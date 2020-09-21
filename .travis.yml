@@ -3,11 +3,19 @@ language: php
 php:
   - '7.4'
 
+env:
+  global:
+    - APP_ENV=test
+    - DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+    - APP_SECRET=Secret!
+
 before_install:
   - composer self-update --2
 
 install:
   - composer install --prefer-dist --no-suggest
+  - php bin/console doctrine:database:create
+  - php bin/console doctrine:migrations:migrate --no-interaction
 
 script:
   - composer ci
