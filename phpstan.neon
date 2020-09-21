@@ -4,3 +4,8 @@ parameters:
     - src
     - tests
   inferPrivatePropertyTypeFromConstructor: true
+  ignoreErrors:
+    # Test methods with intentionally no return type
+    -
+      message: '#::test.+\(\) has no return typehint specified#'
+      path: 'tests'
