@@ -29,3 +29,17 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    app.services.job-states-data-provider:
+        class: App\Services\YamlResourceDataProvider
+        arguments:
+            $resourcePath: '%kernel.project_dir%/config/resources/job-states.yaml'
+
+    App\Services\FixtureLoader\JobStateFixtureLoader:
+        arguments:
+            $dataProvider: '@app.services.job-states-data-provider'
+
+    App\Services\FixtureLoader:
+        arguments:
+            $fixtureLoaders:
+                - '@App\Services\FixtureLoader\JobStateFixtureLoader'

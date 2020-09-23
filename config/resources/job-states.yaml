@@ -1,0 +1,7 @@
+- compilation-awaiting
+- compilation-running
+- compilation-failed
+- execution-awaiting
+- execution-running
+- execution-failed
+- execution-complete

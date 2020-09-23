@@ -24,7 +24,8 @@
   </php>
   <testsuites>
     <testsuite name="Project Test Suite">
-      <directory>tests</directory>
+      <directory>tests/Functional</directory>
+      <directory>tests/Integration</directory>
     </testsuite>
   </testsuites>
   <extensions>
