@@ -13,7 +13,7 @@ env:
     - APP_SECRET=Secret!
 
 before_install:
-  - psql -c 'create database basil-worker-db;' -U postgres
+  - psql -c 'create database "basil-worker-db";' -U postgres
   - composer self-update --2
 
 install:
