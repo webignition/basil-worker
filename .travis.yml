@@ -1,5 +1,8 @@
 language: php
 
+services:
+  - postgresql
+
 php:
   - '7.4'
 
