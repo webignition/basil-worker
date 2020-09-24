@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Exception;
 
-class JobCreateRequestException extends \Exception
+class JobCreateRequestException extends \Exception implements RequestExceptionInterface
 {
+    private const TYPE = 'job-create-request';
+
     public const CODE_LABEL_MISSING = 100;
     public const CODE_CALLBACK_URL_MISSING = 200;
 
@@ -26,5 +28,20 @@ class JobCreateRequestException extends \Exception
             self::MESSAGE_CALLBACK_URL_MISSING,
             self::CODE_CALLBACK_URL_MISSING
         );
+    }
+
+    public function getType(): string
+    {
+        return self::TYPE;
+    }
+
+    public function getResponseMessage(): string
+    {
+        return $this->getMessage();
+    }
+
+    public function getResponseCode(): int
+    {
+        return $this->getCode();
     }
 }
