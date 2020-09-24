@@ -18,9 +18,11 @@
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^6.3",
+        "mockery/mockery": "^1.4",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^0.12.43",
         "phpstan/phpstan-doctrine": "^0.12.19",
+        "phpstan/phpstan-mockery": "^0.12.7",
         "phpstan/phpstan-phpunit": "^0.12.16",
         "phpstan/phpstan-symfony": "^0.12.7",
         "phpunit/phpunit": "^9.3",

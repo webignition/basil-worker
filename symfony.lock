@@ -114,6 +114,9 @@
             ".php_cs.dist"
         ]
     },
+    "hamcrest/hamcrest-php": {
+        "version": "v2.0.1"
+    },
     "jean85/pretty-package-versions": {
         "version": "1.5.1"
     },
@@ -125,6 +128,9 @@
     },
     "laminas/laminas-zendframework-bridge": {
         "version": "1.1.1"
+    },
+    "mockery/mockery": {
+        "version": "1.4.2"
     },
     "myclabs/deep-copy": {
         "version": "1.10.1"
@@ -179,6 +185,9 @@
     },
     "phpstan/phpstan-doctrine": {
         "version": "0.12.19"
+    },
+    "phpstan/phpstan-mockery": {
+        "version": "0.12.7"
     },
     "phpstan/phpstan-phpunit": {
         "version": "0.12.16"
