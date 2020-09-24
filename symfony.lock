@@ -180,6 +180,12 @@
     "phpstan/phpstan-doctrine": {
         "version": "0.12.19"
     },
+    "phpstan/phpstan-phpunit": {
+        "version": "0.12.16"
+    },
+    "phpstan/phpstan-symfony": {
+        "version": "0.12.7"
+    },
     "phpunit/php-code-coverage": {
         "version": "9.1.11"
     },
