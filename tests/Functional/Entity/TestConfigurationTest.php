@@ -3,7 +3,6 @@
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\TestConfiguration;
-use Doctrine\ORM\EntityManagerInterface;
 
 class TestConfigurationTest extends AbstractEntityTest
 {
@@ -17,11 +16,8 @@ class TestConfigurationTest extends AbstractEntityTest
         self::assertSame($browser, $configuration->getBrowser());
         self::assertSame($url, $configuration->getUrl());
 
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($configuration);
-            $this->entityManager->flush();
-        }
-
+        $this->entityManager->persist($configuration);
+        $this->entityManager->flush();
         self::assertIsInt($configuration->getId());
     }
 }

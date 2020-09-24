@@ -5,24 +5,19 @@ namespace App\Tests\Functional\Entity;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Entity\TestState;
-use Doctrine\ORM\EntityManagerInterface;
 
 class TestTest extends AbstractEntityTest
 {
     public function testCreate()
     {
         $configuration = TestConfiguration::create('chrome', 'http://example.com');
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($configuration);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($configuration);
+        $this->entityManager->flush();
         self::assertNotNull($configuration->getId());
 
         $state = TestState::create('test-state-name');
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($state);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($state);
+        $this->entityManager->flush();
         self::assertNotNull($state->getId());
 
         $source = '/app/basil/Test/test.yml';
@@ -37,11 +32,8 @@ class TestTest extends AbstractEntityTest
         self::assertSame($target, $test->getTarget());
         self::assertSame($stepCount, $test->getStepCount());
 
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($test);
-            $this->entityManager->flush();
-        }
-
+        $this->entityManager->persist($test);
+        $this->entityManager->flush();
         self::assertIsInt($test->getId());
     }
 }

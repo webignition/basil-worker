@@ -7,16 +7,15 @@ use Doctrine\ORM\EntityManagerInterface;
 
 abstract class AbstractEntityTest extends AbstractBaseFunctionalTest
 {
-    /**
-     * @var EntityManagerInterface|null
-     */
-    protected ?EntityManagerInterface $entityManager = null;
+    protected EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
+        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
+
         if ($entityManager instanceof EntityManagerInterface) {
             $this->entityManager = $entityManager;
         }

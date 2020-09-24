@@ -4,7 +4,6 @@ namespace App\Tests\Functional\Entity;
 
 use App\Entity\TestState;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\ORM\EntityManagerInterface;
 
 class TestStateTest extends AbstractEntityTest
 {
@@ -16,11 +15,8 @@ class TestStateTest extends AbstractEntityTest
         self::assertNull($state->getId());
         self::assertSame($name, $state->getName());
 
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($state);
-            $this->entityManager->flush();
-        }
-
+        $this->entityManager->persist($state);
+        $this->entityManager->flush();
         self::assertIsInt($state->getId());
     }
 
@@ -30,14 +26,11 @@ class TestStateTest extends AbstractEntityTest
         $state1 = TestState::create($name);
         $state2 = TestState::create($name);
 
+        $this->entityManager->persist($state1);
+        $this->entityManager->persist($state2);
+
         $this->expectException(UniqueConstraintViolationException::class);
         $this->expectExceptionMessage('Key (name)=(test-state-name) already exists');
-
-        if ($this->entityManager instanceof EntityManagerInterface) {
-            $this->entityManager->persist($state1);
-            $this->entityManager->persist($state2);
-
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
     }
 }
