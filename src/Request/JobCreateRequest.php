@@ -6,6 +6,9 @@ namespace App\Request;
 
 class JobCreateRequest
 {
+    public const KEY_LABEL = 'label';
+    public const KEY_CALLBACK_URL = 'callback-url';
+
     private string $label;
     private string $callbackUrl;
 

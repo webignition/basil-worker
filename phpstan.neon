@@ -19,3 +19,8 @@ parameters:
     -
       message: '#::test.+\(\) has no return typehint specified#'
       path: 'tests'
+
+    # Return type of 'array' of test data providers
+    -
+      message: '#DataProvider\(\) return type has no value type specified in iterable type array#'
+      path: 'tests'
