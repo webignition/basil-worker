@@ -23,6 +23,12 @@ class Test
     private ?TestConfiguration $configuration = null;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\TestState")
+     * @ORM\JoinColumn(name="state_id", referencedColumnName="id", nullable=false)
+     */
+    private ?TestState $state = null;
+
+    /**
      * @ORM\Column(type="text")
      */
     private string $source;
@@ -39,12 +45,14 @@ class Test
 
     public static function create(
         TestConfiguration $configuration,
+        TestState $state,
         string $source,
         string $target,
         int $stepCount
     ): self {
         $test = new Test();
         $test->configuration = $configuration;
+        $test->state = $state;
         $test->source = $source;
         $test->target = $target;
         $test->stepCount = $stepCount;
@@ -60,6 +68,11 @@ class Test
     public function getConfiguration(): ?TestConfiguration
     {
         return $this->configuration;
+    }
+
+    public function getState(): ?TestState
+    {
+        return $this->state;
     }
 
     public function getSource(): ?string

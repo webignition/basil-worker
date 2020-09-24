@@ -4,6 +4,7 @@ namespace App\Tests\Functional\Entity;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Entity\TestState;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TestTest extends AbstractEntityTest
@@ -11,20 +12,27 @@ class TestTest extends AbstractEntityTest
     public function testCreate()
     {
         $configuration = TestConfiguration::create('chrome', 'http://example.com');
-
         if ($this->entityManager instanceof EntityManagerInterface) {
             $this->entityManager->persist($configuration);
             $this->entityManager->flush();
         }
+        self::assertNotNull($configuration->getId());
+
+        $state = TestState::create('test-state-name');
+        if ($this->entityManager instanceof EntityManagerInterface) {
+            $this->entityManager->persist($state);
+            $this->entityManager->flush();
+        }
+        self::assertNotNull($state->getId());
 
         $source = '/app/basil/Test/test.yml';
         $target = '/app/generated/Generated9bafa287f3df934f24c7855070da80f7.php';
         $stepCount = 3;
 
-        $test = Test::create($configuration, $source, $target, $stepCount);
-        self::assertNotNull($configuration->getId());
+        $test = Test::create($configuration, $state, $source, $target, $stepCount);
         self::assertNull($test->getId());
         self::assertSame($configuration, $test->getConfiguration());
+        self::assertSame($state, $test->getState());
         self::assertSame($source, $test->getSource());
         self::assertSame($target, $test->getTarget());
         self::assertSame($stepCount, $test->getStepCount());
