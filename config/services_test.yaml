@@ -3,5 +3,5 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Services\JobRetriever:
+    App\Services\JobStore:
         public: true

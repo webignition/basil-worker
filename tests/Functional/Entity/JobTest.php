@@ -5,9 +5,22 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\Job;
+use App\Services\JobStore;
 
 class JobTest extends AbstractEntityTest
 {
+    private JobStore $jobStore;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $jobStore = self::$container->get(JobStore::class);
+        if ($jobStore instanceof JobStore) {
+            $this->jobStore = $jobStore;
+        }
+    }
+
     public function testCreate()
     {
         $label = md5('label source');
@@ -21,7 +34,7 @@ class JobTest extends AbstractEntityTest
         self::assertSame($callbackUrl, $job->getCallbackUrl());
         self::assertSame([], $job->getSources());
 
-        $this->persistJob($job);
+        $this->jobStore->store($job);
     }
 
     /**
@@ -34,7 +47,7 @@ class JobTest extends AbstractEntityTest
         $job = Job::create(md5('label source'), 'http://example.com/callback');
         $job->setSources($sources);
 
-        $this->persistJob($job);
+        $this->jobStore->store($job);
 
         $this->entityManager->clear(Job::class);
         $this->entityManager->close();
@@ -58,13 +71,5 @@ class JobTest extends AbstractEntityTest
                 ],
             ],
         ];
-    }
-
-    private function persistJob(Job $job): void
-    {
-        self::assertFalse($this->entityManager->contains($job));
-        $this->entityManager->persist($job);
-        $this->entityManager->flush();
-        self::assertTrue($this->entityManager->contains($job));
     }
 }

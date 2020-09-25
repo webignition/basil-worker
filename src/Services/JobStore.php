@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Entity\Job;
 use Doctrine\ORM\EntityManagerInterface;
 
-class JobRetriever
+class JobStore
 {
     private EntityManagerInterface $entityManager;
 
@@ -19,5 +19,11 @@ class JobRetriever
     public function retrieve(): ?Job
     {
         return $this->entityManager->find(Job::class, Job::ID);
+    }
+
+    public function store(Job $job): void
+    {
+        $this->entityManager->persist($job);
+        $this->entityManager->flush();
     }
 }
