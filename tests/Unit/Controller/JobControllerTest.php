@@ -9,7 +9,6 @@ use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
 
 class JobControllerTest extends TestCase
 {
@@ -19,13 +18,21 @@ class JobControllerTest extends TestCase
     public function testCreate(
         JobCreateRequest $jobCreateRequest,
         JobStore $jobStore,
-        Response $expectedResponse
+        JsonResponse $expectedResponse
     ) {
         $controller = new JobController($jobStore);
 
         $response = $controller->create($jobCreateRequest);
 
-        self::assertEquals($expectedResponse, $response);
+        self::assertSame(
+            $expectedResponse->getStatusCode(),
+            $response->getStatusCode()
+        );
+
+        self::assertSame(
+            json_decode((string) $expectedResponse->getContent(), true),
+            json_decode((string) $response->getContent(), true)
+        );
     }
 
     public function createDataProvider(): array
