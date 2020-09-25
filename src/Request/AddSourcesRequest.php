@@ -7,7 +7,7 @@ namespace App\Request;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
-class AddSourcesRequest
+class AddSourcesRequest extends AbstractEncapsulatingRequest
 {
     public const KEY_MANIFEST = 'manifest';
 
@@ -18,7 +18,7 @@ class AddSourcesRequest
      */
     private array $sources = [];
 
-    public function __construct(Request $request)
+    public function processRequest(Request $request): void
     {
         $files = $request->files;
 
