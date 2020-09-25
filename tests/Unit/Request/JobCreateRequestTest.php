@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Request;
 
 use App\Request\JobCreateRequest;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\Request;
 
 class JobCreateRequestTest extends TestCase
 {
@@ -14,7 +15,12 @@ class JobCreateRequestTest extends TestCase
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
 
-        $jobCreateRequest = new JobCreateRequest($label, $callbackUrl);
+        $request = new Request([], [
+            JobCreateRequest::KEY_LABEL => $label,
+            JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
+        ]);
+
+        $jobCreateRequest = new JobCreateRequest($request);
 
         self::assertSame($label, $jobCreateRequest->getLabel());
         self::assertSame($callbackUrl, $jobCreateRequest->getCallbackUrl());

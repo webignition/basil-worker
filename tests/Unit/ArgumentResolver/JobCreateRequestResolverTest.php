@@ -86,13 +86,15 @@ class JobCreateRequestResolverTest extends TestCase
 
     public function resolveSuccessDataProvider(): array
     {
+        $request = new Request([], [
+            JobCreateRequest::KEY_LABEL => 'label content',
+            JobCreateRequest::KEY_CALLBACK_URL => 'http://example.com/callback',
+        ]);
+
         return [
             'label present, callback-url present' => [
-                'request' => new Request([], [
-                    JobCreateRequest::KEY_LABEL => 'label content',
-                    JobCreateRequest::KEY_CALLBACK_URL => 'http://example.com/callback',
-                ]),
-                'expectedJobCreateRequest' => new JobCreateRequest('label content', 'http://example.com/callback'),
+                'request' => $request,
+                'expectedJobCreateRequest' => new JobCreateRequest($request),
             ],
         ];
     }

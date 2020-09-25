@@ -39,6 +39,6 @@ class JobCreateRequestResolver implements ArgumentValueResolverInterface
             throw JobCreateRequestException::createCallbackUrlMissingException();
         }
 
-        yield new JobCreateRequest($label, $callbackUrl);
+        yield new JobCreateRequest($request);
     }
 }

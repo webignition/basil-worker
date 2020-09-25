@@ -4,31 +4,31 @@ declare(strict_types=1);
 
 namespace App\Request;
 
+use Symfony\Component\HttpFoundation\ParameterBag;
+use Symfony\Component\HttpFoundation\Request;
+
 class JobCreateRequest
 {
     public const KEY_LABEL = 'label';
     public const KEY_CALLBACK_URL = 'callback-url';
 
-    private string $label;
-    private string $callbackUrl;
-
     /**
-     * @param string $label
-     * @param string $callbackUrl
+     * @var ParameterBag<mixed>
      */
-    public function __construct(string $label, string $callbackUrl)
+    private ParameterBag $requestData;
+
+    public function __construct(Request $request)
     {
-        $this->label = $label;
-        $this->callbackUrl = $callbackUrl;
+        $this->requestData = $request->request;
     }
 
     public function getLabel(): string
     {
-        return $this->label;
+        return $this->requestData->get(self::KEY_LABEL);
     }
 
     public function getCallbackUrl(): string
     {
-        return $this->callbackUrl;
+        return $this->requestData->get(self::KEY_CALLBACK_URL);
     }
 }
