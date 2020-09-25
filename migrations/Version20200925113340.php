@@ -7,7 +7,7 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20200925112016 extends AbstractMigration
+final class Version20200925113340 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -22,7 +22,7 @@ final class Version20200925112016 extends AbstractMigration
                 state VARCHAR(255) NOT NULL, 
                 label VARCHAR(32) NOT NULL, 
                 callback_url VARCHAR(255) NOT NULL, 
-                sources TEXT NOT NULL, 
+                sources TEXT DEFAULT NULL, 
                 PRIMARY KEY(id)
             )
         ');

@@ -43,26 +43,18 @@ class Job
     private ?string $callbackUrl;
 
     /**
-     * @ORM\Column(type="simple_array")
+     * @ORM\Column(type="simple_array", nullable=true)
      *
      * @var string[]
      */
     private array $sources = [];
 
-    /**
-     * @param string $label
-     * @param string $callbackUrl
-     * @param string[] $sources
-     *
-     * @return self
-     */
-    public static function create(string $label, string $callbackUrl, array $sources): self
+    public static function create(string $label, string $callbackUrl): self
     {
         $job = new Job();
 
         $job->label = $label;
         $job->callbackUrl = $callbackUrl;
-        $job->sources = $sources;
 
         return $job;
     }
@@ -93,5 +85,13 @@ class Job
     public function getSources(): array
     {
         return $this->sources;
+    }
+
+    /**
+     * @param string[] $sources
+     */
+    public function setSources(array $sources): void
+    {
+        $this->sources = $sources;
     }
 }

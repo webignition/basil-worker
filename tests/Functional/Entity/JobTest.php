@@ -12,36 +12,27 @@ class JobTest extends AbstractEntityTest
     {
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
-        $sources = [
-            '/app/basil/test1.yml',
-            '/app/basil/test2.yml',
-            '/app/basil/test3.yml',
-        ];
 
-        $job = Job::create($label, $callbackUrl, $sources);
+        $job = Job::create($label, $callbackUrl);
 
         self::assertSame(1, $job->getId());
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
         self::assertSame($label, $job->getLabel());
         self::assertSame($callbackUrl, $job->getCallbackUrl());
-        self::assertSame($sources, $job->getSources());
+        self::assertSame([], $job->getSources());
 
         $this->persistJob($job);
     }
 
-    public function testHydratedJobReturnsSourcesAsStringArray()
+    /**
+     * @dataProvider hydratedJobReturnsSourcesAsStringArrayDataProvider
+     *
+     * @param string[] $sources
+     */
+    public function testHydratedJobReturnsSourcesAsStringArray(array $sources)
     {
-        $sources = [
-            '/app/basil/test1.yml',
-            '/app/basil/test2.yml',
-            '/app/basil/test3.yml',
-        ];
-
-        $job = Job::create(
-            md5('label source'),
-            'http://example.com/callback',
-            $sources
-        );
+        $job = Job::create(md5('label source'), 'http://example.com/callback');
+        $job->setSources($sources);
 
         $this->persistJob($job);
 
@@ -51,6 +42,22 @@ class JobTest extends AbstractEntityTest
 
         self::assertInstanceOf(Job::class, $retrievedJob);
         self::assertSame($sources, $retrievedJob->getSources());
+    }
+
+    public function hydratedJobReturnsSourcesAsStringArrayDataProvider(): array
+    {
+        return [
+            'empty' => [
+                'sources' => [],
+            ],
+            'non-empty' => [
+                'sources' => [
+                    '/app/basil/test1.yml',
+                    '/app/basil/test2.yml',
+                    '/app/basil/test3.yml',
+                ],
+            ],
+        ];
     }
 
     private function persistJob(Job $job): void

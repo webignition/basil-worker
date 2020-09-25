@@ -45,13 +45,8 @@ class JobRetrieverTest extends AbstractBaseFunctionalTest
 
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
-        $sources = [
-            '/app/basil/test1.yml',
-            '/app/basil/test2.yml',
-            '/app/basil/test3.yml',
-        ];
 
-        $job = Job::create($label, $callbackUrl, $sources);
+        $job = Job::create($label, $callbackUrl);
         $this->entityManager->persist($job);
         $this->entityManager->flush();
 
