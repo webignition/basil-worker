@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
-use App\Entity\JobState;
 use App\Services\JobRetriever;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -44,10 +43,6 @@ class JobRetrieverTest extends AbstractBaseFunctionalTest
         $entityManager = self::$container->get(EntityManagerInterface::class);
         self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
 
-        $state = JobState::create('job-state-name');
-        $this->entityManager->persist($state);
-        $this->entityManager->flush();
-
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
         $sources = [
@@ -56,7 +51,7 @@ class JobRetrieverTest extends AbstractBaseFunctionalTest
             '/app/basil/test3.yml',
         ];
 
-        $job = Job::create($state, $label, $callbackUrl, $sources);
+        $job = Job::create($label, $callbackUrl, $sources);
         $this->entityManager->persist($job);
         $this->entityManager->flush();
 

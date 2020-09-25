@@ -11,6 +11,14 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Job
 {
+    public const STATE_COMPILATION_AWAITING = 'compilation-awaiting';
+    public const STATE_COMPILATION_RUNNING = 'compilation-running';
+    public const STATE_COMPILATION_FAILED = 'compilation-failed';
+    public const STATE_EXECUTION_AWAITING = 'execution-awaiting';
+    public const STATE_EXECUTION_RUNNING = 'execution-running';
+    public const STATE_EXECUTION_FAILED = 'execution-failed';
+    public const STATE_EXECUTION_COMPLETE = 'execution-complete';
+
     public const ID = 1;
 
     /**
@@ -20,10 +28,9 @@ class Job
     private int $id = self::ID;
 
     /**
-     * @ORM\ManyToOne(targetEntity=JobState::class)
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private ?JobState $state = null;
+    private string $state = self::STATE_COMPILATION_AWAITING;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=false, unique=true)
@@ -33,7 +40,7 @@ class Job
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
      */
-    private string $callbackUrl;
+    private ?string $callbackUrl;
 
     /**
      * @ORM\Column(type="simple_array")
@@ -43,17 +50,16 @@ class Job
     private array $sources = [];
 
     /**
-     * @param JobState $state
      * @param string $label
      * @param string $callbackUrl
      * @param string[] $sources
      *
      * @return self
      */
-    public static function create(JobState $state, string $label, string $callbackUrl, array $sources): self
+    public static function create(string $label, string $callbackUrl, array $sources): self
     {
         $job = new Job();
-        $job->state = $state;
+
         $job->label = $label;
         $job->callbackUrl = $callbackUrl;
         $job->sources = $sources;
@@ -66,7 +72,7 @@ class Job
         return $this->id;
     }
 
-    public function getState(): ?JobState
+    public function getState(): string
     {
         return $this->state;
     }

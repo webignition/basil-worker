@@ -5,6 +5,3 @@ services:
 
     App\Services\JobRetriever:
         public: true
-
-    App\Services\JobStateRetriever:
-        public: true
