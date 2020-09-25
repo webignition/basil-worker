@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Request;
 
+use App\Model\Manifest;
 use App\Request\AddSourcesRequest;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -15,20 +16,20 @@ class AddSourcesRequestTest extends TestCase
      * @dataProvider createDataProvider
      *
      * @param Request $request
-     * @param UploadedFile|null $expectedManifest
+     * @param Manifest|null $expectedManifest
      * @param UploadedFile[] $expectedSources
      */
-    public function testCreate(Request $request, ?UploadedFile $expectedManifest, array $expectedSources)
+    public function testCreate(Request $request, ?Manifest $expectedManifest, array $expectedSources)
     {
         $addSourcesRequest = new AddSourcesRequest($request);
 
-        self::assertSame($expectedManifest, $addSourcesRequest->getManifest());
+        self::assertEquals($expectedManifest, $addSourcesRequest->getManifest());
         self::assertSame($expectedSources, $addSourcesRequest->getSources());
     }
 
     public function createDataProvider(): array
     {
-        $manifest = \Mockery::mock(UploadedFile::class);
+        $manifestUploadedFile = \Mockery::mock(UploadedFile::class);
         $source1 = \Mockery::mock(UploadedFile::class);
         $source2 = \Mockery::mock(UploadedFile::class);
         $source3 = \Mockery::mock(UploadedFile::class);
@@ -46,10 +47,10 @@ class AddSourcesRequestTest extends TestCase
                     [],
                     [],
                     [
-                        AddSourcesRequest::KEY_MANIFEST => $manifest,
+                        AddSourcesRequest::KEY_MANIFEST => $manifestUploadedFile,
                     ]
                 ),
-                'expectedManifest' => $manifest,
+                'expectedManifest' => new Manifest($manifestUploadedFile),
                 'expectedSources' => [],
             ],
             'sources present only' => [
@@ -78,13 +79,13 @@ class AddSourcesRequestTest extends TestCase
                     [],
                     [],
                     [
-                        AddSourcesRequest::KEY_MANIFEST => $manifest,
+                        AddSourcesRequest::KEY_MANIFEST => $manifestUploadedFile,
                         'test1.yml' => $source1,
                         'test2.yml' => $source2,
                         'test3.yml' => $source3,
                     ]
                 ),
-                'expectedManifest' => $manifest,
+                'expectedManifest' => new Manifest($manifestUploadedFile),
                 'expectedSources' => [
                     'test1.yml' => $source1,
                     'test2.yml' => $source2,
