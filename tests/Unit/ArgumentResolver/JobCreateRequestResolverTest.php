@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\ArgumentResolver;
 
 use App\ArgumentResolver\JobCreateRequestResolver;
-use App\Exception\JobCreateRequestException;
 use App\Request\JobCreateRequest;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -47,36 +46,9 @@ class JobCreateRequestResolverTest extends TestCase
     }
 
     /**
-     * @dataProvider resolveThrowsExceptionDataProvider
+     * @dataProvider resolveDataProvider
      */
-    public function testResolveThrowsException(Request $request, JobCreateRequestException $expectedException)
-    {
-        self::expectExceptionObject($expectedException);
-
-        $generator = $this->resolver->resolve($request, \Mockery::mock(ArgumentMetadata::class));
-        $generator->current();
-    }
-
-    public function resolveThrowsExceptionDataProvider(): array
-    {
-        return [
-            'label missing' => [
-                'request' => new Request(),
-                'expectedException' => JobCreateRequestException::createLabelMissingException(),
-            ],
-            'callback-url missing' => [
-                'request' => new Request([], [
-                    JobCreateRequest::KEY_LABEL => 'label content',
-                ]),
-                'expectedException' => JobCreateRequestException::createCallbackUrlMissingException(),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider resolveSuccessDataProvider
-     */
-    public function testResolveSuccess(Request $request, JobCreateRequest $expectedJobCreateRequest)
+    public function testResolve(Request $request, JobCreateRequest $expectedJobCreateRequest)
     {
         $generator = $this->resolver->resolve($request, \Mockery::mock(ArgumentMetadata::class));
         $jobCreateRequest = $generator->current();
@@ -84,17 +56,33 @@ class JobCreateRequestResolverTest extends TestCase
         self::assertEquals($expectedJobCreateRequest, $jobCreateRequest);
     }
 
-    public function resolveSuccessDataProvider(): array
+    public function resolveDataProvider(): array
     {
-        $request = new Request([], [
-            JobCreateRequest::KEY_LABEL => 'label content',
-            JobCreateRequest::KEY_CALLBACK_URL => 'http://example.com/callback',
-        ]);
+        $label = 'label content';
+        $callbackUrl = 'http://example.com/callback';
 
         return [
+            'label missing' => [
+                'request' => new Request(),
+                'expectedJobCreateRequest' => new JobCreateRequest(new Request()),
+            ],
+            'callback-url missing' => [
+                'request' => new Request([], [
+                    JobCreateRequest::KEY_LABEL => $label,
+                ]),
+                'expectedJobCreateRequest' => new JobCreateRequest(new Request([], [
+                    JobCreateRequest::KEY_LABEL => $label,
+                ])),
+            ],
             'label present, callback-url present' => [
-                'request' => $request,
-                'expectedJobCreateRequest' => new JobCreateRequest($request),
+                'request' => new Request([], [
+                    JobCreateRequest::KEY_LABEL => $label,
+                    JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
+                ]),
+                'expectedJobCreateRequest' => new JobCreateRequest(new Request([], [
+                    JobCreateRequest::KEY_LABEL => $label,
+                    JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
+                ])),
             ],
         ];
     }
