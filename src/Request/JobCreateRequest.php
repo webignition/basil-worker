@@ -24,11 +24,11 @@ class JobCreateRequest
 
     public function getLabel(): string
     {
-        return $this->requestData->get(self::KEY_LABEL);
+        return (string) $this->requestData->get(self::KEY_LABEL);
     }
 
     public function getCallbackUrl(): string
     {
-        return $this->requestData->get(self::KEY_CALLBACK_URL);
+        return (string) $this->requestData->get(self::KEY_CALLBACK_URL);
     }
 }

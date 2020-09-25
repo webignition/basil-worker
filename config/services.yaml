@@ -43,3 +43,7 @@ services:
         arguments:
             $fixtureLoaders:
                 - '@App\Services\FixtureLoader\TestStateFixtureLoader'
+
+    App\ArgumentResolver\JobCreateRequestResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 50 }
