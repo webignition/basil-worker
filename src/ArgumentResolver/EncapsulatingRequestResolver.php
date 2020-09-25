@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ArgumentValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class JobCreateRequestResolver implements ArgumentValueResolverInterface
+class EncapsulatingRequestResolver implements ArgumentValueResolverInterface
 {
     private const SUPPORTED_CLASSES = [
         JobCreateRequest::class,

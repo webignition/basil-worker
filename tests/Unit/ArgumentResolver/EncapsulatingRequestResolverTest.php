@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\ArgumentResolver;
 
-use App\ArgumentResolver\JobCreateRequestResolver;
+use App\ArgumentResolver\EncapsulatingRequestResolver;
 use App\Request\AddSourcesRequest;
 use App\Request\EncapsulatingRequestInterface;
 use App\Request\JobCreateRequest;
@@ -13,15 +13,15 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
-class JobCreateRequestResolverTest extends TestCase
+class EncapsulatingRequestResolverTest extends TestCase
 {
-    private JobCreateRequestResolver $resolver;
+    private EncapsulatingRequestResolver $resolver;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->resolver = new JobCreateRequestResolver();
+        $this->resolver = new EncapsulatingRequestResolver();
     }
 
     /**
