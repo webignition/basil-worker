@@ -28,7 +28,7 @@ class Test
      * @ORM\ManyToOne(targetEntity="App\Entity\TestState")
      * @ORM\JoinColumn(name="state_id", referencedColumnName="id", nullable=false)
      */
-    private ?TestState $state = null;
+    private TestState $state;
 
     /**
      * @ORM\Column(type="text")
@@ -72,7 +72,7 @@ class Test
         return $this->configuration;
     }
 
-    public function getState(): ?TestState
+    public function getState(): TestState
     {
         return $this->state;
     }
