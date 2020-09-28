@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class Job
+class Job implements \JsonSerializable
 {
     public const STATE_COMPILATION_AWAITING = 'compilation-awaiting';
     public const STATE_COMPILATION_RUNNING = 'compilation-running';
@@ -98,5 +98,18 @@ class Job
     public function setState(string $state): void
     {
         $this->state = $state;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'state' => $this->state,
+            'label' => $this->label,
+            'callback-url' => $this->callbackUrl,
+            'sources' => $this->sources,
+        ];
     }
 }
