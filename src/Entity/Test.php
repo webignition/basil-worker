@@ -45,12 +45,18 @@ class Test implements \JsonSerializable
      */
     private int $stepCount = 0;
 
+    /**
+     * @ORM\Column(type="integer", nullable=false, unique=true)
+     */
+    private int $position;
+
     public static function create(
         TestConfiguration $configuration,
         TestState $state,
         string $source,
         string $target,
-        int $stepCount
+        int $stepCount,
+        int $position
     ): self {
         $test = new Test();
         $test->configuration = $configuration;
@@ -58,6 +64,7 @@ class Test implements \JsonSerializable
         $test->source = $source;
         $test->target = $target;
         $test->stepCount = $stepCount;
+        $test->position = $position;
 
         return $test;
     }
@@ -92,6 +99,11 @@ class Test implements \JsonSerializable
         return $this->stepCount;
     }
 
+    public function getPosition(): int
+    {
+        return $this->position;
+    }
+
     /**
      * @return array<mixed>
      */
@@ -103,6 +115,7 @@ class Test implements \JsonSerializable
             'target' => $this->target,
             'step_count' => $this->stepCount,
             'state' => $this->state->jsonSerialize(),
+            'position' => $this->position,
         ];
     }
 }

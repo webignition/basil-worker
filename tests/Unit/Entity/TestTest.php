@@ -31,7 +31,8 @@ class TestTest extends TestCase
                     TestState::create('test state name'),
                     'Test/test1.yml',
                     'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
-                    2
+                    2,
+                    1
                 ),
                 'expectedSerializedTest' => [
                     'configuration' => [
@@ -42,6 +43,7 @@ class TestTest extends TestCase
                     'target' => 'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
                     'step_count' => 2,
                     'state' => 'test state name',
+                    'position' => 1,
                 ],
             ],
         ];

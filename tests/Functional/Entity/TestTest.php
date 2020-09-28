@@ -25,14 +25,16 @@ class TestTest extends AbstractEntityTest
         $source = '/app/basil/Test/test.yml';
         $target = '/app/generated/Generated9bafa287f3df934f24c7855070da80f7.php';
         $stepCount = 3;
+        $position = 1;
 
-        $test = Test::create($configuration, $state, $source, $target, $stepCount);
+        $test = Test::create($configuration, $state, $source, $target, $stepCount, $position);
         self::assertNull($test->getId());
         self::assertSame($configuration, $test->getConfiguration());
         self::assertSame($state, $test->getState());
         self::assertSame($source, $test->getSource());
         self::assertSame($target, $test->getTarget());
         self::assertSame($stepCount, $test->getStepCount());
+        self::assertSame($position, $test->getPosition());
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();
