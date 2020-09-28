@@ -22,7 +22,7 @@ class Test
      * @ORM\ManyToOne(targetEntity="App\Entity\TestConfiguration")
      * @ORM\JoinColumn(name="test_configuration_id", referencedColumnName="id", nullable=false)
      */
-    private ?TestConfiguration $configuration = null;
+    private TestConfiguration $configuration;
 
     /**
      * @ORM\ManyToOne(targetEntity="App\Entity\TestState")
@@ -67,7 +67,7 @@ class Test
         return $this->id;
     }
 
-    public function getConfiguration(): ?TestConfiguration
+    public function getConfiguration(): TestConfiguration
     {
         return $this->configuration;
     }
