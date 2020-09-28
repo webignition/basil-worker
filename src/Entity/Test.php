@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class Test
+class Test implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -90,5 +90,19 @@ class Test
     public function getStepCount(): int
     {
         return $this->stepCount;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'configuration' => $this->configuration->jsonSerialize(),
+            'source' => $this->source,
+            'target' => $this->target,
+            'step_count' => $this->stepCount,
+            'state' => $this->state->jsonSerialize(),
+        ];
     }
 }

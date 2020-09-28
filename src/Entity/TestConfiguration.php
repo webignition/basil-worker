@@ -21,7 +21,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     }
  * )
  */
-class TestConfiguration
+class TestConfiguration implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -62,5 +62,16 @@ class TestConfiguration
     public function getUrl(): string
     {
         return $this->url;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'browser' => $this->browser,
+            'url' => $this->url,
+        ];
     }
 }

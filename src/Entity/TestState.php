@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class TestState extends AbstractState
+class TestState extends AbstractState implements \JsonSerializable
 {
     public static function create(string $name): self
     {
@@ -17,5 +17,10 @@ class TestState extends AbstractState
         $state->name = $name;
 
         return $state;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->name;
     }
 }
