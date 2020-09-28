@@ -94,4 +94,9 @@ class Job
     {
         $this->sources = $sources;
     }
+
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
 }
