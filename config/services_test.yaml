@@ -5,3 +5,12 @@ services:
 
     App\Services\JobStore:
         public: true
+
+    App\Tests\Services\BasilFixtureHandler:
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/basil'
+            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+
+    App\Tests\Services\SourceStoreInitializer:
+        public: true
