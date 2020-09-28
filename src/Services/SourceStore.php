@@ -16,11 +16,6 @@ class SourceStore
         $this->path = (string) $path;
     }
 
-    public function initialize(): bool
-    {
-        return true;
-    }
-
     public function getPath(): string
     {
         return $this->path;
@@ -37,5 +32,10 @@ class SourceStore
         }
 
         return $uploadedFile->move($directory, $filename);
+    }
+
+    public function has(string $relativePath): bool
+    {
+        return file_exists($this->path . '/' . $relativePath);
     }
 }

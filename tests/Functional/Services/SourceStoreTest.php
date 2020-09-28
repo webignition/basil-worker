@@ -46,6 +46,8 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
         string $relativePath,
         File $expectedFile
     ) {
+        self::assertFalse($this->sourceStore->has($relativePath));
+
         $expectedFilePath = $expectedFile->getPathname();
         self::assertFileDoesNotExist($expectedFilePath);
 
@@ -55,6 +57,7 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
 
         self::assertEquals($expectedFile->getPathname(), $file->getPathname());
         self::assertFileExists($expectedFilePath);
+        self::assertTrue($this->sourceStore->has($relativePath));
     }
 
     public function storeDataProvider(): array
