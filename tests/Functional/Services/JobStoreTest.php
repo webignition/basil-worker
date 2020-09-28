@@ -16,11 +16,11 @@ class JobStoreTest extends AbstractBaseFunctionalTest
     {
         parent::setUp();
 
-        $jobRetriever = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobRetriever);
+        $jobStore = self::$container->get(JobStore::class);
+        self::assertInstanceOf(JobStore::class, $jobStore);
 
-        if ($jobRetriever instanceof JobStore) {
-            $this->jobStore = $jobRetriever;
+        if ($jobStore instanceof JobStore) {
+            $this->jobStore = $jobStore;
         }
     }
 
