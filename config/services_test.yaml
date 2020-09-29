@@ -9,6 +9,9 @@ services:
     App\Services\TestConfigurationStore:
         public: true
 
+    App\Services\TestStore:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

@@ -38,6 +38,11 @@ class TestConfigurationStore
         return $testConfiguration;
     }
 
+    public function findByConfiguration(TestConfiguration $testConfiguration): TestConfiguration
+    {
+        return $this->find($testConfiguration->getBrowser(), $testConfiguration->getUrl());
+    }
+
     private function store(TestConfiguration $testConfiguration): TestConfiguration
     {
         $this->entityManager->persist($testConfiguration);
