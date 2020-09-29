@@ -491,6 +491,18 @@
     "theseer/tokenizer": {
         "version": "1.2.0"
     },
+    "webignition/basil-compiler-models": {
+        "version": "0.14"
+    },
+    "webignition/basil-models": {
+        "version": "0.57"
+    },
+    "webignition/error-handler": {
+        "version": "0.1"
+    },
+    "webignition/tcp-cli-proxy-client": {
+        "version": "0.8"
+    },
     "webimpress/safe-writer": {
         "version": "2.1.0"
     },

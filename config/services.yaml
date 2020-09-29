@@ -4,6 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    compiler_source_directory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+    compiler_target_directory: '%env(COMPILER_TARGET_DIRECTORY)%'
 
 services:
     # default configuration for services in *this* file
@@ -36,3 +38,19 @@ services:
     App\Services\SourceStore:
         arguments:
             $path: '%kernel.project_dir%/var/basil'
+
+    app.services.compiler-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(COMPILER_HOST)%'
+            $port: '%env(COMPILER_PORT)%'
+
+    Symfony\Component\Yaml\Parser:
+        class: Symfony\Component\Yaml\Parser
+
+    App\Services\Compiler:
+        arguments:
+            $client: '@app.services.compiler-client'
+            $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+            $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'

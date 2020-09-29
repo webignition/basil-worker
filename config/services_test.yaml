@@ -12,6 +12,13 @@ services:
     App\Services\TestStore:
         public: true
 
+    App\Services\Compiler:
+        public: true
+        arguments:
+            $client: '@app.services.compiler-client'
+            $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+            $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

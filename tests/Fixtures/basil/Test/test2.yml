@@ -1,6 +1,7 @@
 config:
   browsers:
     - chrome
+    - firefox
   url: https://example.com/two
 
 "verify page is open":

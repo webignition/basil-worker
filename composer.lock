@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "17b0748470f5b476b8ada7555f8f2be7",
+    "content-hash": "20d3eaafe8bb56e24345472e6307f857",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -4220,16 +4220,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v5.1.5",
+            "version": "v5.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "a44bd3a91bfbf8db12367fa6ffac9c3eb1a8804a"
+                "reference": "e147a68cb66a8b510f4b7481fe4da5b2ab65ec6a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/a44bd3a91bfbf8db12367fa6ffac9c3eb1a8804a",
-                "reference": "a44bd3a91bfbf8db12367fa6ffac9c3eb1a8804a",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/e147a68cb66a8b510f4b7481fe4da5b2ab65ec6a",
+                "reference": "e147a68cb66a8b510f4b7481fe4da5b2ab65ec6a",
                 "shasum": ""
             },
             "require": {
@@ -4293,7 +4293,196 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-08-26T08:30:57+00:00"
+            "time": "2020-09-27T03:44:28+00:00"
+        },
+        {
+            "name": "webignition/basil-compiler-models",
+            "version": "0.14",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/basil-compiler-models.git",
+                "reference": "f525547507a8c0002a353cb702b9a20aaeed75e0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/basil-compiler-models/zipball/f525547507a8c0002a353cb702b9a20aaeed75e0",
+                "reference": "f525547507a8c0002a353cb702b9a20aaeed75e0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "webignition/basil-models": ">=0.57,<1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "php-mock/php-mock-mockery": "^1.3",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12.0",
+                "phpstan/phpstan-mockery": "^0.12.7",
+                "phpunit/phpunit": "^9.3",
+                "squizlabs/php_codesniffer": "3.*",
+                "symplify/easy-coding-standard": "^8.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\BasilCompilerModels\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "homepage": "https://github.com/webignition/basil-compiler-models",
+            "time": "2020-09-18T09:26:41+00:00"
+        },
+        {
+            "name": "webignition/basil-models",
+            "version": "0.57",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/basil-models.git",
+                "reference": "67d500daa092590652d3d93c33d8fa70dfd265e2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/basil-models/zipball/67d500daa092590652d3d93c33d8fa70dfd265e2",
+                "reference": "67d500daa092590652d3d93c33d8fa70dfd265e2",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "php": ">=7.4"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^0.12",
+                "phpunit/phpunit": "~9.0",
+                "squizlabs/php_codesniffer": "3.*",
+                "symplify/easy-coding-standard": "^8.1",
+                "webignition/object-reflector": "^0.1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\BasilModels\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "homepage": "https://github.com/webignition/basil-models",
+            "time": "2020-07-29T13:22:30+00:00"
+        },
+        {
+            "name": "webignition/error-handler",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/error-handler.git",
+                "reference": "fbdd0c72194bad7547258049c49a0b1a77deea86"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/error-handler/zipball/fbdd0c72194bad7547258049c49a0b1a77deea86",
+                "reference": "fbdd0c72194bad7547258049c49a0b1a77deea86",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "psr/log": "^1.1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.2",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12.0",
+                "phpstan/phpstan-mockery": "^0.12.0",
+                "phpunit/phpunit": "^9.2",
+                "squizlabs/php_codesniffer": "3.*",
+                "symplify/easy-coding-standard": "^8.0",
+                "webignition/object-reflector": "^0.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\ErrorHandler\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "PHP error handler",
+            "homepage": "https://github.com/webignition/error-handler",
+            "time": "2020-08-19T14:12:52+00:00"
+        },
+        {
+            "name": "webignition/tcp-cli-proxy-client",
+            "version": "0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/tcp-cli-proxy-client.git",
+                "reference": "4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/tcp-cli-proxy-client/zipball/4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af",
+                "reference": "4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "symfony/console": "^5.1",
+                "webignition/error-handler": "^0.1.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "php-mock/php-mock": "^2.2",
+                "php-mock/php-mock-mockery": "^1.3",
+                "phpstan/extension-installer": "^1.0",
+                "phpstan/phpstan": "^0.12.0",
+                "phpstan/phpstan-mockery": "^0.12.7",
+                "phpunit/phpunit": "^9.2",
+                "squizlabs/php_codesniffer": "3.*",
+                "symplify/easy-coding-standard": "^8.0",
+                "webignition/object-reflector": "^0.2.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\TcpCliProxyClient\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "homepage": "https://github.com/webignition/tcp-cli-proxy-client",
+            "time": "2020-09-01T15:57:04+00:00"
         },
         {
             "name": "webimpress/safe-writer",

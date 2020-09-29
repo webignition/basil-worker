@@ -1,6 +1,7 @@
 language: php
 
 services:
+  - docker
   - postgresql
 
 php:
@@ -19,6 +20,9 @@ install:
   - composer install --prefer-dist --no-suggest
   - php bin/console doctrine:database:create
   - php bin/console doctrine:migrations:migrate --no-interaction
+
+before_script:
+  - composer integration-setup
 
 script:
   - composer ci

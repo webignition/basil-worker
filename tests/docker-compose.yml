@@ -1,0 +1,12 @@
+version: "3"
+
+services:
+  compiler:
+    image: smartassert/basil-compiler:0.24
+    container_name: test-compiler-container
+    volumes:
+      - ../tests/Fixtures/basil:/app/source
+      - ../tests/build/tests:/app/tests
+      - ../tests/build/manifests:/app/manifests
+    ports:
+      - 9000:8000

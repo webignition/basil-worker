@@ -3,6 +3,8 @@ parameters:
   paths:
     - src
     - tests
+  excludes_analyse:
+    - tests/build/*
   inferPrivatePropertyTypeFromConstructor: true
   ignoreErrors:
     # Test methods with intentionally no return type
