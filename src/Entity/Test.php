@@ -11,6 +11,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Test implements \JsonSerializable
 {
+    public const STATE_AWAITING = 'awaiting';
+    public const STATE_RUNNING = 'running';
+    public const STATE_FAILED = 'failed';
+    public const STATE_COMPLETE = 'complete';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -25,10 +30,9 @@ class Test implements \JsonSerializable
     private TestConfiguration $configuration;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\TestState")
-     * @ORM\JoinColumn(name="state_id", referencedColumnName="id", nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
-    private TestState $state;
+    private string $state;
 
     /**
      * @ORM\Column(type="text")
@@ -52,7 +56,6 @@ class Test implements \JsonSerializable
 
     public static function create(
         TestConfiguration $configuration,
-        TestState $state,
         string $source,
         string $target,
         int $stepCount,
@@ -60,7 +63,7 @@ class Test implements \JsonSerializable
     ): self {
         $test = new Test();
         $test->configuration = $configuration;
-        $test->state = $state;
+        $test->state = self::STATE_AWAITING;
         $test->source = $source;
         $test->target = $target;
         $test->stepCount = $stepCount;
@@ -79,7 +82,7 @@ class Test implements \JsonSerializable
         return $this->configuration;
     }
 
-    public function getState(): TestState
+    public function getState(): string
     {
         return $this->state;
     }
@@ -114,7 +117,7 @@ class Test implements \JsonSerializable
             'source' => $this->source,
             'target' => $this->target,
             'step_count' => $this->stepCount,
-            'state' => $this->state->jsonSerialize(),
+            'state' => $this->state,
             'position' => $this->position,
         ];
     }

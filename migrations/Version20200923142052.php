@@ -20,6 +20,7 @@ final class Version20200923142052 extends AbstractMigration
             CREATE TABLE test (
                 id SERIAL NOT NULL,
                 test_configuration_id INT NOT NULL,
+                state VARCHAR(255) NOT NULL,
                 source TEXT NOT NULL,
                 target TEXT NOT NULL,
                 step_count INT NOT NULL,

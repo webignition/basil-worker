@@ -19,7 +19,6 @@ install:
   - composer install --prefer-dist --no-suggest
   - php bin/console doctrine:database:create
   - php bin/console doctrine:migrations:migrate --no-interaction
-  - php bin/console basil-worker:load-fixtures
 
 script:
   - composer ci

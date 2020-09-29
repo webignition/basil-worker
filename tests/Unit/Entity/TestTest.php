@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Entity\TestState;
 use PHPUnit\Framework\TestCase;
 
 class TestTest extends TestCase
@@ -28,7 +27,6 @@ class TestTest extends TestCase
             'default' => [
                 'test' => Test::create(
                     TestConfiguration::create('chrome', 'http://example.com'),
-                    TestState::create('test state name'),
                     'Test/test1.yml',
                     'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
                     2,
@@ -42,7 +40,7 @@ class TestTest extends TestCase
                     'source' => 'Test/test1.yml',
                     'target' => 'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
                     'step_count' => 2,
-                    'state' => 'test state name',
+                    'state' => 'awaiting',
                     'position' => 1,
                 ],
             ],

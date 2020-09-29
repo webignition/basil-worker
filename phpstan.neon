@@ -5,16 +5,6 @@ parameters:
     - tests
   inferPrivatePropertyTypeFromConstructor: true
   ignoreErrors:
-    # ObjectManager::getRepository() expects class-string<mixed>, string given (string is a valid type here)
-    -
-      message: '#Parameter \#1 \$className of method Doctrine\\Persistence\\ObjectManager::getRepository\(\)#'
-      path: 'src/Services/FixtureLoader/AbstractFixtureLoader.php'
-
-    # Unable to resolve the template type T in call to method Doctrine\Persistence\ObjectManager::getRepository()
-    -
-      message: '#Unable to resolve the template type T in call to method#'
-      path: 'src/Services/FixtureLoader/AbstractFixtureLoader.php'
-
     # Test methods with intentionally no return type
     -
       message: '#::test.+\(\) has no return typehint specified#'
