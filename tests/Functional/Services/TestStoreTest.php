@@ -6,8 +6,10 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
+use Doctrine\ORM\EntityManagerInterface;
 
 class TestStoreTest extends AbstractBaseFunctionalTest
 {
@@ -35,6 +37,38 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         $tests = $this->createTestSet();
 
         self::assertSame($tests, $this->testStore->findAll());
+    }
+
+    public function testFindAllOrdersByPosition()
+    {
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
+
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
+        $testConfiguration = $testConfigurationStore->find('chrome', 'http:/example.com');
+
+        $test1 = Test::create($testConfiguration, 'source', 'target', 3, 2);
+        $entityManager->persist($test1);
+        $entityManager->flush();
+
+        $test2 = Test::create($testConfiguration, 'source', 'target', 3, 1);
+        $entityManager->persist($test2);
+        $entityManager->flush();
+
+        $test3 = Test::create($testConfiguration, 'source', 'target', 3, 3);
+        $entityManager->persist($test3);
+        $entityManager->flush();
+
+        self::assertEquals(
+            [
+                $test2,
+                $test1,
+                $test3,
+            ],
+            $this->testStore->findAll()
+        );
     }
 
     public function testCreate()

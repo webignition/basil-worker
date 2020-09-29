@@ -31,7 +31,9 @@ class TestStore
      */
     public function findAll(): array
     {
-        return $this->repository->findAll();
+        return $this->repository->findBy([], [
+            'position' => 'ASC',
+        ]);
     }
 
     public function create(
