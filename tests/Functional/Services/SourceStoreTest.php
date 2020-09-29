@@ -12,17 +12,17 @@ use Symfony\Component\HttpFoundation\File\File;
 
 class SourceStoreTest extends AbstractBaseFunctionalTest
 {
-    private SourceStore $sourceStore;
+    private SourceStore $store;
     private BasilFixtureHandler $basilFixtureHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $sourceStore = self::$container->get(SourceStore::class);
-        self::assertInstanceOf(SourceStore::class, $sourceStore);
-        if ($sourceStore instanceof SourceStore) {
-            $this->sourceStore = $sourceStore;
+        $store = self::$container->get(SourceStore::class);
+        self::assertInstanceOf(SourceStore::class, $store);
+        if ($store instanceof SourceStore) {
+            $this->store = $store;
         }
 
         $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
@@ -46,18 +46,18 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
         string $relativePath,
         File $expectedFile
     ) {
-        self::assertFalse($this->sourceStore->has($relativePath));
+        self::assertFalse($this->store->has($relativePath));
 
         $expectedFilePath = $expectedFile->getPathname();
         self::assertFileDoesNotExist($expectedFilePath);
 
         $uploadedFile = $this->basilFixtureHandler->createUploadedFile($uploadedFileFixturePath);
 
-        $file = $this->sourceStore->store($uploadedFile, $relativePath);
+        $file = $this->store->store($uploadedFile, $relativePath);
 
         self::assertEquals($expectedFile->getPathname(), $file->getPathname());
         self::assertFileExists($expectedFilePath);
-        self::assertTrue($this->sourceStore->has($relativePath));
+        self::assertTrue($this->store->has($relativePath));
     }
 
     public function storeDataProvider(): array

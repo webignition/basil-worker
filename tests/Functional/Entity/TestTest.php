@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
+use App\Services\TestConfigurationStore;
 
 class TestTest extends AbstractEntityTest
 {
     public function testCreate()
     {
-        $configuration = TestConfiguration::create('chrome', 'http://example.com');
-        $this->entityManager->persist($configuration);
-        $this->entityManager->flush();
-        self::assertNotNull($configuration->getId());
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+        $configuration = $testConfigurationStore->find('chrome', 'http://example.com');
 
         $source = '/app/basil/Test/test.yml';
         $target = '/app/generated/Generated9bafa287f3df934f24c7855070da80f7.php';

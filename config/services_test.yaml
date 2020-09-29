@@ -6,6 +6,9 @@ services:
     App\Services\JobStore:
         public: true
 
+    App\Services\TestConfigurationStore:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

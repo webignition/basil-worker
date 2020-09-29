@@ -10,23 +10,23 @@ use App\Tests\Functional\AbstractBaseFunctionalTest;
 
 class JobStoreTest extends AbstractBaseFunctionalTest
 {
-    private JobStore $jobStore;
+    private JobStore $store;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
+        $store = self::$container->get(JobStore::class);
+        self::assertInstanceOf(JobStore::class, $store);
 
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
+        if ($store instanceof JobStore) {
+            $this->store = $store;
         }
     }
 
     public function testRetrieveReturnsNull()
     {
-        self::assertNull($this->jobStore->retrieve());
+        self::assertNull($this->store->retrieve());
     }
 
     public function testStore()
@@ -35,8 +35,8 @@ class JobStoreTest extends AbstractBaseFunctionalTest
         $callbackUrl = 'http://example.com/callback';
 
         $job = Job::create($label, $callbackUrl);
-        $this->jobStore->store($job);
+        $this->store->store($job);
 
-        self::assertEquals($job, $this->jobStore->retrieve());
+        self::assertEquals($job, $this->store->retrieve());
     }
 }
