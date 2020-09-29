@@ -87,6 +87,11 @@ class Test implements \JsonSerializable
         return $this->state;
     }
 
+    public function setState(string $state): void
+    {
+        $this->state = $state;
+    }
+
     public function getSource(): ?string
     {
         return $this->source;

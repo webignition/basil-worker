@@ -46,4 +46,20 @@ class TestTest extends TestCase
             ],
         ];
     }
+
+    public function testSetState()
+    {
+        $test = Test::create(
+            TestConfiguration::create('chrome', 'http://example.com'),
+            'Test/test1.yml',
+            'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
+            3,
+            1
+        );
+
+        self::assertSame(Test::STATE_AWAITING, $test->getState());
+
+        $test->setState(Test::STATE_RUNNING);
+        self::assertSame(Test::STATE_RUNNING, $test->getState());
+    }
 }
