@@ -74,7 +74,7 @@ class EncapsulatingRequestResolverTest extends TestCase
                 'argumentMetadata' => $this->createArgumentMetadata(JobCreateRequest::class),
                 'expectedEncapsulatingRequest' => new JobCreateRequest(new Request()),
             ],
-            'JobCreateRequest: callback-url missing' => [
+            'JobCreateRequest: callback url missing' => [
                 'request' => new Request([], [
                     JobCreateRequest::KEY_LABEL => $label,
                 ]),
@@ -83,7 +83,7 @@ class EncapsulatingRequestResolverTest extends TestCase
                     JobCreateRequest::KEY_LABEL => $label,
                 ])),
             ],
-            'JobCreateRequest: label present, callback-url present' => [
+            'JobCreateRequest: label present, callback url present' => [
                 'request' => new Request([], [
                     JobCreateRequest::KEY_LABEL => $label,
                     JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,

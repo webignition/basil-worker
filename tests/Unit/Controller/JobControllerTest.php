@@ -47,7 +47,7 @@ class JobControllerTest extends TestCase
                 'jobStore' => \Mockery::mock(JobStore::class),
                 'expectedResponse' => BadJobCreateRequestResponse::createLabelMissingResponse(),
             ],
-            'callback-url missing' => [
+            'callback url missing' => [
                 'jobCreateRequest' => $this->createJobCreateRequest('label', ''),
                 'jobStore' => \Mockery::mock(JobStore::class),
                 'expectedResponse' => BadJobCreateRequestResponse::createCallbackUrlMissingResponse(),

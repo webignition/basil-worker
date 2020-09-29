@@ -108,7 +108,7 @@ class Job implements \JsonSerializable
         return [
             'state' => $this->state,
             'label' => $this->label,
-            'callback-url' => $this->callbackUrl,
+            'callback_url' => $this->callbackUrl,
             'sources' => $this->sources,
         ];
     }
