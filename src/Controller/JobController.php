@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
 
 use App\Entity\Job;
@@ -10,6 +12,7 @@ use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
 use App\Services\SourceStore;
+use App\Services\TestStore;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -102,5 +105,32 @@ class JobController extends AbstractController
         $this->jobStore->store($job);
 
         return new JsonResponse();
+    }
+
+    /**
+     * @Route("/status", name="status", methods={"GET"})
+     *
+     * @param TestStore $testStore
+     *
+     * @return JsonResponse
+     */
+    public function status(TestStore $testStore): JsonResponse
+    {
+        $job = $this->jobStore->retrieve();
+        if (!$job instanceof Job) {
+            return new JsonResponse([], 400);
+        }
+
+        $tests = $testStore->findAll();
+
+        $testData = [];
+        foreach ($tests as $test) {
+            $testData[] = $test->jsonSerialize();
+        }
+
+        $data = $job->jsonSerialize();
+        $data['tests'] = $testData;
+
+        return new JsonResponse($data);
     }
 }
