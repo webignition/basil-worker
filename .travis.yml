@@ -27,7 +27,7 @@ env:
 
 before_install:
 #  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
-  - apt-get install php-amqp
+  - sudo apt-get install php-amqp
   - composer self-update --2
 
 install:
