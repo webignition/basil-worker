@@ -6,9 +6,13 @@ namespace App\Tests\Mock\Services;
 
 use App\Entity\Job;
 use App\Services\JobStore;
+use Mockery\MockInterface;
 
 class MockJobStore
 {
+    /**
+     * @var JobStore|MockInterface
+     */
     private JobStore $jobStore;
 
     public function __construct()
