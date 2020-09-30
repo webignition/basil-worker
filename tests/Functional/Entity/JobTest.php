@@ -21,22 +21,6 @@ class JobTest extends AbstractEntityTest
         }
     }
 
-    public function testCreate()
-    {
-        $label = md5('label source');
-        $callbackUrl = 'http://example.com/callback';
-
-        $job = Job::create($label, $callbackUrl);
-
-        self::assertSame(1, $job->getId());
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
-        self::assertSame($label, $job->getLabel());
-        self::assertSame($callbackUrl, $job->getCallbackUrl());
-        self::assertSame([], $job->getSources());
-
-        $this->jobStore->store($job);
-    }
-
     /**
      * @dataProvider hydratedJobReturnsSourcesAsStringArrayDataProvider
      *
@@ -44,10 +28,10 @@ class JobTest extends AbstractEntityTest
      */
     public function testHydratedJobReturnsSourcesAsStringArray(array $sources)
     {
-        $job = Job::create(md5('label source'), 'http://example.com/callback');
+        $job = $this->jobStore->create(md5('label source'), 'http://example.com/callback');
         $job->setSources($sources);
 
-        $this->jobStore->store($job);
+        $this->jobStore->store();
 
         $this->entityManager->clear(Job::class);
         $this->entityManager->close();

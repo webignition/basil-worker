@@ -10,20 +10,45 @@ use Doctrine\ORM\EntityManagerInterface;
 class JobStore
 {
     private EntityManagerInterface $entityManager;
+    private Job $job;
+    private bool $hasJob = false;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
+        $job = $entityManager->find(Job::class, Job::ID);
+
+        if ($job instanceof Job) {
+            $this->job = $job;
+            $this->hasJob = true;
+        }
     }
 
-    public function retrieve(): ?Job
+    public function create(string $label, string $callbackUrl): Job
     {
-        return $this->entityManager->find(Job::class, Job::ID);
+        $this->job = Job::create($label, $callbackUrl);
+        $this->hasJob = true;
+
+        $this->store();
+
+        return $this->getJob();
     }
 
-    public function store(Job $job): void
+    public function hasJob(): bool
     {
-        $this->entityManager->persist($job);
-        $this->entityManager->flush();
+        return $this->hasJob;
+    }
+
+    public function getJob(): Job
+    {
+        return $this->job;
+    }
+
+    public function store(): void
+    {
+        if ($this->hasJob) {
+            $this->entityManager->persist($this->job);
+            $this->entityManager->flush();
+        }
     }
 }

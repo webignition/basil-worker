@@ -23,7 +23,6 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         'Test/test3.yml',
     ];
 
-    private JobStore $jobStore;
     private BasilFixtureHandler $basilFixtureHandler;
     private SourceStore $sourceStore;
     private SourcesAddedEventSubscriber $sourcesAddedEventSubscriber;
@@ -36,9 +35,6 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
 
         $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
         self::assertInstanceOf(BasilFixtureHandler::class, $basilFixtureHandler);
@@ -60,7 +56,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
         $this->initializeSourceStore();
 
-        $this->job = $this->createJob();
+        $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
         self::assertSame([], $this->job->getSources());
 
         self::assertSame(
@@ -105,14 +101,6 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
         }
-    }
-
-    private function createJob(): Job
-    {
-        $job = Job::create(md5('label content'), 'http://example.com/callback');
-        $this->jobStore->store($job);
-
-        return $job;
     }
 
     private function getAddSourcesResponse(): Response

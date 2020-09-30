@@ -29,7 +29,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
     public function testCreate()
     {
-        self::assertNull($this->jobStore->retrieve());
+        self::assertFalse($this->jobStore->hasJob());
 
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
@@ -45,10 +45,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         self::assertSame('application/json', $response->headers->get('content-type'));
         self::assertSame('{}', $response->getContent());
 
-        self::assertNotNull($this->jobStore->retrieve());
+        self::assertTrue($this->jobStore->hasJob());
         self::assertEquals(
             Job::create($label, $callbackUrl),
-            $this->jobStore->retrieve()
+            $this->jobStore->getJob()
         );
     }
 
@@ -90,8 +90,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, no sources, no tests' => [
                 'initializer' => function (JobStore $jobStore) {
-                    $job = Job::create('label content', 'http://example.com/callback');
-                    $jobStore->store($job);
+                    $jobStore->create('label content', 'http://example.com/callback');
                 },
                 'expectedResponse' => new JsonResponse(
                     [
@@ -105,15 +104,14 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, has sources, no tests' => [
                 'initializer' => function (JobStore $jobStore) {
-                    $job = Job::create('label content', 'http://example.com/callback');
-                    $jobStore->store($job);
+                    $job = $jobStore->create('label content', 'http://example.com/callback');
 
                     $job->setSources([
                         'Test/test1.yml',
                         'Test/test2.yml',
                         'Test/test3.yml',
                     ]);
-                    $jobStore->store($job);
+                    $jobStore->store();
                 },
                 'expectedResponse' => new JsonResponse(
                     [
@@ -131,15 +129,14 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, has sources, has tests' => [
                 'initializer' => function (JobStore $jobStore, TestStore $testStore) {
-                    $job = Job::create('label content', 'http://example.com/callback');
-                    $jobStore->store($job);
+                    $job = $jobStore->create('label content', 'http://example.com/callback');
 
                     $job->setSources([
                         'Test/test1.yml',
                         'Test/test2.yml',
                         'Test/test3.yml',
                     ]);
-                    $jobStore->store($job);
+                    $jobStore->store();
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),

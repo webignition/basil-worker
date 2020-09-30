@@ -11,6 +11,7 @@ use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
 use App\Services\SourceStore;
+use App\Tests\Mock\Services\MockJobStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -55,15 +56,17 @@ class JobControllerTest extends TestCase
             ],
             'job already exists' => [
                 'jobCreateRequest' => $this->createJobCreateRequest('label', 'http://example.com'),
-                'jobStore' => $this->createJobStore(\Mockery::mock(Job::class), null),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createJobAlreadyExistsResponse(),
             ],
             'created' => [
                 'jobCreateRequest' => $this->createJobCreateRequest('label', 'http://example.com'),
-                'jobStore' => $this->createJobStore(
-                    null,
-                    Job::create('label', 'http://example.com')
-                ),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(false)
+                    ->withCreateCall('label', 'http://example.com')
+                    ->getMock(),
                 'expectedResponse' => new JsonResponse(),
             ],
         ];
@@ -101,25 +104,27 @@ class JobControllerTest extends TestCase
         return [
             'job missing' => [
                 'addSourcesRequest' => \Mockery::mock(AddSourcesRequest::class),
-                'jobStore' => $this->createJobStore(null, null),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(false)
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createJobMissingResponse(),
             ],
             'job has sources' => [
                 'addSourcesRequest' => \Mockery::mock(AddSourcesRequest::class),
-                'jobStore' => $this->createJobStore(
-                    $this->createJob([
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->withGetJobCall($this->createJob([
                         'Test/test1.yml',
-                    ]),
-                    null
-                ),
+                    ]))
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourcesNotEmptyResponse(),
             ],
             'request manifest missing' => [
                 'addSourcesRequest' => $this->createAddSourcesRequest(null, []),
-                'jobStore' => $this->createJobStore(
-                    $this->createJob([]),
-                    null
-                ),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->withGetJobCall($this->createJob([]))
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestMissingResponse(),
             ],
             'request manifest empty' => [
@@ -127,10 +132,10 @@ class JobControllerTest extends TestCase
                     $this->createManifest([]),
                     []
                 ),
-                'jobStore' => $this->createJobStore(
-                    $this->createJob([]),
-                    null
-                ),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->withGetJobCall($this->createJob([]))
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestEmptyResponse(),
             ],
             'request source missing' => [
@@ -140,10 +145,10 @@ class JobControllerTest extends TestCase
                     ]),
                     []
                 ),
-                'jobStore' => $this->createJobStore(
-                    $this->createJob([]),
-                    null
-                ),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->withGetJobCall($this->createJob([]))
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
             ],
             'request source not UploadedFile instance' => [
@@ -155,10 +160,10 @@ class JobControllerTest extends TestCase
                         'Test/test1.yml' => 'not UploadedFile instance',
                     ]
                 ),
-                'jobStore' => $this->createJobStore(
-                    $this->createJob([]),
-                    null
-                ),
+                'jobStore' => (new MockJobStore())
+                    ->withHasJobCall(true)
+                    ->withGetJobCall($this->createJob([]))
+                    ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
             ],
         ];
@@ -177,27 +182,6 @@ class JobControllerTest extends TestCase
             ->andReturn($callbackUrl);
 
         return $request;
-    }
-
-    private function createJobStore(?Job $retrieveReturnValue, ?Job $storeCallValue): JobStore
-    {
-        $store = \Mockery::mock(JobStore::class);
-
-        $store
-            ->shouldReceive('retrieve')
-            ->andReturn($retrieveReturnValue);
-
-        if ($storeCallValue instanceof Job) {
-            $store
-                ->shouldReceive('store')
-                ->withArgs(function (Job $job) use ($storeCallValue) {
-                    self::assertEquals($storeCallValue, $job);
-
-                    return true;
-                });
-        }
-
-        return $store;
     }
 
     /**

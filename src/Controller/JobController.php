@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Entity\Job;
 use App\Event\SourcesAddedEvent;
 use App\Model\Manifest;
 use App\Request\AddSourcesRequest;
@@ -46,12 +45,11 @@ class JobController extends AbstractController
             return BadJobCreateRequestResponse::createCallbackUrlMissingResponse();
         }
 
-        if ($this->jobStore->retrieve() instanceof Job) {
+        if (true === $this->jobStore->hasJob()) {
             return BadJobCreateRequestResponse::createJobAlreadyExistsResponse();
         }
 
-        $job = Job::create($jobCreateRequest->getLabel(), $jobCreateRequest->getCallbackUrl());
-        $this->jobStore->store($job);
+        $this->jobStore->create($jobCreateRequest->getLabel(), $jobCreateRequest->getCallbackUrl());
 
         return new JsonResponse();
     }
@@ -70,11 +68,11 @@ class JobController extends AbstractController
         EventDispatcherInterface $eventDispatcher,
         AddSourcesRequest $addSourcesRequest
     ): JsonResponse {
-        $job = $this->jobStore->retrieve();
-
-        if (!$job instanceof Job) {
+        if (false === $this->jobStore->hasJob()) {
             return BadAddSourcesRequestResponse::createJobMissingResponse();
         }
+
+        $job = $this->jobStore->getJob();
 
         if ([] !== $job->getSources()) {
             return BadAddSourcesRequestResponse::createSourcesNotEmptyResponse();
@@ -108,7 +106,7 @@ class JobController extends AbstractController
         }
 
         $job->setSources($jobSources);
-        $this->jobStore->store($job);
+        $this->jobStore->store();
 
         $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
 
@@ -124,10 +122,11 @@ class JobController extends AbstractController
      */
     public function status(TestStore $testStore): JsonResponse
     {
-        $job = $this->jobStore->retrieve();
-        if (!$job instanceof Job) {
+        if (false === $this->jobStore->hasJob()) {
             return new JsonResponse([], 400);
         }
+
+        $job = $this->jobStore->getJob();
 
         $tests = $testStore->findAll();
 
