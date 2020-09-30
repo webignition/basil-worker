@@ -26,6 +26,7 @@ env:
     - WORKER_RABBITMQ_EXPOSED_PORT=9001
 
 before_install:
+  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer self-update --2
 
 install:
@@ -35,7 +36,6 @@ install:
 
 before_script:
   - docker-compose -f tests/docker-compose.yml up -d
-  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 script:
   - composer ci
