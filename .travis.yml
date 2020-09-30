@@ -20,6 +20,10 @@ env:
     - WORKER_COMPILER_TARGET_PATH=/app/tests
     - WORKER_COMPILER_MANIFEST_PATH=/app/manifests
     - WORKER_COMPILER_EXPOSED_PORT=9000
+    - WORKER_RABBITMQ_CONTAINER_NAME=rabbitmq
+    - WORKER_RABBITMQ_USER=guest
+    - WORKER_RABBITMQ_PASS=guest
+    - WORKER_RABBITMQ_EXPOSED_PORT=9001
 
 before_install:
   - composer self-update --2
