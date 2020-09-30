@@ -24,6 +24,11 @@ class MockManifest
         return $this->manifest;
     }
 
+    /**
+     * @param string[] $testPaths
+     *
+     * @return $this
+     */
     public function withGetTestPathsCall(array $testPaths): self
     {
         $this->manifest

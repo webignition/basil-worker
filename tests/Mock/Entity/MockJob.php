@@ -24,6 +24,11 @@ class MockJob
         return $this->job;
     }
 
+    /**
+     * @param string[] $sources
+     *
+     * @return $this
+     */
     public function withGetSourcesCall(array $sources): self
     {
         $this->job

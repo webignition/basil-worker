@@ -34,6 +34,11 @@ class MockAddSourcesRequest
         return $this;
     }
 
+    /**
+     * @param string[] $sources
+     *
+     * @return $this
+     */
     public function withGetSourcesCall(array $sources): self
     {
         $this->addSourcesRequest
