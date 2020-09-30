@@ -8,8 +8,9 @@ use App\ArgumentResolver\EncapsulatingRequestResolver;
 use App\Request\AddSourcesRequest;
 use App\Request\EncapsulatingRequestInterface;
 use App\Request\JobCreateRequest;
+use App\Tests\Mock\MockArgumentMetadata;
+use App\Tests\Mock\MockUploadedFile;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 
@@ -38,11 +39,15 @@ class EncapsulatingRequestResolverTest extends TestCase
     {
         return [
             'does support' => [
-                'argumentMetadata' => $this->createArgumentMetadata(JobCreateRequest::class),
+                'argumentMetadata' => (new MockArgumentMetadata())
+                    ->withGetTypeCall(JobCreateRequest::class)
+                    ->getMock(),
                 'expectedSupports' => true,
             ],
             'does not support' => [
-                'argumentMetadata' => $this->createArgumentMetadata('string'),
+                'argumentMetadata' => (new MockArgumentMetadata())
+                    ->withGetTypeCall('string')
+                    ->getMock(),
                 'expectedSupports' => false,
             ],
         ];
@@ -68,17 +73,21 @@ class EncapsulatingRequestResolverTest extends TestCase
         $label = 'label content';
         $callbackUrl = 'http://example.com/callback';
 
+        $argumentMetadata = (new MockArgumentMetadata())
+            ->withGetTypeCall(JobCreateRequest::class)
+            ->getMock();
+
         return [
             'JobCreateRequest: empty' => [
                 'request' => new Request(),
-                'argumentMetadata' => $this->createArgumentMetadata(JobCreateRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new JobCreateRequest(new Request()),
             ],
             'JobCreateRequest: callback url missing' => [
                 'request' => new Request([], [
                     JobCreateRequest::KEY_LABEL => $label,
                 ]),
-                'argumentMetadata' => $this->createArgumentMetadata(JobCreateRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new JobCreateRequest(new Request([], [
                     JobCreateRequest::KEY_LABEL => $label,
                 ])),
@@ -88,7 +97,7 @@ class EncapsulatingRequestResolverTest extends TestCase
                     JobCreateRequest::KEY_LABEL => $label,
                     JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
                 ]),
-                'argumentMetadata' => $this->createArgumentMetadata(JobCreateRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new JobCreateRequest(new Request([], [
                     JobCreateRequest::KEY_LABEL => $label,
                     JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
@@ -99,10 +108,10 @@ class EncapsulatingRequestResolverTest extends TestCase
 
     public function resolveAddSourcesRequestDataProvider(): array
     {
-        $manifest = \Mockery::mock(UploadedFile::class);
-        $source1 = \Mockery::mock(UploadedFile::class);
-        $source2 = \Mockery::mock(UploadedFile::class);
-        $source3 = \Mockery::mock(UploadedFile::class);
+        $manifest = (new MockUploadedFile())->getMock();
+        $source1 = (new MockUploadedFile())->getMock();
+        $source2 = (new MockUploadedFile())->getMock();
+        $source3 = (new MockUploadedFile())->getMock();
 
         $manifestOnlyRequest = new Request(
             [],
@@ -139,37 +148,31 @@ class EncapsulatingRequestResolverTest extends TestCase
             ]
         );
 
+        $argumentMetadata = (new MockArgumentMetadata())
+            ->withGetTypeCall(AddSourcesRequest::class)
+            ->getMock();
+
         return [
             'AddSourcesRequest: empty' => [
                 'request' => new Request(),
-                'argumentMetadata' => $this->createArgumentMetadata(AddSourcesRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new AddSourcesRequest(new Request()),
             ],
             'AddSourcesRequest: manifest only' => [
                 'request' => clone $manifestOnlyRequest,
-                'argumentMetadata' => $this->createArgumentMetadata(AddSourcesRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new AddSourcesRequest(clone $manifestOnlyRequest),
             ],
             'AddSourcesRequest: sources only' => [
                 'request' => clone $sourcesOnlyRequest,
-                'argumentMetadata' => $this->createArgumentMetadata(AddSourcesRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new AddSourcesRequest(clone $sourcesOnlyRequest),
             ],
             'AddSourcesRequest: manifest and sources' => [
                 'request' => clone $manifestAndSourcesRequest,
-                'argumentMetadata' => $this->createArgumentMetadata(AddSourcesRequest::class),
+                'argumentMetadata' => $argumentMetadata,
                 'expectedEncapsulatingRequest' => new AddSourcesRequest(clone $manifestAndSourcesRequest),
             ],
         ];
-    }
-
-    private function createArgumentMetadata(string $type): ArgumentMetadata
-    {
-        $metadata = \Mockery::mock(ArgumentMetadata::class);
-        $metadata
-            ->shouldReceive('getType')
-            ->andReturn($type);
-
-        return $metadata;
     }
 }

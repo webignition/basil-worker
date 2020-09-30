@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Model;
 
 use App\Model\Manifest;
+use App\Tests\Mock\MockUploadedFile;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use phpmock\mockery\PHPMockery;
 use PHPUnit\Framework\TestCase;
@@ -35,20 +36,19 @@ class ManifestTest extends TestCase
 
     public function createDataProvider(): array
     {
+        $uploadedFile = (new MockUploadedFile())
+            ->withGetErrorCall(0)
+            ->withGetPathnameCall('/tmp/manifest.txt')
+            ->getMock();
+
         return [
             'empty' => [
-                'uploadedFile' => $this->createUploadedFile(
-                    'Test/test1.yml',
-                    0
-                ),
+                'uploadedFile' => $uploadedFile,
                 'manifestContent' => '',
                 'expectedTestPaths' => [],
             ],
             'non-empty' => [
-                'uploadedFile' => $this->createUploadedFile(
-                    '/tmp/manifest.txt',
-                    0
-                ),
+                'uploadedFile' => $uploadedFile,
                 'manifestContent' => 'Test/test1.yml' . "\n" .
                     'Test/test2.yml' . "\n" .
                     '' . "\n" .
@@ -61,20 +61,5 @@ class ManifestTest extends TestCase
                 ],
             ],
         ];
-    }
-
-    private function createUploadedFile(string $pathname, int $error = 0): UploadedFile
-    {
-        $uploadedFile = \Mockery::mock(UploadedFile::class);
-
-        $uploadedFile
-            ->shouldReceive('getPathname')
-            ->andReturn($pathname);
-
-        $uploadedFile
-            ->shouldReceive('getError')
-            ->andReturn($error);
-
-        return $uploadedFile;
     }
 }

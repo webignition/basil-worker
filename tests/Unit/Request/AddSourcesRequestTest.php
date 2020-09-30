@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Request;
 
 use App\Model\Manifest;
 use App\Request\AddSourcesRequest;
+use App\Tests\Mock\MockUploadedFile;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,10 +30,10 @@ class AddSourcesRequestTest extends TestCase
 
     public function createDataProvider(): array
     {
-        $manifestUploadedFile = \Mockery::mock(UploadedFile::class);
-        $source1 = \Mockery::mock(UploadedFile::class);
-        $source2 = \Mockery::mock(UploadedFile::class);
-        $source3 = \Mockery::mock(UploadedFile::class);
+        $manifestUploadedFile = (new MockUploadedFile())->getMock();
+        $source1 = (new MockUploadedFile())->getMock();
+        $source2 = (new MockUploadedFile())->getMock();
+        $source3 = (new MockUploadedFile())->getMock();
 
         return [
             'empty' => [
