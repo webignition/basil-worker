@@ -30,7 +30,7 @@ install:
   - php bin/console doctrine:migrations:migrate --no-interaction
 
 before_script:
-  - composer integration-setup
+  - docker-compose -f tests/docker-compose.yml up -d
 
 script:
   - composer ci
