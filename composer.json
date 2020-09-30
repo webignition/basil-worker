@@ -86,9 +86,9 @@
             "@static-analysis",
             "@test"
         ],
-        "integration-setup": "docker-compose -f tests/docker-compose.yml up -d",
-        "integration-status": "docker-compose -f tests/docker-compose.yml ps",
-        "integration-teardown": "docker-compose -f tests/docker-compose.yml down"
+        "integration-setup": "docker-compose --env-file tests/.env -f tests/docker-compose.yml up -d",
+        "integration-status": "docker-compose --env-file tests/.env -f tests/docker-compose.yml ps",
+        "integration-teardown": "docker-compose --env-file tests/.env -f tests/docker-compose.yml down"
     },
     "conflict": {
         "symfony/symfony": "*"

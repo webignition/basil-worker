@@ -3,10 +3,10 @@ version: "3"
 services:
   compiler:
     image: smartassert/basil-compiler:0.24
-    container_name: test-compiler-container
+    container_name: ${WORKER_COMPILER_CONTAINER_NAME}
     volumes:
-      - ../tests/Fixtures/basil:/app/source
-      - ../tests/build/tests:/app/tests
-      - ../tests/build/manifests:/app/manifests
+      - ${WORKER_COMPILER_LOCAL_SOURCE_PATH}:${WORKER_COMPILER_SOURCE_PATH}
+      - ${WORKER_COMPILER_LOCAL_TARGET_PATH}:${WORKER_COMPILER_TARGET_PATH}
+      - ${WORKER_COMPILER_LOCAL_MANIFEST_PATH}:${WORKER_COMPILER_MANIFEST_PATH}
     ports:
-      - 9000:8000
+      - ${WORKER_COMPILER_EXPOSED_PORT}:8000
