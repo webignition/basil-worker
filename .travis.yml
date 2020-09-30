@@ -26,7 +26,8 @@ env:
     - WORKER_RABBITMQ_EXPOSED_PORT=9001
 
 before_install:
-  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+#  - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
+  - apt-get install php-amqp
   - composer self-update --2
 
 install:
