@@ -10,6 +10,7 @@ use App\Services\JobStore;
 use App\Services\SourceStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
+use App\Tests\Services\SourcesAddedEventSubscriber;
 use App\Tests\Services\SourceStoreInitializer;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +26,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private JobStore $jobStore;
     private BasilFixtureHandler $basilFixtureHandler;
     private SourceStore $sourceStore;
+    private SourcesAddedEventSubscriber $sourcesAddedEventSubscriber;
     private Job $job;
     private Response $response;
 
@@ -50,10 +52,21 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
             $this->sourceStore = $sourceStore;
         }
 
+        $sourcesAddedEventSubscriber = self::$container->get(SourcesAddedEventSubscriber::class);
+        self::assertInstanceOf(SourcesAddedEventSubscriber::class, $sourcesAddedEventSubscriber);
+        if ($sourcesAddedEventSubscriber instanceof SourcesAddedEventSubscriber) {
+            $this->sourcesAddedEventSubscriber = $sourcesAddedEventSubscriber;
+        }
+
         $this->initializeSourceStore();
 
         $this->job = $this->createJob();
         self::assertSame([], $this->job->getSources());
+
+        self::assertSame(
+            SourcesAddedEventSubscriber::STATE_NO_EVENTS_HANDLED,
+            $this->sourcesAddedEventSubscriber->getState()
+        );
 
         $this->response = $this->getAddSourcesResponse();
     }
@@ -75,6 +88,14 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         foreach (self::EXPECTED_SOURCES as $expectedSource) {
             self::assertTrue($this->sourceStore->has($expectedSource));
         }
+    }
+
+    public function testSourcesAddedEventIsDispatched()
+    {
+        self::assertSame(
+            SourcesAddedEventSubscriber::STATE_SOURCES_ADDED_EVENT_HANDLED,
+            $this->sourcesAddedEventSubscriber->getState()
+        );
     }
 
     private function initializeSourceStore(): void

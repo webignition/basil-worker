@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Entity\Job;
+use App\Event\SourcesAddedEvent;
 use App\Model\Manifest;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
@@ -14,6 +15,7 @@ use App\Services\JobStore;
 use App\Services\SourceStore;
 use App\Services\TestStore;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -58,12 +60,16 @@ class JobController extends AbstractController
      * @Route("/add-sources", name="add-sources", methods={"POST"})
      *
      * @param SourceStore $sourceStore
+     * @param EventDispatcherInterface $eventDispatcher
      * @param AddSourcesRequest $addSourcesRequest
      *
      * @return JsonResponse
      */
-    public function addSources(SourceStore $sourceStore, AddSourcesRequest $addSourcesRequest): JsonResponse
-    {
+    public function addSources(
+        SourceStore $sourceStore,
+        EventDispatcherInterface $eventDispatcher,
+        AddSourcesRequest $addSourcesRequest
+    ): JsonResponse {
         $job = $this->jobStore->retrieve();
 
         if (!$job instanceof Job) {
@@ -103,6 +109,8 @@ class JobController extends AbstractController
 
         $job->setSources($jobSources);
         $this->jobStore->store($job);
+
+        $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
 
         return new JsonResponse();
     }

@@ -12,6 +12,7 @@ use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class JobControllerTest extends TestCase
@@ -78,7 +79,11 @@ class JobControllerTest extends TestCase
     ) {
         $controller = new JobController($jobStore);
 
-        $response = $controller->addSources(\Mockery::mock(SourceStore::class), $addSourcesRequest);
+        $response = $controller->addSources(
+            \Mockery::mock(SourceStore::class),
+            \Mockery::mock(EventDispatcherInterface::class),
+            $addSourcesRequest
+        );
 
         self::assertSame(
             $expectedResponse->getStatusCode(),

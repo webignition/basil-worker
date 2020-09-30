@@ -27,3 +27,6 @@ services:
 
     App\Tests\Services\SourceStoreInitializer:
         public: true
+
+    App\Tests\Services\SourcesAddedEventSubscriber:
+        public: true
