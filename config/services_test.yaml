@@ -25,6 +25,9 @@ services:
     App\MessageHandler\CompileSourceHandler:
         public: true
 
+    App\Services\JobSourceFinder:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

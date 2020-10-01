@@ -36,6 +36,13 @@ class TestStore
         ]);
     }
 
+    public function findBySource(string $source): ?Test
+    {
+        return $this->repository->findOneBy([
+            'source' => $source,
+        ]);
+    }
+
     public function create(
         TestConfiguration $configuration,
         string $source,
