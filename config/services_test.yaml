@@ -22,6 +22,9 @@ services:
     App\Services\CallbackSender:
         public: true
 
+    App\MessageHandler\CompileSourceHandler:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
@@ -38,6 +41,12 @@ services:
         public: true
 
     App\Tests\Services\CallbackHttpResponseEventSubscriber:
+        public: true
+
+    App\Tests\Services\SourceCompileSuccessEventSubscriber:
+        public: true
+
+    App\Tests\Services\SourceCompileFailureEventSubscriber:
         public: true
 
     GuzzleHttp\Handler\MockHandler: ~

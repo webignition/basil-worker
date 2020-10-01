@@ -55,4 +55,13 @@ class MockJob
 
         return $this;
     }
+
+    public function withGetStateCall(string $state): self
+    {
+        $this->job
+            ->shouldReceive('getState')
+            ->andReturn($state);
+
+        return $this;
+    }
 }
