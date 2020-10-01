@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-class SourcesAddedEvent
+use Symfony\Contracts\EventDispatcher\Event;
+
+class SourcesAddedEvent extends Event
 {
     public const NAME = 'worker.sources.added';
 }
