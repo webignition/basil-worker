@@ -9,15 +9,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SourcesAddedEventSubscriber implements EventSubscriberInterface
 {
-    public const STATE_NO_EVENTS_HANDLED = 'no events handled';
-    public const STATE_SOURCES_ADDED_EVENT_HANDLED = 'sources added event handled';
-
-    private string $state;
-
-    public function __construct()
-    {
-        $this->state = self::STATE_NO_EVENTS_HANDLED;
-    }
+    private ?SourcesAddedEvent $event = null;
 
     public static function getSubscribedEvents()
     {
@@ -28,11 +20,11 @@ class SourcesAddedEventSubscriber implements EventSubscriberInterface
 
     public function onSourcesAdded(SourcesAddedEvent $event): void
     {
-        $this->state = self::STATE_SOURCES_ADDED_EVENT_HANDLED;
+        $this->event = $event;
     }
 
-    public function getState(): string
+    public function getEvent(): ?SourcesAddedEvent
     {
-        return $this->state;
+        return $this->event;
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\Job;
+use App\Event\SourcesAddedEvent;
 use App\Request\AddSourcesRequest;
 use App\Services\JobStore;
 use App\Services\SourceStore;
@@ -58,11 +59,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
         $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
         self::assertSame([], $this->job->getSources());
-
-        self::assertSame(
-            SourcesAddedEventSubscriber::STATE_NO_EVENTS_HANDLED,
-            $this->sourcesAddedEventSubscriber->getState()
-        );
+        self::assertNull($this->sourcesAddedEventSubscriber->getEvent());
 
         $this->response = $this->getAddSourcesResponse();
     }
@@ -88,9 +85,9 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
     public function testSourcesAddedEventIsDispatched()
     {
-        self::assertSame(
-            SourcesAddedEventSubscriber::STATE_SOURCES_ADDED_EVENT_HANDLED,
-            $this->sourcesAddedEventSubscriber->getState()
+        self::assertEquals(
+            new SourcesAddedEvent(),
+            $this->sourcesAddedEventSubscriber->getEvent()
         );
     }
 
