@@ -6,24 +6,17 @@ namespace App\Event;
 
 use App\Model\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
-use Symfony\Contracts\EventDispatcher\Event;
 
-class CallbackHttpExceptionEvent extends Event
+class CallbackHttpExceptionEvent extends AbstractCallbackEvent
 {
     public const NAME = 'worker.callback.http-exception';
 
-    private CallbackInterface $callback;
     private ClientExceptionInterface $exception;
 
     public function __construct(CallbackInterface $callback, ClientExceptionInterface $exception)
     {
-        $this->callback = $callback;
+        parent::__construct($callback);
         $this->exception = $exception;
-    }
-
-    public function getCallback(): CallbackInterface
-    {
-        return $this->callback;
     }
 
     public function getException(): ClientExceptionInterface
