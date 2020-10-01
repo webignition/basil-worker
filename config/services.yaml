@@ -54,3 +54,6 @@ services:
             $client: '@app.services.compiler-client'
             $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
             $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client

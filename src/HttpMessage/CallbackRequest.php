@@ -16,11 +16,11 @@ class CallbackRequest extends GuzzleRequest
     {
         parent::__construct(
             self::METHOD,
-            $job->getCallbackUrl(),
+            (string) $job->getCallbackUrl(),
             [
                 'content-type' => 'application/json',
             ],
-            json_encode([
+            (string) json_encode([
                 'label' => $job->getLabel(),
                 'type' => $callback->getType(),
                 'payload' => $callback->getData(),

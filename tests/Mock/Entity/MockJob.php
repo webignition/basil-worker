@@ -37,4 +37,22 @@ class MockJob
 
         return $this;
     }
+
+    public function withGetCallbackUrlCall(string $callbackUrl): self
+    {
+        $this->job
+            ->shouldReceive('getCallbackUrl')
+            ->andReturn($callbackUrl);
+
+        return $this;
+    }
+
+    public function withGetLabelCall(string $label): self
+    {
+        $this->job
+            ->shouldReceive('getLabel')
+            ->andReturn($label);
+
+        return $this;
+    }
 }

@@ -19,6 +19,9 @@ services:
             $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
             $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
 
+    App\Services\CallbackSender:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
@@ -30,3 +33,17 @@ services:
 
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
+
+    App\Tests\Services\CallbackHttpExceptionEventSubscriber:
+        public: true
+
+    App\Tests\Services\CallbackHttpResponseEventSubscriber:
+        public: true
+
+    GuzzleHttp\Handler\MockHandler: ~
+
+    App\Tests\Services\GuzzleClientFactory: ~
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+        factory: [ '@App\Tests\Services\GuzzleClientFactory', 'get' ]
