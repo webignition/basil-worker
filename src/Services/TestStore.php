@@ -72,6 +72,24 @@ class TestStore
         );
     }
 
+    /**
+     * @param TestManifest[] $manifests
+     *
+     * @return Test[]
+     */
+    public function createFromTestManifests(array $manifests): array
+    {
+        $tests = [];
+
+        foreach ($manifests as $manifest) {
+            if ($manifest instanceof TestManifest) {
+                $tests[] = $this->createFromTestManifest($manifest);
+            }
+        }
+
+        return $tests;
+    }
+
     public function store(Test $test): Test
     {
         $this->entityManager->persist($test);

@@ -99,31 +99,46 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
         self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
 
-
-        $browser = 'chrome';
-        $url = 'http://example.com';
-
-        $source = 'Tests/test.yml';
-        $target = '/app/tests/GeneratedTest.php';
-        $stepCount = 2;
-
         $manifest = new TestManifest(
-            new Configuration($browser, $url),
-            $source,
-            $target,
-            $stepCount
+            new Configuration('chrome', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedTest.php',
+            2
         );
 
         $test = $this->testStore->createFromTestManifest($manifest);
 
-        self::assertInstanceOf(Test::class, $test);
-        self::assertIsInt($test->getId());
-        self::assertSame(
-            $testConfigurationStore->find($browser, $url),
-            $test->getConfiguration()
-        );
-        self::assertSame($stepCount, $test->getStepCount());
+        $this->assertTestMatchesManifest($manifest, $test);
         self::assertSame(1, $test->getPosition());
+    }
+
+    public function testCreateFromTestManifests()
+    {
+        $manifest1 = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedChromeTest.php',
+            2
+        );
+
+        $manifest2 = new TestManifest(
+            new Configuration('firefox', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedFirefoxTest.php',
+            2
+        );
+
+        $manifests = [
+            $manifest1,
+            $manifest2,
+        ];
+
+        $tests = $this->testStore->createFromTestManifests($manifests);
+
+        foreach ($tests as $testIndex => $test) {
+            $this->assertTestMatchesManifest($manifests[$testIndex], $test);
+            self::assertSame($testIndex + 1, $test->getPosition());
+        }
     }
 
     /**
@@ -151,5 +166,23 @@ class TestStoreTest extends AbstractBaseFunctionalTest
                 2
             ),
         ];
+    }
+
+    private function assertTestMatchesManifest(TestManifest $manifest, Test $test): void
+    {
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
+        $manifestConfiguration = $manifest->getConfiguration();
+
+        self::assertInstanceOf(Test::class, $test);
+        self::assertIsInt($test->getId());
+        self::assertSame(
+            $testConfigurationStore->find($manifestConfiguration->getBrowser(), $manifestConfiguration->getUrl()),
+            $test->getConfiguration()
+        );
+        self::assertSame($manifest->getSource(), $test->getSource());
+        self::assertSame($manifest->getTarget(), $test->getTarget());
+        self::assertSame($manifest->getStepCount(), $test->getStepCount());
     }
 }
