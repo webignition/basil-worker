@@ -104,6 +104,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $queue = $this->messengerTransport->get();
         self::assertCount(1, $queue);
+        self::assertIsArray($queue);
 
         /** @var Envelope $envelope */
         $envelope = $queue[0] ?? null;
