@@ -10,6 +10,8 @@ use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
+use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\Configuration;
 
 class TestStoreTest extends AbstractBaseFunctionalTest
 {
@@ -90,6 +92,38 @@ class TestStoreTest extends AbstractBaseFunctionalTest
             $test->setState(Test::STATE_RUNNING);
             $this->testStore->store($test);
         }
+    }
+
+    public function testCreateFromTestManifest()
+    {
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
+
+        $browser = 'chrome';
+        $url = 'http://example.com';
+
+        $source = 'Tests/test.yml';
+        $target = '/app/tests/GeneratedTest.php';
+        $stepCount = 2;
+
+        $manifest = new TestManifest(
+            new Configuration($browser, $url),
+            $source,
+            $target,
+            $stepCount
+        );
+
+        $test = $this->testStore->createFromTestManifest($manifest);
+
+        self::assertInstanceOf(Test::class, $test);
+        self::assertIsInt($test->getId());
+        self::assertSame(
+            $testConfigurationStore->find($browser, $url),
+            $test->getConfiguration()
+        );
+        self::assertSame($stepCount, $test->getStepCount());
+        self::assertSame(1, $test->getPosition());
     }
 
     /**
