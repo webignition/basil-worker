@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageHandler;
 
+use App\Entity\Job;
 use App\Entity\TestConfiguration;
+use App\Event\SourcesAddedEvent;
 use App\EventSubscriber\SourcesAddedEventSubscriber;
 use App\Message\CompileSource;
 use App\Services\JobStore;
@@ -12,6 +14,7 @@ use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
 {
@@ -46,19 +49,42 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         }
     }
 
+    public function testGetSubscribedEvents()
+    {
+        self::assertSame(
+            [
+                SourcesAddedEvent::NAME => [
+                    ['setJobState', 10],
+                    ['dispatchCompileSourceMessage', 0]
+                ],
+            ],
+            SourcesAddedEventSubscriber::getSubscribedEvents()
+        );
+    }
+
+    public function testSetJobState()
+    {
+        $job = $this->jobStore->getJob();
+        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
+
+        $this->eventSubscriber->setJobState();
+
+        $this->assertJobState($job);
+    }
+
     /**
-     * @dataProvider onSourcesAddedNoMessageDispatchedDataProvider
+     * @dataProvider dispatchCompileSourceMessageNoMessageDispatchedDataProvider
      */
-    public function testOnSourcesAddedNoMessageDispatched(callable $initializer)
+    public function testDispatchCompileSourceMessageNoMessageDispatched(callable $initializer)
     {
         $initializer($this->jobStore, $this->testStore);
 
-        $this->eventSubscriber->onSourcesAdded();
+        $this->eventSubscriber->dispatchCompileSourceMessage();
 
         self::assertCount(0, $this->messengerTransport->get());
     }
 
-    public function onSourcesAddedNoMessageDispatchedDataProvider(): array
+    public function dispatchCompileSourceMessageNoMessageDispatchedDataProvider(): array
     {
         return [
             'no sources' => [
@@ -85,27 +111,20 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider onSourcesAddedMessageDispatchedDataProvider
+     * @dataProvider dispatchCompileSourceMessageMessageDispatchedDataProvider
      */
-    public function testOnSourcesAddedMessageDispatched(
+    public function testDispatchCompileSourceMessageMessageDispatched(
         callable $initializer,
-        ?CompileSource $expectedQueuedMessage
+        CompileSource $expectedQueuedMessage
     ) {
         $initializer($this->jobStore, $this->testStore);
 
-        $this->eventSubscriber->onSourcesAdded();
+        $this->eventSubscriber->dispatchCompileSourceMessage();
 
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
-
-        /** @var Envelope $envelope */
-        $envelope = $queue[0] ?? null;
-
-        self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
+        $this->assertMessageTransportQueue($expectedQueuedMessage);
     }
 
-    public function onSourcesAddedMessageDispatchedDataProvider(): array
+    public function dispatchCompileSourceMessageMessageDispatchedDataProvider(): array
     {
         return [
             'no sources compiled' => [
@@ -138,5 +157,41 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
                 'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),
             ],
         ];
+    }
+
+    public function testIntegration()
+    {
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+
+        $job = $this->jobStore->getJob();
+        $job->setSources([
+            'Test/test1.yml',
+        ]);
+        $this->jobStore->store();
+
+        $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
+
+        $expectedQueuedMessage = new CompileSource('Test/test1.yml');
+
+        $this->assertJobState($job);
+        $this->assertMessageTransportQueue($expectedQueuedMessage);
+    }
+
+    private function assertJobState(Job $job): void
+    {
+        self::assertSame(Job::STATE_COMPILATION_RUNNING, $job->getState());
+    }
+
+    private function assertMessageTransportQueue(CompileSource $expectedQueuedMessage): void
+    {
+        $queue = $this->messengerTransport->get();
+        self::assertCount(1, $queue);
+        self::assertIsArray($queue);
+
+        /** @var Envelope $envelope */
+        $envelope = $queue[0] ?? null;
+
+        self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 }

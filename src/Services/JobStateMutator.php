@@ -15,11 +15,21 @@ class JobStateMutator
         $this->jobStore = $jobStore;
     }
 
+    public function setCompilationRunning(): void
+    {
+        $this->set(Job::STATE_COMPILATION_RUNNING);
+    }
+
     public function setCompilationFailed(): void
+    {
+        $this->set(Job::STATE_COMPILATION_FAILED);
+    }
+
+    private function set(string $state): void
     {
         if ($this->jobStore->hasJob()) {
             $job = $this->jobStore->getJob();
-            $job->setState(Job::STATE_COMPILATION_FAILED);
+            $job->setState($state);
             $this->jobStore->store();
         }
     }
