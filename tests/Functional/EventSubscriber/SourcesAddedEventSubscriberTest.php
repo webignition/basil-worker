@@ -8,7 +8,6 @@ use App\Entity\TestConfiguration;
 use App\EventSubscriber\SourcesAddedEventSubscriber;
 use App\Message\CompileSource;
 use App\Services\JobStore;
-use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
@@ -19,7 +18,6 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
     private SourcesAddedEventSubscriber $eventSubscriber;
     private JobStore $jobStore;
     private TestStore $testStore;
-    private TestConfigurationStore $testConfigurationStore;
     private InMemoryTransport $messengerTransport;
 
     protected function setUp(): void
@@ -40,11 +38,6 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         $testStore = self::$container->get(TestStore::class);
         if ($testStore instanceof TestStore) {
             $this->testStore = $testStore;
-        }
-
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        if ($testConfigurationStore instanceof TestConfigurationStore) {
-            $this->testConfigurationStore = $testConfigurationStore;
         }
 
         $messengerTransport = self::$container->get('messenger.transport.async');
@@ -98,7 +91,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         callable $initializer,
         ?CompileSource $expectedQueuedMessage
     ) {
-        $initializer($this->jobStore, $this->testStore, $this->testConfigurationStore);
+        $initializer($this->jobStore, $this->testStore);
 
         $this->eventSubscriber->onSourcesAdded();
 
