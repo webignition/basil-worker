@@ -28,10 +28,10 @@ class CallbackSender
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function send(CallbackInterface $callback): bool
+    public function send(CallbackInterface $callback): void
     {
         if (false === $this->jobStore->hasJob()) {
-            return false;
+            return;
         }
 
         $job = $this->jobStore->getJob();
@@ -39,24 +39,20 @@ class CallbackSender
 
         try {
             $response = $this->httpClient->sendRequest($request);
+
+            if (200 !== $response->getStatusCode()) {
+                $this->eventDispatcher->dispatch(
+                    new CallbackHttpResponseEvent($callback, $response),
+                    CallbackHttpResponseEvent::NAME
+                );
+            }
         } catch (ClientExceptionInterface $httpClientException) {
             $this->eventDispatcher->dispatch(
                 new CallbackHttpExceptionEvent($callback, $httpClientException),
                 CallbackHttpExceptionEvent::NAME
             );
 
-            return false;
+            return;
         }
-
-        if (200 === $response->getStatusCode()) {
-            return true;
-        }
-
-        $this->eventDispatcher->dispatch(
-            new CallbackHttpResponseEvent($callback, $response),
-            CallbackHttpResponseEvent::NAME
-        );
-
-        return false;
     }
 }
