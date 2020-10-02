@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\TestConfiguration;
 use App\Services\JobSourceFinder;
 use App\Services\JobStore;
-use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use webignition\ObjectReflector\ObjectReflector;
@@ -16,7 +16,6 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     private JobSourceFinder $jobSourceFinder;
     private JobStore $jobStore;
     private TestStore $testStore;
-    private TestConfigurationStore $testConfigurationStore;
 
     protected function setUp(): void
     {
@@ -38,11 +37,6 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 $this->testStore = $testStore;
             }
         }
-
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        if ($testConfigurationStore instanceof TestConfigurationStore) {
-            $this->testConfigurationStore = $testConfigurationStore;
-        }
     }
 
     /**
@@ -50,7 +44,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
      */
     public function testFindNextNonCompiledSource(callable $initializer, ?string $expectedNextNonCompiledSource)
     {
-        $initializer($this->jobStore, $this->testStore, $this->testConfigurationStore);
+        $initializer($this->jobStore, $this->testStore);
         self::assertSame($expectedNextNonCompiledSource, $this->jobSourceFinder->findNextNonCompiledSource());
     }
 
@@ -80,11 +74,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 'expectedNextNonCompiledSource' => 'Test/testZebra.yml',
             ],
             'test exists for first source' => [
-                'initializer' => function (
-                    JobStore $jobStore,
-                    TestStore $testStore,
-                    TestConfigurationStore $testConfigurationStore
-                ) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -92,17 +82,13 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = $testConfigurationStore->find('chrome', 'http://example.com');
+                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
                     $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testApple.yml',
             ],
             'test exists for first and second sources' => [
-                'initializer' => function (
-                    JobStore $jobStore,
-                    TestStore $testStore,
-                    TestConfigurationStore $testConfigurationStore
-                ) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -110,18 +96,14 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = $testConfigurationStore->find('chrome', 'http://example.com');
+                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
                     $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
                     $testStore->create($testConfiguration, 'Test/testApple.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testBat.yml',
             ],
             'tests exist for all sources' => [
-                'initializer' => function (
-                    JobStore $jobStore,
-                    TestStore $testStore,
-                    TestConfigurationStore $testConfigurationStore
-                ) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -129,7 +111,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = $testConfigurationStore->find('chrome', 'http://example.com');
+                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
                     $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
                     $testStore->create($testConfiguration, 'Test/testApple.yml', '', 0);
                     $testStore->create($testConfiguration, 'Test/testBat.yml', '', 0);
