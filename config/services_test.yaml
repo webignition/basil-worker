@@ -28,6 +28,9 @@ services:
     App\Services\JobSourceFinder:
         public: true
 
+    App\Services\CompilationWorkflowHandler:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
