@@ -14,7 +14,6 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
-use webignition\BasilCompilerModels\TestManifest;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {
@@ -44,35 +43,17 @@ class CompileSourceHandler implements MessageHandlerInterface
         $output = $this->compiler->compile($source);
 
         if ($output instanceof ErrorOutputInterface) {
-            $this->handleCompileFailure($source, $output);
+            $this->eventDispatcher->dispatch(
+                new SourceCompileFailureEvent($source, $output),
+                SourceCompileFailureEvent::NAME
+            );
         }
 
         if ($output instanceof SuiteManifest) {
-            $this->handleCompileSuccess($source, $output->getTestManifests());
+            $this->eventDispatcher->dispatch(
+                new SourceCompileSuccessEvent($source, $output->getTestManifests()),
+                SourceCompileSuccessEvent::NAME
+            );
         }
-    }
-
-    /**
-     * @param string $source
-     * @param TestManifest[] $testManifests
-     */
-    private function handleCompileSuccess(string $source, array $testManifests): void
-    {
-        $this->eventDispatcher->dispatch(
-            new SourceCompileSuccessEvent($source, $testManifests),
-            SourceCompileSuccessEvent::NAME
-        );
-    }
-
-    private function handleCompileFailure(string $source, ErrorOutputInterface $errorOutput): void
-    {
-        $job = $this->jobStore->getJob();
-        $job->setState(Job::STATE_COMPILATION_FAILED);
-        $this->jobStore->store();
-
-        $this->eventDispatcher->dispatch(
-            new SourceCompileFailureEvent($source, $errorOutput),
-            SourceCompileFailureEvent::NAME
-        );
     }
 }

@@ -46,12 +46,6 @@ services:
     App\Tests\Services\CallbackHttpResponseEventSubscriber:
         public: true
 
-    App\Tests\Services\SourceCompileSuccessEventSubscriber:
-        public: true
-
-    App\Tests\Services\SourceCompileFailureEventSubscriber:
-        public: true
-
     GuzzleHttp\Handler\MockHandler: ~
 
     App\Tests\Services\GuzzleClientFactory: ~

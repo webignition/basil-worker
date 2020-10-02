@@ -12,21 +12,20 @@ use App\MessageHandler\CompileSourceHandler;
 use App\Services\JobStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockJob;
+use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
 use App\Tests\Mock\Services\MockJobStore;
-use App\Tests\Services\SourceCompileFailureEventSubscriber;
-use App\Tests\Services\SourceCompileSuccessEventSubscriber;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\ObjectReflector\ObjectReflector;
 
 class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 {
+    use MockeryPHPUnitIntegration;
+
     private CompileSourceHandler $handler;
-    private SourceCompileSuccessEventSubscriber $successEventSubscriber;
-    private SourceCompileFailureEventSubscriber $failureEventSubscriber;
-    private Job $job;
 
     protected function setUp(): void
     {
@@ -39,19 +38,9 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
         $jobStore = self::$container->get(JobStore::class);
         if ($jobStore instanceof JobStore) {
-            $this->job = $jobStore->create('label content', 'http://example.com/callback');
-            $this->job->setState(Job::STATE_COMPILATION_RUNNING);
+            $job = $jobStore->create('label content', 'http://example.com/callback');
+            $job->setState(Job::STATE_COMPILATION_RUNNING);
             $jobStore->store();
-        }
-
-        $successEventSubscriber = self::$container->get(SourceCompileSuccessEventSubscriber::class);
-        if ($successEventSubscriber instanceof SourceCompileSuccessEventSubscriber) {
-            $this->successEventSubscriber = $successEventSubscriber;
-        }
-
-        $failureEventSubscriber = self::$container->get(SourceCompileFailureEventSubscriber::class);
-        if ($failureEventSubscriber instanceof SourceCompileFailureEventSubscriber) {
-            $this->failureEventSubscriber = $failureEventSubscriber;
         }
     }
 
@@ -67,11 +56,14 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
             $jobStore
         );
 
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withoutDispatchCall()
+            ->getMock();
+
+        ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);
+
         $handler = $this->handler;
         $handler(\Mockery::mock(CompileSource::class));
-
-        self::assertNull($this->successEventSubscriber->getEvent());
-        self::assertNull($this->failureEventSubscriber->getEvent());
     }
 
     public function invokeNoCompilationDataProvider(): array
@@ -122,14 +114,17 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
             $compiler
         );
 
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withDispatchCall(
+                new SourceCompileSuccessEvent('Test/test1.yml', $testManifests),
+                SourceCompileSuccessEvent::NAME
+            )
+            ->getMock();
+
+        ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);
+
         $handler = $this->handler;
         $handler($compileSourceMessage);
-
-        self::assertEquals(
-            new SourceCompileSuccessEvent($compileSourceMessage->getSource(), $testManifests),
-            $this->successEventSubscriber->getEvent()
-        );
-        self::assertNull($this->failureEventSubscriber->getEvent());
     }
 
     public function testInvokeCompileFailure()
@@ -151,15 +146,16 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
             $compiler
         );
 
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withDispatchCall(
+                new SourceCompileFailureEvent('Test/test1.yml', $errorOutput),
+                SourceCompileFailureEvent::NAME
+            )
+            ->getMock();
+
+        ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);
+
         $handler = $this->handler;
         $handler($compileSourceMessage);
-
-        self::assertNull($this->successEventSubscriber->getEvent());
-        self::assertEquals(
-            new SourceCompileFailureEvent($compileSourceMessage->getSource(), $errorOutput),
-            $this->failureEventSubscriber->getEvent()
-        );
-
-        self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
     }
 }
