@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Services\SuiteManifestStore;
+use App\Services\ManifestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
-use App\Tests\Mock\MockSuiteManifest;
-use App\Tests\Mock\Services\MockSuiteManifestPathGenerator;
+use App\Tests\Mock\MockTestManifest;
+use App\Tests\Mock\Services\MockManifestPathGenerator;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\ObjectReflector\ObjectReflector;
 
-class SuiteManifestStoreTest extends AbstractBaseFunctionalTest
+class ManifestStoreTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
 
-    private SuiteManifestStore $suiteManifestStore;
+    private ManifestStore $suiteManifestStore;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $suiteManifestStore = self::$container->get(SuiteManifestStore::class);
-        if ($suiteManifestStore instanceof SuiteManifestStore) {
+        $suiteManifestStore = self::$container->get(ManifestStore::class);
+        if ($suiteManifestStore instanceof ManifestStore) {
             $this->suiteManifestStore = $suiteManifestStore;
         }
     }
 
     public function testStore()
     {
-        $suiteManifest = (new MockSuiteManifest())
+        $testManifest = (new MockTestManifest())
             ->withGetDataCall([
                 'key1' => 'value1',
                 'key2' => 'value2',
@@ -38,18 +38,18 @@ class SuiteManifestStoreTest extends AbstractBaseFunctionalTest
             ->getMock();
 
         $generatedPath = 'generated-manifest.yml';
-        $pathGenerator = (new MockSuiteManifestPathGenerator())
-            ->withGenerateCall($suiteManifest, $generatedPath)
+        $pathGenerator = (new MockManifestPathGenerator())
+            ->withGenerateCall($testManifest, $generatedPath)
             ->getMock();
 
         ObjectReflector::setProperty(
             $this->suiteManifestStore,
-            SuiteManifestStore::class,
+            ManifestStore::class,
             'pathGenerator',
             $pathGenerator
         );
 
-        $path = $this->suiteManifestStore->store($suiteManifest);
+        $path = $this->suiteManifestStore->store($testManifest);
 
         self::assertFileExists($path);
         self::assertSame(

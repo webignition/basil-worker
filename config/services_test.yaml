@@ -31,7 +31,7 @@ services:
     App\Services\CompilationWorkflowHandler:
         public: true
 
-    App\Services\SuiteManifestStore:
+    App\Services\ManifestStore:
         public: true
         arguments:
             $manifestDirectory: '%kernel.project_dir%/%env(MANIFEST_DIRECTORY)%'

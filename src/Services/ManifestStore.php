@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Symfony\Component\Yaml\Dumper;
-use webignition\BasilCompilerModels\SuiteManifest;
+use webignition\BasilCompilerModels\TestManifest;
 
-class SuiteManifestStore
+class ManifestStore
 {
     private const YAML_DUMP_INLINE_DEPTH = 4;
 
     private string $manifestDirectory;
-    private SuiteManifestPathGenerator $pathGenerator;
+    private ManifestPathGenerator $pathGenerator;
     private Dumper $yamlDumper;
 
     public function __construct(
         string $manifestDirectory,
-        SuiteManifestPathGenerator $pathGenerator,
+        ManifestPathGenerator $pathGenerator,
         Dumper $yamlDumper
     ) {
         $this->manifestDirectory = $manifestDirectory;
@@ -25,10 +25,10 @@ class SuiteManifestStore
         $this->yamlDumper = $yamlDumper;
     }
 
-    public function store(SuiteManifest $suiteManifest): string
+    public function store(TestManifest $testManifest): string
     {
-        $path = $this->manifestDirectory . '/' . $this->pathGenerator->generate($suiteManifest);
-        $yaml = $this->yamlDumper->dump($suiteManifest->getData(), self::YAML_DUMP_INLINE_DEPTH);
+        $path = $this->manifestDirectory . '/' . $this->pathGenerator->generate($testManifest);
+        $yaml = $this->yamlDumper->dump($testManifest->getData(), self::YAML_DUMP_INLINE_DEPTH);
 
         file_put_contents($path, $yaml);
 

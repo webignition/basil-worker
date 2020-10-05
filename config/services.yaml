@@ -61,6 +61,6 @@ services:
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
 
-    App\Services\SuiteManifestStore:
+    App\Services\ManifestStore:
         arguments:
             $manifestDirectory: '%env(MANIFEST_DIRECTORY)%'
