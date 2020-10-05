@@ -15,15 +15,14 @@ env:
     - WORKER_COMPILER_CONTAINER_NAME=test-compiler-container
     - WORKER_COMPILER_LOCAL_SOURCE_PATH=../tests/Fixtures/basil
     - WORKER_COMPILER_LOCAL_TARGET_PATH=../tests/build/tests
-    - WORKER_COMPILER_LOCAL_MANIFEST_PATH=../tests/build/manifests
     - WORKER_COMPILER_SOURCE_PATH=/app/source
     - WORKER_COMPILER_TARGET_PATH=/app/tests
-    - WORKER_COMPILER_MANIFEST_PATH=/app/manifests
     - WORKER_COMPILER_EXPOSED_PORT=9000
     - WORKER_RABBITMQ_CONTAINER_NAME=rabbitmq
     - WORKER_RABBITMQ_USER=guest
     - WORKER_RABBITMQ_PASS=guest
     - WORKER_RABBITMQ_EXPOSED_PORT=9001
+    - MANIFEST_DIRECTORY=tests/build/manifests
 
 before_install:
   - sudo apt-get install php-amqp

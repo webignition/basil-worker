@@ -49,6 +49,9 @@ services:
     Symfony\Component\Yaml\Parser:
         class: Symfony\Component\Yaml\Parser
 
+    Symfony\Component\Yaml\Dumper:
+        class: Symfony\Component\Yaml\Dumper
+
     App\Services\Compiler:
         arguments:
             $client: '@app.services.compiler-client'
@@ -57,3 +60,7 @@ services:
 
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
+
+    App\Services\SuiteManifestStore:
+        arguments:
+            $manifestDirectory: '%env(MANIFEST_DIRECTORY)%'
