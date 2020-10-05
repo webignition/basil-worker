@@ -27,6 +27,11 @@ class TestStore
         $this->testConfigurationStore = $testConfigurationStore;
     }
 
+    public function find(int $testId): ?Test
+    {
+        return $this->repository->find($testId);
+    }
+
     /**
      * @return Test[]
      */

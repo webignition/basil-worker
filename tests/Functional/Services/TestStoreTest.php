@@ -29,6 +29,32 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         }
     }
 
+    public function testFind()
+    {
+        $tests = $this->createTestSet();
+
+        $testIds = [];
+        foreach ($tests as $test) {
+            $testId = $test->getId();
+
+            if (is_int($testId)) {
+                $testIds[] = $testId;
+            }
+        }
+
+        foreach ($testIds as $testId) {
+            self::assertInstanceOf(Test::class, $this->testStore->find($testId));
+        }
+
+        self::assertNull($this->testStore->find(0));
+
+        $minTestId = min($testIds);
+        self::assertNull($this->testStore->find($minTestId - 1));
+
+        $maxTestId = max($testIds);
+        self::assertNull($this->testStore->find($maxTestId + 1));
+    }
+
     public function testFindAllEmpty()
     {
         self::assertSame([], $this->testStore->findAll());
