@@ -116,7 +116,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
         $eventDispatcher = (new MockEventDispatcher())
             ->withDispatchCall(
-                new SourceCompileSuccessEvent('Test/test1.yml', $testManifests),
+                new SourceCompileSuccessEvent('Test/test1.yml', $suiteManifest),
                 SourceCompileSuccessEvent::NAME
             )
             ->getMock();

@@ -32,7 +32,9 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
 
     public function createTests(SourceCompileSuccessEvent $event): void
     {
-        $this->testStore->createFromTestManifests($event->getTestManifests());
+        $suiteManifest = $event->getSuiteManifest();
+
+        $this->testStore->createFromTestManifests($suiteManifest->getTestManifests());
     }
 
     public function dispatchNextCompileSourceMessage(): void

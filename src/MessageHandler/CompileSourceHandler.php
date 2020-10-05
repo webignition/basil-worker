@@ -51,7 +51,7 @@ class CompileSourceHandler implements MessageHandlerInterface
 
         if ($output instanceof SuiteManifest) {
             $this->eventDispatcher->dispatch(
-                new SourceCompileSuccessEvent($source, $output->getTestManifests()),
+                new SourceCompileSuccessEvent($source, $output),
                 SourceCompileSuccessEvent::NAME
             );
         }

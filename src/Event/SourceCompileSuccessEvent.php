@@ -4,32 +4,22 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilCompilerModels\SuiteManifest;
 
 class SourceCompileSuccessEvent extends AbstractSourceCompileEvent
 {
     public const NAME = 'worker.source.compile.success';
 
-    /**
-     * @var TestManifest[]
-     */
-    private array $testManifests;
+    private SuiteManifest $suiteManifest;
 
-    /**
-     * @param string $source
-     * @param TestManifest[] $testManifests
-     */
-    public function __construct(string $source, array $testManifests)
+    public function __construct(string $source, SuiteManifest $suiteManifest)
     {
         parent::__construct($source);
-        $this->testManifests = $testManifests;
+        $this->suiteManifest = $suiteManifest;
     }
 
-    /**
-     * @return TestManifest[]
-     */
-    public function getTestManifests(): array
+    public function getSuiteManifest(): SuiteManifest
     {
-        return $this->testManifests;
+        return $this->suiteManifest;
     }
 }

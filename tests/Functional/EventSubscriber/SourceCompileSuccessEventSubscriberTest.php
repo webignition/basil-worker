@@ -13,6 +13,8 @@ use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use webignition\BasilCompilerModels\ConfigurationInterface;
+use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\BasilModels\Test\Configuration;
 
@@ -75,14 +77,20 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
             2
         );
 
-        $manifests = [
-            $manifest1,
-            $manifest2,
-        ];
+        $suiteManifest = new SuiteManifest(
+            \Mockery::mock(ConfigurationInterface::class),
+            [
+                $manifest1,
+                $manifest2,
+            ]
+        );
 
         self::assertCount(0, $testStore->findAll());
 
-        $eventDispatcher->dispatch(new SourceCompileSuccessEvent($source, $manifests), SourceCompileSuccessEvent::NAME);
+        $eventDispatcher->dispatch(
+            new SourceCompileSuccessEvent($source, $suiteManifest),
+            SourceCompileSuccessEvent::NAME
+        );
 
         self::assertCount(2, $testStore->findAll());
 
