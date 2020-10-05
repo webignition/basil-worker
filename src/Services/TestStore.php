@@ -63,20 +63,17 @@ class TestStore
         );
     }
 
-    public function create(string $source, string $manifestPath): Test
+    public function create(string $source, TestManifest $manifest, string $manifestPath): Test
     {
         $position = $this->findNextPosition();
-        $test = Test::create($source, $manifestPath, $position);
+        $test = Test::create($source, $manifest, $manifestPath, $position);
 
         return $this->store($test);
     }
 
     public function createFromTestManifest(TestManifest $manifest, string $manifestPath): Test
     {
-        $test = $this->create($manifest->getSource(), $manifestPath);
-        $test->setManifest($manifest);
-
-        return $test;
+        return $this->create($manifest->getSource(), $manifest, $manifestPath);
     }
 
     public function store(Test $test): Test
@@ -99,7 +96,7 @@ class TestStore
         ));
     }
 
-    public function loadManifest(Test $test): void
+    private function loadManifest(Test $test): void
     {
         $manifestContent = (string) file_get_contents($test->getManifestPath());
         $manifestData = $this->yamlParser->parse($manifestContent);

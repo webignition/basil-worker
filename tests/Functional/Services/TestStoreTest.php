@@ -34,6 +34,31 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         }
     }
 
+    public function testCreate()
+    {
+        $tests = $this->createTestSet();
+
+        foreach ($tests as $testIndex => $test) {
+            $expectedPosition = $testIndex + 1;
+            self::assertSame($expectedPosition, $test->getPosition());
+        }
+    }
+
+    public function testCreateFromTestManifest()
+    {
+        $manifest = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedTest.php',
+            2
+        );
+
+        $test = $this->testStore->createFromTestManifest($manifest, '');
+
+        $this->assertTestMatchesManifest($manifest, $test);
+        self::assertSame(1, $test->getPosition());
+    }
+
     public function testFind()
     {
         $tests = $this->createTestSet();
@@ -82,42 +107,24 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         $entityManager = self::$container->get(EntityManagerInterface::class);
         self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
 
-        $test1 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test1.yml',
-                'generated/GeneratedTest1.php',
-                3
-            )),
-            2
+        $manifest = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Test/test1.yml',
+            'generated/GeneratedTest1.php',
+            3
         );
+
+        $manifestPath = $this->manifestStore->store($manifest);
+
+        $test1 = Test::create('source', $manifest, $manifestPath, 2);
         $entityManager->persist($test1);
         $entityManager->flush();
 
-        $test2 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test2.yml',
-                'generated/GeneratedTest2.php',
-                3
-            )),
-            1
-        );
+        $test2 = Test::create('source', $manifest, $manifestPath, 1);
         $entityManager->persist($test2);
         $entityManager->flush();
 
-        $test3 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test3.yml',
-                'generated/GeneratedTest3.php',
-                3
-            )),
-            3
-        );
+        $test3 = Test::create('source', $manifest, $manifestPath, 3);
         $entityManager->persist($test3);
         $entityManager->flush();
 
@@ -131,16 +138,6 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         );
     }
 
-    public function testCreate()
-    {
-        $tests = $this->createTestSet();
-
-        foreach ($tests as $testIndex => $test) {
-            $expectedPosition = $testIndex + 1;
-            self::assertSame($expectedPosition, $test->getPosition());
-        }
-    }
-
     public function testFindNextAwaiting()
     {
         $tests = $this->createTestSet();
@@ -152,54 +149,40 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testCreateFromTestManifest()
-    {
-        $manifest = new TestManifest(
-            new Configuration('chrome', 'http://example.com'),
-            'Tests/test.yml',
-            '/app/tests/GeneratedTest.php',
-            2
-        );
-
-        $test = $this->testStore->createFromTestManifest($manifest, '');
-
-        $this->assertTestMatchesManifest($manifest, $test);
-        self::assertSame(1, $test->getPosition());
-    }
-
     /**
      * @return Test[]
      */
     private function createTestSet(): array
     {
+        $manifest1 = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Test/test1.yml',
+            'generated/GeneratedTest1.php',
+            3
+        );
+
+        $manifest2 = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Test/test2.yml',
+            'generated/GeneratedTest2.php',
+            2
+        );
+
+        $manifest3 = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Test/test3.yml',
+            'generated/GeneratedTest3.php',
+            1
+        );
+
+        $manifestPath1 = $this->manifestStore->store($manifest1);
+        $manifestPath2 = $this->manifestStore->store($manifest2);
+        $manifestPath3 = $this->manifestStore->store($manifest3);
+
         return [
-            $this->testStore->create(
-                'Test/test1.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test1.yml',
-                    'generated/GeneratedTest1.php',
-                    3
-                ))
-            ),
-            $this->testStore->create(
-                'Test/test2.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test2.yml',
-                    'generated/GeneratedTest1.php',
-                    2
-                ))
-            ),
-            $this->testStore->create(
-                'Test/test3.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test3.yml',
-                    'generated/GeneratedTest1.php',
-                    1
-                ))
-            ),
+            $this->testStore->create('Test/test1.yml', $manifest1, $manifestPath1),
+            $this->testStore->create('Test/test2.yml', $manifest2, $manifestPath2),
+            $this->testStore->create('Test/test3.yml', $manifest3, $manifestPath3),
         ];
     }
 
