@@ -30,7 +30,8 @@ class TestTest extends TestCase
                     'Test/test1.yml',
                     'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
                     2,
-                    1
+                    1,
+                    'manifests/manifest-test1.yml',
                 ),
                 'expectedSerializedTest' => [
                     'configuration' => [
@@ -54,7 +55,8 @@ class TestTest extends TestCase
             'Test/test1.yml',
             'generated/Generatedfc66338eaf47ef8bb65727705cdee990.php',
             3,
-            1
+            1,
+            'manifests/manifest-test1.yml',
         );
 
         self::assertSame(Test::STATE_AWAITING, $test->getState());

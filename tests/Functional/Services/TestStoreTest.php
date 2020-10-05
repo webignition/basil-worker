@@ -77,15 +77,15 @@ class TestStoreTest extends AbstractBaseFunctionalTest
 
         $testConfiguration = $testConfigurationStore->find('chrome', 'http:/example.com');
 
-        $test1 = Test::create($testConfiguration, 'source', 'target', 3, 2);
+        $test1 = Test::create($testConfiguration, 'source', 'target', 3, 2, '');
         $entityManager->persist($test1);
         $entityManager->flush();
 
-        $test2 = Test::create($testConfiguration, 'source', 'target', 3, 1);
+        $test2 = Test::create($testConfiguration, 'source', 'target', 3, 1, '');
         $entityManager->persist($test2);
         $entityManager->flush();
 
-        $test3 = Test::create($testConfiguration, 'source', 'target', 3, 3);
+        $test3 = Test::create($testConfiguration, 'source', 'target', 3, 3, '');
         $entityManager->persist($test3);
         $entityManager->flush();
 
@@ -132,7 +132,7 @@ class TestStoreTest extends AbstractBaseFunctionalTest
             2
         );
 
-        $test = $this->testStore->createFromTestManifest($manifest);
+        $test = $this->testStore->createFromTestManifest($manifest, '');
 
         $this->assertTestMatchesManifest($manifest, $test);
         self::assertSame(1, $test->getPosition());
@@ -159,7 +159,16 @@ class TestStoreTest extends AbstractBaseFunctionalTest
             $manifest2,
         ];
 
-        $tests = $this->testStore->createFromTestManifests($manifests);
+        $tests = [];
+
+        foreach ($manifests as $testIndex => $manifest) {
+            $manifestPath = 'manifests/manifest-test' . (string)($testIndex + 1) . '.yml';
+
+            $tests[] = $this->testStore->createFromTestManifest(
+                $manifest,
+                $manifestPath
+            );
+        }
 
         foreach ($tests as $testIndex => $test) {
             $this->assertTestMatchesManifest($manifests[$testIndex], $test);
@@ -177,19 +186,22 @@ class TestStoreTest extends AbstractBaseFunctionalTest
                 TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test1.yml',
                 'generated/GeneratedTest1.php',
-                3
+                3,
+                'manifests/manifest-test1.yml'
             ),
             $this->testStore->create(
                 TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test2.yml',
                 'generated/GeneratedTest2.php',
-                2
+                2,
+                'manifests/manifest-test2.yml'
             ),
             $this->testStore->create(
                 TestConfiguration::create('firefox', 'http://example.com'),
                 'Test/test2.yml',
                 'generated/GeneratedTest3.php',
-                2
+                2,
+                'manifests/manifest-test3.yml'
             ),
         ];
     }

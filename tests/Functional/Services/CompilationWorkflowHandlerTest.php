@@ -77,7 +77,8 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
-                        1
+                        1,
+                        'manifests/manifest-test1.yml'
                     );
                 },
             ],
@@ -132,7 +133,8 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
-                        1
+                        1,
+                        'manifests/manifest-test1.yml'
                     );
                 },
                 'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageHandler;
 
+use App\Entity\Test;
 use App\Event\SourceCompileSuccessEvent;
 use App\EventSubscriber\SourceCompileSuccessEventSubscriber;
 use App\Message\CompileSource;
@@ -92,7 +93,13 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
             SourceCompileSuccessEvent::NAME
         );
 
-        self::assertCount(2, $testStore->findAll());
+        /** @var Test[] $tests */
+        $tests = $testStore->findAll();
+        self::assertCount(2, $tests);
+
+        foreach ($tests as $test) {
+            self::assertFileExists($test->getManifestPath());
+        }
 
         $expectedQueuedMessage = new CompileSource('Test/test2.yml');
 

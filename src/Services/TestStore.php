@@ -53,16 +53,17 @@ class TestStore
         TestConfiguration $configuration,
         string $source,
         string $target,
-        int $stepCount
+        int $stepCount,
+        string $manifestPath
     ): Test {
         $position = $this->findNextPosition();
         $configuration = $this->testConfigurationStore->findByConfiguration($configuration);
-        $test = Test::create($configuration, $source, $target, $stepCount, $position);
+        $test = Test::create($configuration, $source, $target, $stepCount, $position, $manifestPath);
 
         return $this->store($test);
     }
 
-    public function createFromTestManifest(TestManifest $manifest): Test
+    public function createFromTestManifest(TestManifest $manifest, string $manifestPath): Test
     {
         $manifestConfiguration = $manifest->getConfiguration();
 
@@ -73,26 +74,9 @@ class TestStore
             ),
             $manifest->getSource(),
             $manifest->getTarget(),
-            $manifest->getStepCount()
+            $manifest->getStepCount(),
+            $manifestPath
         );
-    }
-
-    /**
-     * @param TestManifest[] $manifests
-     *
-     * @return Test[]
-     */
-    public function createFromTestManifests(array $manifests): array
-    {
-        $tests = [];
-
-        foreach ($manifests as $manifest) {
-            if ($manifest instanceof TestManifest) {
-                $tests[] = $this->createFromTestManifest($manifest);
-            }
-        }
-
-        return $tests;
     }
 
     public function store(Test $test): Test
