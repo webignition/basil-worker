@@ -6,9 +6,6 @@ services:
     App\Services\JobStore:
         public: true
 
-    App\Services\TestConfigurationStore:
-        public: true
-
     App\Services\TestStore:
         public: true
 

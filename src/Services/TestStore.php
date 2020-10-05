@@ -5,31 +5,33 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Yaml\Parser;
 use webignition\BasilCompilerModels\TestManifest;
 
 class TestStore
 {
     private EntityManagerInterface $entityManager;
+    private Parser $yamlParser;
 
     /**
      * @var EntityRepository<Test>
      */
     private EntityRepository $repository;
-    private TestConfigurationStore $testConfigurationStore;
 
-    public function __construct(EntityManagerInterface $entityManager, TestConfigurationStore $testConfigurationStore)
+    public function __construct(EntityManagerInterface $entityManager, Parser $yamlParser)
     {
         $this->entityManager = $entityManager;
         $this->repository = $entityManager->getRepository(Test::class);
-        $this->testConfigurationStore = $testConfigurationStore;
+        $this->yamlParser = $yamlParser;
     }
 
     public function find(int $testId): ?Test
     {
-        return $this->repository->find($testId);
+        return $this->hydrateManifestIfTest(
+            $this->repository->find($testId)
+        );
     }
 
     /**
@@ -37,46 +39,44 @@ class TestStore
      */
     public function findAll(): array
     {
-        return $this->repository->findBy([], [
+        $all = $this->repository->findBy([], [
             'position' => 'ASC',
         ]);
+
+        foreach ($all as $testIndex => $test) {
+            $test = $this->hydrateManifestIfTest($test);
+
+            if ($test instanceof Test) {
+                $all[$testIndex] = $test;
+            }
+        }
+
+        return $all;
     }
 
     public function findBySource(string $source): ?Test
     {
-        return $this->repository->findOneBy([
-            'source' => $source,
-        ]);
+        return $this->hydrateManifestIfTest(
+            $this->repository->findOneBy([
+                'source' => $source,
+            ])
+        );
     }
 
-    public function create(
-        TestConfiguration $configuration,
-        string $source,
-        string $target,
-        int $stepCount,
-        string $manifestPath
-    ): Test {
+    public function create(string $source, string $manifestPath): Test
+    {
         $position = $this->findNextPosition();
-        $configuration = $this->testConfigurationStore->findByConfiguration($configuration);
-        $test = Test::create($configuration, $source, $target, $stepCount, $position, $manifestPath);
+        $test = Test::create($source, $manifestPath, $position);
 
         return $this->store($test);
     }
 
     public function createFromTestManifest(TestManifest $manifest, string $manifestPath): Test
     {
-        $manifestConfiguration = $manifest->getConfiguration();
+        $test = $this->create($manifest->getSource(), $manifestPath);
+        $test->setManifest($manifest);
 
-        return $this->create(
-            TestConfiguration::create(
-                $manifestConfiguration->getBrowser(),
-                $manifestConfiguration->getUrl()
-            ),
-            $manifest->getSource(),
-            $manifest->getTarget(),
-            $manifest->getStepCount(),
-            $manifestPath
-        );
+        return $test;
     }
 
     public function store(Test $test): Test
@@ -89,16 +89,23 @@ class TestStore
 
     public function findNextAwaiting(): ?Test
     {
-        $test = $this->repository->findOneBy(
+        return $this->hydrateManifestIfTest($this->repository->findOneBy(
             [
                 'state' => Test::STATE_AWAITING,
             ],
             [
                 'position' => 'ASC',
             ]
-        );
+        ));
+    }
 
-        return $test instanceof Test ? $test : null;
+    public function loadManifest(Test $test): void
+    {
+        $manifestContent = (string) file_get_contents($test->getManifestPath());
+        $manifestData = $this->yamlParser->parse($manifestContent);
+
+        $manifest = TestManifest::fromArray($manifestData);
+        $test->setManifest($manifest);
     }
 
     private function findNextPosition(): int
@@ -119,5 +126,14 @@ class TestStore
         return $test instanceof Test
             ? $test->getPosition()
             : null;
+    }
+
+    private function hydrateManifestIfTest(?Test $test): ?Test
+    {
+        if ($test instanceof Test) {
+            $this->loadManifest($test);
+        }
+
+        return $test;
     }
 }

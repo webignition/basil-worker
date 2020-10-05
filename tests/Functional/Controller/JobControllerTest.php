@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\Job;
-use App\Entity\TestConfiguration;
 use App\Request\JobCreateRequest;
 use App\Services\JobStore;
+use App\Services\ManifestStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\Configuration;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
 {
@@ -63,7 +65,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         $testStore = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $testStore);
 
-        $initializer($jobStore, $testStore);
+        $manifestStore = self::$container->get(ManifestStore::class);
+        self::assertInstanceOf(ManifestStore::class, $manifestStore);
+
+        $initializer($jobStore, $testStore, $manifestStore);
 
         $this->client->request('GET', '/status');
 
@@ -128,7 +133,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'new job, has sources, has tests' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
                     $job = $jobStore->create('label content', 'http://example.com/callback');
 
                     $job->setSources([
@@ -139,19 +144,23 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     $jobStore->store();
 
                     $testStore->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
-                        'generated/GeneratedTest1.php',
-                        3,
-                        'manifests/manifest-test1.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
 
                     $testStore->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test2.yml',
-                        'generated/GeneratedTest2.php',
-                        2,
-                        'manifests/manifest-test2.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test2.yml',
+                            'generated/GeneratedTest2.php',
+                            2
+                        ))
                     );
                 },
                 'expectedResponse' => new JsonResponse(

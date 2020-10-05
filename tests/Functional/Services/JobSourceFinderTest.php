@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\TestConfiguration;
 use App\Services\JobSourceFinder;
 use App\Services\JobStore;
+use App\Services\ManifestStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
+use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\Configuration;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobSourceFinderTest extends AbstractBaseFunctionalTest
@@ -16,6 +18,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     private JobSourceFinder $jobSourceFinder;
     private JobStore $jobStore;
     private TestStore $testStore;
+    private ManifestStore $manifestStore;
 
     protected function setUp(): void
     {
@@ -37,6 +40,11 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 $this->testStore = $testStore;
             }
         }
+
+        $manifestStore = self::$container->get(ManifestStore::class);
+        if ($manifestStore instanceof ManifestStore) {
+            $this->manifestStore = $manifestStore;
+        }
     }
 
     /**
@@ -44,7 +52,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
      */
     public function testFindNextNonCompiledSource(callable $initializer, ?string $expectedNextNonCompiledSource)
     {
-        $initializer($this->jobStore, $this->testStore);
+        $initializer($this->jobStore, $this->testStore, $this->manifestStore);
         self::assertSame($expectedNextNonCompiledSource, $this->jobSourceFinder->findNextNonCompiledSource());
     }
 
@@ -74,7 +82,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 'expectedNextNonCompiledSource' => 'Test/testZebra.yml',
             ],
             'test exists for first source' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -82,19 +90,20 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
                 },
                 'expectedNextNonCompiledSource' => 'Test/testApple.yml',
             ],
             'test exists for first and second sources' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -102,28 +111,29 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
-
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testApple.yml',
-                        '',
-                        0,
-                        'manifests/manifest-apple.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
                 },
                 'expectedNextNonCompiledSource' => 'Test/testBat.yml',
             ],
             'tests exist for all sources' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -131,30 +141,32 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         'Test/testBat.yml',
                     ]);
 
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
-
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testApple.yml',
-                        '',
-                        0,
-                        'manifests/manifest-apple.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
-
                     $testStore->create(
-                        $testConfiguration,
                         'Test/testBat.yml',
-                        '',
-                        0,
-                        'manifests/manifest-bat.yml'
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
                 },
                 'expectedNextNonCompiledSource' => null,

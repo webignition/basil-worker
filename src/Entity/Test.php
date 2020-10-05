@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\ConfigurationInterface as TestConfigurationInterface;
 
 /**
  * @ORM\Entity
@@ -24,12 +26,6 @@ class Test implements \JsonSerializable
     private ?int $id = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\TestConfiguration")
-     * @ORM\JoinColumn(name="test_configuration_id", referencedColumnName="id", nullable=false)
-     */
-    private TestConfiguration $configuration;
-
-    /**
      * @ORM\Column(type="string", length=255)
      */
     private string $state;
@@ -38,16 +34,6 @@ class Test implements \JsonSerializable
      * @ORM\Column(type="text")
      */
     private string $source;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private string $target;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private int $stepCount = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=false, unique=true)
@@ -59,22 +45,15 @@ class Test implements \JsonSerializable
      */
     private string $manifestPath;
 
-    public static function create(
-        TestConfiguration $configuration,
-        string $source,
-        string $target,
-        int $stepCount,
-        int $position,
-        string $manifestPath
-    ): self {
+    private ?TestManifest $manifest = null;
+
+    public static function create(string $source, string $manifestPath, int $position): self
+    {
         $test = new Test();
-        $test->configuration = $configuration;
         $test->state = self::STATE_AWAITING;
         $test->source = $source;
-        $test->target = $target;
-        $test->stepCount = $stepCount;
-        $test->position = $position;
         $test->manifestPath = $manifestPath;
+        $test->position = $position;
 
         return $test;
     }
@@ -84,9 +63,9 @@ class Test implements \JsonSerializable
         return $this->id;
     }
 
-    public function getConfiguration(): TestConfiguration
+    public function getConfiguration(): ?TestConfigurationInterface
     {
-        return $this->configuration;
+        return $this->manifest instanceof TestManifest ? $this->manifest->getConfiguration() : null;
     }
 
     public function getState(): string
@@ -104,14 +83,19 @@ class Test implements \JsonSerializable
         return $this->source;
     }
 
-    public function getTarget(): ?string
+    public function getManifestPath(): string
     {
-        return $this->target;
+        return $this->manifestPath;
     }
 
-    public function getStepCount(): int
+    public function getTarget(): ?string
     {
-        return $this->stepCount;
+        return $this->manifest instanceof TestManifest ? $this->manifest->getTarget() : null;
+    }
+
+    public function getStepCount(): ?int
+    {
+        return $this->manifest instanceof TestManifest ? $this->manifest->getStepCount() : null;
     }
 
     public function getPosition(): int
@@ -119,9 +103,9 @@ class Test implements \JsonSerializable
         return $this->position;
     }
 
-    public function getManifestPath(): string
+    public function setManifest(TestManifest $manifest): void
     {
-        return $this->manifestPath;
+        $this->manifest = $manifest;
     }
 
     /**
@@ -129,11 +113,21 @@ class Test implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
+        $configurationData = [];
+
+        if ($this->manifest instanceof TestManifest) {
+            $configuration = $this->manifest->getConfiguration();
+            $configurationData = [
+                'browser' => $configuration->getBrowser(),
+                'url' => $configuration->getUrl(),
+            ];
+        }
+
         return [
-            'configuration' => $this->configuration->jsonSerialize(),
+            'configuration' => $configurationData,
             'source' => $this->source,
-            'target' => $this->target,
-            'step_count' => $this->stepCount,
+            'target' => $this->getTarget(),
+            'step_count' => $this->getStepCount(),
             'state' => $this->state,
             'position' => $this->position,
         ];
