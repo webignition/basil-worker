@@ -45,14 +45,13 @@ class Test implements \JsonSerializable
      */
     private string $manifestPath;
 
-    private TestManifest $manifest;
+    private ?TestManifest $manifest = null;
 
-    public static function create(string $source, TestManifest $manifest, string $manifestPath, int $position): self
+    public static function create(string $source, string $manifestPath, int $position): self
     {
         $test = new Test();
         $test->state = self::STATE_AWAITING;
         $test->source = $source;
-        $test->manifest = $manifest;
         $test->manifestPath = $manifestPath;
         $test->position = $position;
 
@@ -64,9 +63,9 @@ class Test implements \JsonSerializable
         return $this->id;
     }
 
-    public function getConfiguration(): TestConfigurationInterface
+    public function getConfiguration(): ?TestConfigurationInterface
     {
-        return $this->manifest->getConfiguration();
+        return $this->manifest instanceof TestManifest ? $this->manifest->getConfiguration() : null;
     }
 
     public function getState(): string
@@ -89,14 +88,14 @@ class Test implements \JsonSerializable
         return $this->manifestPath;
     }
 
-    public function getTarget(): string
+    public function getTarget(): ?string
     {
-        return $this->manifest->getTarget();
+        return $this->manifest instanceof TestManifest ? $this->manifest->getTarget() : null;
     }
 
     public function getStepCount(): ?int
     {
-        return $this->manifest->getStepCount();
+        return $this->manifest instanceof TestManifest ? $this->manifest->getStepCount() : null;
     }
 
     public function getPosition(): int
@@ -114,11 +113,15 @@ class Test implements \JsonSerializable
      */
     public function jsonSerialize(): array
     {
-        $configuration = $this->manifest->getConfiguration();
-        $configurationData = [
-            'browser' => $configuration->getBrowser(),
-            'url' => $configuration->getUrl(),
-        ];
+        $configurationData = [];
+
+        if ($this->manifest instanceof TestManifest) {
+            $configuration = $this->manifest->getConfiguration();
+            $configurationData = [
+                'browser' => $configuration->getBrowser(),
+                'url' => $configuration->getUrl(),
+            ];
+        }
 
         return [
             'configuration' => $configurationData,

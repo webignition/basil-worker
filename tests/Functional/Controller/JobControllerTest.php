@@ -143,25 +143,25 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store();
 
-                    $manifest1 = new TestManifest(
-                        new Configuration('chrome', 'http://example.com'),
+                    $testStore->create(
                         'Test/test1.yml',
-                        'generated/GeneratedTest1.php',
-                        3
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
 
-                    $manifest2 = new TestManifest(
-                        new Configuration('chrome', 'http://example.com'),
+                    $testStore->create(
                         'Test/test2.yml',
-                        'generated/GeneratedTest2.php',
-                        2
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test2.yml',
+                            'generated/GeneratedTest2.php',
+                            2
+                        ))
                     );
-
-                    $manifestPath1 = $manifestStore->store($manifest1);
-                    $manifestPath2 = $manifestStore->store($manifest2);
-
-                    $testStore->create('Test/test1.yml', $manifest1, $manifestPath1);
-                    $testStore->create('Test/test2.yml', $manifest2, $manifestPath2);
                 },
                 'expectedResponse' => new JsonResponse(
                     [

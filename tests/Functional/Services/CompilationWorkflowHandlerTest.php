@@ -81,16 +81,15 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store();
 
-                    $manifest = new TestManifest(
-                        new Configuration('chrome', 'http://example.com'),
+                    $testStore->create(
                         'Test/test1.yml',
-                        'generated/GeneratedTest1.php',
-                        3
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
-
-                    $manifestPath = $manifestStore->store($manifest);
-
-                    $testStore->create('Test/test1.yml', $manifest, $manifestPath);
                 },
             ],
         ];
@@ -140,15 +139,15 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store();
 
-                    $manifest = new TestManifest(
-                        new Configuration('chrome', 'http://example.com'),
+                    $testStore->create(
                         'Test/test1.yml',
-                        'generated/GeneratedTest1.php',
-                        3
+                        $manifestStore->store(new TestManifest(
+                            new Configuration('chrome', 'http://example.com'),
+                            'Test/test1.yml',
+                            'generated/GeneratedTest1.php',
+                            3
+                        ))
                     );
-
-                    $manifestPath = $manifestStore->store($manifest);
-                    $testStore->create('Test/test1.yml', $manifest, $manifestPath);
                 },
                 'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),
             ],
