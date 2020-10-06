@@ -4,16 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\TestConfiguration;
 use App\Message\CompileSource;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\JobStore;
-use App\Services\ManifestStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
-use webignition\BasilCompilerModels\TestManifest;
-use webignition\BasilModels\Test\Configuration;
 
 class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 {
@@ -21,7 +19,6 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
     private JobStore $jobStore;
     private TestStore $testStore;
     private InMemoryTransport $messengerTransport;
-    private ManifestStore $manifestStore;
 
     protected function setUp(): void
     {
@@ -47,11 +44,6 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         if ($messengerTransport instanceof InMemoryTransport) {
             $this->messengerTransport = $messengerTransport;
         }
-
-        $manifestStore = self::$container->get(ManifestStore::class);
-        if ($manifestStore instanceof ManifestStore) {
-            $this->manifestStore = $manifestStore;
-        }
     }
 
     /**
@@ -59,7 +51,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
      */
     public function testDispatchNextCompileSourceMessageNoMessageDispatched(callable $initializer)
     {
-        $initializer($this->jobStore, $this->testStore, $this->manifestStore);
+        $initializer($this->jobStore, $this->testStore);
 
         $this->handler->dispatchNextCompileSourceMessage();
 
@@ -74,7 +66,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 },
             ],
             'no non-compiled sources' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
@@ -82,13 +74,11 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     $jobStore->store();
 
                     $testStore->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
-                        $manifestStore->store(new TestManifest(
-                            new Configuration('chrome', 'http://example.com'),
-                            'Test/test1.yml',
-                            'generated/GeneratedTest1.php',
-                            3
-                        ))
+                        '/app/tests/GeneratedTest1.php',
+                        1,
+                        'manifests/manifest-test1.yml'
                     );
                 },
             ],
@@ -102,7 +92,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         callable $initializer,
         CompileSource $expectedQueuedMessage
     ) {
-        $initializer($this->jobStore, $this->testStore, $this->manifestStore);
+        $initializer($this->jobStore, $this->testStore);
 
         $this->handler->dispatchNextCompileSourceMessage();
 
@@ -131,7 +121,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 'expectedQueuedMessage' => new CompileSource('Test/test1.yml'),
             ],
             'all but one sources compiled' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore, ManifestStore $manifestStore) {
+                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
@@ -140,13 +130,11 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     $jobStore->store();
 
                     $testStore->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
-                        $manifestStore->store(new TestManifest(
-                            new Configuration('chrome', 'http://example.com'),
-                            'Test/test1.yml',
-                            'generated/GeneratedTest1.php',
-                            3
-                        ))
+                        '/app/tests/GeneratedTest1.php',
+                        1,
+                        'manifests/manifest-test1.yml'
                     );
                 },
                 'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),

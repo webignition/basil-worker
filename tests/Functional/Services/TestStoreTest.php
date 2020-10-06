@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
-use App\Services\ManifestStore;
+use App\Entity\TestConfiguration;
+use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -15,7 +16,6 @@ use webignition\BasilModels\Test\Configuration;
 class TestStoreTest extends AbstractBaseFunctionalTest
 {
     private TestStore $testStore;
-    private ManifestStore $manifestStore;
 
     protected function setUp(): void
     {
@@ -26,11 +26,6 @@ class TestStoreTest extends AbstractBaseFunctionalTest
 
         if ($store instanceof TestStore) {
             $this->testStore = $store;
-        }
-
-        $manifestStore = self::$container->get(ManifestStore::class);
-        if ($manifestStore instanceof ManifestStore) {
-            $this->manifestStore = $manifestStore;
         }
     }
 
@@ -48,12 +43,7 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         }
 
         foreach ($testIds as $testId) {
-            $test = $this->testStore->find($testId);
-
-            self::assertInstanceOf(Test::class, $test);
-            self::assertNotNull($test->getConfiguration());
-            self::assertNotNull($test->getTarget());
-            self::assertNotNull($test->getStepCount());
+            self::assertInstanceOf(Test::class, $this->testStore->find($testId));
         }
 
         self::assertNull($this->testStore->find(0));
@@ -82,42 +72,20 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         $entityManager = self::$container->get(EntityManagerInterface::class);
         self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
 
-        $test1 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test1.yml',
-                'generated/GeneratedTest1.php',
-                3
-            )),
-            2
-        );
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
+        $testConfiguration = $testConfigurationStore->find('chrome', 'http:/example.com');
+
+        $test1 = Test::create($testConfiguration, 'source', 'target', 3, 2, '');
         $entityManager->persist($test1);
         $entityManager->flush();
 
-        $test2 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test2.yml',
-                'generated/GeneratedTest2.php',
-                3
-            )),
-            1
-        );
+        $test2 = Test::create($testConfiguration, 'source', 'target', 3, 1, '');
         $entityManager->persist($test2);
         $entityManager->flush();
 
-        $test3 = Test::create(
-            'source',
-            $this->manifestStore->store(new TestManifest(
-                new Configuration('chrome', 'http://example.com'),
-                'Test/test3.yml',
-                'generated/GeneratedTest3.php',
-                3
-            )),
-            3
-        );
+        $test3 = Test::create($testConfiguration, 'source', 'target', 3, 3, '');
         $entityManager->persist($test3);
         $entityManager->flush();
 
@@ -154,6 +122,9 @@ class TestStoreTest extends AbstractBaseFunctionalTest
 
     public function testCreateFromTestManifest()
     {
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
         $manifest = new TestManifest(
             new Configuration('chrome', 'http://example.com'),
             'Tests/test.yml',
@@ -167,6 +138,44 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         self::assertSame(1, $test->getPosition());
     }
 
+    public function testCreateFromTestManifests()
+    {
+        $manifest1 = new TestManifest(
+            new Configuration('chrome', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedChromeTest.php',
+            2
+        );
+
+        $manifest2 = new TestManifest(
+            new Configuration('firefox', 'http://example.com'),
+            'Tests/test.yml',
+            '/app/tests/GeneratedFirefoxTest.php',
+            2
+        );
+
+        $manifests = [
+            $manifest1,
+            $manifest2,
+        ];
+
+        $tests = [];
+
+        foreach ($manifests as $testIndex => $manifest) {
+            $manifestPath = 'manifests/manifest-test' . (string)($testIndex + 1) . '.yml';
+
+            $tests[] = $this->testStore->createFromTestManifest(
+                $manifest,
+                $manifestPath
+            );
+        }
+
+        foreach ($tests as $testIndex => $test) {
+            $this->assertTestMatchesManifest($manifests[$testIndex], $test);
+            self::assertSame($testIndex + 1, $test->getPosition());
+        }
+    }
+
     /**
      * @return Test[]
      */
@@ -174,39 +183,42 @@ class TestStoreTest extends AbstractBaseFunctionalTest
     {
         return [
             $this->testStore->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test1.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test1.yml',
-                    'generated/GeneratedTest1.php',
-                    3
-                ))
+                'generated/GeneratedTest1.php',
+                3,
+                'manifests/manifest-test1.yml'
             ),
             $this->testStore->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test2.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test2.yml',
-                    'generated/GeneratedTest1.php',
-                    2
-                ))
+                'generated/GeneratedTest2.php',
+                2,
+                'manifests/manifest-test2.yml'
             ),
             $this->testStore->create(
-                'Test/test3.yml',
-                $this->manifestStore->store(new TestManifest(
-                    new Configuration('chrome', 'http://example.com'),
-                    'Test/test3.yml',
-                    'generated/GeneratedTest1.php',
-                    1
-                ))
+                TestConfiguration::create('firefox', 'http://example.com'),
+                'Test/test2.yml',
+                'generated/GeneratedTest3.php',
+                2,
+                'manifests/manifest-test3.yml'
             ),
         ];
     }
 
     private function assertTestMatchesManifest(TestManifest $manifest, Test $test): void
     {
+        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
+        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
+
+        $manifestConfiguration = $manifest->getConfiguration();
+
         self::assertInstanceOf(Test::class, $test);
         self::assertIsInt($test->getId());
+        self::assertSame(
+            $testConfigurationStore->find($manifestConfiguration->getBrowser(), $manifestConfiguration->getUrl()),
+            $test->getConfiguration()
+        );
         self::assertSame($manifest->getSource(), $test->getSource());
         self::assertSame($manifest->getTarget(), $test->getTarget());
         self::assertSame($manifest->getStepCount(), $test->getStepCount());

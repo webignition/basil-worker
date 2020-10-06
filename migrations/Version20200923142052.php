@@ -19,14 +19,21 @@ final class Version20200923142052 extends AbstractMigration
         $this->addSql('
             CREATE TABLE test (
                 id SERIAL NOT NULL,
+                test_configuration_id INT NOT NULL,
                 state VARCHAR(255) NOT NULL,
                 source TEXT NOT NULL,
-                position INT NOT NULL,
-                manifest_path VARCHAR(255) NOT NULL,
+                target TEXT NOT NULL,
+                step_count INT NOT NULL,
                 PRIMARY KEY(id)
             )
         ');
-        $this->addSql('CREATE UNIQUE INDEX UNIQ_D87F7E0C462CE4F5 ON test (position)');
+        $this->addSql('CREATE INDEX IDX_D87F7E0C753B56F7 ON test (test_configuration_id)');
+        $this->addSql('
+            ALTER TABLE test 
+                ADD CONSTRAINT FK_D87F7E0C753B56F7
+                FOREIGN KEY (test_configuration_id)
+                REFERENCES test_configuration (id) NOT DEFERRABLE INITIALLY IMMEDIATE
+        ');
     }
 
     public function down(Schema $schema): void
