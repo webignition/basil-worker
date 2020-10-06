@@ -31,11 +31,6 @@ services:
     App\Services\CompilationWorkflowHandler:
         public: true
 
-    App\Services\SuiteManifestStore:
-        public: true
-        arguments:
-            $manifestDirectory: '%kernel.project_dir%/%env(MANIFEST_DIRECTORY)%'
-
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

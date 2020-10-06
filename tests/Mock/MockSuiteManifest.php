@@ -38,18 +38,4 @@ class MockSuiteManifest
 
         return $this;
     }
-
-    /**
-     * @param array<mixed> $data
-     *
-     * @return $this
-     */
-    public function withGetDataCall(array $data): self
-    {
-        $this->suiteManifest
-            ->shouldReceive('getData')
-            ->andReturn($data);
-
-        return $this;
-    }
 }
