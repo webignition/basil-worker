@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Yaml\Parser as YamlParser;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\OutputInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\TcpCliProxyClient\Client;
+use webignition\TcpCliProxyClient\HandlerFactory;
 
 class Compiler
 {
@@ -17,34 +17,39 @@ class Compiler
     private string $compilerSourceDirectory;
     private string $compilerTargetDirectory;
     private YamlParser $yamlParser;
+    private HandlerFactory $handlerFactory;
 
     public function __construct(
         Client $client,
         string $compilerSourceDirectory,
         string $compilerTargetDirectory,
-        YamlParser $yamlParser
+        YamlParser $yamlParser,
+        HandlerFactory $handlerFactory
     ) {
         $this->client = $client;
         $this->compilerTargetDirectory = $compilerTargetDirectory;
         $this->compilerSourceDirectory = $compilerSourceDirectory;
         $this->yamlParser = $yamlParser;
+        $this->handlerFactory = $handlerFactory;
     }
 
     public function compile(string $source): OutputInterface
     {
-        $output = new BufferedOutput();
-        $client = $this->client->withOutput($output);
+        $output = '';
+        $exitCode = null;
 
-        $client->request(sprintf(
-            './compiler --source=%s --target=%s',
-            $this->compilerSourceDirectory . '/' . $source,
-            $this->compilerTargetDirectory
-        ));
+        $handler = $this->handlerFactory->createWithScalarOutput($output, $exitCode);
 
-        $rawOutputLines = explode("\n", $output->fetch());
-        $exitCode = (int) array_pop($rawOutputLines);
-        $outputContent = trim(implode("\n", $rawOutputLines));
-        $outputData = $this->yamlParser->parse($outputContent);
+        $this->client->request(
+            sprintf(
+                './compiler --source=%s --target=%s',
+                $this->compilerSourceDirectory . '/' . $source,
+                $this->compilerTargetDirectory
+            ),
+            $handler
+        );
+
+        $outputData = $this->yamlParser->parse($output);
 
         if (0 === $exitCode) {
             return SuiteManifest::fromArray($outputData);

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "732529a713c28d203658c55b2b2b6186",
+    "content-hash": "9d060c1840675837f3cacf443a1d0507",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5097,21 +5097,20 @@
         },
         {
             "name": "webignition/tcp-cli-proxy-client",
-            "version": "0.8",
+            "version": "0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/tcp-cli-proxy-client.git",
-                "reference": "4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af"
+                "reference": "48881c1d0f5bb8941a188e5718ceda03ba8eb743"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/tcp-cli-proxy-client/zipball/4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af",
-                "reference": "4b1c6fd1d6d746d1c281ad9d62b65d80d39b44af",
+                "url": "https://api.github.com/repos/webignition/tcp-cli-proxy-client/zipball/48881c1d0f5bb8941a188e5718ceda03ba8eb743",
+                "reference": "48881c1d0f5bb8941a188e5718ceda03ba8eb743",
                 "shasum": ""
             },
             "require": {
                 "php": ">=7.4",
-                "symfony/console": "^5.1",
                 "webignition/error-handler": "^0.1.0"
             },
             "require-dev": {
@@ -5143,7 +5142,11 @@
                 }
             ],
             "homepage": "https://github.com/webignition/tcp-cli-proxy-client",
-            "time": "2020-09-01T15:57:04+00:00"
+            "support": {
+                "issues": "https://github.com/webignition/tcp-cli-proxy-client/issues",
+                "source": "https://github.com/webignition/tcp-cli-proxy-client/tree/0.11"
+            },
+            "time": "2020-10-06T16:45:56+00:00"
         },
         {
             "name": "webimpress/safe-writer",
@@ -9316,5 +9319,5 @@
         "ext-pdo_pgsql": "*"
     },
     "platform-dev": [],
-    "plugin-api-version": "1.1.0"
+    "plugin-api-version": "2.0.0"
 }
