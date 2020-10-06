@@ -19,9 +19,8 @@ class TestTest extends AbstractEntityTest
         $target = '/app/generated/Generated9bafa287f3df934f24c7855070da80f7.php';
         $stepCount = 3;
         $position = 1;
-        $manifestPath = 'manifests/manifest-test.yml';
 
-        $test = Test::create($configuration, $source, $target, $stepCount, $position, $manifestPath);
+        $test = Test::create($configuration, $source, $target, $stepCount, $position);
         self::assertNull($test->getId());
         self::assertSame($configuration, $test->getConfiguration());
         self::assertSame('awaiting', $test->getState());
@@ -29,7 +28,6 @@ class TestTest extends AbstractEntityTest
         self::assertSame($target, $test->getTarget());
         self::assertSame($stepCount, $test->getStepCount());
         self::assertSame($position, $test->getPosition());
-        self::assertSame($manifestPath, $test->getManifestPath());
 
         $this->entityManager->persist($test);
         $this->entityManager->flush();

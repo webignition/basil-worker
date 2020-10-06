@@ -54,18 +54,12 @@ class Test implements \JsonSerializable
      */
     private int $position;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=false)
-     */
-    private string $manifestPath;
-
     public static function create(
         TestConfiguration $configuration,
         string $source,
         string $target,
         int $stepCount,
-        int $position,
-        string $manifestPath
+        int $position
     ): self {
         $test = new Test();
         $test->configuration = $configuration;
@@ -74,7 +68,6 @@ class Test implements \JsonSerializable
         $test->target = $target;
         $test->stepCount = $stepCount;
         $test->position = $position;
-        $test->manifestPath = $manifestPath;
 
         return $test;
     }
@@ -117,11 +110,6 @@ class Test implements \JsonSerializable
     public function getPosition(): int
     {
         return $this->position;
-    }
-
-    public function getManifestPath(): string
-    {
-        return $this->manifestPath;
     }
 
     /**

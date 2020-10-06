@@ -83,13 +83,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
-                    );
+                    $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testApple.yml',
             ],
@@ -103,22 +97,8 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
-                    );
-
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testApple.yml',
-                        '',
-                        0,
-                        'manifests/manifest-apple.yml'
-                    );
+                    $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
+                    $testStore->create($testConfiguration, 'Test/testApple.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testBat.yml',
             ],
@@ -132,30 +112,9 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testZebra.yml',
-                        '',
-                        0,
-                        'manifests/manifest-zebra.yml'
-                    );
-
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testApple.yml',
-                        '',
-                        0,
-                        'manifests/manifest-apple.yml'
-                    );
-
-                    $testStore->create(
-                        $testConfiguration,
-                        'Test/testBat.yml',
-                        '',
-                        0,
-                        'manifests/manifest-bat.yml'
-                    );
+                    $testStore->create($testConfiguration, 'Test/testZebra.yml', '', 0);
+                    $testStore->create($testConfiguration, 'Test/testApple.yml', '', 0);
+                    $testStore->create($testConfiguration, 'Test/testBat.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => null,
             ],

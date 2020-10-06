@@ -142,16 +142,14 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
                         'generated/GeneratedTest1.php',
-                        3,
-                        'manifests/manifest-test1.yml'
+                        3
                     );
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test2.yml',
                         'generated/GeneratedTest2.php',
-                        2,
-                        'manifests/manifest-test2.yml'
+                        2
                     );
                 },
                 'expectedResponse' => new JsonResponse(
