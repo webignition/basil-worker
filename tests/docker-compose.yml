@@ -10,6 +10,12 @@ services:
     ports:
       - ${WORKER_COMPILER_EXPOSED_PORT}:8000
 
+  nginx:
+    image: nginx
+    container_name: ${WORKER_NGINX_CONTAINER_NAME}
+    volumes:
+      - ../tests/Fixtures/html:/usr/share/nginx/html
+
   chrome-runner:
     image: smartassert/chrome-runner:0.13
     container_name: ${WORKER_CHROME_RUNNER_CONTAINER_NAME}
