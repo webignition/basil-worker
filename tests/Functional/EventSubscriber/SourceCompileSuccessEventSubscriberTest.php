@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\MessageHandler;
+namespace App\Tests\Functional\EventSubscriber;
 
 use App\Event\SourceCompileSuccessEvent;
 use App\EventSubscriber\SourceCompileSuccessEventSubscriber;
