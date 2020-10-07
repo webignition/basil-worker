@@ -59,7 +59,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                         [
                             'config' => [
                                 'browser' => 'chrome',
-                                'url' => 'https://example.com/one'
+                                'url' => 'https://nginx/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test1.yml',
                             'target' =>
@@ -81,7 +81,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                         [
                             'config' => [
                                 'browser' => 'chrome',
-                                'url' => 'https://example.com/two'
+                                'url' => 'http://nginx/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test2.yml',
                             'target' =>
@@ -91,7 +91,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                         [
                             'config' => [
                                 'browser' => 'firefox',
-                                'url' => 'https://example.com/two'
+                                'url' => 'http://nginx/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test2.yml',
                             'target' =>

@@ -2,8 +2,8 @@ config:
   browsers:
     - chrome
     - firefox
-  url: https://example.com/two
+  url: http://nginx/index.html
 
 "verify page is open":
   assertions:
-    - $page.url is "https://example.com/two"
+    - $page.url is "http://nginx/index.html"
