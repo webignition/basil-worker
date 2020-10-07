@@ -176,6 +176,21 @@ class YamlDocumentFactoryTest extends TestCase
                     ),
                 ],
             ],
+            'newline at end of multi-link chunks is ignored' => [
+                'contentChunks' => [
+                    "---\n",
+                    "- item1\n- item2\n",
+                    "- item3\n",
+                    '...',
+                ],
+                'expectedDocuments' => [
+                    new Document(
+                        '- item1' . "\n" .
+                        '- item2' . "\n" .
+                        '- item3' . "\n"
+                    ),
+                ],
+            ],
         ];
     }
 }

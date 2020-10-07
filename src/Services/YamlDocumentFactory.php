@@ -34,6 +34,8 @@ class YamlDocumentFactory
 
     public function process(string $content): void
     {
+        $content = rtrim($content, "\n");
+
         $lines = explode("\n", $content);
 
         foreach ($lines as $line) {
