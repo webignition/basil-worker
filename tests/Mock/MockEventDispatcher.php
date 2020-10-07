@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Mock;
 
 use Mockery\MockInterface;
+use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
@@ -29,7 +30,12 @@ class MockEventDispatcher
     {
         $this->eventDispatcher
             ->shouldReceive('dispatch')
-            ->andReturn($event, $name);
+            ->withArgs(function (Event $passedEvent, string $passedName) use ($event, $name) {
+                TestCase::assertEquals($event, $passedEvent);
+                TestCase::assertSame($name, $passedName);
+
+                return true;
+            });
 
         return $this;
     }
