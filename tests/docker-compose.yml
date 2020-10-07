@@ -12,13 +12,13 @@ services:
 
   chrome-runner:
     image: smartassert/chrome-runner:0.13
-    container_name: test-chrome-runner-container
+    container_name: ${WORKER_CHROME_RUNNER_CONTAINER_NAME}
     volumes:
       - ../tests/build/tests:/app/tests
 
   firefox-runner:
     image: smartassert/firefox-runner:0.13
-    container_name: test-firefox-runner-container
+    container_name: ${WORKER_FIREFOX_RUNNER_CONTAINER_NAME}
     volumes:
       - ../tests/build/tests:/app/tests
 

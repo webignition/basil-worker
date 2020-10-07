@@ -18,10 +18,14 @@ env:
     - WORKER_COMPILER_SOURCE_PATH=/app/source
     - WORKER_COMPILER_TARGET_PATH=/app/tests
     - WORKER_COMPILER_EXPOSED_PORT=9000
+    - WORKER_CHROME_RUNNER_CONTAINER_NAME=test-chrome-runner-container
+    - WORKER_FIREFOX_RUNNER_CONTAINER_NAME=test-firefox-runner-container
+    - WORKER_DELEGATOR_CONTAINER_NAME=test-delegator-container
+    - WOREKR_DELEGATOR_EXPOSED_PORT=9001
     - WORKER_RABBITMQ_CONTAINER_NAME=rabbitmq
     - WORKER_RABBITMQ_USER=guest
     - WORKER_RABBITMQ_PASS=guest
-    - WORKER_RABBITMQ_EXPOSED_PORT=9001
+    - WORKER_RABBITMQ_EXPOSED_PORT=9002
 
 before_install:
   - sudo apt-get install php-amqp
