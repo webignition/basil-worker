@@ -47,11 +47,11 @@ class CompilerTest extends AbstractBaseFunctionalTest
     public function compileSuccessDataProvider(): array
     {
         return [
-            'Test/test1.yml: single-browser test' => [
-                'source' => 'Test/test1.yml',
+            'Test/chrome-open-index.yml: single-browser test' => [
+                'source' => 'Test/chrome-open-index.yml',
                 'expectedSuiteManifestData' => [
                     'config' => [
-                        'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test1.yml',
+                        'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-open-index.yml',
                         'target' => '{{ COMPILER_TARGET_DIRECTORY }}',
                         'base-class' => 'webignition\BaseBasilTestCase\AbstractBaseTest',
                     ],
@@ -61,19 +61,19 @@ class CompilerTest extends AbstractBaseFunctionalTest
                                 'browser' => 'chrome',
                                 'url' => 'https://nginx/index.html'
                             ],
-                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test1.yml',
+                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated5df1c36cfefe3387cc7e41c16c1fd271Test.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated20a684f0e0c3561fcf627ccef9cd1d93Test.php',
                             'step_count' => 1,
                         ],
                     ],
                 ],
             ],
-            'Test/test2.yml: multiple-browser test' => [
-                'source' => 'Test/test2.yml',
+            'Test/chrome-firefox-open-index.yml: multiple-browser test' => [
+                'source' => 'Test/chrome-firefox-open-index.yml',
                 'expectedSuiteManifestData' => [
                     'config' => [
-                        'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test2.yml',
+                        'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                         'target' => '{{ COMPILER_TARGET_DIRECTORY }}',
                         'base-class' => 'webignition\BaseBasilTestCase\AbstractBaseTest',
                     ],
@@ -83,9 +83,9 @@ class CompilerTest extends AbstractBaseFunctionalTest
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx/index.html'
                             ],
-                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test2.yml',
+                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated78ad6cae3af220a62ce5fac7ccb74e15Test.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/GeneratedD4f678300db2a05515c2d7f37bf371e6Test.php',
                             'step_count' => 1,
                         ],
                         [
@@ -93,9 +93,9 @@ class CompilerTest extends AbstractBaseFunctionalTest
                                 'browser' => 'firefox',
                                 'url' => 'http://nginx/index.html'
                             ],
-                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/test2.yml',
+                            'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated5694195947f5c4a0d3044512e8ac9b0dTest.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated1acff01f6f61ee1997b72f934fbd3111Test.php',
                             'step_count' => 1,
                         ],
                     ],

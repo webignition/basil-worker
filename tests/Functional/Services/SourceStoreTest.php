@@ -64,9 +64,9 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
     {
         return [
             'default' => [
-                'uploadedFileFixturePath' => 'Test/test1.yml',
-                'relativePath' => 'Test/test1.yml',
-                'expectedFile' => new File(getcwd() . '/var/basil/Test/test1.yml', false),
+                'uploadedFileFixturePath' => 'Test/chrome-open-index.yml',
+                'relativePath' => 'Test/chrome-open-index.yml',
+                'expectedFile' => new File(getcwd() . '/var/basil/Test/chrome-open-index.yml', false),
             ],
         ];
     }

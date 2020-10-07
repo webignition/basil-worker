@@ -19,9 +19,9 @@ use Symfony\Component\HttpFoundation\Response;
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 {
     private const EXPECTED_SOURCES = [
-        'Test/test1.yml',
-        'Test/test2.yml',
-        'Test/test3.yml',
+        'Test/chrome-open-index.yml',
+        'Test/chrome-firefox-open-index.yml',
+        'Test/chrome-open-form.yml',
     ];
 
     private BasilFixtureHandler $basilFixtureHandler;
