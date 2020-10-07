@@ -8,6 +8,7 @@ use App\Services\Compiler;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
+use webignition\TcpCliProxyClient\Client;
 
 class CompilerTest extends AbstractBaseFunctionalTest
 {
@@ -186,5 +187,18 @@ class CompilerTest extends AbstractBaseFunctionalTest
         }
 
         return $data;
+    }
+
+    protected function tearDown(): void
+    {
+        $compilerClient = self::$container->get('app.services.compiler-client');
+        self::assertInstanceOf(Client::class, $compilerClient);
+
+        $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
+
+        $request = 'rm ' . $compilerTargetDirectory . '/*.php';
+        $compilerClient->request($request);
+
+        parent::tearDown();
     }
 }
