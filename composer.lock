@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d060c1840675837f3cacf443a1d0507",
+    "content-hash": "9600a2c054f78c6cefddeafc5d63a32f",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5147,6 +5147,55 @@
                 "source": "https://github.com/webignition/tcp-cli-proxy-client/tree/0.11"
             },
             "time": "2020-10-06T16:45:56+00:00"
+        },
+        {
+            "name": "webignition/yaml-document",
+            "version": "0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/yaml-document.git",
+                "reference": "3c8c61722f91837292cac9cf744d348865f9fbf9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/yaml-document/zipball/3c8c61722f91837292cac9cf744d348865f9fbf9",
+                "reference": "3c8c61722f91837292cac9cf744d348865f9fbf9",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4",
+                "symfony/yaml": "^5.1"
+            },
+            "require-dev": {
+                "phpstan/extension-installer": "~1.0",
+                "phpstan/phpstan": "~0.12",
+                "phpunit/phpunit": "~9.4",
+                "squizlabs/php_codesniffer": "~3.5",
+                "symplify/easy-coding-standard": "~8.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\YamlDocument\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "g",
+            "homepage": "https://github.com/webignition/yaml-document",
+            "support": {
+                "issues": "https://github.com/webignition/yaml-document/issues",
+                "source": "https://github.com/webignition/yaml-document/tree/0.1"
+            },
+            "time": "2020-10-07T14:22:27+00:00"
         },
         {
             "name": "webimpress/safe-writer",

@@ -545,6 +545,9 @@
     "webignition/tcp-cli-proxy-client": {
         "version": "0.8"
     },
+    "webignition/yaml-document": {
+        "version": "0.1"
+    },
     "webimpress/safe-writer": {
         "version": "2.1.0"
     },
