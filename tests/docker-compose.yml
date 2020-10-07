@@ -10,6 +10,29 @@ services:
     ports:
       - ${WORKER_COMPILER_EXPOSED_PORT}:8000
 
+  chrome-runner:
+    image: smartassert/chrome-runner:0.13
+    container_name: test-chrome-runner-container
+    volumes:
+      - ../tests/build/tests:/app/tests
+
+  firefox-runner:
+    image: smartassert/firefox-runner:0.13
+    container_name: test-firefox-runner-container
+    volumes:
+      - ../tests/build/tests:/app/tests
+
+  delegator:
+    image: smartassert/basil-runner-delegator:0.4
+    container_name: ${WORKER_DELEGATOR_CONTAINER_NAME}
+    environment:
+      CHROME_RUNNER_HOST: chrome-runner
+      CHROME_RUNNER_PORT: 8000
+      FIREFOX_RUNNER_HOST: firefox-runner
+      FIREFOX_RUNNER_PORT: 8000
+    ports:
+      - ${WORKER_DELEGATOR_EXPOSED_PORT}:8000
+
   rabbitmq:
     image: rabbitmq:3
     container_name: ${WORKER_RABBITMQ_CONTAINER_NAME}
