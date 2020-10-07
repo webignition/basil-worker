@@ -59,7 +59,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                         [
                             'config' => [
                                 'browser' => 'chrome',
-                                'url' => 'https://nginx/index.html'
+                                'url' => 'http://nginx/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-open-index.yml',
                             'target' =>
