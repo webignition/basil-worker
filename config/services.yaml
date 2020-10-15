@@ -60,3 +60,14 @@ services:
 
     webignition\TcpCliProxyClient\HandlerFactory:
         class: webignition\TcpCliProxyClient\HandlerFactory
+
+    app.services.delegator-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(DELEGATOR_HOST)%'
+            $port: '%env(DELEGATOR_PORT)%'
+
+    App\Services\TestExecutor:
+        arguments:
+            $delegatorClient: '@app.services.delegator-client'

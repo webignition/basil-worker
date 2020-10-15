@@ -18,8 +18,7 @@ class YamlDocumentFactory
     public function __construct()
     {
         $this->currentDocument = new Document();
-        $this->onDocumentCreated = function (Document $document) {
-        };
+        $this->resetOnDocumentCreated();
     }
 
     public function setOnDocumentCreated(callable $onDocumentCreated): void
@@ -30,6 +29,12 @@ class YamlDocumentFactory
     public function start(): void
     {
         $this->currentDocument = new Document();
+    }
+
+    public function resetOnDocumentCreated(): void
+    {
+        $this->onDocumentCreated = function (Document $document) {
+        };
     }
 
     public function process(string $content): void
