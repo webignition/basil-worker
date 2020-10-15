@@ -63,7 +63,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated20a684f0e0c3561fcf627ccef9cd1d93Test.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated2380721d052389cf928f39ac198a41baTest.php',
                             'step_count' => 1,
                         ],
                     ],
@@ -85,7 +85,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/GeneratedD4f678300db2a05515c2d7f37bf371e6Test.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated45ead8003cb8ba3fa966dc1ad5a91372Test.php',
                             'step_count' => 1,
                         ],
                         [
@@ -95,7 +95,7 @@ class CompilerTest extends AbstractBaseFunctionalTest
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>
-                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated1acff01f6f61ee1997b72f934fbd3111Test.php',
+                                '{{ COMPILER_TARGET_DIRECTORY }}/Generated88b4291e887760b0fe2eec8891356665Test.php',
                             'step_count' => 1,
                         ],
                     ],
