@@ -37,7 +37,7 @@ class TestExecutor
                 }
             });
 
-        $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) use (&$documents) {
+        $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) {
             $this->eventDispatcher->dispatch(
                 new TestExecuteDocumentReceivedEvent($document),
                 TestExecuteDocumentReceivedEvent::NAME

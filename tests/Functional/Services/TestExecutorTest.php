@@ -47,9 +47,6 @@ class TestExecutorTest extends AbstractBaseFunctionalTest
 
     /**
      * @dataProvider executeSuccessDataProvider
-     *
-     * @param string $source
-     * @param array<mixed> $expectedSuiteManifestData
      */
     public function testExecute(string $source, EventDispatcherInterface $eventDispatcher)
     {
