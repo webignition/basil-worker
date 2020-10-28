@@ -12,7 +12,6 @@ use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
-use Symfony\Contracts\EventDispatcher\Event;
 use webignition\YamlDocument\Document;
 
 class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctionalTest
@@ -22,7 +21,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     private TestExecuteDocumentReceivedEventSubscriber $eventSubscriber;
     private InMemoryTransport $messengerTransport;
     private Document $document;
-    private Event $event;
+    private TestExecuteDocumentReceivedEvent $event;
 
     protected function setUp(): void
     {
