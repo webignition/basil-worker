@@ -21,8 +21,10 @@
         "symfony/messenger": "5.1.*",
         "symfony/yaml": "5.1.*",
         "webignition/basil-compiler-models": "^0.14.0",
+        "webignition/basil-runner-documents": "^0.2.0",
         "webignition/tcp-cli-proxy-client": "^0.11.0",
-        "webignition/yaml-document": "^0.1.0"
+        "webignition/yaml-document": "^0.1.0",
+        "webignition/yaml-document-generator": "^0.2.0"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^6.3",

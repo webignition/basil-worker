@@ -16,6 +16,8 @@ use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
 use App\Tests\Mock\Services\MockJobStore;
+use App\Tests\Model\ExpectedDispatchedEvent;
+use App\Tests\Model\ExpectedDispatchedEventCollection;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\TestManifest;
@@ -115,10 +117,12 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         );
 
         $eventDispatcher = (new MockEventDispatcher())
-            ->withDispatchCall(
-                new SourceCompileSuccessEvent('Test/test1.yml', $suiteManifest),
-                SourceCompileSuccessEvent::NAME
-            )
+            ->withDispatchCalls(new ExpectedDispatchedEventCollection([
+                new ExpectedDispatchedEvent(
+                    new SourceCompileSuccessEvent('Test/test1.yml', $suiteManifest),
+                    SourceCompileSuccessEvent::NAME
+                )
+            ]))
             ->getMock();
 
         ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);
@@ -147,10 +151,12 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         );
 
         $eventDispatcher = (new MockEventDispatcher())
-            ->withDispatchCall(
-                new SourceCompileFailureEvent('Test/test1.yml', $errorOutput),
-                SourceCompileFailureEvent::NAME
-            )
+            ->withDispatchCalls(new ExpectedDispatchedEventCollection([
+                new ExpectedDispatchedEvent(
+                    new SourceCompileFailureEvent('Test/test1.yml', $errorOutput),
+                    SourceCompileFailureEvent::NAME
+                )
+            ]))
             ->getMock();
 
         ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);

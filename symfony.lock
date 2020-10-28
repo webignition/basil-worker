@@ -536,6 +536,9 @@
     "webignition/basil-models": {
         "version": "0.57"
     },
+    "webignition/basil-runner-documents": {
+        "version": "0.2"
+    },
     "webignition/error-handler": {
         "version": "0.1"
     },
@@ -547,6 +550,9 @@
     },
     "webignition/yaml-document": {
         "version": "0.1"
+    },
+    "webignition/yaml-document-generator": {
+        "version": "0.2"
     },
     "webimpress/safe-writer": {
         "version": "2.1.0"

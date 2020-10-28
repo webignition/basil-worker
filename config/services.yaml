@@ -71,3 +71,6 @@ services:
     App\Services\TestExecutor:
         arguments:
             $delegatorClient: '@app.services.delegator-client'
+
+    webignition\YamlDocumentGenerator\YamlGenerator:
+        class: webignition\YamlDocumentGenerator\YamlGenerator

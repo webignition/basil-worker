@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock;
 
+use App\Tests\Model\ExpectedDispatchedEvent;
+use App\Tests\Model\ExpectedDispatchedEventCollection;
 use Mockery\MockInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -26,15 +28,23 @@ class MockEventDispatcher
         return $this->eventDispatcher;
     }
 
-    public function withDispatchCall(Event $event, string $name): self
+    public function withDispatchCalls(ExpectedDispatchedEventCollection $expectedDispatchedEvents): self
     {
         $this->eventDispatcher
             ->shouldReceive('dispatch')
-            ->withArgs(function (Event $passedEvent, string $passedName) use ($event, $name) {
-                TestCase::assertEquals($event, $passedEvent);
-                TestCase::assertSame($name, $passedName);
+            ->withArgs(function (Event $passedEvent, string $passedName) use ($expectedDispatchedEvents) {
+                static $dispatchCallIndex = 0;
 
-                return true;
+                $expectedDispatchedEvent = $expectedDispatchedEvents[$dispatchCallIndex];
+
+                if ($expectedDispatchedEvent instanceof ExpectedDispatchedEvent) {
+                    TestCase::assertEquals($expectedDispatchedEvent->getEvent(), $passedEvent);
+                    TestCase::assertSame($expectedDispatchedEvent->getName(), $passedName);
+                }
+
+                $dispatchCallIndex++;
+
+                return $expectedDispatchedEvent instanceof ExpectedDispatchedEvent;
             });
 
         return $this;
