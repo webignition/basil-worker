@@ -25,6 +25,11 @@ class JobStateMutator
         $this->set(Job::STATE_COMPILATION_FAILED);
     }
 
+    public function setExecutionRunning(): void
+    {
+        $this->set(Job::STATE_EXECUTION_RUNNING);
+    }
+
     private function set(string $state): void
     {
         if ($this->jobStore->hasJob()) {

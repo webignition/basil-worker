@@ -39,6 +39,9 @@ services:
         arguments:
             $delegatorClient: '@app.services.delegator-client'
 
+    App\MessageHandler\ExecuteTestHandler:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
