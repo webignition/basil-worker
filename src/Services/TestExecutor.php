@@ -46,13 +46,16 @@ class TestExecutor
         $runnerTestString = $this->yamlGenerator->generate($runnerTest);
 
         $this->eventDispatcher->dispatch(
-            new TestExecuteDocumentReceivedEvent(new Document($runnerTestString)),
+            new TestExecuteDocumentReceivedEvent(
+                $test,
+                new Document($runnerTestString)
+            ),
             TestExecuteDocumentReceivedEvent::NAME
         );
 
-        $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) {
+        $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) use ($test) {
             $this->eventDispatcher->dispatch(
-                new TestExecuteDocumentReceivedEvent($document),
+                new TestExecuteDocumentReceivedEvent($test, $document),
                 TestExecuteDocumentReceivedEvent::NAME
             );
         });

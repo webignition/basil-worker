@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
@@ -12,7 +13,6 @@ use App\Tests\Functional\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\TcpCliProxyClient\Client;
@@ -49,12 +49,40 @@ class TestExecutorTest extends AbstractBaseFunctionalTest
 
     /**
      * @dataProvider executeSuccessDataProvider
+     *
+     * @param string $source
+     * @param array<int, Document[]> $expectedDispatchedEventDocumentsPerTest
      */
-    public function testExecute(string $source, EventDispatcherInterface $eventDispatcher)
+    public function testExecute(string $source, array $expectedDispatchedEventDocumentsPerTest)
     {
         /** @var SuiteManifest $suiteManifest */
         $suiteManifest = $this->compiler->compile($source);
         self::assertInstanceOf(SuiteManifest::class, $suiteManifest);
+
+        /** @var Test[] */
+        $tests = [];
+        foreach ($suiteManifest->getTestManifests() as $testManifest) {
+            $tests[] = $this->testStore->createFromTestManifest($testManifest);
+        }
+
+        $expectedDispatchedEvents = [];
+        foreach ($tests as $testIndex => $test) {
+            $expectedDispatchedEventDocuments = $expectedDispatchedEventDocumentsPerTest[$testIndex] ?? [];
+
+            foreach ($expectedDispatchedEventDocuments as $expectedDispatchedEventDocument) {
+                $expectedDispatchedEvents[] = new ExpectedDispatchedEvent(
+                    new TestExecuteDocumentReceivedEvent(
+                        $test,
+                        $expectedDispatchedEventDocument
+                    ),
+                    TestExecuteDocumentReceivedEvent::NAME
+                );
+            }
+        }
+
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withDispatchCalls(new ExpectedDispatchedEventCollection($expectedDispatchedEvents))
+            ->getMock();
 
         ObjectReflector::setProperty(
             $this->testExecutor,
@@ -63,111 +91,112 @@ class TestExecutorTest extends AbstractBaseFunctionalTest
             $eventDispatcher
         );
 
-        foreach ($suiteManifest->getTestManifests() as $testManifest) {
-            $test = $this->testStore->createFromTestManifest($testManifest);
+        foreach ($tests as $test) {
             $this->testExecutor->execute($test);
         }
     }
 
     public function executeSuccessDataProvider(): array
     {
-        $expectedVerifyPageIsOpenStepDispatchedEvent = new ExpectedDispatchedEvent(
-            new TestExecuteDocumentReceivedEvent(
-                new Document(
-                    'type: step' . "\n" .
-                    'name: \'verify page is open\'' . "\n" .
-                    'status: passed' . "\n" .
-                    'statements:' . "\n" .
-                    '  -' . "\n" .
-                    '    type: assertion' . "\n" .
-                    '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
-                    '    status: passed' . "\n"
-                )
-            ),
-            TestExecuteDocumentReceivedEvent::NAME
-        );
-
         return [
             'Test/chrome-open-index.yml: single-browser test (chrome)' => [
                 'source' => 'Test/chrome-open-index.yml',
-                'eventDispatcher' => (new MockEventDispatcher())
-                    ->withDispatchCalls(new ExpectedDispatchedEventCollection([
-                        new ExpectedDispatchedEvent(
-                            new TestExecuteDocumentReceivedEvent(
-                                new Document(
-                                    '---' . "\n" .
-                                    'type: test' . "\n" .
-                                    'path: /app/source/Test/chrome-open-index.yml' . "\n" .
-                                    'config:' . "\n" .
-                                    '  browser: chrome' . "\n" .
-                                    '  url: \'http://nginx/index.html\'' . "\n" .
-                                    '...' . "\n"
-                                )
-                            ),
-                            TestExecuteDocumentReceivedEvent::NAME
+                'expectedDispatchedEventDocumentsPerTest' => [
+                    [
+                        new Document(
+                            '---' . "\n" .
+                            'type: test' . "\n" .
+                            'path: /app/source/Test/chrome-open-index.yml' . "\n" .
+                            'config:' . "\n" .
+                            '  browser: chrome' . "\n" .
+                            '  url: \'http://nginx/index.html\'' . "\n" .
+                            '...' . "\n"
                         ),
-                        $expectedVerifyPageIsOpenStepDispatchedEvent,
-                    ]))
-                    ->getMock(),
+                        new Document(
+                            'type: step' . "\n" .
+                            'name: \'verify page is open\'' . "\n" .
+                            'status: passed' . "\n" .
+                            'statements:' . "\n" .
+                            '  -' . "\n" .
+                            '    type: assertion' . "\n" .
+                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    status: passed' . "\n"
+                        ),
+                    ],
+                ],
             ],
             'Test/chrome-open-index.yml: single-browser test (firefox)' => [
                 'source' => 'Test/firefox-open-index.yml',
-                'eventDispatcher' => (new MockEventDispatcher())
-                    ->withDispatchCalls(new ExpectedDispatchedEventCollection([
-                        new ExpectedDispatchedEvent(
-                            new TestExecuteDocumentReceivedEvent(
-                                new Document(
-                                    '---' . "\n" .
-                                    'type: test' . "\n" .
-                                    'path: /app/source/Test/firefox-open-index.yml' . "\n" .
-                                    'config:' . "\n" .
-                                    '  browser: firefox' . "\n" .
-                                    '  url: \'http://nginx/index.html\'' . "\n" .
-                                    '...' . "\n"
-                                )
-                            ),
-                            TestExecuteDocumentReceivedEvent::NAME
+                'expectedDispatchedEventDocuments' => [
+                    [
+                        new Document(
+                            '---' . "\n" .
+                            'type: test' . "\n" .
+                            'path: /app/source/Test/firefox-open-index.yml' . "\n" .
+                            'config:' . "\n" .
+                            '  browser: firefox' . "\n" .
+                            '  url: \'http://nginx/index.html\'' . "\n" .
+                            '...' . "\n"
                         ),
-                        $expectedVerifyPageIsOpenStepDispatchedEvent,
-                    ]))
-                    ->getMock(),
+                        new Document(
+                            'type: step' . "\n" .
+                            'name: \'verify page is open\'' . "\n" .
+                            'status: passed' . "\n" .
+                            'statements:' . "\n" .
+                            '  -' . "\n" .
+                            '    type: assertion' . "\n" .
+                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    status: passed' . "\n"
+                        ),
+                    ],
+                ],
             ],
             'Test/chrome-firefox-open-index.yml: multi-browser test' => [
                 'source' => 'Test/chrome-firefox-open-index.yml',
-                'eventDispatcher' => (new MockEventDispatcher())
-                    ->withDispatchCalls(new ExpectedDispatchedEventCollection([
-                        new ExpectedDispatchedEvent(
-                            new TestExecuteDocumentReceivedEvent(
-                                new Document(
-                                    '---' . "\n" .
-                                    'type: test' . "\n" .
-                                    'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
-                                    'config:' . "\n" .
-                                    '  browser: chrome' . "\n" .
-                                    '  url: \'http://nginx/index.html\'' . "\n" .
-                                    '...' . "\n"
-                                )
-                            ),
-                            TestExecuteDocumentReceivedEvent::NAME
+                'expectedDispatchedEventDocuments' => [
+                    [
+                        new Document(
+                            '---' . "\n" .
+                            'type: test' . "\n" .
+                            'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
+                            'config:' . "\n" .
+                            '  browser: chrome' . "\n" .
+                            '  url: \'http://nginx/index.html\'' . "\n" .
+                            '...' . "\n"
                         ),
-                        $expectedVerifyPageIsOpenStepDispatchedEvent,
-                        new ExpectedDispatchedEvent(
-                            new TestExecuteDocumentReceivedEvent(
-                                new Document(
-                                    '---' . "\n" .
-                                    'type: test' . "\n" .
-                                    'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
-                                    'config:' . "\n" .
-                                    '  browser: firefox' . "\n" .
-                                    '  url: \'http://nginx/index.html\'' . "\n" .
-                                    '...' . "\n"
-                                )
-                            ),
-                            TestExecuteDocumentReceivedEvent::NAME
+                        new Document(
+                            'type: step' . "\n" .
+                            'name: \'verify page is open\'' . "\n" .
+                            'status: passed' . "\n" .
+                            'statements:' . "\n" .
+                            '  -' . "\n" .
+                            '    type: assertion' . "\n" .
+                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    status: passed' . "\n"
                         ),
-                        $expectedVerifyPageIsOpenStepDispatchedEvent,
-                    ]))
-                    ->getMock(),
+                    ],
+                    [
+                        new Document(
+                            '---' . "\n" .
+                            'type: test' . "\n" .
+                            'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
+                            'config:' . "\n" .
+                            '  browser: firefox' . "\n" .
+                            '  url: \'http://nginx/index.html\'' . "\n" .
+                            '...' . "\n"
+                        ),
+                        new Document(
+                            'type: step' . "\n" .
+                            'name: \'verify page is open\'' . "\n" .
+                            'status: passed' . "\n" .
+                            'statements:' . "\n" .
+                            '  -' . "\n" .
+                            '    type: assertion' . "\n" .
+                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    status: passed' . "\n"
+                        ),
+                    ],
+                ],
             ],
         ];
     }

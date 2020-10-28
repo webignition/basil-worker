@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\EventSubscriber;
 
+use App\Entity\TestConfiguration;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\EventSubscriber\TestExecuteDocumentReceivedEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\ExecuteDocumentReceived;
+use App\Services\JobStore;
+use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -27,6 +30,21 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     {
         parent::setUp();
 
+        $jobStore = self::$container->get(JobStore::class);
+        self::assertInstanceOf(JobStore::class, $jobStore);
+
+        $jobStore->create('label content', 'http://example.com/callback');
+
+        $testStore = self::$container->get(TestStore::class);
+        self::assertInstanceOf(TestStore::class, $testStore);
+
+        $test = $testStore->create(
+            TestConfiguration::create('chrome', 'http://example.com'),
+            '/tests/test1.yml',
+            '/generated/GeneratedTest1.php',
+            1
+        );
+
         $eventSubscriber = self::$container->get(TestExecuteDocumentReceivedEventSubscriber::class);
         if ($eventSubscriber instanceof TestExecuteDocumentReceivedEventSubscriber) {
             $this->eventSubscriber = $eventSubscriber;
@@ -45,7 +63,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
                 'key2' => 'value2',
             ]);
 
-        $this->event = new TestExecuteDocumentReceivedEvent($this->document);
+        $this->event = new TestExecuteDocumentReceivedEvent($test, $this->document);
     }
 
     public function testDispatchSendCallbackMessage()
