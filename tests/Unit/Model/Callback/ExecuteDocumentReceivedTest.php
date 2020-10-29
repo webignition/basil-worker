@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Model\Callback;
 
 use App\Model\Callback\ExecuteDocumentReceived;
+use App\Tests\Mock\MockYamlDocument;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
-use webignition\YamlDocument\Document;
 
 class ExecuteDocumentReceivedTest extends TestCase
 {
@@ -15,7 +15,7 @@ class ExecuteDocumentReceivedTest extends TestCase
 
     public function testGetType()
     {
-        $callback = new ExecuteDocumentReceived(\Mockery::mock(Document::class));
+        $callback = new ExecuteDocumentReceived((new MockYamlDocument())->getMock());
 
         self::assertSame(ExecuteDocumentReceived::TYPE, $callback->getType());
     }
@@ -38,17 +38,13 @@ class ExecuteDocumentReceivedTest extends TestCase
             'key2' => 'value2',
         ];
 
-        $arrayDocument = \Mockery::mock(Document::class);
-        $arrayDocument
-            ->shouldReceive('parse')
-            ->withNoArgs()
-            ->andReturn($data);
+        $arrayDocument = (new MockYamlDocument())
+            ->withParseCall($data)
+            ->getMock();
 
-        $nonArrayDocument = \Mockery::mock(Document::class);
-        $nonArrayDocument
-            ->shouldReceive('parse')
-            ->withNoArgs()
-            ->andReturn('string');
+        $nonArrayDocument = (new MockYamlDocument())
+            ->withParseCall('string')
+            ->getMock();
 
         return [
             'document is an array' => [

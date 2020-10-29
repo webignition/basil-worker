@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\EventSubscriber;
 
+use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\EventSubscriber\TestExecuteDocumentReceivedEventSubscriber;
@@ -12,6 +13,7 @@ use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\Mock\MockYamlDocument;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -23,8 +25,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
     private TestExecuteDocumentReceivedEventSubscriber $eventSubscriber;
     private InMemoryTransport $messengerTransport;
-    private Document $document;
-    private TestExecuteDocumentReceivedEvent $event;
+    private Test $test;
 
     protected function setUp(): void
     {
@@ -38,7 +39,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         $testStore = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $testStore);
 
-        $test = $testStore->create(
+        $this->test = $testStore->create(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/tests/test1.yml',
             '/generated/GeneratedTest1.php',
@@ -54,35 +55,112 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         if ($messengerTransport instanceof InMemoryTransport) {
             $this->messengerTransport = $messengerTransport;
         }
-
-        $this->document = \Mockery::mock(Document::class);
-        $this->document
-            ->shouldReceive('parse')
-            ->andReturn([
-                'key1' => 'value1',
-                'key2' => 'value2',
-            ]);
-
-        $this->event = new TestExecuteDocumentReceivedEvent($test, $this->document);
     }
 
     public function testDispatchSendCallbackMessage()
     {
-        $this->eventSubscriber->dispatchSendCallbackMessage($this->event);
+        $document = (new MockYamlDocument())->getMock();
+        $event = $this->createEvent($document);
 
-        $this->assertMessageTransportQueue($this->document);
+        $this->eventSubscriber->dispatchSendCallbackMessage($event);
+
+        $this->assertMessageTransportQueue($document);
     }
 
-    public function testIntegration()
+    /**
+     * @dataProvider setTestStateToFailedIfFailedDataProvider
+     */
+    public function testSetTestStateToFailedIfFailed(Document $document, string $expectedTestState)
     {
+        self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
+
+        $event = $this->createEvent($document);
+        $this->eventSubscriber->setTestStateToFailedIfFailed($event);
+
+        self::assertSame($expectedTestState, $this->test->getState());
+    }
+
+    public function setTestStateToFailedIfFailedDataProvider(): array
+    {
+        return [
+            'not a step document' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'test',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_AWAITING,
+            ],
+            'step status passed' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'step',
+                        'status' => 'passed',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_AWAITING,
+            ],
+            'step status failed' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'step',
+                        'status' => 'failed',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_FAILED,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider integrationDataProvider
+     */
+    public function testIntegration(Document $document, string $expectedTestState)
+    {
+        self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
         self::assertCount(0, $this->messengerTransport->get());
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
         if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $eventDispatcher->dispatch($this->event, TestExecuteDocumentReceivedEvent::NAME);
+            $event = $this->createEvent($document);
+
+            $eventDispatcher->dispatch($event, TestExecuteDocumentReceivedEvent::NAME);
         }
 
-        $this->assertMessageTransportQueue($this->document);
+        $this->assertMessageTransportQueue($document);
+        self::assertSame($expectedTestState, $this->test->getState());
+    }
+
+    public function integrationDataProvider(): array
+    {
+        return [
+            'not a step document' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'test',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_AWAITING,
+            ],
+            'step status passed' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'step',
+                        'status' => 'passed',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_AWAITING,
+            ],
+            'step status failed' => [
+                'document' => (new MockYamlDocument())
+                    ->withParseCall([
+                        'type' => 'step',
+                        'status' => 'failed',
+                    ])
+                    ->getMock(),
+                'expectedTestState' => Test::STATE_FAILED,
+            ],
+        ];
     }
 
     private function assertMessageTransportQueue(Document $document): void
@@ -95,5 +173,10 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         $expectedQueuedMessage = new SendCallback($expectedCallback);
 
         self::assertEquals($expectedQueuedMessage, $queue[0]->getMessage());
+    }
+
+    private function createEvent(Document $document): TestExecuteDocumentReceivedEvent
+    {
+        return new TestExecuteDocumentReceivedEvent($this->test, $document);
     }
 }
