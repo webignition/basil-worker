@@ -62,6 +62,9 @@ class ExecuteTestHandler implements MessageHandlerInterface
 
         $this->testExecutor->execute($test);
 
+        $test->setState(Test::STATE_COMPLETE);
+        $this->testStore->store($test);
+
         // @todo: execute next test #225
     }
 }
