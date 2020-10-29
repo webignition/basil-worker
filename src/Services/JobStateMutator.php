@@ -25,6 +25,11 @@ class JobStateMutator
         $this->set(Job::STATE_COMPILATION_FAILED);
     }
 
+    public function setExecutionAwaiting(): void
+    {
+        $this->set(Job::STATE_EXECUTION_AWAITING);
+    }
+
     public function setExecutionRunning(): void
     {
         $this->set(Job::STATE_EXECUTION_RUNNING);

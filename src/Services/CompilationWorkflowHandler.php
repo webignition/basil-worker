@@ -27,4 +27,10 @@ class CompilationWorkflowHandler
             $this->messageBus->dispatch($message);
         }
     }
+
+
+    public function isComplete(): bool
+    {
+        return false === is_string($this->jobSourceFinder->findNextNonCompiledSource());
+    }
 }
