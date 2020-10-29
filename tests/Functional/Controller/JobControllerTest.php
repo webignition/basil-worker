@@ -111,7 +111,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         'Test/test2.yml',
                         'Test/test3.yml',
                     ]);
-                    $jobStore->store();
+                    $jobStore->store($job);
                 },
                 'expectedResponse' => new JsonResponse(
                     [
@@ -136,7 +136,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         'Test/test2.yml',
                         'Test/test3.yml',
                     ]);
-                    $jobStore->store();
+                    $jobStore->store($job);
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),

@@ -39,7 +39,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(JobStore::class, $jobStore);
         $this->job = $jobStore->create('label content', 'http://example.com/callback');
         $this->job->setState(Job::STATE_EXECUTION_AWAITING);
-        $jobStore->store();
+        $jobStore->store($this->job);
 
         $testStore = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $testStore);

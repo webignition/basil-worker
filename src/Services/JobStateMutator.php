@@ -35,7 +35,7 @@ class JobStateMutator
         if ($this->jobStore->hasJob()) {
             $job = $this->jobStore->getJob();
             $job->setState($state);
-            $this->jobStore->store();
+            $this->jobStore->store($job);
         }
     }
 }

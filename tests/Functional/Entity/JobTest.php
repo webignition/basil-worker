@@ -31,7 +31,7 @@ class JobTest extends AbstractEntityTest
         $job = $this->jobStore->create(md5('label source'), 'http://example.com/callback');
         $job->setSources($sources);
 
-        $this->jobStore->store();
+        $this->jobStore->store($job);
 
         $this->entityManager->clear(Job::class);
         $this->entityManager->close();

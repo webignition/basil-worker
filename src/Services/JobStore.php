@@ -11,44 +11,43 @@ class JobStore
 {
     private EntityManagerInterface $entityManager;
     private Job $job;
-    private bool $hasJob = false;
 
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $job = $entityManager->find(Job::class, Job::ID);
-
-        if ($job instanceof Job) {
-            $this->job = $job;
-            $this->hasJob = true;
-        }
     }
 
     public function create(string $label, string $callbackUrl): Job
     {
-        $this->job = Job::create($label, $callbackUrl);
-        $this->hasJob = true;
+        $job = Job::create($label, $callbackUrl);
+        $this->store($job);
 
-        $this->store();
-
-        return $this->getJob();
+        return $job;
     }
 
     public function hasJob(): bool
     {
-        return $this->hasJob;
+        return null !== $this->fetch();
     }
 
     public function getJob(): Job
     {
+        $job = $this->fetch();
+        if ($job instanceof Job) {
+            $this->job = $job;
+        }
+
         return $this->job;
     }
 
-    public function store(): void
+    public function store(Job $job): void
     {
-        if ($this->hasJob) {
-            $this->entityManager->persist($this->job);
-            $this->entityManager->flush();
-        }
+        $this->entityManager->persist($job);
+        $this->entityManager->flush();
+    }
+
+    private function fetch(): ?Job
+    {
+        return $this->entityManager->find(Job::class, Job::ID);
     }
 }

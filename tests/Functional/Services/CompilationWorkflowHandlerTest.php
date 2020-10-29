@@ -71,7 +71,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     $job->setSources([
                         'Test/test1.yml',
                     ]);
-                    $jobStore->store();
+                    $jobStore->store($job);
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
@@ -115,7 +115,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         'Test/test1.yml',
                         'Test/test2.yml',
                     ]);
-                    $jobStore->store();
+                    $jobStore->store($job);
                 },
                 'expectedQueuedMessage' => new CompileSource('Test/test1.yml'),
             ],
@@ -126,7 +126,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         'Test/test1.yml',
                         'Test/test2.yml',
                     ]);
-                    $jobStore->store();
+                    $jobStore->store($job);
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),

@@ -19,7 +19,6 @@ class JobStoreTest extends AbstractBaseFunctionalTest
 
         $store = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $store);
-
         if ($store instanceof JobStore) {
             $this->store = $store;
         }
@@ -47,7 +46,7 @@ class JobStoreTest extends AbstractBaseFunctionalTest
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
         $job->setState(Job::STATE_COMPILATION_RUNNING);
-        $this->store->store();
+        $this->store->store($job);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         self::assertInstanceOf(EntityManagerInterface::class, $entityManager);

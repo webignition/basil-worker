@@ -106,7 +106,7 @@ class JobController extends AbstractController
         }
 
         $job->setSources($jobSources);
-        $this->jobStore->store();
+        $this->jobStore->store($job);
 
         $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
 

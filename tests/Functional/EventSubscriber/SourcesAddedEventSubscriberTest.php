@@ -51,7 +51,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         $job->setSources([
             'Test/test1.yml',
         ]);
-        $this->jobStore->store();
+        $this->jobStore->store($job);
 
         $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
 

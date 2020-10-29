@@ -42,7 +42,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         if ($jobStore instanceof JobStore) {
             $job = $jobStore->create('label content', 'http://example.com/callback');
             $job->setState(Job::STATE_COMPILATION_RUNNING);
-            $jobStore->store();
+            $jobStore->store($job);
         }
     }
 

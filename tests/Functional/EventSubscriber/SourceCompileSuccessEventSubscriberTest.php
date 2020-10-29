@@ -59,7 +59,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
             'Test/test1.yml',
             'Test/test2.yml',
         ]);
-        $this->jobStore->store();
+        $this->jobStore->store($job);
 
         $source = 'Test/test1.yml';
 
