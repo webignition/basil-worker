@@ -10,11 +10,13 @@ class JobSourceFinder
 {
     private JobStore $jobStore;
     private TestStore $testStore;
+    private SourcePathTranslator $sourcePathTranslator;
 
-    public function __construct(JobStore $jobStore, TestStore $testStore)
+    public function __construct(JobStore $jobStore, TestStore $testStore, SourcePathTranslator $sourcePathTranslator)
     {
         $this->jobStore = $jobStore;
         $this->testStore = $testStore;
+        $this->sourcePathTranslator = $sourcePathTranslator;
     }
 
     public function findNextNonCompiledSource(): ?string
@@ -25,7 +27,8 @@ class JobSourceFinder
 
         $job = $this->jobStore->getJob();
         foreach ($job->getSources() as $source) {
-            $hasTest = $this->testStore->findBySource($source) instanceof Test;
+            $testSource = $this->sourcePathTranslator->translateJobSourceToTestSource($source);
+            $hasTest = $this->testStore->findBySource($testSource) instanceof Test;
 
             if (false === $hasTest) {
                 return $source;
