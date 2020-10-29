@@ -54,23 +54,4 @@ class ClientRequestSender
 
         return $this->client->getResponse();
     }
-
-    public function foo(KernelBrowser $client, UploadedFile $manifest, array $requestSources): Response
-    {
-        $requestFiles = array_merge(
-            [
-                AddSourcesRequest::KEY_MANIFEST => $manifest,
-            ],
-            $requestSources
-        );
-
-        $client->request(
-            'POST',
-            '/add-sources',
-            [],
-            $requestFiles
-        );
-
-        return $client->getResponse();
-    }
 }
