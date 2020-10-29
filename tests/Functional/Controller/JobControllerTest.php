@@ -6,15 +6,16 @@ namespace App\Tests\Functional\Controller;
 
 use App\Entity\Job;
 use App\Entity\TestConfiguration;
-use App\Request\JobCreateRequest;
 use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\Services\ClientRequestSender;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
 {
     private JobStore $jobStore;
+    private ClientRequestSender $clientRequestSender;
 
     protected function setUp(): void
     {
@@ -25,6 +26,12 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         if ($jobStore instanceof JobStore) {
             $this->jobStore = $jobStore;
         }
+
+        $clientRequestSender = self::$container->get(ClientRequestSender::class);
+        self::assertInstanceOf(ClientRequestSender::class, $clientRequestSender);
+        if ($clientRequestSender instanceof ClientRequestSender) {
+            $this->clientRequestSender = $clientRequestSender;
+        }
     }
 
     public function testCreate()
@@ -34,12 +41,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
 
-        $this->client->request('POST', '/create', [
-            JobCreateRequest::KEY_LABEL => $label,
-            JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
-        ]);
-
-        $response = $this->client->getResponse();
+        $response = $this->clientRequestSender->createJob($label, $callbackUrl);
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/json', $response->headers->get('content-type'));

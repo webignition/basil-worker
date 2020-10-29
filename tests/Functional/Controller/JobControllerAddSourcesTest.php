@@ -6,14 +6,14 @@ namespace App\Tests\Functional\Controller;
 
 use App\Entity\Job;
 use App\Event\SourcesAddedEvent;
-use App\Request\AddSourcesRequest;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use App\Tests\Functional\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
+use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourcesAddedEventSubscriber;
 use App\Tests\Services\SourceStoreInitializer;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
+use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
@@ -29,6 +29,8 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private SourcesAddedEventSubscriber $sourcesAddedEventSubscriber;
     private Job $job;
     private Response $response;
+    private ClientRequestSender $clientRequestSender;
+    private UploadedFileFactory $uploadedFileFactory;
 
     protected function setUp(): void
     {
@@ -55,13 +57,28 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
             $this->sourcesAddedEventSubscriber = $sourcesAddedEventSubscriber;
         }
 
+        $clientRequestSender = self::$container->get(ClientRequestSender::class);
+        self::assertInstanceOf(ClientRequestSender::class, $clientRequestSender);
+        if ($clientRequestSender instanceof ClientRequestSender) {
+            $this->clientRequestSender = $clientRequestSender;
+        }
+
+        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
+        self::assertInstanceOf(UploadedFileFactory::class, $uploadedFileFactory);
+        if ($uploadedFileFactory instanceof UploadedFileFactory) {
+            $this->uploadedFileFactory = $uploadedFileFactory;
+        }
+
         $this->initializeSourceStore();
 
         $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
         self::assertSame([], $this->job->getSources());
         self::assertNull($this->sourcesAddedEventSubscriber->getEvent());
 
-        $this->response = $this->getAddSourcesResponse();
+        $this->response = $this->clientRequestSender->addJobSources(
+            $this->uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
+            $this->basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
+        );
     }
 
     public function testResponse()
@@ -98,35 +115,5 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
         }
-    }
-
-    private function getAddSourcesResponse(): Response
-    {
-        $requestSources = [];
-        foreach (self::EXPECTED_SOURCES as $source) {
-            $requestSources[$source] = $this->basilFixtureHandler->createUploadedFile($source);
-        }
-
-        $requestFiles = array_merge(
-            [
-                AddSourcesRequest::KEY_MANIFEST => new UploadedFile(
-                    getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
-                    'manifest.yml',
-                    'text/yaml',
-                    null,
-                    true
-                ),
-            ],
-            $requestSources
-        );
-
-        $this->client->request(
-            'POST',
-            '/add-sources',
-            [],
-            $requestFiles
-        );
-
-        return $this->client->getResponse();
     }
 }
