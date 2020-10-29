@@ -13,12 +13,10 @@ use Symfony\Component\HttpFoundation\Response;
 class ClientRequestSender
 {
     private KernelBrowser $client;
-    private BasilFixtureHandler $basilFixtureHandler;
 
-    public function __construct(KernelBrowser $client, BasilFixtureHandler $basilFixtureHandler)
+    public function __construct(KernelBrowser $client)
     {
         $this->client = $client;
-        $this->basilFixtureHandler = $basilFixtureHandler;
     }
 
     public function createJob(string $label, string $callbackUrl): Response
