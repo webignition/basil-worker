@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
 use App\Services\JobStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
 
 class JobStoreTest extends AbstractBaseFunctionalTest

@@ -10,7 +10,7 @@ use App\Event\SourceCompileSuccessEvent;
 use App\Message\CompileSource;
 use App\MessageHandler\CompileSourceHandler;
 use App\Services\JobStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Mock\MockSuiteManifest;

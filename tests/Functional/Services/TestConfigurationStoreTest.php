@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\TestConfiguration;
 use App\Services\TestConfigurationStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 
 class TestConfigurationStoreTest extends AbstractBaseFunctionalTest
 {

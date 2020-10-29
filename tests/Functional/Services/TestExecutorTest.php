@@ -9,7 +9,7 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;

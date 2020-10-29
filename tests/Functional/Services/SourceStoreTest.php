@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Services\SourceStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use Symfony\Component\HttpFoundation\File\File;

@@ -8,7 +8,7 @@ use App\Entity\TestConfiguration;
 use App\Services\JobSourceFinder;
 use App\Services\JobStore;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobSourceFinderTest extends AbstractBaseFunctionalTest

@@ -9,7 +9,7 @@ use App\Event\SourcesAddedEvent;
 use App\EventSubscriber\SourcesAddedEventSubscriber;
 use App\Message\CompileSource;
 use App\Services\JobStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;

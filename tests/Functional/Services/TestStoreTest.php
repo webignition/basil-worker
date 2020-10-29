@@ -8,7 +8,7 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\BasilModels\Test\Configuration;

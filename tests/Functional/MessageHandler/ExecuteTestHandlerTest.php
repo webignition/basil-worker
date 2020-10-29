@@ -11,7 +11,7 @@ use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Services\JobStore;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockTestExecutor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\ObjectReflector\ObjectReflector;

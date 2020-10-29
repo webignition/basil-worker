@@ -12,7 +12,7 @@ use App\Message\SendCallback;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockYamlDocument;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;

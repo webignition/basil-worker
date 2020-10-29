@@ -8,7 +8,7 @@ use App\Event\CallbackHttpExceptionEvent;
 use App\Event\CallbackHttpResponseEvent;
 use App\Services\CallbackSender;
 use App\Services\JobStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Model\Callback\MockCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;

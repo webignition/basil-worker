@@ -10,7 +10,7 @@ use App\EventSubscriber\SourceCompileFailureEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\CompileFailure;
 use App\Services\JobStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;

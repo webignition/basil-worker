@@ -10,7 +10,7 @@ use App\Message\ExecuteTest;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
 use App\Services\TestStore;
-use App\Tests\Functional\AbstractBaseFunctionalTest;
+use App\Tests\AbstractBaseFunctionalTest;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
