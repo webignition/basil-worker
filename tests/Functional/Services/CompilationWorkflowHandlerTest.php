@@ -75,7 +75,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
-                        'Test/test1.yml',
+                        '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
                         1
                     );
@@ -130,7 +130,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
                     $testStore->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
-                        'Test/test1.yml',
+                        '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
                         1
                     );

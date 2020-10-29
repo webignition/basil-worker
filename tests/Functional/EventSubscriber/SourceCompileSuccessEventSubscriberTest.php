@@ -65,14 +65,14 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $manifest1 = new TestManifest(
             new Configuration('chrome', 'http://example.com'),
-            'Test/test1.yml',
+            '/app/source/Test/test1.yml',
             '/app/tests/GeneratedChromeTest.php',
             2
         );
 
         $manifest2 = new TestManifest(
             new Configuration('firefox', 'http://example.com'),
-            'Test/test1.yml',
+            '/app/source/Test/test1.yml',
             '/app/tests/GeneratedFirefoxTest.php',
             2
         );
