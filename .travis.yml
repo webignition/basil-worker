@@ -28,6 +28,7 @@ env:
     - WORKER_RABBITMQ_EXPOSED_PORT=9002
 
 before_install:
+  - docker load -i docker_images/images.tar || true
   - sudo apt-get install php-amqp
   - echo "extension = amqp.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - composer self-update --2
@@ -43,6 +44,10 @@ before_script:
 script:
   - composer ci
 
+before_cache:
+  - docker save -o docker_images/images.tar $(docker images -a -q)
+
 cache:
   directories:
   - "$HOME/.composer/cache/files"
+  - docker_images
