@@ -1,0 +1,36 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Model\Document;
+
+use webignition\YamlDocument\Document;
+
+abstract class AbstractDocument
+{
+    private const KEY_TYPE = 'type';
+
+    /**
+     * @var array<mixed>
+     */
+    private array $data;
+
+    public function __construct(Document $document)
+    {
+        $data = $document->parse();
+        $this->data = is_array($data) ? $data : [];
+    }
+
+    public function getType(): ?string
+    {
+        return $this->data[self::KEY_TYPE] ?? null;
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    protected function getData(): array
+    {
+        return $this->data;
+    }
+}
