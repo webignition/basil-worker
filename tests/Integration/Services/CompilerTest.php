@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Services;
+namespace App\Tests\Integration\Services;
 
 use App\Services\Compiler;
-use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Integration\AbstractBaseIntegrationTest;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\TcpCliProxyClient\Client;
 
-class CompilerTest extends AbstractBaseFunctionalTest
+class CompilerTest extends AbstractBaseIntegrationTest
 {
     private Compiler $compiler;
 
