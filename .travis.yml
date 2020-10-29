@@ -39,7 +39,8 @@ install:
 
 script:
   - composer ci
-  - composer integration-run
+  - docker-compose -f tests/docker-compose.yml up -d
+  - composer test-integration
 
 cache:
   directories:
