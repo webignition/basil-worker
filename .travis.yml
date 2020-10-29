@@ -37,11 +37,9 @@ install:
   - php bin/console doctrine:database:create
   - php bin/console doctrine:migrations:migrate --no-interaction
 
-before_script:
-  - docker-compose -f tests/docker-compose.yml up -d
-
 script:
   - composer ci
+  - composer integration-run
 
 cache:
   directories:
