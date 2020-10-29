@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Services;
+namespace App\Tests\Integration\Services;
 
 use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
 use App\Services\TestStore;
-use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
@@ -18,7 +18,7 @@ use webignition\ObjectReflector\ObjectReflector;
 use webignition\TcpCliProxyClient\Client;
 use webignition\YamlDocument\Document;
 
-class TestExecutorTest extends AbstractBaseFunctionalTest
+class TestExecutorTest extends AbstractBaseIntegrationTest
 {
     private TestExecutor $testExecutor;
     private Compiler $compiler;
