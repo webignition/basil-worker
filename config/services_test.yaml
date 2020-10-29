@@ -70,3 +70,11 @@ services:
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
         factory: [ '@App\Tests\Services\GuzzleClientFactory', 'get' ]
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
+    App\Tests\Services\UploadedFileFactory:
+        public: true

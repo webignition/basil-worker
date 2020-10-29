@@ -33,4 +33,20 @@ class BasilFixtureHandler
 
         return new UploadedFile($uploadedFilePath, '', 'text/yaml', null, true);
     }
+
+    /**
+     * @param string[] $relativePaths
+     *
+     * @return UploadedFile[]
+     */
+    public function createUploadFileCollection(array $relativePaths): array
+    {
+        $uploadedFiles = [];
+
+        foreach ($relativePaths as $relativePath) {
+            $uploadedFiles[$relativePath] = $this->createUploadedFile($relativePath);
+        }
+
+        return $uploadedFiles;
+    }
 }
