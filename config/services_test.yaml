@@ -48,6 +48,9 @@ services:
     App\Services\CompilationWorkflowFactory:
         public: true
 
+    App\Services\ExecutionWorkflowFactory:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

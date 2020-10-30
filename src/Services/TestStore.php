@@ -117,6 +117,18 @@ class TestStore
         return $test instanceof Test ? $test : null;
     }
 
+    public function getTotalCount(): int
+    {
+        return count($this->repository->findAll());
+    }
+
+    public function getAwaitingCount(): int
+    {
+        return count($this->repository->findBy([
+            'state' => Test::STATE_AWAITING,
+        ]));
+    }
+
     private function findNextPosition(): int
     {
         $maxPosition = $this->findMaxPosition();
