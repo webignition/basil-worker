@@ -35,7 +35,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
             [
                 SourcesAddedEvent::NAME => [
                     ['setJobState', 10],
-                    ['dispatchCompileSourceMessage', 0]
+                    ['dispatchNextCompileSourceMessage', 0]
                 ],
             ],
             SourcesAddedEventSubscriber::getSubscribedEvents()

@@ -5,22 +5,24 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Message\CompileSource;
+use App\Model\Workflow\CompilationWorkflow;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class CompilationWorkflowHandler
 {
     private MessageBusInterface $messageBus;
-    private JobSourceFinder $jobSourceFinder;
+    private CompilationWorkflowFactory $compilationWorkflowFactory;
 
-    public function __construct(MessageBusInterface $messageBus, JobSourceFinder $jobSourceFinder)
+    public function __construct(MessageBusInterface $messageBus, CompilationWorkflowFactory $compilationWorkflowFactory)
     {
         $this->messageBus = $messageBus;
-        $this->jobSourceFinder = $jobSourceFinder;
+        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
     }
 
     public function dispatchNextCompileSourceMessage(): void
     {
-        $nextNonCompiledSource = $this->jobSourceFinder->findNextNonCompiledSource();
+        $workflow = $this->compilationWorkflowFactory->create();
+        $nextNonCompiledSource = $workflow->getNextSource();
 
         if (is_string($nextNonCompiledSource)) {
             $message = new CompileSource($nextNonCompiledSource);
@@ -28,9 +30,8 @@ class CompilationWorkflowHandler
         }
     }
 
-
     public function isComplete(): bool
     {
-        return false === is_string($this->jobSourceFinder->findNextNonCompiledSource());
+        return CompilationWorkflow::STATE_COMPLETE === $this->compilationWorkflowFactory->create()->getState();
     }
 }

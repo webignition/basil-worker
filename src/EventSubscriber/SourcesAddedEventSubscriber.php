@@ -27,7 +27,7 @@ class SourcesAddedEventSubscriber implements EventSubscriberInterface
         return [
             SourcesAddedEvent::NAME => [
                 ['setJobState', 10],
-                ['dispatchCompileSourceMessage', 0],
+                ['dispatchNextCompileSourceMessage', 0],
             ],
         ];
     }
@@ -37,7 +37,7 @@ class SourcesAddedEventSubscriber implements EventSubscriberInterface
         $this->jobStateMutator->setCompilationRunning();
     }
 
-    public function dispatchCompileSourceMessage(): void
+    public function dispatchNextCompileSourceMessage(): void
     {
         $this->compilationWorkflowHandler->dispatchNextCompileSourceMessage();
     }
