@@ -19,6 +19,7 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use App\Tests\Mock\Services\MockTestStore;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class ExecuteTestHandlerTest extends TestCase
 {
@@ -41,7 +42,8 @@ class ExecuteTestHandlerTest extends TestCase
             $jobStore,
             $jobStateMutator,
             $testStore,
-            $testExecutor
+            $testExecutor,
+            \Mockery::mock(EventDispatcherInterface::class)
         );
 
         $handler($message);
