@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace App\Tests\Functional\EventSubscriber;
 
 use App\Entity\Job;
+use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\SourceCompileSuccessEvent;
 use App\EventSubscriber\SourceCompileSuccessEventSubscriber;
 use App\Message\CompileSource;
+use App\Message\ExecuteTest;
 use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -42,6 +44,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ['createTests', 10],
                     ['dispatchNextCompileSourceMessage', 0],
                     ['setJobStateToCompilationAwaitingIfCompilationComplete', 0],
+                    ['dispatchNextTestExecuteMessage', 0],
                 ],
             ],
             SourceCompileSuccessEventSubscriber::getSubscribedEvents()
@@ -182,8 +185,19 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         $eventDispatcher->dispatch($event, SourceCompileSuccessEvent::NAME);
 
         self::assertCount($expectedTestCount, $testStore->findAll());
-        self::assertCount(0, $messengerTransport->get());
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
+
+        $queue = $messengerTransport->get();
+        self::assertCount(1, $queue);
+        self::assertIsArray($queue);
+
+        $nextAwaitingTest = $testStore->findNextAwaiting();
+        $nextAwaitingTestId = $nextAwaitingTest instanceof Test ? (int) $nextAwaitingTest->getId() : 0;
+
+        $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);
+
+        $envelope = $queue[0] ?? null;
+        self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 
     public function integrationFinalEventDataProvider(): array

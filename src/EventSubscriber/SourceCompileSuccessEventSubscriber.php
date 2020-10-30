@@ -6,6 +6,7 @@ namespace App\EventSubscriber;
 
 use App\Event\SourceCompileSuccessEvent;
 use App\Services\CompilationWorkflowHandler;
+use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\TestStore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -15,15 +16,18 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     private TestStore $testStore;
     private CompilationWorkflowHandler $compilationWorkflowHandler;
     private JobStateMutator $jobStateMutator;
+    private ExecutionWorkflowHandler $executionWorkflowHandler;
 
     public function __construct(
         TestStore $testStore,
         CompilationWorkflowHandler $compilationWorkflowHandler,
-        JobStateMutator $jobStateMutator
+        JobStateMutator $jobStateMutator,
+        ExecutionWorkflowHandler $executionWorkflowHandler
     ) {
         $this->testStore = $testStore;
         $this->compilationWorkflowHandler = $compilationWorkflowHandler;
         $this->jobStateMutator = $jobStateMutator;
+        $this->executionWorkflowHandler = $executionWorkflowHandler;
     }
 
     public static function getSubscribedEvents()
@@ -33,6 +37,7 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
                 ['createTests', 10],
                 ['dispatchNextCompileSourceMessage', 0],
                 ['setJobStateToCompilationAwaitingIfCompilationComplete', 0],
+                ['dispatchNextTestExecuteMessage', 0],
             ],
         ];
     }
@@ -53,6 +58,13 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     {
         if ($this->compilationWorkflowHandler->isComplete()) {
             $this->jobStateMutator->setExecutionAwaiting();
+        }
+    }
+
+    public function dispatchNextTestExecuteMessage(): void
+    {
+        if ($this->compilationWorkflowHandler->isComplete()) {
+            $this->executionWorkflowHandler->dispatchNextExecuteTestMessage();
         }
     }
 }
