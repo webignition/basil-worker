@@ -78,7 +78,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
 
         $job = $this->jobStore->getJob();
         self::assertSame($sources, $job->getSources());
-        self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
+        self::assertSame(Job::STATE_EXECUTION_RUNNING, $job->getState());
 
         // @todo: verify execution in #223
     }
