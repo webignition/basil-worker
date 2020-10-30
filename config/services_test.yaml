@@ -51,6 +51,9 @@ services:
     App\Services\ExecutionWorkflowFactory:
         public: true
 
+    App\EventSubscriber\TestExecuteCompleteEventSubscriber:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

@@ -35,6 +35,11 @@ class JobStateMutator
         $this->set(Job::STATE_EXECUTION_RUNNING);
     }
 
+    public function setExecutionComplete(): void
+    {
+        $this->set(Job::STATE_EXECUTION_COMPLETE);
+    }
+
     private function set(string $state): void
     {
         if ($this->jobStore->hasJob()) {
