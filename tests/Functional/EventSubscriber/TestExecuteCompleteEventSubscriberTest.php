@@ -98,7 +98,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         $queue = $this->messengerTransport->get();
         self::assertCount($expectedMessageQueueCount, $queue);
 
-        if (1 === $expectedMessageQueueCount) {
+        if (1 === $expectedMessageQueueCount && is_callable($expectedMessageQueueMessageCreator)) {
             $expectedMessage = $expectedMessageQueueMessageCreator($this->testStore);
 
             self::assertIsArray($queue);
@@ -145,7 +145,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                 'expectedMessageQueueCount' => 1,
                 'expectedMessageQueueMessageCreator' => function (TestStore $testStore) {
                     $nextAwaitingTest = $testStore->findNextAwaiting();
-                    $nextAwaitingId = $nextAwaitingTest instanceof Test ? $nextAwaitingTest->getId() : 0;
+                    $nextAwaitingId = $nextAwaitingTest instanceof Test ? (int) $nextAwaitingTest->getId() : 0;
 
                     return new ExecuteTest($nextAwaitingId);
                 },
