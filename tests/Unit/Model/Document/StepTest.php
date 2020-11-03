@@ -23,7 +23,7 @@ class StepTest extends TestCase
         return [
             'empty' => [
                 'step' => new Step(
-                    new Document('')
+                    new Document()
                 ),
                 'expectedIsStep' => false,
             ],
@@ -61,7 +61,7 @@ class StepTest extends TestCase
         return [
             'empty' => [
                 'step' => new Step(
-                    new Document('')
+                    new Document()
                 ),
                 'expectedIsPassed' => false,
             ],
@@ -99,7 +99,7 @@ class StepTest extends TestCase
         return [
             'empty' => [
                 'step' => new Step(
-                    new Document('')
+                    new Document()
                 ),
                 'expectedIsFailed' => false,
             ],

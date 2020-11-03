@@ -7,8 +7,8 @@ namespace App\EventSubscriber;
 use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
-use App\Model\Callback\ExecuteDocumentReceived;
 use App\Model\Document\Step;
+use App\Services\ExecuteDocumentReceivedCallbackFactory;
 use App\Services\TestStore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -17,11 +17,16 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
 {
     private MessageBusInterface $messageBus;
     private TestStore $testStore;
+    private ExecuteDocumentReceivedCallbackFactory $callbackFactory;
 
-    public function __construct(MessageBusInterface $messageBus, TestStore $testStore)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        TestStore $testStore,
+        ExecuteDocumentReceivedCallbackFactory $callbackFactory
+    ) {
         $this->messageBus = $messageBus;
         $this->testStore = $testStore;
+        $this->callbackFactory = $callbackFactory;
     }
 
     public static function getSubscribedEvents()
@@ -48,8 +53,9 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
 
     public function dispatchSendCallbackMessage(TestExecuteDocumentReceivedEvent $event): void
     {
-        $callback = new ExecuteDocumentReceived($event->getDocument());
-        $message = new SendCallback($callback);
+        $message = new SendCallback(
+            $this->callbackFactory->create($event->getDocument())
+        );
 
         $this->messageBus->dispatch($message);
     }

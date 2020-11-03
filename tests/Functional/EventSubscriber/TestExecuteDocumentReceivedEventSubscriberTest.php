@@ -13,7 +13,6 @@ use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Mock\MockYamlDocument;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -59,7 +58,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
     public function testDispatchSendCallbackMessage()
     {
-        $document = (new MockYamlDocument())->getMock();
+        $document = new Document();
         $event = $this->createEvent($document);
 
         $this->eventSubscriber->dispatchSendCallbackMessage($event);
@@ -84,29 +83,15 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     {
         return [
             'not a step document' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'test',
-                    ])
-                    ->getMock(),
+                'document' => new Document('{ type: test }'),
                 'expectedTestState' => Test::STATE_AWAITING,
             ],
             'step status passed' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'step',
-                        'status' => 'passed',
-                    ])
-                    ->getMock(),
+                'document' => new Document('{ type: step, status: passed }'),
                 'expectedTestState' => Test::STATE_AWAITING,
             ],
             'step status failed' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'step',
-                        'status' => 'failed',
-                    ])
-                    ->getMock(),
+                'document' => new Document('{ type: step, status: failed }'),
                 'expectedTestState' => Test::STATE_FAILED,
             ],
         ];
@@ -115,8 +100,11 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     /**
      * @dataProvider integrationDataProvider
      */
-    public function testIntegration(Document $document, string $expectedTestState)
-    {
+    public function testIntegration(
+        Document $document,
+        string $expectedTestState,
+        Document $expectedQueuedDocument
+    ) {
         self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
         self::assertCount(0, $this->messengerTransport->get());
 
@@ -127,38 +115,38 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
             $eventDispatcher->dispatch($event, TestExecuteDocumentReceivedEvent::NAME);
         }
 
-        $this->assertMessageTransportQueue($document);
+        $this->assertMessageTransportQueue($expectedQueuedDocument);
         self::assertSame($expectedTestState, $this->test->getState());
     }
 
     public function integrationDataProvider(): array
     {
+        $testWithoutPrefixedPath = new Document('{ type: test, path: Test/test.yml }');
+        $testWithPrefixedPath = new Document('{ type: test, path: /app/source/Test/test.yml }');
+
+        $stepPassed = new Document('{ type: step, status: passed }');
+        $stepFailed = new Document('{ type: step, status: failed }');
+
         return [
-            'not a step document' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'test',
-                    ])
-                    ->getMock(),
+            'test document, path is not prefixed with compiler source directory' => [
+                'document' => $testWithoutPrefixedPath,
                 'expectedTestState' => Test::STATE_AWAITING,
+                'expectedQueuedDocument' => $testWithoutPrefixedPath,
+            ],
+            'test document, path prefixed with compiler source directory' => [
+                'document' => $testWithPrefixedPath,
+                'expectedTestState' => Test::STATE_AWAITING,
+                'expectedQueuedDocument' => $testWithoutPrefixedPath,
             ],
             'step status passed' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'step',
-                        'status' => 'passed',
-                    ])
-                    ->getMock(),
+                'document' => $stepPassed,
                 'expectedTestState' => Test::STATE_AWAITING,
+                'expectedQueuedDocument' => $stepPassed,
             ],
             'step status failed' => [
-                'document' => (new MockYamlDocument())
-                    ->withParseCall([
-                        'type' => 'step',
-                        'status' => 'failed',
-                    ])
-                    ->getMock(),
+                'document' => $stepFailed,
                 'expectedTestState' => Test::STATE_FAILED,
+                'expectedQueuedDocument' => $stepFailed,
             ],
         ];
     }

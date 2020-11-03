@@ -129,8 +129,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                     $this->createHttpTransaction(
                         $this->createExpectedRequest($label, $callbackUrl, [
                             'type' => 'test',
-                            // @todo: fix in #268
-                            'path' => '/app/source/Test/chrome-open-index.yml',
+                            'path' => 'Test/chrome-open-index.yml',
                             'config' => [
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx/index.html',
@@ -156,7 +155,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                     $this->createHttpTransaction(
                         $this->createExpectedRequest($label, $callbackUrl, [
                             'type' => 'test',
-                            'path' => '/app/source/Test/chrome-firefox-open-index.yml',
+                            'path' => 'Test/chrome-firefox-open-index.yml',
                             'config' => [
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx/index.html',
@@ -182,7 +181,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                     $this->createHttpTransaction(
                         $this->createExpectedRequest($label, $callbackUrl, [
                             'type' => 'test',
-                            'path' => '/app/source/Test/chrome-firefox-open-index.yml',
+                            'path' => 'Test/chrome-firefox-open-index.yml',
                             'config' => [
                                 'browser' => 'firefox',
                                 'url' => 'http://nginx/index.html',
@@ -208,7 +207,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                     $this->createHttpTransaction(
                         $this->createExpectedRequest($label, $callbackUrl, [
                             'type' => 'test',
-                            'path' => '/app/source/Test/chrome-open-form.yml',
+                            'path' => 'Test/chrome-open-form.yml',
                             'config' => [
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx/form.html',

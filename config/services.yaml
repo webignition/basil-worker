@@ -78,3 +78,5 @@ services:
     App\Services\SourcePathTranslator:
         arguments:
             $compilerSourceDirectory: '%compiler_source_directory%'
+
+    Symfony\Component\Yaml\Dumper: ~
