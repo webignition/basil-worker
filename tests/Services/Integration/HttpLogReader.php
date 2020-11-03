@@ -30,4 +30,9 @@ class HttpLogReader
 
         return $transactions;
     }
+
+    public function reset(): void
+    {
+        unlink($this->path);
+    }
 }

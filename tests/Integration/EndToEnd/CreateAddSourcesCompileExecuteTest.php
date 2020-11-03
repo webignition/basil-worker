@@ -98,6 +98,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         self::assertSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
 
         $transactions = $this->httpLogReader->getTransactions();
+        $this->httpLogReader->reset();
 
         self::assertCount(count($expectedHttpTransactions), $transactions);
 
