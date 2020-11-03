@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\EventSubscriber;
 
+use App\Entity\Job;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteDocumentReceivedEvent;
@@ -25,6 +26,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     private TestExecuteDocumentReceivedEventSubscriber $eventSubscriber;
     private InMemoryTransport $messengerTransport;
     private Test $test;
+    private JobStore $jobStore;
 
     protected function setUp(): void
     {
@@ -32,8 +34,13 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
+        if ($jobStore instanceof JobStore) {
+            $this->jobStore = $jobStore;
+        }
 
-        $jobStore->create('label content', 'http://example.com/callback');
+        $job = $jobStore->create('label content', 'http://example.com/callback');
+        $job->setState(Job::STATE_EXECUTION_RUNNING);
+        $jobStore->store($job);
 
         $testStore = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $testStore);
@@ -67,19 +74,19 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     }
 
     /**
-     * @dataProvider setTestStateToFailedIfFailedDataProvider
+     * @dataProvider setTestStateToFailedIfStepFailedDataProvider
      */
-    public function testSetTestStateToFailedIfFailed(Document $document, string $expectedTestState)
+    public function testSetTestStateToFailedIfStepFailed(Document $document, string $expectedTestState)
     {
         self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
 
         $event = $this->createEvent($document);
-        $this->eventSubscriber->setTestStateToFailedIfFailed($event);
+        $this->eventSubscriber->setTestStateToFailedIfStepFailed($event);
 
         self::assertSame($expectedTestState, $this->test->getState());
     }
 
-    public function setTestStateToFailedIfFailedDataProvider(): array
+    public function setTestStateToFailedIfStepFailedDataProvider(): array
     {
         return [
             'not a step document' => [
@@ -103,7 +110,8 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     public function testIntegration(
         Document $document,
         string $expectedTestState,
-        Document $expectedQueuedDocument
+        Document $expectedQueuedDocument,
+        string $expectedJobState
     ) {
         self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
         self::assertCount(0, $this->messengerTransport->get());
@@ -117,6 +125,9 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
         $this->assertMessageTransportQueue($expectedQueuedDocument);
         self::assertSame($expectedTestState, $this->test->getState());
+
+        $job = $this->jobStore->getJob();
+        self::assertSame($expectedJobState, $job->getState());
     }
 
     public function integrationDataProvider(): array
@@ -132,21 +143,25 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
                 'document' => $testWithoutPrefixedPath,
                 'expectedTestState' => Test::STATE_AWAITING,
                 'expectedQueuedDocument' => $testWithoutPrefixedPath,
+                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'test document, path prefixed with compiler source directory' => [
                 'document' => $testWithPrefixedPath,
                 'expectedTestState' => Test::STATE_AWAITING,
                 'expectedQueuedDocument' => $testWithoutPrefixedPath,
+                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'step status passed' => [
                 'document' => $stepPassed,
                 'expectedTestState' => Test::STATE_AWAITING,
                 'expectedQueuedDocument' => $stepPassed,
+                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'step status failed' => [
                 'document' => $stepFailed,
                 'expectedTestState' => Test::STATE_FAILED,
                 'expectedQueuedDocument' => $stepFailed,
+                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
             ],
         ];
     }
