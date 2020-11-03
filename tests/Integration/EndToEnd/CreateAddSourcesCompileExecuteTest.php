@@ -250,7 +250,10 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                 $actualResponse,
                 'Response at index ' . (string) $transactionIndex . 'expected to be null'
             );
-        } else {
+        }
+
+        if ($expectedResponse instanceof ResponseInterface) {
+            self::assertInstanceOf(ResponseInterface::class, $actualResponse);
             $this->assertResponsesAreEquivalent($expectedResponse, $actualResponse, $transactionIndex);
         }
     }
@@ -306,6 +309,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         }
     }
 
+    /**
+     * @param HttpTransaction[] $transactions
+     *
+     * @return HttpTransactionCollection
+     */
     private function createHttpTransactionCollection(array $transactions): HttpTransactionCollection
     {
         $collection = new HttpTransactionCollection();
@@ -323,6 +331,13 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         return new HttpTransaction($request, $response, null, []);
     }
 
+    /**
+     * @param string $label
+     * @param string $callbackUrl
+     * @param array<mixed> $payload
+     *
+     * @return RequestInterface
+     */
     private function createExpectedRequest(string $label, string $callbackUrl, array $payload): RequestInterface
     {
         return new Request(
@@ -331,7 +346,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
             [
                 'content-type' => 'application/json',
             ],
-            json_encode([
+            (string) json_encode([
                 'label' => $label,
                 'type' => 'execute-document-received',
                 'payload' => $payload,

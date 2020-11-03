@@ -18,7 +18,7 @@ class HttpLogReader
 
     public function getTransactions(): HttpTransactionCollection
     {
-        $content = file_get_contents($this->path);
+        $content = (string) file_get_contents($this->path);
         $lines = array_filter(explode("\n", $content));
 
         $transactions = new HttpTransactionCollection();

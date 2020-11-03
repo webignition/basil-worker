@@ -13,10 +13,8 @@ class HttpLoggerFactory
 {
     public function create(string $path): LoggerInterface
     {
-        $stream = fopen($path, 'w+');
-
         $logger = new Logger('');
-        $logHandler = new StreamHandler($stream);
+        $logHandler = new StreamHandler($path);
         $logHandler
             ->setFormatter(new LineFormatter('%message%' . "\n"));
 
