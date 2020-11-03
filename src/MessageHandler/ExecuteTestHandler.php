@@ -11,6 +11,7 @@ use App\Message\ExecuteTest;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestExecutor;
+use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -22,19 +23,22 @@ class ExecuteTestHandler implements MessageHandlerInterface
     private TestExecutor $testExecutor;
     private TestStore $testStore;
     private EventDispatcherInterface $eventDispatcher;
+    private TestStateMutator $testStateMutator;
 
     public function __construct(
         JobStore $jobStore,
         JobStateMutator $jobStateMutator,
         TestStore $testStore,
         TestExecutor $testExecutor,
-        EventDispatcherInterface $eventDispatcher
+        EventDispatcherInterface $eventDispatcher,
+        TestStateMutator $testStateMutator
     ) {
         $this->jobStore = $jobStore;
         $this->jobStateMutator = $jobStateMutator;
         $this->testStore = $testStore;
         $this->testExecutor = $testExecutor;
         $this->eventDispatcher = $eventDispatcher;
+        $this->testStateMutator = $testStateMutator;
     }
 
     public function __invoke(ExecuteTest $message): void
@@ -62,13 +66,9 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $test->setState(Test::STATE_RUNNING);
-        $this->testStore->store($test);
-
+        $this->testStateMutator->setRunning($test);
         $this->testExecutor->execute($test);
-
-        $test->setState(Test::STATE_COMPLETE);
-        $this->testStore->store($test);
+        $this->testStateMutator->setComplete($test);
 
         $this->eventDispatcher->dispatch(
             new TestExecuteCompleteEvent($test),

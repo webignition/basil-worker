@@ -8,23 +8,23 @@ use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
-use App\Services\TestStore;
+use App\Services\TestStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 {
     private JobStateMutator $jobStateMutator;
-    private TestStore $testStore;
     private ExecutionWorkflowHandler $executionWorkflowHandler;
+    private TestStateMutator $testStateMutator;
 
     public function __construct(
         JobStateMutator $jobStateMutator,
-        TestStore $testStore,
-        ExecutionWorkflowHandler $executionWorkflowHandler
+        ExecutionWorkflowHandler $executionWorkflowHandler,
+        TestStateMutator $testStateMutator
     ) {
         $this->jobStateMutator = $jobStateMutator;
-        $this->testStore = $testStore;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
+        $this->testStateMutator = $testStateMutator;
     }
 
     public static function getSubscribedEvents()
@@ -53,8 +53,7 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
         $test = $event->getTest();
 
         if (Test::STATE_FAILED !== $test->getState()) {
-            $test->setState(Test::STATE_COMPLETE);
-            $this->testStore->store($test);
+            $this->testStateMutator->setComplete($test);
         }
     }
 

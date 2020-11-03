@@ -10,6 +10,7 @@ use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
+use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\Entity\MockTest;
@@ -43,7 +44,8 @@ class ExecuteTestHandlerTest extends TestCase
             $jobStateMutator,
             $testStore,
             $testExecutor,
-            \Mockery::mock(EventDispatcherInterface::class)
+            \Mockery::mock(EventDispatcherInterface::class),
+            \Mockery::mock(TestStateMutator::class)
         );
 
         $handler($message);

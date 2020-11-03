@@ -4,33 +4,32 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\Model\Document\Step;
 use App\Services\ExecuteDocumentReceivedCallbackFactory;
 use App\Services\JobStateMutator;
-use App\Services\TestStore;
+use App\Services\TestStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInterface
 {
     private MessageBusInterface $messageBus;
-    private TestStore $testStore;
     private ExecuteDocumentReceivedCallbackFactory $callbackFactory;
     private JobStateMutator $jobStateMutator;
+    private TestStateMutator $testStateMutator;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        TestStore $testStore,
         ExecuteDocumentReceivedCallbackFactory $callbackFactory,
-        JobStateMutator $jobStateMutator
+        JobStateMutator $jobStateMutator,
+        TestStateMutator $testStateMutator
     ) {
         $this->messageBus = $messageBus;
-        $this->testStore = $testStore;
         $this->callbackFactory = $callbackFactory;
         $this->jobStateMutator = $jobStateMutator;
+        $this->testStateMutator = $testStateMutator;
     }
 
     public static function getSubscribedEvents()
@@ -55,8 +54,7 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
     {
         $this->executeIfStepFailed($event, function (TestExecuteDocumentReceivedEvent $event) {
             $test = $event->getTest();
-            $test->setState(Test::STATE_FAILED);
-            $this->testStore->store($test);
+            $this->testStateMutator->setFailed($test);
         });
     }
 
