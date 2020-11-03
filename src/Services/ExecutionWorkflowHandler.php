@@ -45,4 +45,11 @@ class ExecutionWorkflowHandler
 
         return ExecutionWorkflow::STATE_COMPLETE === $workflow->getState();
     }
+
+    public function isReadyToExecute(): bool
+    {
+        $workflow = $this->executionWorkflowFactory->create();
+
+        return ExecutionWorkflow::STATE_NOT_STARTED === $workflow->getState();
+    }
 }

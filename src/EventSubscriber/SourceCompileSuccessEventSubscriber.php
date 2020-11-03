@@ -34,9 +34,9 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     {
         return [
             SourceCompileSuccessEvent::NAME => [
-                ['createTests', 10],
-                ['dispatchNextCompileSourceMessage', 0],
-                ['setJobStateToCompilationAwaitingIfCompilationComplete', 0],
+                ['createTests', 30],
+                ['dispatchNextCompileSourceMessage', 20],
+                ['setJobStateToExecutionAwaitingIfCompilationComplete', 10],
                 ['dispatchNextTestExecuteMessage', 0],
             ],
         ];
@@ -54,16 +54,16 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
         $this->compilationWorkflowHandler->dispatchNextCompileSourceMessage();
     }
 
-    public function setJobStateToCompilationAwaitingIfCompilationComplete(): void
+    public function setJobStateToExecutionAwaitingIfCompilationComplete(): void
     {
-        if ($this->compilationWorkflowHandler->isComplete()) {
+        if ($this->compilationWorkflowHandler->isComplete() && $this->executionWorkflowHandler->isReadyToExecute()) {
             $this->jobStateMutator->setExecutionAwaiting();
         }
     }
 
     public function dispatchNextTestExecuteMessage(): void
     {
-        if ($this->compilationWorkflowHandler->isComplete()) {
+        if ($this->compilationWorkflowHandler->isComplete() && $this->executionWorkflowHandler->isReadyToExecute()) {
             $this->executionWorkflowHandler->dispatchNextExecuteTestMessage();
         }
     }
