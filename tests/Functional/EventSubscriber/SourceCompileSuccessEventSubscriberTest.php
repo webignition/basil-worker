@@ -41,9 +41,9 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(
             [
                 SourceCompileSuccessEvent::NAME => [
-                    ['createTests', 10],
-                    ['dispatchNextCompileSourceMessage', 0],
-                    ['setJobStateToCompilationAwaitingIfCompilationComplete', 0],
+                    ['createTests', 30],
+                    ['dispatchNextCompileSourceMessage', 20],
+                    ['setJobStateToExecutionAwaitingIfCompilationComplete', 10],
                     ['dispatchNextTestExecuteMessage', 0],
                 ],
             ],
