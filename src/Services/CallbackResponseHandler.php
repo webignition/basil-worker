@@ -22,7 +22,9 @@ class CallbackResponseHandler
 
     public function handleResponse(CallbackInterface $callback, ResponseInterface $response): void
     {
-        if (200 !== $response->getStatusCode()) {
+        $statusCode = $response->getStatusCode();
+
+        if ($statusCode >= 300) {
             $this->eventDispatcher->dispatch(
                 new CallbackHttpResponseEvent($callback, $response),
                 CallbackHttpResponseEvent::NAME

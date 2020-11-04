@@ -13,6 +13,7 @@ use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
+use Psr\Http\Message\ResponseInterface;
 
 class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 {
@@ -40,15 +41,30 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testHandleResponseNoEventDispatched()
+    /**
+     * @dataProvider handleResponseNoEventDispatchedDataProvider
+     */
+    public function testHandleResponseNoEventDispatched(ResponseInterface $response)
     {
-        $response = new Response();
         $callback = MockCallback::createEmpty();
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
         self::assertNull($this->exceptionEventSubscriber->getEvent());
         self::assertNull($this->responseEventSubscriber->getEvent());
+    }
+
+    public function handleResponseNoEventDispatchedDataProvider(): array
+    {
+        $dataSets = [];
+
+        for ($statusCode = 100; $statusCode < 300; $statusCode++) {
+            $dataSets[(string) $statusCode] = [
+                'response' => new Response($statusCode)
+            ];
+        }
+
+        return $dataSets;
     }
 
     public function testHandleResponseEventDispatched()
