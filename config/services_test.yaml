@@ -57,6 +57,9 @@ services:
     App\Services\TestFactory:
         public: true
 
+    App\Services\CallbackResponseHandler:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

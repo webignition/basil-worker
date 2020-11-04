@@ -4,28 +4,25 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\CallbackHttpExceptionEvent;
-use App\Event\CallbackHttpResponseEvent;
 use App\HttpMessage\CallbackRequest;
 use App\Model\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CallbackSender
 {
     private HttpClientInterface $httpClient;
     private JobStore $jobStore;
-    private EventDispatcherInterface $eventDispatcher;
+    private CallbackResponseHandler $callbackResponseHandler;
 
     public function __construct(
         HttpClientInterface $httpClient,
         JobStore $jobStore,
-        EventDispatcherInterface $eventDispatcher
+        CallbackResponseHandler $callbackResponseHandler
     ) {
         $this->httpClient = $httpClient;
         $this->jobStore = $jobStore;
-        $this->eventDispatcher = $eventDispatcher;
+        $this->callbackResponseHandler = $callbackResponseHandler;
     }
 
     public function send(CallbackInterface $callback): void
@@ -39,20 +36,9 @@ class CallbackSender
 
         try {
             $response = $this->httpClient->sendRequest($request);
-
-            if (200 !== $response->getStatusCode()) {
-                $this->eventDispatcher->dispatch(
-                    new CallbackHttpResponseEvent($callback, $response),
-                    CallbackHttpResponseEvent::NAME
-                );
-            }
+            $this->callbackResponseHandler->handleResponse($callback, $response);
         } catch (ClientExceptionInterface $httpClientException) {
-            $this->eventDispatcher->dispatch(
-                new CallbackHttpExceptionEvent($callback, $httpClientException),
-                CallbackHttpExceptionEvent::NAME
-            );
-
-            return;
+            $this->callbackResponseHandler->handleClientException($callback, $httpClientException);
         }
     }
 }
