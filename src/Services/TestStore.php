@@ -5,18 +5,15 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
-use App\Repository\TestRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TestStore
 {
     private EntityManagerInterface $entityManager;
-    private TestRepository $repository;
 
-    public function __construct(EntityManagerInterface $entityManager, TestRepository $testRepository)
+    public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->repository = $testRepository;
     }
 
     public function store(Test $test): Test
