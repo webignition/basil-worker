@@ -26,8 +26,4 @@ class TestStore
 
         return $test;
     }
-    public function getAwaitingCount(): int
-    {
-        return $this->repository->getAwaitingCount();
-    }
 }
