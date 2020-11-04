@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Services;
 
-use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
-use App\Services\TestStore;
+use App\Services\TestFactory;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
@@ -22,7 +21,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
 {
     private TestExecutor $testExecutor;
     private Compiler $compiler;
-    private TestStore $testStore;
+    private TestFactory $testFactory;
 
     protected function setUp(): void
     {
@@ -40,10 +39,10 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
             $this->compiler = $compiler;
         }
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
+        $testFactory = self::$container->get(TestFactory::class);
+        self::assertInstanceOf(TestFactory::class, $testFactory);
+        if ($testFactory instanceof TestFactory) {
+            $this->testFactory = $testFactory;
         }
     }
 
@@ -59,11 +58,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         $suiteManifest = $this->compiler->compile($source);
         self::assertInstanceOf(SuiteManifest::class, $suiteManifest);
 
-        /** @var Test[] */
-        $tests = [];
-        foreach ($suiteManifest->getTestManifests() as $testManifest) {
-            $tests[] = $this->testStore->createFromTestManifest($testManifest);
-        }
+        $tests = $this->testFactory->createFromManifestCollection($suiteManifest->getTestManifests());
 
         $expectedDispatchedEvents = [];
         foreach ($tests as $testIndex => $test) {

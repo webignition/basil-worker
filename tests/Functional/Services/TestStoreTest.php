@@ -10,8 +10,6 @@ use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilCompilerModels\TestManifest;
-use webignition\BasilModels\Test\Configuration;
 
 class TestStoreTest extends AbstractBaseFunctionalTest
 {
@@ -120,24 +118,6 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testCreateFromTestManifest()
-    {
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
-
-        $manifest = new TestManifest(
-            new Configuration('chrome', 'http://example.com'),
-            'Tests/test.yml',
-            '/app/tests/GeneratedTest.php',
-            2
-        );
-
-        $test = $this->testStore->createFromTestManifest($manifest);
-
-        $this->assertTestMatchesManifest($manifest, $test);
-        self::assertSame(1, $test->getPosition());
-    }
-
     /**
      * @return Test[]
      */
@@ -163,23 +143,5 @@ class TestStoreTest extends AbstractBaseFunctionalTest
                 2
             ),
         ];
-    }
-
-    private function assertTestMatchesManifest(TestManifest $manifest, Test $test): void
-    {
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
-
-        $manifestConfiguration = $manifest->getConfiguration();
-
-        self::assertInstanceOf(Test::class, $test);
-        self::assertIsInt($test->getId());
-        self::assertSame(
-            $testConfigurationStore->find($manifestConfiguration->getBrowser(), $manifestConfiguration->getUrl()),
-            $test->getConfiguration()
-        );
-        self::assertSame($manifest->getSource(), $test->getSource());
-        self::assertSame($manifest->getTarget(), $test->getTarget());
-        self::assertSame($manifest->getStepCount(), $test->getStepCount());
     }
 }

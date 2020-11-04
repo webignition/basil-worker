@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilCompilerModels\TestManifest;
 
 class TestStore
 {
@@ -55,21 +54,6 @@ class TestStore
         $test = Test::create($configuration, $source, $target, $stepCount, $position);
 
         return $this->store($test);
-    }
-
-    public function createFromTestManifest(TestManifest $manifest): Test
-    {
-        $manifestConfiguration = $manifest->getConfiguration();
-
-        return $this->create(
-            TestConfiguration::create(
-                $manifestConfiguration->getBrowser(),
-                $manifestConfiguration->getUrl()
-            ),
-            $manifest->getSource(),
-            $manifest->getTarget(),
-            $manifest->getStepCount()
-        );
     }
 
     public function store(Test $test): Test
