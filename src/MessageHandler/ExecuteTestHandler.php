@@ -8,11 +8,11 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
+use App\Repository\TestRepository;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
-use App\Services\TestStore;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
@@ -21,24 +21,24 @@ class ExecuteTestHandler implements MessageHandlerInterface
     private JobStore $jobStore;
     private JobStateMutator $jobStateMutator;
     private TestExecutor $testExecutor;
-    private TestStore $testStore;
     private EventDispatcherInterface $eventDispatcher;
     private TestStateMutator $testStateMutator;
+    private TestRepository $testRepository;
 
     public function __construct(
         JobStore $jobStore,
         JobStateMutator $jobStateMutator,
-        TestStore $testStore,
         TestExecutor $testExecutor,
         EventDispatcherInterface $eventDispatcher,
-        TestStateMutator $testStateMutator
+        TestStateMutator $testStateMutator,
+        TestRepository $testRepository
     ) {
         $this->jobStore = $jobStore;
         $this->jobStateMutator = $jobStateMutator;
-        $this->testStore = $testStore;
         $this->testExecutor = $testExecutor;
         $this->eventDispatcher = $eventDispatcher;
         $this->testStateMutator = $testStateMutator;
+        $this->testRepository = $testRepository;
     }
 
     public function __invoke(ExecuteTest $message): void
@@ -57,7 +57,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $test = $this->testStore->find($message->getTestId());
+        $test = $this->testRepository->find($message->getTestId());
         if (null === $test) {
             return;
         }

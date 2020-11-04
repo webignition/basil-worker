@@ -19,11 +19,6 @@ class TestStore
         $this->repository = $testRepository;
     }
 
-    public function find(int $testId): ?Test
-    {
-        return $this->repository->find($testId);
-    }
-
     /**
      * @return Test[]
      */
