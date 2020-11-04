@@ -6,13 +6,13 @@ namespace App\Controller;
 
 use App\Event\SourcesAddedEvent;
 use App\Model\Manifest;
+use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
 use App\Services\SourceStore;
-use App\Services\TestStore;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -116,11 +116,11 @@ class JobController extends AbstractController
     /**
      * @Route("/status", name="status", methods={"GET"})
      *
-     * @param TestStore $testStore
+     * @param TestRepository $testRepository
      *
      * @return JsonResponse
      */
-    public function status(TestStore $testStore): JsonResponse
+    public function status(TestRepository $testRepository): JsonResponse
     {
         if (false === $this->jobStore->hasJob()) {
             return new JsonResponse([], 400);
@@ -128,7 +128,7 @@ class JobController extends AbstractController
 
         $job = $this->jobStore->getJob();
 
-        $tests = $testStore->findAll();
+        $tests = $testRepository->findAll();
 
         $testData = [];
         foreach ($tests as $test) {

@@ -19,14 +19,6 @@ class TestStore
         $this->repository = $testRepository;
     }
 
-    /**
-     * @return Test[]
-     */
-    public function findAll(): array
-    {
-        return $this->repository->findAll();
-    }
-
     public function findBySource(string $source): ?Test
     {
         return $this->repository->findBySource($source);

@@ -6,10 +6,10 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\TestConfiguration;
 use App\Message\ExecuteTest;
+use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
 use Symfony\Component\Messenger\Envelope;
@@ -18,10 +18,10 @@ use Symfony\Component\Messenger\Transport\InMemoryTransport;
 class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
 {
     private ExecutionWorkflowHandler $handler;
-    private TestStore $testStore;
     private InMemoryTransport $messengerTransport;
     private TestTestFactory $testFactory;
     private TestStateMutator $testStateMutator;
+    private TestRepository $testRepository;
 
     protected function setUp(): void
     {
@@ -35,11 +35,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         if ($jobStore instanceof JobStore) {
             $jobStore->create('label content', 'http://example.com/callback');
-        }
-
-        $testStore = self::$container->get(TestStore::class);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
         }
 
         $messengerTransport = self::$container->get('messenger.transport.async');
@@ -57,6 +52,12 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
         if ($testStateMutator instanceof TestStateMutator) {
             $this->testStateMutator = $testStateMutator;
+        }
+
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
         }
     }
 
@@ -86,7 +87,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         $envelope = $queue[0] ?? null;
 
         self::assertEquals(
-            $expectedQueuedMessageCreator($this->testStore),
+            $expectedQueuedMessageCreator($this->testRepository),
             $envelope->getMessage()
         );
     }
@@ -110,8 +111,8 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
                 },
-                'expectedQueuedMessageCreator' => function (TestStore $testStore) {
-                    $allTests = $testStore->findAll();
+                'expectedQueuedMessageCreator' => function (TestRepository $testRepository) {
+                    $allTests = $testRepository->findAll();
                     $test = $allTests[0];
 
                     return new ExecuteTest((int) $test->getId());
@@ -142,8 +143,8 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
                 },
-                'expectedQueuedMessageCreator' => function (TestStore $testStore) {
-                    $allTests = $testStore->findAll();
+                'expectedQueuedMessageCreator' => function (TestRepository $testRepository) {
+                    $allTests = $testRepository->findAll();
                     $test = $allTests[1];
 
                     return new ExecuteTest((int) $test->getId());
@@ -176,8 +177,8 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
                 },
-                'expectedQueuedMessageCreator' => function (TestStore $testStore) {
-                    $allTests = $testStore->findAll();
+                'expectedQueuedMessageCreator' => function (TestRepository $testRepository) {
+                    $allTests = $testRepository->findAll();
                     $test = $allTests[2];
 
                     return new ExecuteTest((int) $test->getId());
