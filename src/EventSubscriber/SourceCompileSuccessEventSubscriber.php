@@ -8,23 +8,23 @@ use App\Event\SourceCompileSuccessEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
-use App\Services\TestStore;
+use App\Services\TestFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
 {
-    private TestStore $testStore;
+    private TestFactory $testFactory;
     private CompilationWorkflowHandler $compilationWorkflowHandler;
     private JobStateMutator $jobStateMutator;
     private ExecutionWorkflowHandler $executionWorkflowHandler;
 
     public function __construct(
-        TestStore $testStore,
+        TestFactory $testFactory,
         CompilationWorkflowHandler $compilationWorkflowHandler,
         JobStateMutator $jobStateMutator,
         ExecutionWorkflowHandler $executionWorkflowHandler
     ) {
-        $this->testStore = $testStore;
+        $this->testFactory = $testFactory;
         $this->compilationWorkflowHandler = $compilationWorkflowHandler;
         $this->jobStateMutator = $jobStateMutator;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
@@ -46,7 +46,7 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     {
         $suiteManifest = $event->getSuiteManifest();
 
-        $this->testStore->createFromTestManifests($suiteManifest->getTestManifests());
+        $this->testFactory->createFromManifestCollection($suiteManifest->getTestManifests());
     }
 
     public function dispatchNextCompileSourceMessage(): void
