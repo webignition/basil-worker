@@ -10,6 +10,13 @@ class TestCallback extends AbstractCallback
 {
     private const TYPE = 'test';
 
+    public function __construct(int $retryCount = 0)
+    {
+        for ($i = 0; $i < $retryCount; $i++) {
+            $this->incrementRetryCount();
+        }
+    }
+
     public function getType(): string
     {
         return self::TYPE;

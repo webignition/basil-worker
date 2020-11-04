@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Event\CallbackHttpExceptionEvent;
 use App\Event\CallbackHttpResponseEvent;
+use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
@@ -47,10 +48,8 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider handleResponseNoEventDispatchedDataProvider
      */
-    public function testHandleResponseNoEventDispatched(ResponseInterface $response)
+    public function testHandleResponseNoEventDispatched(CallbackInterface $callback, ResponseInterface $response)
     {
-        $callback = new TestCallback();
-
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
         self::assertNull($this->exceptionEventSubscriber->getEvent());
@@ -63,9 +62,15 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 
         for ($statusCode = 100; $statusCode < 300; $statusCode++) {
             $dataSets[(string) $statusCode] = [
-                'response' => new Response($statusCode)
+                'callback' => new TestCallback(),
+                'response' => new Response($statusCode),
             ];
         }
+
+        $dataSets['retry limit reached'] = [
+            'callback' => new TestCallback(3),
+            'response' => new Response($statusCode),
+        ];
 
         return $dataSets;
     }
@@ -86,6 +91,19 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         self::assertSame($callback, $event->getCallback());
         self::assertSame($response, $event->getResponse());
         self::assertSame(1, $callback->getRetryCount());
+    }
+
+    public function testHandleExceptionNoEventDispatched()
+    {
+        $retryLimit = (int) self::$container->getParameter('callback_retry_limit');
+
+        $callback = new TestCallback($retryLimit);
+        $exception = \Mockery::mock(ConnectException::class);
+
+        $this->callbackResponseHandler->handleClientException($callback, $exception);
+
+        self::assertNull($this->exceptionEventSubscriber->getEvent());
+        self::assertNull($this->responseEventSubscriber->getEvent());
     }
 
     public function testHandleExceptionEventDispatched()
