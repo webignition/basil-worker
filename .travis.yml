@@ -27,6 +27,7 @@ env:
     - WORKER_RABBITMQ_PASS=guest
     - WORKER_RABBITMQ_EXPOSED_PORT=9002
     - HTTP_LOG_PATH=tests/log/http_log.txt
+    - CALLBACK_RETRY_LIMIT=3
 
 before_install:
   - sudo apt-get install php-amqp

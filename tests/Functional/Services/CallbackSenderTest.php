@@ -8,8 +8,8 @@ use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Mock\Model\Callback\MockCallback;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
+use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
@@ -45,7 +45,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
      */
     public function testHandleResponseReceived(ResponseInterface $response)
     {
-        $callback = MockCallback::createEmpty();
+        $callback = new TestCallback();
 
         $this->mockHandler->append($response);
 
@@ -82,7 +82,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send(MockCallback::createEmpty());
+        $this->callbackSender->send(new TestCallback());
     }
 
     /**
@@ -94,7 +94,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->mockHandler->append($exception);
 
-        $callback = MockCallback::createEmpty();
+        $callback = new TestCallback();
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleResponseCall()

@@ -59,6 +59,8 @@ services:
 
     App\Services\CallbackResponseHandler:
         public: true
+        arguments:
+            $retryLimit: '%callback_retry_limit%'
 
     App\Tests\Services\BasilFixtureHandler:
         public: true

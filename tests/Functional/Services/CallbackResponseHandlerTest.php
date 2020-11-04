@@ -8,15 +8,18 @@ use App\Event\CallbackHttpExceptionEvent;
 use App\Event\CallbackHttpResponseEvent;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Mock\Model\Callback\MockCallback;
+use App\Tests\Model\TestCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
+use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 
 class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 {
+    use MockeryPHPUnitIntegration;
+
     private CallbackResponseHandler $callbackResponseHandler;
     private CallbackHttpExceptionEventSubscriber $exceptionEventSubscriber;
     private CallbackHttpResponseEventSubscriber $responseEventSubscriber;
@@ -46,7 +49,7 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
      */
     public function testHandleResponseNoEventDispatched(ResponseInterface $response)
     {
-        $callback = MockCallback::createEmpty();
+        $callback = new TestCallback();
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
@@ -70,7 +73,8 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     public function testHandleResponseEventDispatched()
     {
         $response = new Response(404);
-        $callback = MockCallback::createEmpty();
+        $callback = new TestCallback();
+        self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
@@ -81,12 +85,14 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 
         self::assertSame($callback, $event->getCallback());
         self::assertSame($response, $event->getResponse());
+        self::assertSame(1, $callback->getRetryCount());
     }
 
     public function testHandleExceptionEventDispatched()
     {
         $exception = \Mockery::mock(ConnectException::class);
-        $callback = MockCallback::createEmpty();
+        $callback = new TestCallback();
+        self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleClientException($callback, $exception);
 
@@ -97,5 +103,6 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 
         self::assertSame($callback, $event->getCallback());
         self::assertSame($exception, $event->getException());
+        self::assertSame(1, $callback->getRetryCount());
     }
 }

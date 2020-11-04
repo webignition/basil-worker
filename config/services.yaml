@@ -6,6 +6,7 @@
 parameters:
     compiler_source_directory: '%env(COMPILER_SOURCE_DIRECTORY)%'
     compiler_target_directory: '%env(COMPILER_TARGET_DIRECTORY)%'
+    callback_retry_limit: '%env(CALLBACK_RETRY_LIMIT)%'
 
 services:
     # default configuration for services in *this* file
@@ -80,3 +81,8 @@ services:
             $compilerSourceDirectory: '%compiler_source_directory%'
 
     Symfony\Component\Yaml\Dumper: ~
+
+    App\Services\CallbackResponseHandler:
+        arguments:
+            $retryLimit: '%callback_retry_limit%'
+

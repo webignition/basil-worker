@@ -6,7 +6,7 @@ namespace App\Model\Callback;
 
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
-class CompileFailure implements CallbackInterface
+class CompileFailure extends AbstractCallback
 {
     public const TYPE = 'compile-failure';
 

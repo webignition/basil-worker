@@ -6,7 +6,7 @@ namespace App\Model\Callback;
 
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceived implements CallbackInterface
+class ExecuteDocumentReceived extends AbstractCallback
 {
     public const TYPE = 'execute-document-received';
 

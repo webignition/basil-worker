@@ -48,4 +48,16 @@ class CompileFailureTest extends TestCase
 
         self::assertSame($sourceData, $callback->getData());
     }
+
+    public function testSendAttemptCount()
+    {
+        $callback = new CompileFailure(\Mockery::mock(ErrorOutputInterface::class));
+        self::assertSame(0, $callback->getRetryCount());
+
+        $callback->incrementRetryCount();
+        self::assertSame(1, $callback->getRetryCount());
+
+        $callback->incrementRetryCount();
+        self::assertSame(2, $callback->getRetryCount());
+    }
 }

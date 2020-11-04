@@ -52,4 +52,16 @@ class ExecuteDocumentReceivedTest extends TestCase
             ],
         ];
     }
+
+    public function testSendAttemptCount()
+    {
+        $callback = new ExecuteDocumentReceived(new Document());
+        self::assertSame(0, $callback->getRetryCount());
+
+        $callback->incrementRetryCount();
+        self::assertSame(1, $callback->getRetryCount());
+
+        $callback->incrementRetryCount();
+        self::assertSame(2, $callback->getRetryCount());
+    }
 }

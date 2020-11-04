@@ -14,10 +14,12 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class CallbackResponseHandler
 {
     private EventDispatcherInterface $eventDispatcher;
+    private int $retryLimit;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(EventDispatcherInterface $eventDispatcher, int $retryLimit)
     {
         $this->eventDispatcher = $eventDispatcher;
+        $this->retryLimit = $retryLimit;
     }
 
     public function handleResponse(CallbackInterface $callback, ResponseInterface $response): void
@@ -25,18 +27,26 @@ class CallbackResponseHandler
         $statusCode = $response->getStatusCode();
 
         if ($statusCode >= 300) {
-            $this->eventDispatcher->dispatch(
-                new CallbackHttpResponseEvent($callback, $response),
-                CallbackHttpResponseEvent::NAME
-            );
+            if (false === $callback->hasReachedRetryLimit($this->retryLimit)) {
+                $callback->incrementRetryCount();
+
+                $this->eventDispatcher->dispatch(
+                    new CallbackHttpResponseEvent($callback, $response),
+                    CallbackHttpResponseEvent::NAME
+                );
+            }
         }
     }
 
     public function handleClientException(CallbackInterface $callback, ClientExceptionInterface $clientException): void
     {
-        $this->eventDispatcher->dispatch(
-            new CallbackHttpExceptionEvent($callback, $clientException),
-            CallbackHttpExceptionEvent::NAME
-        );
+        if (false === $callback->hasReachedRetryLimit($this->retryLimit)) {
+            $callback->incrementRetryCount();
+
+            $this->eventDispatcher->dispatch(
+                new CallbackHttpExceptionEvent($callback, $clientException),
+                CallbackHttpExceptionEvent::NAME
+            );
+        }
     }
 }
