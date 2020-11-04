@@ -26,12 +26,6 @@ class TestStore
 
         return $test;
     }
-
-    public function getTotalCount(): int
-    {
-        return $this->repository->count([]);
-    }
-
     public function getAwaitingCount(): int
     {
         return $this->repository->getAwaitingCount();
