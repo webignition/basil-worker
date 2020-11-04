@@ -175,9 +175,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
         self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-
         $testFactory = self::$container->get(TestTestFactory::class);
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
@@ -202,7 +199,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
-        $nextAwaitingTest = $testStore->findNextAwaiting();
+        $nextAwaitingTest = $testRepository->findNextAwaiting();
         $nextAwaitingTestId = $nextAwaitingTest instanceof Test ? (int) $nextAwaitingTest->getId() : 0;
 
         $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);

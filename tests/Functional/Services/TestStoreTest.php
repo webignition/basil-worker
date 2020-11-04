@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Repository\TestRepository;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
@@ -13,6 +14,8 @@ use App\Tests\Services\TestTestFactory;
 class TestStoreTest extends AbstractBaseFunctionalTest
 {
     private TestStore $testStore;
+    private TestTestFactory $testFactory;
+    private TestRepository $testRepository;
 
     protected function setUp(): void
     {
@@ -20,50 +23,38 @@ class TestStoreTest extends AbstractBaseFunctionalTest
 
         $store = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $store);
-
         if ($store instanceof TestStore) {
             $this->testStore = $store;
         }
-    }
 
-    public function testFindNextAwaiting()
-    {
-        $tests = $this->createTestSet();
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
+        }
 
-        foreach ($tests as $test) {
-            self::assertEquals($test, $this->testStore->findNextAwaiting());
-            $test->setState(Test::STATE_RUNNING);
-            $this->testStore->store($test);
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
         }
     }
 
-    /**
-     * @return Test[]
-     */
-    private function createTestSet(): array
+    public function testStore()
     {
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        $test = $this->testFactory->createFoo(
+            TestConfiguration::create('chrome', 'http://example.com'),
+            '/app/source/Test/test.yml',
+            '/app/tests/GeneratedTest.php',
+            1
+        );
 
-        return [
-            $testFactory->createFoo(
-                TestConfiguration::create('chrome', 'http://example.com'),
-                'Test/test1.yml',
-                'generated/GeneratedTest1.php',
-                3
-            ),
-            $testFactory->createFoo(
-                TestConfiguration::create('chrome', 'http://example.com'),
-                'Test/test2.yml',
-                'generated/GeneratedTest2.php',
-                2
-            ),
-            $testFactory->createFoo(
-                TestConfiguration::create('firefox', 'http://example.com'),
-                'Test/test2.yml',
-                'generated/GeneratedTest3.php',
-                2
-            ),
-        ];
+        self::assertSame(Test::STATE_AWAITING, $test->getState());
+
+        $test->setState(Test::STATE_RUNNING);
+        $this->testStore->store($test);
+
+        $retrievedTest = $this->testRepository->find($test->getId());
+        self::assertEquals($test, $retrievedTest);
     }
 }

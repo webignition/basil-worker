@@ -6,30 +6,29 @@ namespace App\Services;
 
 use App\Entity\Test;
 use App\Model\Workflow\ExecutionWorkflow;
+use App\Repository\TestRepository;
 
 class ExecutionWorkflowFactory
 {
     private CompilationWorkflowFactory $compilationWorkflowFactory;
-    private TestStore $testStore;
+    private TestRepository $testRepository;
 
-    public function __construct(
-        CompilationWorkflowFactory $compilationWorkflowFactory,
-        TestStore $testStore
-    ) {
+    public function __construct(CompilationWorkflowFactory $compilationWorkflowFactory, TestRepository $testRepository)
+    {
         $this->compilationWorkflowFactory = $compilationWorkflowFactory;
-        $this->testStore = $testStore;
+        $this->testRepository = $testRepository;
     }
 
     public function create(): ExecutionWorkflow
     {
         $compilationWorkflow = $this->compilationWorkflowFactory->create();
-        $nextAwaitingTest = $this->testStore->findNextAwaiting();
+        $nextAwaitingTest = $this->testRepository->findNextAwaiting();
         $nextTestId = $nextAwaitingTest instanceof Test ? $nextAwaitingTest->getId() : null;
 
         return new ExecutionWorkflow(
             $compilationWorkflow->getState(),
-            $this->testStore->getTotalCount(),
-            $this->testStore->getAwaitingCount(),
+            $this->testRepository->count([]),
+            $this->testRepository->getAwaitingCount(),
             $nextTestId
         );
     }

@@ -7,27 +7,28 @@ namespace App\Services;
 use App\Entity\Test;
 use App\Message\ExecuteTest;
 use App\Model\Workflow\ExecutionWorkflow;
+use App\Repository\TestRepository;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class ExecutionWorkflowHandler
 {
-    private TestStore $testStore;
     private MessageBusInterface $messageBus;
     private ExecutionWorkflowFactory $executionWorkflowFactory;
+    private TestRepository $testRepository;
 
     public function __construct(
-        TestStore $testStore,
         MessageBusInterface $messageBus,
-        ExecutionWorkflowFactory $executionWorkflowFactory
+        ExecutionWorkflowFactory $executionWorkflowFactory,
+        TestRepository $testRepository
     ) {
-        $this->testStore = $testStore;
         $this->messageBus = $messageBus;
         $this->executionWorkflowFactory = $executionWorkflowFactory;
+        $this->testRepository = $testRepository;
     }
 
     public function dispatchNextExecuteTestMessage(): void
     {
-        $nextAwaitingTest = $this->testStore->findNextAwaiting();
+        $nextAwaitingTest = $this->testRepository->findNextAwaiting();
 
         if ($nextAwaitingTest instanceof Test) {
             $testId = $nextAwaitingTest->getId();
