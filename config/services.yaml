@@ -82,7 +82,6 @@ services:
 
     Symfony\Component\Yaml\Dumper: ~
 
-    App\Services\CallbackResponseHandler:
+    App\Services\CallbackSender:
         arguments:
             $retryLimit: '%callback_retry_limit%'
-

@@ -41,9 +41,9 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider handleResponseReceivedDataProvider
+     * @dataProvider sendResponseReceivedDataProvider
      */
-    public function testHandleResponseReceived(ResponseInterface $response)
+    public function testSendResponseReceived(ResponseInterface $response)
     {
         $callback = new TestCallback();
 
@@ -61,7 +61,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->callbackSender->send($callback);
     }
 
-    public function handleResponseReceivedDataProvider(): array
+    public function sendResponseReceivedDataProvider(): array
     {
         return [
             'HTTP 200' => [
@@ -83,6 +83,20 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
         $this->callbackSender->send(new TestCallback());
+    }
+
+    public function testSendCallbackRetryLimitReached()
+    {
+        $retryLimit = (int) self::$container->getParameter('callback_retry_limit');
+
+        $responseHandler = (new MockCallbackResponseHandler())
+            ->withoutHandleResponseCall()
+            ->withoutHandleClientExceptionCall()
+            ->getMock();
+
+        $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
+
+        $this->callbackSender->send(new TestCallback($retryLimit));
     }
 
     /**

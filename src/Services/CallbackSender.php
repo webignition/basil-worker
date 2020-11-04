@@ -14,20 +14,27 @@ class CallbackSender
     private HttpClientInterface $httpClient;
     private JobStore $jobStore;
     private CallbackResponseHandler $callbackResponseHandler;
+    private int $retryLimit;
 
     public function __construct(
         HttpClientInterface $httpClient,
         JobStore $jobStore,
-        CallbackResponseHandler $callbackResponseHandler
+        CallbackResponseHandler $callbackResponseHandler,
+        int $retryLimit
     ) {
         $this->httpClient = $httpClient;
         $this->jobStore = $jobStore;
         $this->callbackResponseHandler = $callbackResponseHandler;
+        $this->retryLimit = $retryLimit;
     }
 
     public function send(CallbackInterface $callback): void
     {
         if (false === $this->jobStore->hasJob()) {
+            return;
+        }
+
+        if ($callback->hasReachedRetryLimit($this->retryLimit)) {
             return;
         }
 

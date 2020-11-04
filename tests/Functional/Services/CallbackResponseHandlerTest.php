@@ -67,11 +67,6 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
             ];
         }
 
-        $dataSets['retry limit reached'] = [
-            'callback' => new TestCallback(3),
-            'response' => new Response($statusCode),
-        ];
-
         return $dataSets;
     }
 
@@ -91,19 +86,6 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         self::assertSame($callback, $event->getCallback());
         self::assertSame($response, $event->getResponse());
         self::assertSame(1, $callback->getRetryCount());
-    }
-
-    public function testHandleExceptionNoEventDispatched()
-    {
-        $retryLimit = (int) self::$container->getParameter('callback_retry_limit');
-
-        $callback = new TestCallback($retryLimit);
-        $exception = \Mockery::mock(ConnectException::class);
-
-        $this->callbackResponseHandler->handleClientException($callback, $exception);
-
-        self::assertNull($this->exceptionEventSubscriber->getEvent());
-        self::assertNull($this->responseEventSubscriber->getEvent());
     }
 
     public function testHandleExceptionEventDispatched()
