@@ -19,11 +19,6 @@ class TestStore
         $this->repository = $testRepository;
     }
 
-    public function findBySource(string $source): ?Test
-    {
-        return $this->repository->findBySource($source);
-    }
-
     public function store(Test $test): Test
     {
         $this->entityManager->persist($test);

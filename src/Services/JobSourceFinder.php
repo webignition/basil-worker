@@ -5,18 +5,22 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
+use App\Repository\TestRepository;
 
 class JobSourceFinder
 {
     private JobStore $jobStore;
-    private TestStore $testStore;
     private SourcePathTranslator $sourcePathTranslator;
+    private TestRepository $testRepository;
 
-    public function __construct(JobStore $jobStore, TestStore $testStore, SourcePathTranslator $sourcePathTranslator)
-    {
+    public function __construct(
+        JobStore $jobStore,
+        SourcePathTranslator $sourcePathTranslator,
+        TestRepository $testRepository
+    ) {
         $this->jobStore = $jobStore;
-        $this->testStore = $testStore;
         $this->sourcePathTranslator = $sourcePathTranslator;
+        $this->testRepository = $testRepository;
     }
 
     /**
@@ -56,7 +60,7 @@ class JobSourceFinder
 
         foreach ($job->getSources() as $currentSource) {
             $testSource = $this->sourcePathTranslator->translateJobSourceToTestSource($currentSource);
-            $sourceHasTest = $this->testStore->findBySource($testSource) instanceof Test;
+            $sourceHasTest = $this->testRepository->findBySource($testSource) instanceof Test;
 
             $bar = $something($currentSource, $sourceHasTest);
 
