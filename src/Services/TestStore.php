@@ -6,25 +6,24 @@ namespace App\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Repository\TestRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
 use webignition\BasilCompilerModels\TestManifest;
 
 class TestStore
 {
     private EntityManagerInterface $entityManager;
-
-    /**
-     * @var EntityRepository<Test>
-     */
-    private EntityRepository $repository;
+    private TestRepository $repository;
     private TestConfigurationStore $testConfigurationStore;
 
-    public function __construct(EntityManagerInterface $entityManager, TestConfigurationStore $testConfigurationStore)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TestConfigurationStore $testConfigurationStore,
+        TestRepository $testRepository
+    ) {
         $this->entityManager = $entityManager;
-        $this->repository = $entityManager->getRepository(Test::class);
         $this->testConfigurationStore = $testConfigurationStore;
+        $this->repository = $testRepository;
     }
 
     public function find(int $testId): ?Test
@@ -37,16 +36,12 @@ class TestStore
      */
     public function findAll(): array
     {
-        return $this->repository->findBy([], [
-            'position' => 'ASC',
-        ]);
+        return $this->repository->findAll();
     }
 
     public function findBySource(string $source): ?Test
     {
-        return $this->repository->findOneBy([
-            'source' => $source,
-        ]);
+        return $this->repository->findBySource($source);
     }
 
     public function create(
@@ -105,28 +100,17 @@ class TestStore
 
     public function findNextAwaiting(): ?Test
     {
-        $test = $this->repository->findOneBy(
-            [
-                'state' => Test::STATE_AWAITING,
-            ],
-            [
-                'position' => 'ASC',
-            ]
-        );
-
-        return $test instanceof Test ? $test : null;
+        return $this->repository->findNextAwaiting();
     }
 
     public function getTotalCount(): int
     {
-        return count($this->repository->findAll());
+        return $this->repository->count([]);
     }
 
     public function getAwaitingCount(): int
     {
-        return count($this->repository->findBy([
-            'state' => Test::STATE_AWAITING,
-        ]));
+        return $this->repository->getAwaitingCount();
     }
 
     private function findNextPosition(): int
@@ -140,12 +124,6 @@ class TestStore
 
     private function findMaxPosition(): ?int
     {
-        $test = $this->repository->findOneBy([], [
-            'position' => 'DESC',
-        ]);
-
-        return $test instanceof Test
-            ? $test->getPosition()
-            : null;
+        return $this->repository->findMaxPosition();
     }
 }
