@@ -12,8 +12,8 @@ use App\EventSubscriber\TestExecuteDocumentReceivedEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -42,10 +42,10 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         $job->setState(Job::STATE_EXECUTION_RUNNING);
         $jobStore->store($job);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
-        $this->test = $testStore->create(
+        $this->test = $testFactory->createFoo(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/tests/test1.yml',
             '/generated/GeneratedTest1.php',

@@ -14,6 +14,7 @@ use App\Message\ExecuteTest;
 use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\ConfigurationInterface;
@@ -173,10 +174,13 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         $testStore = self::$container->get(TestStore::class);
         self::assertInstanceOf(TestStore::class, $testStore);
 
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+
         $messengerTransport = self::$container->get('messenger.transport.async');
         self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
 
-        $setup($this->jobStore, $testStore);
+        $setup($this->jobStore, $testFactory);
         $job = $this->jobStore->getJob();
 
         self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
@@ -229,7 +233,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                 'expectedTestCount' => 1,
             ],
             'two sources, first is compiled, event is for second' => [
-                'setup' => function (JobStore $jobStore, TestStore $testStore): void {
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory): void {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
@@ -237,7 +241,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com/one'),
                         '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',

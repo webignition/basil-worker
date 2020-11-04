@@ -10,9 +10,9 @@ use App\Entity\TestConfiguration;
 use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockTestExecutor;
+use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\ObjectReflector\ObjectReflector;
 
@@ -41,10 +41,10 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         $this->job->setState(Job::STATE_EXECUTION_AWAITING);
         $jobStore->store($this->job);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
-        $this->test = $testStore->create(
+        $this->test = $testFactory->createFoo(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/tests/test1.yml',
             '/generated/GeneratedTest.php',

@@ -7,9 +7,9 @@ namespace App\Tests\Functional\Controller;
 use App\Entity\Job;
 use App\Entity\TestConfiguration;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\ClientRequestSender;
+use App\Tests\Services\TestTestFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
@@ -62,10 +62,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
-        $initializer($jobStore, $testStore);
+        $initializer($jobStore, $testFactory);
 
         $this->client->request('GET', '/status');
 
@@ -130,7 +130,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'new job, has sources, has tests' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->create('label content', 'http://example.com/callback');
 
                     $job->setSources([
@@ -140,14 +140,14 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
                         'generated/GeneratedTest1.php',
                         3
                     );
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test2.yml',
                         'generated/GeneratedTest2.php',

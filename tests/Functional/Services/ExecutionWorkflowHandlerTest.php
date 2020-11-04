@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Message\ExecuteTest;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
+use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -19,6 +20,8 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     private ExecutionWorkflowHandler $handler;
     private TestStore $testStore;
     private InMemoryTransport $messengerTransport;
+    private TestTestFactory $testFactory;
+    private TestStateMutator $testStateMutator;
 
     protected function setUp(): void
     {
@@ -43,6 +46,18 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         if ($messengerTransport instanceof InMemoryTransport) {
             $this->messengerTransport = $messengerTransport;
         }
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
+        }
+
+        $testStateMutator = self::$container->get(TestStateMutator::class);
+        self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
+        if ($testStateMutator instanceof TestStateMutator) {
+            $this->testStateMutator = $testStateMutator;
+        }
     }
 
     public function testDispatchNextExecuteTestMessageNoMessageDispatched()
@@ -59,7 +74,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         callable $initializer,
         callable $expectedQueuedMessageCreator
     ) {
-        $initializer($this->testStore);
+        $initializer($this->testFactory, $this->testStateMutator);
 
         $this->handler->dispatchNextExecuteTestMessage();
 
@@ -80,15 +95,15 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         return [
             'two tests, none run' => [
-                'initializer' => function (TestStore $testStore) {
-                    $testStore->create(
+                'initializer' => function (TestTestFactory $testFactory) {
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
                         1
                     );
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
@@ -103,25 +118,24 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 },
             ],
             'three tests, first complete' => [
-                'initializer' => function (TestStore $testStore) {
-                    $firstTest = $testStore->create(
+                'initializer' => function (TestTestFactory $testFactory, TestStateMutator $testStateMutator) {
+                    $firstTest = $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
                         1
                     );
 
-                    $firstTest->setState(Test::STATE_COMPLETE);
-                    $testStore->store($firstTest);
+                    $testStateMutator->setComplete($firstTest);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
                         1
                     );
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test3.yml',
                         '/generated/GeneratedTest3.php',
@@ -136,28 +150,26 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 },
             ],
             'three tests, first, second complete' => [
-                'initializer' => function (TestStore $testStore) {
-                    $firstTest = $testStore->create(
+                'initializer' => function (TestTestFactory $testFactory, TestStateMutator $testStateMutator) {
+                    $firstTest = $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
                         1
                     );
 
-                    $firstTest->setState(Test::STATE_COMPLETE);
-                    $testStore->store($firstTest);
+                    $testStateMutator->setComplete($firstTest);
 
-                    $secondTest = $testStore->create(
+                    $secondTest = $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
                         1
                     );
 
-                    $secondTest->setState(Test::STATE_COMPLETE);
-                    $testStore->store($secondTest);
+                    $testStateMutator->setComplete($secondTest);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test3.yml',
                         '/generated/GeneratedTest3.php',

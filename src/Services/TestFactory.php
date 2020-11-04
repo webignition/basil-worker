@@ -58,7 +58,7 @@ class TestFactory
         );
     }
 
-    private function create(
+    protected function create(
         TestConfiguration $configuration,
         string $source,
         string $target,

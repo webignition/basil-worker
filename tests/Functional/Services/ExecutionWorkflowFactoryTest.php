@@ -8,10 +8,12 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Model\Workflow\CompilationWorkflow;
 use App\Model\Workflow\ExecutionWorkflow;
+use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStore;
-use App\Services\TestStore;
+use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 
 class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {
@@ -21,8 +23,9 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     ];
 
     private ExecutionWorkflowFactory $executionWorkflowFactory;
-    private JobStore $jobStore;
-    private TestStore $testStore;
+    private TestTestFactory $testFactory;
+    private TestRepository $testRepository;
+    private TestStateMutator $testStateMutator;
 
     protected function setUp(): void
     {
@@ -37,17 +40,27 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
         if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-
-            $job = $this->jobStore->create('label', 'http://example.com/callback');
+            $job = $jobStore->create('label', 'http://example.com/callback');
             $job->setSources(self::JOB_SOURCES);
         }
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
             $this->createTests();
+        }
+
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
+        }
+
+        $testStateMutator = self::$container->get(TestStateMutator::class);
+        self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
+        if ($testStateMutator instanceof TestStateMutator) {
+            $this->testStateMutator = $testStateMutator;
         }
     }
 
@@ -56,19 +69,21 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
      */
     public function testCreate(callable $setup, callable $expectedWorkflowCreator)
     {
-        $setup($this->jobStore, $this->testStore);
+        $setup($this->testRepository, $this->testStateMutator);
 
-        self::assertEquals($expectedWorkflowCreator($this->testStore), $this->executionWorkflowFactory->create());
+        $workflow = $expectedWorkflowCreator($this->testRepository);
+
+        self::assertEquals($workflow, $this->executionWorkflowFactory->create());
     }
 
     public function createDataProvider(): array
     {
         return [
             'no tests executed' => [
-                'initializer' => function () {
+                'setup' => function () {
                 },
-                'expectedWorkflowCreator' => function (TestStore $testStore) {
-                    $nextTest = $testStore->findNextAwaiting();
+                'expectedWorkflowCreator' => function (TestRepository $testRepository) {
+                    $nextTest = $testRepository->findNextAwaiting();
                     $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
                     return new ExecutionWorkflow(
@@ -80,16 +95,14 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 },
             ],
             'first test executed' => [
-                'initializer' => function () {
-                },
-                'expectedWorkflowCreator' => function (TestStore $testStore) {
-                    $nextTest = $testStore->findNextAwaiting();
+                'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
+                    $nextTest = $testRepository->findNextAwaiting();
                     if ($nextTest instanceof Test) {
-                        $nextTest->setState(Test::STATE_COMPLETE);
-                        $testStore->store($nextTest);
+                        $testStateMutator->setComplete($nextTest);
                     }
-
-                    $nextTest = $testStore->findNextAwaiting();
+                },
+                'expectedWorkflowCreator' => function (TestRepository $testRepository) {
+                    $nextTest = $testRepository->findNextAwaiting();
                     $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
                     return new ExecutionWorkflow(
@@ -101,21 +114,18 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 },
             ],
             'both tests executed' => [
-                'initializer' => function () {
+                'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
+                    $nextTest = $testRepository->findNextAwaiting();
+                    if ($nextTest instanceof Test) {
+                        $testStateMutator->setComplete($nextTest);
+                    }
+
+                    $nextTest = $testRepository->findNextAwaiting();
+                    if ($nextTest instanceof Test) {
+                        $testStateMutator->setComplete($nextTest);
+                    }
                 },
-                'expectedWorkflowCreator' => function (TestStore $testStore) {
-                    $nextTest = $testStore->findNextAwaiting();
-                    if ($nextTest instanceof Test) {
-                        $nextTest->setState(Test::STATE_COMPLETE);
-                        $testStore->store($nextTest);
-                    }
-
-                    $nextTest = $testStore->findNextAwaiting();
-                    if ($nextTest instanceof Test) {
-                        $nextTest->setState(Test::STATE_COMPLETE);
-                        $testStore->store($nextTest);
-                    }
-
+                'expectedWorkflowCreator' => function () {
                     return new ExecutionWorkflow(
                         CompilationWorkflow::STATE_COMPLETE,
                         2,
@@ -136,7 +146,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 
     private function createTest(string $source, int $index): void
     {
-        $this->testStore->create(
+        $this->testFactory->createFoo(
             TestConfiguration::create('chrome', 'http://example.com/' . $index),
             '/app/source/' . $source,
             '/generated/GeneratedTest' . $index . '.php',

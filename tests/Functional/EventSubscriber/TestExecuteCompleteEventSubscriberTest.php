@@ -9,9 +9,11 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
+use App\Repository\TestRepository;
 use App\Services\JobStore;
-use App\Services\TestStore;
+use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -21,8 +23,9 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
     use MockeryPHPUnitIntegration;
 
     private InMemoryTransport $messengerTransport;
-    private TestStore $testStore;
     private Job $job;
+    private TestStateMutator $testStateMutator;
+    private TestRepository $testRepository;
 
     /**
      * @var Test[]
@@ -44,31 +47,40 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         $this->job->setState(Job::STATE_EXECUTION_RUNNING);
         $jobStore->store($this->job);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
+        $testStateMutator = self::$container->get(TestStateMutator::class);
+        self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
+        if ($testStateMutator instanceof TestStateMutator) {
+            $this->testStateMutator = $testStateMutator;
         }
 
-        $this->tests[] = $testStore->create(
+        $messengerTransport = self::$container->get('messenger.transport.async');
+        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
+        if ($messengerTransport instanceof InMemoryTransport) {
+            $this->messengerTransport = $messengerTransport;
+        }
+
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
+        }
+
+        $this->tests[] = $testFactory->createFoo(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/app/source/Test/test1.yml',
             '/generated/GeneratedTest1.php',
             1
         );
 
-        $this->tests[] = $testStore->create(
+        $this->tests[] = $testFactory->createFoo(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/app/source/Test/test2.yml',
             '/generated/GeneratedTest2.php',
             1
         );
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        if ($messengerTransport instanceof InMemoryTransport) {
-            $this->messengerTransport = $messengerTransport;
-        }
     }
 
     /**
@@ -82,7 +94,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         int $expectedMessageQueueCount,
         ?callable $expectedMessageQueueMessageCreator = null
     ) {
-        $setup($this->testStore, $this->tests);
+        $setup($this->testStateMutator, $this->tests);
         $test = $this->tests[$testIndex];
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
@@ -99,7 +111,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertCount($expectedMessageQueueCount, $queue);
 
         if (1 === $expectedMessageQueueCount && is_callable($expectedMessageQueueMessageCreator)) {
-            $expectedMessage = $expectedMessageQueueMessageCreator($this->testStore);
+            $expectedMessage = $expectedMessageQueueMessageCreator($this->testRepository);
 
             self::assertIsArray($queue);
             self::assertEquals($expectedMessage, $queue[0]->getMessage());
@@ -110,10 +122,8 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
     {
         return [
             'test failed, not final test' => [
-                'setup' => function (TestStore $testStore, array $tests) {
-                    $test = $tests[0];
-                    $test->setState(Test::STATE_FAILED);
-                    $testStore->store($test);
+                'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setFailed($tests[0]);
                 },
                 'testIndex' => 0,
                 'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
@@ -121,12 +131,9 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                 'expectedMessageQueueCount' => 0,
             ],
             'test failed, is final test' => [
-                'setup' => function (TestStore $testStore, array $tests) {
-                    $tests[0]->setState(Test::STATE_COMPLETE);
-                    $testStore->store($tests[0]);
-
-                    $tests[1]->setState(Test::STATE_FAILED);
-                    $testStore->store($tests[1]);
+                'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setComplete($tests[0]);
+                    $testStateMutator->setFailed($tests[1]);
                 },
                 'testIndex' => 1,
                 'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
@@ -134,30 +141,24 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                 'expectedMessageQueueCount' => 0,
             ],
             'test passed, not final test' => [
-                'setup' => function (TestStore $testStore, array $tests) {
-                    $test = $tests[0];
-                    $test->setState(Test::STATE_RUNNING);
-                    $testStore->store($test);
+                'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setRunning($tests[0]);
                 },
                 'testIndex' => 0,
                 'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
                 'expectedTestSTate' => Test::STATE_COMPLETE,
                 'expectedMessageQueueCount' => 1,
-                'expectedMessageQueueMessageCreator' => function (TestStore $testStore) {
-                    $nextAwaitingTest = $testStore->findNextAwaiting();
+                'expectedMessageQueueMessageCreator' => function (TestRepository $testRepository) {
+                    $nextAwaitingTest = $testRepository->findNextAwaiting();
                     $nextAwaitingId = $nextAwaitingTest instanceof Test ? (int) $nextAwaitingTest->getId() : 0;
 
                     return new ExecuteTest($nextAwaitingId);
                 },
             ],
             'test passed, final test' => [
-                'setup' => function (TestStore $testStore, array $tests) {
-                    $tests[0]->setState(Test::STATE_COMPLETE);
-                    $testStore->store($tests[0]);
-
-                    $test = $tests[1];
-                    $test->setState(Test::STATE_RUNNING);
-                    $testStore->store($test);
+                'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setComplete($tests[0]);
+                    $testStateMutator->setRunning($tests[1]);
                 },
                 'testIndex' => 1,
                 'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,

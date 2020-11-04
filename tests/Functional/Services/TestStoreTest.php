@@ -9,6 +9,7 @@ use App\Entity\TestConfiguration;
 use App\Services\TestConfigurationStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Doctrine\ORM\EntityManagerInterface;
 
 class TestStoreTest extends AbstractBaseFunctionalTest
@@ -97,16 +98,6 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         );
     }
 
-    public function testCreate()
-    {
-        $tests = $this->createTestSet();
-
-        foreach ($tests as $testIndex => $test) {
-            $expectedPosition = $testIndex + 1;
-            self::assertSame($expectedPosition, $test->getPosition());
-        }
-    }
-
     public function testFindNextAwaiting()
     {
         $tests = $this->createTestSet();
@@ -123,20 +114,23 @@ class TestStoreTest extends AbstractBaseFunctionalTest
      */
     private function createTestSet(): array
     {
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+
         return [
-            $this->testStore->create(
+            $testFactory->createFoo(
                 TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test1.yml',
                 'generated/GeneratedTest1.php',
                 3
             ),
-            $this->testStore->create(
+            $testFactory->createFoo(
                 TestConfiguration::create('chrome', 'http://example.com'),
                 'Test/test2.yml',
                 'generated/GeneratedTest2.php',
                 2
             ),
-            $this->testStore->create(
+            $testFactory->createFoo(
                 TestConfiguration::create('firefox', 'http://example.com'),
                 'Test/test2.yml',
                 'generated/GeneratedTest3.php',

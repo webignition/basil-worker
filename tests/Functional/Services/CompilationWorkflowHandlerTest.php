@@ -8,8 +8,8 @@ use App\Entity\TestConfiguration;
 use App\Message\CompileSource;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -17,8 +17,8 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 {
     private CompilationWorkflowHandler $handler;
     private JobStore $jobStore;
-    private TestStore $testStore;
     private InMemoryTransport $messengerTransport;
+    private TestTestFactory $testFactory;
 
     protected function setUp(): void
     {
@@ -35,14 +35,15 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
             $this->jobStore = $jobStore;
         }
 
-        $testStore = self::$container->get(TestStore::class);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
-        }
-
         $messengerTransport = self::$container->get('messenger.transport.async');
         if ($messengerTransport instanceof InMemoryTransport) {
             $this->messengerTransport = $messengerTransport;
+        }
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
         }
     }
 
@@ -51,7 +52,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
      */
     public function testDispatchNextCompileSourceMessageNoMessageDispatched(callable $initializer)
     {
-        $initializer($this->jobStore, $this->testStore);
+        $initializer($this->jobStore, $this->testFactory);
 
         $this->handler->dispatchNextCompileSourceMessage();
 
@@ -66,14 +67,14 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 },
             ],
             'no non-compiled sources' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
                     ]);
                     $jobStore->store($job);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
@@ -91,7 +92,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         callable $initializer,
         CompileSource $expectedQueuedMessage
     ) {
-        $initializer($this->jobStore, $this->testStore);
+        $initializer($this->jobStore, $this->testFactory);
 
         $this->handler->dispatchNextCompileSourceMessage();
 
@@ -120,7 +121,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 'expectedQueuedMessage' => new CompileSource('Test/test1.yml'),
             ],
             'all but one sources compiled' => [
-                'initializer' => function (JobStore $jobStore, TestStore $testStore) {
+                'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
@@ -128,7 +129,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testStore->create(
+                    $testFactory->createFoo(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',

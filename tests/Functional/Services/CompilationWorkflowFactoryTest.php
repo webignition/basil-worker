@@ -8,14 +8,14 @@ use App\Entity\TestConfiguration;
 use App\Model\Workflow\CompilationWorkflow;
 use App\Services\CompilationWorkflowFactory;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 
 class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {
     private CompilationWorkflowFactory $compilationWorkflowFactory;
     private JobStore $jobStore;
-    private TestStore $testStore;
+    private TestTestFactory $testFactory;
 
     protected function setUp(): void
     {
@@ -33,10 +33,10 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
             $this->jobStore = $jobStore;
         }
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
         }
     }
 
@@ -45,7 +45,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
      */
     public function testCreate(callable $setup, CompilationWorkflow $expectedWorkflow)
     {
-        $setup($this->jobStore, $this->testStore);
+        $setup($this->jobStore, $this->testFactory);
 
         self::assertEquals($expectedWorkflow, $this->compilationWorkflowFactory->create());
     }
@@ -76,7 +76,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'expectedWorkflow' => new CompilationWorkflow([], 'Test/testZebra.yml'),
             ],
             'test exists for first source' => [
-                'setup' => function (JobStore $jobStore, TestStore $testStore) {
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -85,7 +85,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testStore->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [
@@ -95,7 +95,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'test exists for first and second sources' => [
-                'setup' => function (JobStore $jobStore, TestStore $testStore) {
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -104,8 +104,8 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testStore->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testStore->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [
@@ -116,7 +116,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'tests exist for all sources' => [
-                'setup' => function (JobStore $jobStore, TestStore $testStore) {
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->create('label', 'http://example.com/callback');
                     $job->setSources([
                         'Test/testZebra.yml',
@@ -125,9 +125,9 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testStore->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testStore->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testStore->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [
