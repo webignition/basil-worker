@@ -138,35 +138,6 @@ class TestStoreTest extends AbstractBaseFunctionalTest
         self::assertSame(1, $test->getPosition());
     }
 
-    public function testCreateFromTestManifests()
-    {
-        $manifest1 = new TestManifest(
-            new Configuration('chrome', 'http://example.com'),
-            'Tests/test.yml',
-            '/app/tests/GeneratedChromeTest.php',
-            2
-        );
-
-        $manifest2 = new TestManifest(
-            new Configuration('firefox', 'http://example.com'),
-            'Tests/test.yml',
-            '/app/tests/GeneratedFirefoxTest.php',
-            2
-        );
-
-        $manifests = [
-            $manifest1,
-            $manifest2,
-        ];
-
-        $tests = $this->testStore->createFromTestManifests($manifests);
-
-        foreach ($tests as $testIndex => $test) {
-            $this->assertTestMatchesManifest($manifests[$testIndex], $test);
-            self::assertSame($testIndex + 1, $test->getPosition());
-        }
-    }
-
     /**
      * @return Test[]
      */
