@@ -64,13 +64,4 @@ class MockCallbackResponseHandler
 
         return $this;
     }
-
-//    public function withSendCall(CallbackInterface $callback): self
-//    {
-//        $this->callbackResponseHandler
-//            ->shouldReceive('send')
-//            ->with($callback);
-//
-//        return $this;
-//    }
 }
