@@ -539,6 +539,124 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
     }
 
     /**
+     * @dataProvider findAllAwaitingDataProvider
+     *
+     * @param callable $testsCreator
+     * @param Test[] $expectedAwaitingTests
+     */
+    public function testFindAllAwaiting(callable $testsCreator, array $expectedAwaitingTests)
+    {
+        $tests = $testsCreator($this->testConfigurationStore);
+        $this->persistTests($tests);
+
+        self::assertSame($expectedAwaitingTests, $this->repository->findAllAwaiting());
+    }
+
+    public function findAllAwaitingDataProvider(): array
+    {
+        $tests = [
+            'awaiting1' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/awaiting1'),
+                '',
+                '',
+                1,
+                Test::STATE_AWAITING
+            ),
+            'awaiting2' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/awaiting2'),
+                '',
+                '',
+                2,
+                Test::STATE_AWAITING
+            ),
+            'running' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/running'),
+                '',
+                '',
+                3,
+                Test::STATE_FAILED
+            ),
+            'failed' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/failed'),
+                '',
+                '',
+                4,
+                Test::STATE_FAILED
+            ),
+            'complete' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/complete'),
+                '',
+                '',
+                5,
+                Test::STATE_COMPLETE
+            ),
+        ];
+
+        return [
+            'empty' => [
+                'setup' => function () {
+                    return [];
+                },
+                'expectedAwaitingTests' => [],
+            ],
+            'awaiting1' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['awaiting1'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedAwaitingTests' => [
+                    $tests['awaiting1'],
+                ],
+            ],
+            'awaiting2' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['awaiting2'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedAwaitingTests' => [
+                    $tests['awaiting2'],
+                ],
+            ],
+            'awaiting1, awaiting2' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['awaiting1'],
+                            $tests['awaiting2'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedAwaitingTests' => [
+                    $tests['awaiting1'],
+                    $tests['awaiting2'],
+                ],
+            ],
+            'running, failed, complete' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['running'],
+                            $tests['failed'],
+                            $tests['complete'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedAwaitingTests' => [],
+            ],
+        ];
+    }
+
+    /**
      * @param Test[] $tests
      */
     private function persistTests(array $tests): void

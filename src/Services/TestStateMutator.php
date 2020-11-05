@@ -30,6 +30,11 @@ class TestStateMutator
         $this->set($test, Test::STATE_FAILED);
     }
 
+    public function setCancelled(Test $test): void
+    {
+        $this->set($test, Test::STATE_CANCELLED);
+    }
+
     /**
      * @param Test $test
      * @param Test::STATE_* $state

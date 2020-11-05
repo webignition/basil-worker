@@ -68,4 +68,14 @@ class TestRepository extends ServiceEntityRepository
             'state' => Test::STATE_AWAITING,
         ]));
     }
+
+    /**
+     * @return Test[]
+     */
+    public function findAllAwaiting(): array
+    {
+        return $this->findBy([
+            'state' => Test::STATE_AWAITING,
+        ]);
+    }
 }

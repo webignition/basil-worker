@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Event\TestFailedEvent;
+use App\Repository\TestRepository;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
@@ -15,15 +16,18 @@ class TestFailedEventSubscriber implements EventSubscriberInterface
     private JobStateMutator $jobStateMutator;
     private TestStateMutator $testStateMutator;
     private JobStore $jobStore;
+    private TestRepository $testRepository;
 
     public function __construct(
         JobStateMutator $jobStateMutator,
         TestStateMutator $testStateMutator,
-        JobStore $jobStore
+        JobStore $jobStore,
+        TestRepository $testRepository
     ) {
         $this->jobStateMutator = $jobStateMutator;
         $this->testStateMutator = $testStateMutator;
         $this->jobStore = $jobStore;
+        $this->testRepository = $testRepository;
     }
 
     public static function getSubscribedEvents()
@@ -32,6 +36,7 @@ class TestFailedEventSubscriber implements EventSubscriberInterface
             TestFailedEvent::class => [
                 ['setTestStateToFailed', 0],
                 ['setJobStateToCancelled', 0],
+                ['cancelAwaitingTests', 0],
             ],
         ];
     }
@@ -47,6 +52,14 @@ class TestFailedEventSubscriber implements EventSubscriberInterface
 
         if (false === $job->isFinished()) {
             $this->jobStateMutator->setExecutionCancelled();
+        }
+    }
+
+    public function cancelAwaitingTests(): void
+    {
+        $awaitingTests = $this->testRepository->findAllAwaiting();
+        foreach ($awaitingTests as $test) {
+            $this->testStateMutator->setCancelled($test);
         }
     }
 }

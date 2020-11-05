@@ -9,6 +9,7 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestFailedEvent;
 use App\EventSubscriber\TestFailedEventSubscriber;
+use App\Repository\TestRepository;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -24,6 +25,7 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
     private TestTestFactory $testFactory;
     private JobStateMutator $jobStateMutator;
     private Job $job;
+    private TestRepository $testRepository;
 
     protected function setUp(): void
     {
@@ -51,6 +53,12 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(JobStateMutator::class, $jobStateMutator);
         if ($jobStateMutator instanceof JobStateMutator) {
             $this->jobStateMutator = $jobStateMutator;
+        }
+
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
         }
     }
 
@@ -128,9 +136,89 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         ];
     }
 
+    /**
+     * @dataProvider cancelAwaitingTestsDataProvider
+     *
+     * @param callable $setup
+     * @param array<Test::STATE_*> $expectedTestStates
+     */
+    public function testCancelAwaitingTests(callable $setup, array $expectedTestStates)
+    {
+        $setup($this->testFactory);
+
+        $this->eventSubscriber->cancelAwaitingTests();
+
+        $this->assertTestStates($this->testRepository->findAll(), $expectedTestStates);
+    }
+
+    public function cancelAwaitingTestsDataProvider(): array
+    {
+        return [
+            'no tests' => [
+                'setup' => function () {
+                },
+                'expectedTestStates' => [],
+            ],
+            'no awaiting tests' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    $configuration = TestConfiguration::create('chrome', 'http://example.com');
+
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_RUNNING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_FAILED);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_COMPLETE);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_CANCELLED);
+                },
+                'expectedTestStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_FAILED,
+                    Test::STATE_COMPLETE,
+                    Test::STATE_CANCELLED,
+                ],
+            ],
+            'all awaiting tests' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    $configuration = TestConfiguration::create('chrome', 'http://example.com');
+
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+                },
+                'expectedTestStates' => [
+                    Test::STATE_CANCELLED,
+                    Test::STATE_CANCELLED,
+                ],
+            ],
+            'mixed states' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    $configuration = TestConfiguration::create('chrome', 'http://example.com');
+
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_RUNNING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_FAILED);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_COMPLETE);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+                    $testFactory->create($configuration, '', '', 1, Test::STATE_CANCELLED);
+                },
+                'expectedTestStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_CANCELLED,
+                    Test::STATE_FAILED,
+                    Test::STATE_CANCELLED,
+                    Test::STATE_COMPLETE,
+                    Test::STATE_CANCELLED,
+                    Test::STATE_CANCELLED,
+                ],
+            ],
+        ];
+    }
+
     public function testIntegration()
     {
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+
+        $configuration = TestConfiguration::create('chrome', 'http://example.com');
+        $this->testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
+        $this->testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
 
         $test = $this->createTest();
         self::assertSame(Test::STATE_AWAITING, $test->getState());
@@ -142,6 +230,30 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
         self::assertSame(Test::STATE_FAILED, $test->getState());
+
+        $this->assertTestStates(
+            $this->testRepository->findAll(),
+            [
+                Test::STATE_CANCELLED,
+                Test::STATE_CANCELLED,
+                Test::STATE_FAILED,
+            ]
+        );
+    }
+
+    /**
+     * @param Test[] $tests
+     * @param array<Test::STATE_*> $expectedTestStates
+     */
+    private function assertTestStates(array $tests, array $expectedTestStates): void
+    {
+        self::assertCount(count($expectedTestStates), $tests);
+
+        foreach ($tests as $testIndex => $test) {
+            $expectedTestState = $expectedTestStates[$testIndex] ?? null;
+
+            self::assertSame($expectedTestState, $test->getState());
+        }
     }
 
     private function createTest(): Test

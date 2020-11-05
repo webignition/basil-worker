@@ -15,6 +15,7 @@ class Test implements \JsonSerializable
     public const STATE_RUNNING = 'running';
     public const STATE_FAILED = 'failed';
     public const STATE_COMPLETE = 'complete';
+    public const STATE_CANCELLED = 'cancelled';
 
     /**
      * @ORM\Id
