@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Event\CallbackHttpExceptionEvent;
-use App\Event\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpExceptionEvent;
+use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;

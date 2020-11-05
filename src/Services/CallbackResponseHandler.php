@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\CallbackHttpExceptionEvent;
-use App\Event\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpExceptionEvent;
+use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Model\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;

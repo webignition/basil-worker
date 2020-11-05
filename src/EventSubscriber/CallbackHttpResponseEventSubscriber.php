@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Event\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Message\SendCallback;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;

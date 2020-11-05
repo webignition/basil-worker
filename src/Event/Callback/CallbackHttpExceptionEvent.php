@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Event;
+namespace App\Event\Callback;
 
 use App\Model\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;

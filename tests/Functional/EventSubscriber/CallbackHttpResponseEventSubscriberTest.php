@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\EventSubscriber;
 
-use App\Event\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpResponseEvent;
 use App\EventSubscriber\CallbackHttpResponseEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\CallbackInterface;
