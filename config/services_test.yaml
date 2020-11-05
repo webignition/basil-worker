@@ -65,6 +65,9 @@ services:
     App\EventSubscriber\CallbackHttpResponseEventSubscriber:
         public: true
 
+    App\Services\SourceCompileEventDispatcher:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:

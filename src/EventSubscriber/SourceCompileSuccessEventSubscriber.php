@@ -44,7 +44,7 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
 
     public function createTests(SourceCompileSuccessEvent $event): void
     {
-        $suiteManifest = $event->getSuiteManifest();
+        $suiteManifest = $event->getOutput();
 
         $this->testFactory->createFromManifestCollection($suiteManifest->getTestManifests());
     }

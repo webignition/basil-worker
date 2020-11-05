@@ -16,7 +16,7 @@ class SourceCompileFailureEvent extends AbstractSourceCompileEvent
         $this->errorOutput = $errorOutput;
     }
 
-    public function getErrorOutput(): ErrorOutputInterface
+    public function getOutput(): ErrorOutputInterface
     {
         return $this->errorOutput;
     }

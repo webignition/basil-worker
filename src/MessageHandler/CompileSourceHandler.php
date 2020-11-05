@@ -5,23 +5,19 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Entity\Job;
-use App\Event\SourceCompileFailureEvent;
-use App\Event\SourceCompileSuccessEvent;
 use App\Message\CompileSource;
 use App\Services\Compiler;
 use App\Services\JobStore;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use App\Services\SourceCompileEventDispatcher;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilCompilerModels\ErrorOutputInterface;
-use webignition\BasilCompilerModels\SuiteManifest;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {
     private Compiler $compiler;
     private JobStore $jobStore;
-    private EventDispatcherInterface $eventDispatcher;
+    private SourceCompileEventDispatcher $eventDispatcher;
 
-    public function __construct(Compiler $compiler, JobStore $jobStore, EventDispatcherInterface $eventDispatcher)
+    public function __construct(Compiler $compiler, JobStore $jobStore, SourceCompileEventDispatcher $eventDispatcher)
     {
         $this->compiler = $compiler;
         $this->jobStore = $jobStore;
@@ -42,12 +38,6 @@ class CompileSourceHandler implements MessageHandlerInterface
         $source = $message->getSource();
         $output = $this->compiler->compile($source);
 
-        if ($output instanceof ErrorOutputInterface) {
-            $this->eventDispatcher->dispatch(new SourceCompileFailureEvent($source, $output));
-        }
-
-        if ($output instanceof SuiteManifest) {
-            $this->eventDispatcher->dispatch(new SourceCompileSuccessEvent($source, $output));
-        }
+        $this->eventDispatcher->dispatch($source, $output);
     }
 }

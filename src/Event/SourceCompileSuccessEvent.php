@@ -16,7 +16,7 @@ class SourceCompileSuccessEvent extends AbstractSourceCompileEvent
         $this->suiteManifest = $suiteManifest;
     }
 
-    public function getSuiteManifest(): SuiteManifest
+    public function getOutput(): SuiteManifest
     {
         return $this->suiteManifest;
     }

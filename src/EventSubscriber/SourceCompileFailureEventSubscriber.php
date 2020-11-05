@@ -39,7 +39,7 @@ class SourceCompileFailureEventSubscriber implements EventSubscriberInterface
 
     public function dispatchSendCallbackMessage(SourceCompileFailureEvent $event): void
     {
-        $callback = new CompileFailure($event->getErrorOutput());
+        $callback = new CompileFailure($event->getOutput());
         $message = new SendCallback($callback);
 
         $this->messageBus->dispatch($message);

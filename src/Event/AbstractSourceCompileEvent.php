@@ -6,7 +6,7 @@ namespace App\Event;
 
 use Symfony\Contracts\EventDispatcher\Event;
 
-abstract class AbstractSourceCompileEvent extends Event
+abstract class AbstractSourceCompileEvent extends Event implements SourceCompileEventInterface
 {
     private string $source;
 
