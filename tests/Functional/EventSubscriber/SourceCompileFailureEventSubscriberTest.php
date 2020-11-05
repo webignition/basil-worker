@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\EventSubscriber;
 
 use App\Entity\Job;
-use App\Event\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\EventSubscriber\SourceCompileFailureEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\CompileFailure;

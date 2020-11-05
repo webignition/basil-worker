@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Event;
+namespace App\Event\SourceCompile;
 
 use Psr\EventDispatcher\StoppableEventInterface;
 use webignition\BasilCompilerModels\OutputInterface;

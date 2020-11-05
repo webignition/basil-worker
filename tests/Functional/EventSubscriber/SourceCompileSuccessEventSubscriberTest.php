@@ -7,7 +7,7 @@ namespace App\Tests\Functional\EventSubscriber;
 use App\Entity\Job;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Event\SourceCompileSuccessEvent;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\EventSubscriber\SourceCompileSuccessEventSubscriber;
 use App\Message\CompileSource;
 use App\Message\ExecuteTest;

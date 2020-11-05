@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\SourceCompileEventInterface;
+use App\Event\SourceCompile\SourceCompileEventInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\OutputInterface;
 

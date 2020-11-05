@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\SourceCompileEventInterface;
-use App\Event\SourceCompileFailureEvent;
-use App\Event\SourceCompileSuccessEvent;
+use App\Event\SourceCompile\SourceCompileEventInterface;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\OutputInterface;
 use webignition\BasilCompilerModels\SuiteManifest;

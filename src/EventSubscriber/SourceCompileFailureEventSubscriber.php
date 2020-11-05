@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Event\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Message\SendCallback;
 use App\Model\Callback\CompileFailure;
 use App\Services\JobStateMutator;
