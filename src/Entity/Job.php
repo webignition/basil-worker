@@ -18,6 +18,7 @@ class Job implements \JsonSerializable
     public const STATE_EXECUTION_RUNNING = 'execution-running';
     public const STATE_EXECUTION_FAILED = 'execution-failed';
     public const STATE_EXECUTION_COMPLETE = 'execution-complete';
+    public const STATE_EXECUTION_CANCELLED = 'execution-cancelled';
 
     public const ID = 1;
 
@@ -29,6 +30,8 @@ class Job implements \JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255, nullable=false)
+     *
+     * @var Job::STATE_*
      */
     private string $state = self::STATE_COMPILATION_AWAITING;
 
@@ -64,6 +67,9 @@ class Job implements \JsonSerializable
         return $this->id;
     }
 
+    /**
+     * @return Job::STATE_*
+     */
     public function getState(): string
     {
         return $this->state;
@@ -95,6 +101,9 @@ class Job implements \JsonSerializable
         $this->sources = $sources;
     }
 
+    /**
+     * @param Job::STATE_* $state
+     */
     public function setState(string $state): void
     {
         $this->state = $state;
