@@ -9,8 +9,6 @@ use App\Event\TestFailedEvent;
 use App\Message\SendCallback;
 use App\Model\Document\Step;
 use App\Services\ExecuteDocumentReceivedCallbackFactory;
-use App\Services\JobStateMutator;
-use App\Services\TestStateMutator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -19,21 +17,15 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
 {
     private MessageBusInterface $messageBus;
     private ExecuteDocumentReceivedCallbackFactory $callbackFactory;
-    private JobStateMutator $jobStateMutator;
-    private TestStateMutator $testStateMutator;
     private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ExecuteDocumentReceivedCallbackFactory $callbackFactory,
-        JobStateMutator $jobStateMutator,
-        TestStateMutator $testStateMutator,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->messageBus = $messageBus;
         $this->callbackFactory = $callbackFactory;
-        $this->jobStateMutator = $jobStateMutator;
-        $this->testStateMutator = $testStateMutator;
         $this->eventDispatcher = $eventDispatcher;
     }
 
