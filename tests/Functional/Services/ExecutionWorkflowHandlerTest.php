@@ -97,14 +97,14 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'two tests, none run' => [
                 'initializer' => function (TestTestFactory $testFactory) {
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
                         1
                     );
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
@@ -120,7 +120,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first complete' => [
                 'initializer' => function (TestTestFactory $testFactory, TestStateMutator $testStateMutator) {
-                    $firstTest = $testFactory->createFoo(
+                    $firstTest = $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
@@ -129,14 +129,14 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
                     $testStateMutator->setComplete($firstTest);
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
                         1
                     );
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test3.yml',
                         '/generated/GeneratedTest3.php',
@@ -152,7 +152,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first, second complete' => [
                 'initializer' => function (TestTestFactory $testFactory, TestStateMutator $testStateMutator) {
-                    $firstTest = $testFactory->createFoo(
+                    $firstTest = $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test1.yml',
                         '/generated/GeneratedTest1.php',
@@ -161,7 +161,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
                     $testStateMutator->setComplete($firstTest);
 
-                    $secondTest = $testFactory->createFoo(
+                    $secondTest = $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test2.yml',
                         '/generated/GeneratedTest2.php',
@@ -170,7 +170,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
                     $testStateMutator->setComplete($secondTest);
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         '/tests/test3.yml',
                         '/generated/GeneratedTest3.php',

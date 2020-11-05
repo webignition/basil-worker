@@ -140,14 +140,14 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test1.yml',
                         'generated/GeneratedTest1.php',
                         3
                     );
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
                         'Test/test2.yml',
                         'generated/GeneratedTest2.php',

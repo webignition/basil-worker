@@ -7,15 +7,33 @@ namespace App\Tests\Services;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Services\TestFactory;
+use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\Configuration as ModelTestConfiguration;
 
-class TestTestFactory extends TestFactory
+class TestTestFactory
 {
-    public function createFoo(
+    private TestFactory $testFactory;
+
+    public function __construct(TestFactory $testFactory)
+    {
+        $this->testFactory = $testFactory;
+    }
+
+    public function create(
         TestConfiguration $configuration,
         string $source,
         string $target,
         int $stepCount
     ): Test {
-        return parent::create($configuration, $source, $target, $stepCount);
+        $tests = $this->testFactory->createFromManifestCollection([
+            new TestManifest(
+                new ModelTestConfiguration($configuration->getBrowser(), $configuration->getUrl()),
+                $source,
+                $target,
+                $stepCount
+            ),
+        ]);
+
+        return $tests[0];
     }
 }

@@ -68,14 +68,14 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
             $this->testRepository = $testRepository;
         }
 
-        $this->tests[] = $testFactory->createFoo(
+        $this->tests[] = $testFactory->create(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/app/source/Test/test1.yml',
             '/generated/GeneratedTest1.php',
             1
         );
 
-        $this->tests[] = $testFactory->createFoo(
+        $this->tests[] = $testFactory->create(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/app/source/Test/test2.yml',
             '/generated/GeneratedTest2.php',

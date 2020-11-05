@@ -83,7 +83,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testApple.yml',
             ],
@@ -97,8 +97,8 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => 'Test/testBat.yml',
             ],
@@ -112,9 +112,9 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
                 },
                 'expectedNextNonCompiledSource' => null,
             ],
@@ -169,7 +169,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
                 },
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',
@@ -185,8 +185,8 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
                 },
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',
@@ -203,9 +203,9 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
                 },
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',

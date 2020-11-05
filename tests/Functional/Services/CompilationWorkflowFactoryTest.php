@@ -85,7 +85,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [
@@ -104,8 +104,8 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [
@@ -125,9 +125,9 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ]);
 
                     $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testFactory->createFoo($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
+                    $testFactory->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
                 },
                 'expectedWorkflow' => new CompilationWorkflow(
                     [

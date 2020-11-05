@@ -45,7 +45,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         $testFactory = self::$container->get(TestTestFactory::class);
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
 
-        $this->test = $testFactory->createFoo(
+        $this->test = $testFactory->create(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/tests/test1.yml',
             '/generated/GeneratedTest1.php',

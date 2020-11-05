@@ -42,7 +42,7 @@ class TestStoreTest extends AbstractBaseFunctionalTest
 
     public function testStore()
     {
-        $test = $this->testFactory->createFoo(
+        $test = $this->testFactory->create(
             TestConfiguration::create('chrome', 'http://example.com'),
             '/app/source/Test/test.yml',
             '/app/tests/GeneratedTest.php',

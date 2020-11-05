@@ -146,7 +146,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 
     private function createTest(string $source, int $index): void
     {
-        $this->testFactory->createFoo(
+        $this->testFactory->create(
             TestConfiguration::create('chrome', 'http://example.com/' . $index),
             '/app/source/' . $source,
             '/generated/GeneratedTest' . $index . '.php',

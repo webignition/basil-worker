@@ -245,7 +245,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testFactory->createFoo(
+                    $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com/one'),
                         '/app/source/Test/test1.yml',
                         '/app/tests/GeneratedTest1.php',
