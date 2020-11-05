@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use App\Message\SendCallback;
 use App\Model\Document\Step;
 use App\Services\ExecuteDocumentReceivedCallbackFactory;
 use App\Services\JobStateMutator;
 use App\Services\TestStateMutator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -19,42 +21,36 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
     private ExecuteDocumentReceivedCallbackFactory $callbackFactory;
     private JobStateMutator $jobStateMutator;
     private TestStateMutator $testStateMutator;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ExecuteDocumentReceivedCallbackFactory $callbackFactory,
         JobStateMutator $jobStateMutator,
-        TestStateMutator $testStateMutator
+        TestStateMutator $testStateMutator,
+        EventDispatcherInterface $eventDispatcher
     ) {
         $this->messageBus = $messageBus;
         $this->callbackFactory = $callbackFactory;
         $this->jobStateMutator = $jobStateMutator;
         $this->testStateMutator = $testStateMutator;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents()
     {
         return [
             TestExecuteDocumentReceivedEvent::class => [
-                ['setJobStateToCompleteIfStepFailed', 20],
-                ['setTestStateToFailedIfStepFailed', 10],
+                ['dispatchTestFailedEventIfStepFailed', 10],
                 ['dispatchSendCallbackMessage', 0],
             ],
         ];
     }
 
-    public function setJobStateToCompleteIfStepFailed(TestExecuteDocumentReceivedEvent $event): void
-    {
-        $this->executeIfStepFailed($event, function () {
-            $this->jobStateMutator->setExecutionComplete();
-        });
-    }
-
-    public function setTestStateToFailedIfStepFailed(TestExecuteDocumentReceivedEvent $event): void
+    public function dispatchTestFailedEventIfStepFailed(TestExecuteDocumentReceivedEvent $event): void
     {
         $this->executeIfStepFailed($event, function (TestExecuteDocumentReceivedEvent $event) {
-            $test = $event->getTest();
-            $this->testStateMutator->setFailed($test);
+            $this->eventDispatcher->dispatch(new TestFailedEvent($event->getTest()));
         });
     }
 
@@ -67,13 +63,13 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
         $this->messageBus->dispatch($message);
     }
 
-    private function executeIfStepFailed(TestExecuteDocumentReceivedEvent $event, callable $bar): void
+    private function executeIfStepFailed(TestExecuteDocumentReceivedEvent $event, callable $callback): void
     {
         $document = $event->getDocument();
 
         $step = new Step($document);
         if ($step->isStep() && $step->statusIsFailed()) {
-            $bar($event);
+            $callback($event);
         }
     }
 }

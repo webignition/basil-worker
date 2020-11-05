@@ -8,15 +8,20 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use App\EventSubscriber\TestExecuteDocumentReceivedEventSubscriber;
 use App\Message\SendCallback;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Mock\MockEventDispatcher;
+use App\Tests\Model\ExpectedDispatchedEvent;
+use App\Tests\Model\ExpectedDispatchedEventCollection;
 use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use webignition\ObjectReflector\ObjectReflector;
 use webignition\YamlDocument\Document;
 
 class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctionalTest
@@ -74,34 +79,69 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     }
 
     /**
-     * @dataProvider setTestStateToFailedIfStepFailedDataProvider
+     * @dataProvider dispatchTestFailedEventIfStepFailedNoEventDispatchedDataProvider
      */
-    public function testSetTestStateToFailedIfStepFailed(Document $document, string $expectedTestState)
+    public function testDispatchTestFailedEventIfStepFailedNoEventDispatched(Document $document)
     {
         self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
 
         $event = $this->createEvent($document);
-        $this->eventSubscriber->setTestStateToFailedIfStepFailed($event);
 
-        self::assertSame($expectedTestState, $this->test->getState());
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withoutDispatchCall()
+            ->getMock();
+
+        ObjectReflector::setProperty(
+            $this->eventSubscriber,
+            TestExecuteDocumentReceivedEventSubscriber::class,
+            'eventDispatcher',
+            $eventDispatcher
+        );
+
+        $this->eventSubscriber->dispatchTestFailedEventIfStepFailed($event);
     }
 
-    public function setTestStateToFailedIfStepFailedDataProvider(): array
+    public function dispatchTestFailedEventIfStepFailedNoEventDispatchedDataProvider(): array
     {
         return [
             'not a step document' => [
                 'document' => new Document('{ type: test }'),
-                'expectedTestState' => Test::STATE_AWAITING,
+                'eventDispatcher' => (new MockEventDispatcher())
+                    ->withoutDispatchCall()
+                    ->getMock(),
             ],
             'step status passed' => [
                 'document' => new Document('{ type: step, status: passed }'),
-                'expectedTestState' => Test::STATE_AWAITING,
-            ],
-            'step status failed' => [
-                'document' => new Document('{ type: step, status: failed }'),
-                'expectedTestState' => Test::STATE_FAILED,
+                'eventDispatcher' => (new MockEventDispatcher())
+                    ->withoutDispatchCall()
+                    ->getMock(),
             ],
         ];
+    }
+
+    public function testDispatchTestFailedEventIfStepFailedEventDispatched()
+    {
+        self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
+
+        $document = new Document('{ type: step, status: failed }');
+        $event = $this->createEvent($document);
+
+        $eventDispatcher = (new MockEventDispatcher())
+            ->withDispatchCalls(new ExpectedDispatchedEventCollection([
+                new ExpectedDispatchedEvent(
+                    new TestFailedEvent($this->test)
+                )
+            ]))
+            ->getMock();
+
+        ObjectReflector::setProperty(
+            $this->eventSubscriber,
+            TestExecuteDocumentReceivedEventSubscriber::class,
+            'eventDispatcher',
+            $eventDispatcher
+        );
+
+        $this->eventSubscriber->dispatchTestFailedEventIfStepFailed($event);
     }
 
     /**
@@ -161,7 +201,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
                 'document' => $stepFailed,
                 'expectedTestState' => Test::STATE_FAILED,
                 'expectedQueuedDocument' => $stepFailed,
-                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
             ],
         ];
     }
