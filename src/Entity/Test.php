@@ -31,6 +31,8 @@ class Test implements \JsonSerializable
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @var Test::STATE_*
      */
     private string $state;
 
@@ -82,11 +84,17 @@ class Test implements \JsonSerializable
         return $this->configuration;
     }
 
+    /**
+     * @return Test::STATE_*
+     */
     public function getState(): string
     {
         return $this->state;
     }
 
+    /**
+     * @param Test::STATE_* $state
+     */
     public function setState(string $state): void
     {
         $this->state = $state;
