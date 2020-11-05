@@ -33,7 +33,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
     {
         self::assertSame(
             [
-                SourcesAddedEvent::NAME => [
+                SourcesAddedEvent::class => [
                     ['setJobState', 10],
                     ['dispatchNextCompileSourceMessage', 0]
                 ],
@@ -53,7 +53,7 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         ]);
         $this->jobStore->store($job);
 
-        $eventDispatcher->dispatch(new SourcesAddedEvent(), SourcesAddedEvent::NAME);
+        $eventDispatcher->dispatch(new SourcesAddedEvent());
 
         $expectedQueuedMessage = new CompileSource('Test/test1.yml');
 

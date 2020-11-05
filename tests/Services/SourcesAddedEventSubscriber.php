@@ -14,7 +14,7 @@ class SourcesAddedEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SourcesAddedEvent::NAME => 'onSourcesAdded',
+            SourcesAddedEvent::class => 'onSourcesAdded',
         ];
     }
 

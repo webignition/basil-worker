@@ -73,7 +73,7 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
         if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $eventDispatcher->dispatch($event, SourceCompileFailureEvent::NAME);
+            $eventDispatcher->dispatch($event);
         }
 
         $this->assertJobState();

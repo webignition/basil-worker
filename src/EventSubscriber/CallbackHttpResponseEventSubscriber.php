@@ -21,7 +21,7 @@ class CallbackHttpResponseEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CallbackHttpResponseEvent::NAME => [
+            CallbackHttpResponseEvent::class => [
                 ['dispatchSendCallbackMessage', 0],
             ],
         ];

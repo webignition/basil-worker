@@ -33,7 +33,7 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SourceCompileSuccessEvent::NAME => [
+            SourceCompileSuccessEvent::class => [
                 ['createTests', 30],
                 ['dispatchNextCompileSourceMessage', 20],
                 ['setJobStateToExecutionAwaitingIfCompilationComplete', 10],

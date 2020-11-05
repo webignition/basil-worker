@@ -14,7 +14,7 @@ class CallbackHttpExceptionEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CallbackHttpExceptionEvent::NAME => 'onCallbackHttpException',
+            CallbackHttpExceptionEvent::class => 'onCallbackHttpException',
         ];
     }
 

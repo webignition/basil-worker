@@ -35,7 +35,7 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
     public static function getSubscribedEvents()
     {
         return [
-            TestExecuteDocumentReceivedEvent::NAME => [
+            TestExecuteDocumentReceivedEvent::class => [
                 ['setJobStateToCompleteIfStepFailed', 20],
                 ['setTestStateToFailedIfStepFailed', 10],
                 ['dispatchSendCallbackMessage', 0],

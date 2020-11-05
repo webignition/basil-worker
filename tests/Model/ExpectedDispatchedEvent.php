@@ -9,21 +9,14 @@ use Symfony\Contracts\EventDispatcher\Event;
 class ExpectedDispatchedEvent
 {
     private Event $event;
-    private string $name;
 
-    public function __construct(Event $event, string $name)
+    public function __construct(Event $event)
     {
         $this->event = $event;
-        $this->name = $name;
     }
 
     public function getEvent(): Event
     {
         return $this->event;
-    }
-
-    public function getName(): string
-    {
-        return $this->name;
     }
 }

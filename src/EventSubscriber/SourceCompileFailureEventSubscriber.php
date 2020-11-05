@@ -25,7 +25,7 @@ class SourceCompileFailureEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SourceCompileFailureEvent::NAME => [
+            SourceCompileFailureEvent::class => [
                 ['setJobState', 10],
                 ['dispatchSendCallbackMessage', 0],
             ],

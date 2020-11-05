@@ -9,8 +9,6 @@ use webignition\YamlDocument\Document;
 
 class TestExecuteDocumentReceivedEvent extends AbstractTestEvent
 {
-    public const NAME = 'worker.test.execute.document-received';
-
     private Document $document;
 
     public function __construct(Test $test, Document $document)

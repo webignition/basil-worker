@@ -58,7 +58,7 @@ class CallbackHttpResponseEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
         if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $eventDispatcher->dispatch($event, CallbackHttpResponseEvent::NAME);
+            $eventDispatcher->dispatch($event);
         }
 
         $this->assertMessageTransportQueue($callback);

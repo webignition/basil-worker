@@ -35,7 +35,7 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TestExecuteCompleteEvent::NAME => [
+            TestExecuteCompleteEvent::class => [
                 ['setJobStateToExecutionCompleteIfTestFailed', 10],
                 ['setTestStateToCompleteIfPassed', 10],
                 ['dispatchNextTestExecuteMessageIfPassed', 0],

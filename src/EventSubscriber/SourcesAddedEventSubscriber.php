@@ -25,7 +25,7 @@ class SourcesAddedEventSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            SourcesAddedEvent::NAME => [
+            SourcesAddedEvent::class => [
                 ['setJobState', 10],
                 ['dispatchNextCompileSourceMessage', 0],
             ],

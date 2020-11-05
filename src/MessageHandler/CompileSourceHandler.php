@@ -43,17 +43,11 @@ class CompileSourceHandler implements MessageHandlerInterface
         $output = $this->compiler->compile($source);
 
         if ($output instanceof ErrorOutputInterface) {
-            $this->eventDispatcher->dispatch(
-                new SourceCompileFailureEvent($source, $output),
-                SourceCompileFailureEvent::NAME
-            );
+            $this->eventDispatcher->dispatch(new SourceCompileFailureEvent($source, $output));
         }
 
         if ($output instanceof SuiteManifest) {
-            $this->eventDispatcher->dispatch(
-                new SourceCompileSuccessEvent($source, $output),
-                SourceCompileSuccessEvent::NAME
-            );
+            $this->eventDispatcher->dispatch(new SourceCompileSuccessEvent($source, $output));
         }
     }
 }

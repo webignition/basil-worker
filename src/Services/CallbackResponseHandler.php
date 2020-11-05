@@ -27,10 +27,7 @@ class CallbackResponseHandler
         if ($statusCode >= 300) {
             $callback->incrementRetryCount();
 
-            $this->eventDispatcher->dispatch(
-                new CallbackHttpResponseEvent($callback, $response),
-                CallbackHttpResponseEvent::NAME
-            );
+            $this->eventDispatcher->dispatch(new CallbackHttpResponseEvent($callback, $response));
         }
     }
 
@@ -38,9 +35,6 @@ class CallbackResponseHandler
     {
         $callback->incrementRetryCount();
 
-        $this->eventDispatcher->dispatch(
-            new CallbackHttpExceptionEvent($callback, $clientException),
-            CallbackHttpExceptionEvent::NAME
-        );
+        $this->eventDispatcher->dispatch(new CallbackHttpExceptionEvent($callback, $clientException));
     }
 }

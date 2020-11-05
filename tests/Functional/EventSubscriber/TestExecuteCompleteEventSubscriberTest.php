@@ -101,7 +101,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         if ($eventDispatcher instanceof EventDispatcherInterface) {
             $event = new TestExecuteCompleteEvent($test);
 
-            $eventDispatcher->dispatch($event, TestExecuteCompleteEvent::NAME);
+            $eventDispatcher->dispatch($event);
         }
 
         self::assertSame($expectedJobState, $this->job->getState());

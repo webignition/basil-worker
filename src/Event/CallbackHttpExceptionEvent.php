@@ -9,8 +9,6 @@ use Psr\Http\Client\ClientExceptionInterface;
 
 class CallbackHttpExceptionEvent extends AbstractCallbackEvent
 {
-    public const NAME = 'worker.callback.http-exception';
-
     private ClientExceptionInterface $exception;
 
     public function __construct(CallbackInterface $callback, ClientExceptionInterface $exception)

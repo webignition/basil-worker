@@ -42,7 +42,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
     {
         self::assertSame(
             [
-                SourceCompileSuccessEvent::NAME => [
+                SourceCompileSuccessEvent::class => [
                     ['createTests', 30],
                     ['dispatchNextCompileSourceMessage', 20],
                     ['setJobStateToExecutionAwaitingIfCompilationComplete', 10],
@@ -79,7 +79,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 
         self::assertCount($expectedInitialTestCount, $testRepository->findAll());
 
-        $eventDispatcher->dispatch($event, SourceCompileSuccessEvent::NAME);
+        $eventDispatcher->dispatch($event);
 
         self::assertCount($expectedTestCount, $testRepository->findAll());
 
@@ -190,7 +190,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
         self::assertCount($expectedInitialTestCount, $testRepository->findAll());
 
-        $eventDispatcher->dispatch($event, SourceCompileSuccessEvent::NAME);
+        $eventDispatcher->dispatch($event);
 
         self::assertCount($expectedTestCount, $testRepository->findAll());
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());

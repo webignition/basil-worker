@@ -120,7 +120,7 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         if ($eventDispatcher instanceof EventDispatcherInterface) {
             $event = $this->createEvent($document);
 
-            $eventDispatcher->dispatch($event, TestExecuteDocumentReceivedEvent::NAME);
+            $eventDispatcher->dispatch($event);
         }
 
         $this->assertMessageTransportQueue($expectedQueuedDocument);

@@ -66,11 +66,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
 
             foreach ($expectedDispatchedEventDocuments as $expectedDispatchedEventDocument) {
                 $expectedDispatchedEvents[] = new ExpectedDispatchedEvent(
-                    new TestExecuteDocumentReceivedEvent(
-                        $test,
-                        $expectedDispatchedEventDocument
-                    ),
-                    TestExecuteDocumentReceivedEvent::NAME
+                    new TestExecuteDocumentReceivedEvent($test, $expectedDispatchedEventDocument)
                 );
             }
         }

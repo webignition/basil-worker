@@ -8,5 +8,4 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class SourcesAddedEvent extends Event
 {
-    public const NAME = 'worker.sources.added';
 }

@@ -119,8 +119,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         $eventDispatcher = (new MockEventDispatcher())
             ->withDispatchCalls(new ExpectedDispatchedEventCollection([
                 new ExpectedDispatchedEvent(
-                    new SourceCompileSuccessEvent('Test/test1.yml', $suiteManifest),
-                    SourceCompileSuccessEvent::NAME
+                    new SourceCompileSuccessEvent('Test/test1.yml', $suiteManifest)
                 )
             ]))
             ->getMock();
@@ -153,8 +152,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         $eventDispatcher = (new MockEventDispatcher())
             ->withDispatchCalls(new ExpectedDispatchedEventCollection([
                 new ExpectedDispatchedEvent(
-                    new SourceCompileFailureEvent('Test/test1.yml', $errorOutput),
-                    SourceCompileFailureEvent::NAME
+                    new SourceCompileFailureEvent('Test/test1.yml', $errorOutput)
                 )
             ]))
             ->getMock();

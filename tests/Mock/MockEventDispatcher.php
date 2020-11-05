@@ -32,14 +32,13 @@ class MockEventDispatcher
     {
         $this->eventDispatcher
             ->shouldReceive('dispatch')
-            ->withArgs(function (Event $passedEvent, string $passedName) use ($expectedDispatchedEvents) {
+            ->withArgs(function (Event $passedEvent) use ($expectedDispatchedEvents) {
                 static $dispatchCallIndex = 0;
 
                 $expectedDispatchedEvent = $expectedDispatchedEvents[$dispatchCallIndex];
 
                 if ($expectedDispatchedEvent instanceof ExpectedDispatchedEvent) {
                     TestCase::assertEquals($expectedDispatchedEvent->getEvent(), $passedEvent);
-                    TestCase::assertSame($expectedDispatchedEvent->getName(), $passedName);
                 }
 
                 $dispatchCallIndex++;

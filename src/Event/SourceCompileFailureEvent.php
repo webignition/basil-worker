@@ -8,8 +8,6 @@ use webignition\BasilCompilerModels\ErrorOutputInterface;
 
 class SourceCompileFailureEvent extends AbstractSourceCompileEvent
 {
-    public const NAME = 'worker.source.compile.failure';
-
     private ErrorOutputInterface $errorOutput;
 
     public function __construct(string $source, ErrorOutputInterface $errorOutput)

@@ -70,9 +70,6 @@ class ExecuteTestHandler implements MessageHandlerInterface
         $this->testExecutor->execute($test);
         $this->testStateMutator->setComplete($test);
 
-        $this->eventDispatcher->dispatch(
-            new TestExecuteCompleteEvent($test),
-            TestExecuteCompleteEvent::NAME
-        );
+        $this->eventDispatcher->dispatch(new TestExecuteCompleteEvent($test));
     }
 }

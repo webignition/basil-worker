@@ -8,8 +8,6 @@ use webignition\BasilCompilerModels\SuiteManifest;
 
 class SourceCompileSuccessEvent extends AbstractSourceCompileEvent
 {
-    public const NAME = 'worker.source.compile.success';
-
     private SuiteManifest $suiteManifest;
 
     public function __construct(string $source, SuiteManifest $suiteManifest)
