@@ -19,7 +19,7 @@
   </coverage>
   <php>
     <ini name="error_reporting" value="-1"/>
-    <server name="APP_ENV" value="integration" force="true"/>
+    <server name="APP_ENV" value="integration_sync" force="true"/>
     <server name="SHELL_VERBOSITY" value="-1"/>
   </php>
   <testsuites>

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\EndToEnd;
+namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Job;
 use App\Services\JobStore;

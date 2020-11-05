@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Services;
+namespace App\Tests\Integration\Synchronous\Services;
 
 use App\Services\Compiler;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
