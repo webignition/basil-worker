@@ -7,6 +7,17 @@ on:
   pull_request:
 
 jobs:
+  ecs:
+    name: Easy Coding Standard
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: ECS
+        uses: zingimmick/ecs-action@0.0.6
+
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
