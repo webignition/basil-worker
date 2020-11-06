@@ -74,6 +74,9 @@ services:
     App\EventSubscriber\TestFailedEventSubscriber:
         public: true
 
+    App\EventSubscriber\JobCompletedEventSubscriber:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
