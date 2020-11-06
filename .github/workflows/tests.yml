@@ -29,11 +29,11 @@ jobs:
 
     services:
       postgres:
-        image: postgres:12.4
+        image: postgres:10.8
         env:
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: password!
-          POSTGRES_DB: basil_worker_db
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
         ports:
           - 5432/tcp
 
@@ -66,6 +66,8 @@ jobs:
         run: |
           php bin/console doctrine:database:create --no-interaction
           php bin/conosole doctrine:migrations:migrate --no-interaction
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
 #
 #      - name: Run tests
 #        run: |
