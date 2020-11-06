@@ -51,16 +51,16 @@ jobs:
         id: composercache
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
 
-      - name: Cache composer dependencies
-        user: actions/cache@v2
-        with:
-          paths: ${{ steps.composercache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: ${{ runner.os }}-composer-
-
-      - name: Install composer dependencies
-        run: |
-          composer install --no-progress --prefer-dist
+#      - name: Cache composer dependencies
+#        user: actions/cache@v2
+#        with:
+#          paths: ${{ steps.composercache.outputs.dir }}
+#          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+#          restore-keys: ${{ runner.os }}-composer-
+#
+#      - name: Install composer dependencies
+#        run: |
+#          composer install --no-progress --prefer-dist
 #
 #      - name: Run DB migrations
 #        run: |
