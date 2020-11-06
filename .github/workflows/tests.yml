@@ -89,11 +89,11 @@ jobs:
           - 5432/tcp
 
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
       - name: Create docker services
         run: composer integration-setup
-
-#      - name: Checkout
-#        uses: actions/checkout@v2
 #
 #      - name: Install extensions
 #        uses: shivammathur/setup-php@v2
