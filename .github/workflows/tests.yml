@@ -27,15 +27,15 @@ jobs:
     name: Functional tests
     runs-on: ubuntu-latest
 
-#    services:
-#      postgres:
-#        image: postgres:12.4
-#        env:
-#          POSTGRES_USER: postgres
-#          POSTGRES_PASSWORD: password!
-#          POSTGRES_DB: basil_worker_db
-#        ports:
-#          - 5432/tcp
+    services:
+      postgres:
+        image: postgres:12.4
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password!
+          POSTGRES_DB: basil_worker_db
+        ports:
+          - 5432/tcp
 
     steps:
       - name: Checkout
@@ -61,11 +61,11 @@ jobs:
       - name: Install composer dependencies
         run: |
           composer install --no-progress --prefer-dist
-#
-#      - name: Run DB migrations
-#        run: |
-#          php bin/console doctrine:database:create --no-interaction
-#          php bin/conosole doctrine:migrations:migrate --no-interaction
+
+      - name: Run DB migrations
+        run: |
+          php bin/console doctrine:database:create --no-interaction
+          php bin/conosole doctrine:migrations:migrate --no-interaction
 #
 #      - name: Run tests
 #        run: |
