@@ -85,7 +85,7 @@
         "post-update-cmd": [
             "@auto-scripts"
         ],
-        "cs-ecs": "./vendor/bin/ecs check src tests --ansi --config ecs.php",
+        "cs-ecs": "./vendor/bin/ecs check src tests --ansi --no-progress-bar --config ecs.php",
         "cs-phpcs": "./vendor/bin/phpcs",
         "cs": [
             "@cs-ecs",
