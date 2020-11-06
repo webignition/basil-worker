@@ -130,6 +130,7 @@ jobs:
 
       - name: Run asynchronous tests
         run: |
+          php bin/console --env=integration_async messenger:consume async > /dev/null &
           composer test-integration-async
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
