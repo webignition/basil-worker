@@ -1,0 +1,52 @@
+parameters:
+    integration_http_log_path: '%env(HTTP_LOG_PATH)%'
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tests\Services\BasilFixtureHandler:
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/basil'
+            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+
+    App\Tests\Services\SourceStoreInitializer:
+        public: true
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
+    App\Tests\Services\UploadedFileFactory:
+        public: true
+
+    App\Tests\Services\Integration\HttpLoggerFactory:
+
+    app.tests.services.integration.httplogger:
+        class: Psr\Log\LoggerInterface
+        factory: [ '@App\Tests\Services\Integration\HttpLoggerFactory', 'create' ]
+        arguments:
+            $path: '%kernel.project_dir%/%integration_http_log_path%'
+
+    webignition\HttpHistoryContainer\LoggableContainer:
+        arguments:
+            $logger: '@app.tests.services.integration.httplogger'
+
+    App\Tests\Services\Integration\GuzzleMockHandlerFactory: ~
+
+    TijmenWierenga\Guzzle\Mocking\MockHandler:
+        factory: [ '@App\Tests\Services\Integration\GuzzleMockHandlerFactory', 'create' ]
+
+    App\Tests\Services\Integration\GuzzleHandlerStackFactory: ~
+
+    GuzzleHttp\HandlerStack:
+        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
+
+    App\Tests\Services\Integration\GuzzleClientFactory: ~
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+        factory: [ '@App\Tests\Services\Integration\GuzzleClientFactory', 'get' ]
