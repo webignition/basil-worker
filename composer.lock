@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f28dcecb4f6a4e864a616c9c36f447ae",
+    "content-hash": "cdc218466a7583bb434c3e5c691e0469",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -6870,6 +6870,10 @@
                 "MIT"
             ],
             "description": "Composer plugin for automatic installation of PHPStan extensions",
+            "support": {
+                "issues": "https://github.com/phpstan/extension-installer/issues",
+                "source": "https://github.com/phpstan/extension-installer/tree/1.0.5"
+            },
             "time": "2020-08-30T12:06:42+00:00"
         },
         {
@@ -6919,20 +6923,24 @@
                 "MIT"
             ],
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
+            "support": {
+                "issues": "https://github.com/phpstan/phpdoc-parser/issues",
+                "source": "https://github.com/phpstan/phpdoc-parser/tree/master"
+            },
             "time": "2020-08-03T20:32:43+00:00"
         },
         {
             "name": "phpstan/phpstan",
-            "version": "0.12.43",
+            "version": "0.12.54",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "54221b44766cb4bdfe40d1828d5bba5dd79c38c6"
+                "reference": "45c7b999a4b7dd9ac5558bdaaf23dcebbef88223"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/54221b44766cb4bdfe40d1828d5bba5dd79c38c6",
-                "reference": "54221b44766cb4bdfe40d1828d5bba5dd79c38c6",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/45c7b999a4b7dd9ac5558bdaaf23dcebbef88223",
+                "reference": "45c7b999a4b7dd9ac5558bdaaf23dcebbef88223",
                 "shasum": ""
             },
             "require": {
@@ -6961,6 +6969,10 @@
                 "MIT"
             ],
             "description": "PHPStan - PHP Static Analysis Tool",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan/issues",
+                "source": "https://github.com/phpstan/phpstan/tree/0.12.54"
+            },
             "funding": [
                 {
                     "url": "https://github.com/ondrejmirtes",
@@ -6975,20 +6987,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2020-09-19T21:19:38+00:00"
+            "time": "2020-11-05T13:36:26+00:00"
         },
         {
             "name": "phpstan/phpstan-doctrine",
-            "version": "0.12.19",
+            "version": "0.12.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-doctrine.git",
-                "reference": "78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4"
+                "reference": "a4966eee1fb42383e752e9c84bd5b7b07b01e57a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4",
-                "reference": "78376cbf68e0c30c2ff16d6e38f3acf1fdd386b4",
+                "url": "https://api.github.com/repos/phpstan/phpstan-doctrine/zipball/a4966eee1fb42383e752e9c84bd5b7b07b01e57a",
+                "reference": "a4966eee1fb42383e752e9c84bd5b7b07b01e57a",
                 "shasum": ""
             },
             "require": {
@@ -7003,7 +7015,7 @@
                 "doctrine/persistence": "<1.3"
             },
             "require-dev": {
-                "consistence/coding-standard": "^3.0.1",
+                "consistence/coding-standard": "^3.10",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "doctrine/collections": "^1.0",
                 "doctrine/common": "^2.7 || ^3.0",
@@ -7011,13 +7023,13 @@
                 "doctrine/orm": "^2.5",
                 "doctrine/persistence": "^1.1 || ^2.0",
                 "ergebnis/composer-normalize": "^2.0.2",
-                "jakub-onderka/php-parallel-lint": "^1.0",
                 "phing/phing": "^2.16.0",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-phpunit": "^0.12",
                 "phpstan/phpstan-strict-rules": "^0.12",
                 "phpunit/phpunit": "^7.0",
                 "ramsey/uuid-doctrine": "^1.5.0",
-                "slevomat/coding-standard": "^4.5.2"
+                "slevomat/coding-standard": "^6.4"
             },
             "type": "phpstan-extension",
             "extra": {
@@ -7041,7 +7053,11 @@
                 "MIT"
             ],
             "description": "Doctrine extensions for PHPStan",
-            "time": "2020-07-21T14:46:27+00:00"
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-doctrine/issues",
+                "source": "https://github.com/phpstan/phpstan-doctrine/tree/0.12.22"
+            },
+            "time": "2020-10-24T20:53:39+00:00"
         },
         {
             "name": "phpstan/phpstan-mockery",
@@ -7095,6 +7111,10 @@
                 "MIT"
             ],
             "description": "PHPStan Mockery extension",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-mockery/issues",
+                "source": "https://github.com/phpstan/phpstan-mockery/tree/0.12.7"
+            },
             "time": "2020-07-21T14:43:24+00:00"
         },
         {
@@ -7151,41 +7171,45 @@
                 "MIT"
             ],
             "description": "PHPUnit extensions and rules for PHPStan",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-phpunit/issues",
+                "source": "https://github.com/phpstan/phpstan-phpunit/tree/0.12.16"
+            },
             "time": "2020-08-05T13:28:50+00:00"
         },
         {
             "name": "phpstan/phpstan-symfony",
-            "version": "0.12.7",
+            "version": "0.12.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan-symfony.git",
-                "reference": "86bb993d4f343fd6ee5570633d3fbd08b4d4bc4a"
+                "reference": "edb6aeb171980b11dca1fd27d3fa7573af89ac8e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/86bb993d4f343fd6ee5570633d3fbd08b4d4bc4a",
-                "reference": "86bb993d4f343fd6ee5570633d3fbd08b4d4bc4a",
+                "url": "https://api.github.com/repos/phpstan/phpstan-symfony/zipball/edb6aeb171980b11dca1fd27d3fa7573af89ac8e",
+                "reference": "edb6aeb171980b11dca1fd27d3fa7573af89ac8e",
                 "shasum": ""
             },
             "require": {
                 "ext-simplexml": "*",
                 "php": "^7.1 || ^8.0",
-                "phpstan/phpstan": "^0.12.26"
+                "phpstan/phpstan": "^0.12.51"
             },
             "conflict": {
                 "symfony/framework-bundle": "<3.0"
             },
             "require-dev": {
-                "consistence/coding-standard": "^3.0.1",
+                "consistence/coding-standard": "^3.10",
                 "dealerdirect/phpcodesniffer-composer-installer": "^0.7.0",
                 "ergebnis/composer-normalize": "^2.0.2",
-                "jakub-onderka/php-parallel-lint": "^1.0",
-                "phing/phing": "^2.16.0",
+                "phing/phing": "^2.16.2",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
                 "phpstan/phpstan-phpunit": "^0.12.8",
                 "phpstan/phpstan-strict-rules": "^0.12.2",
                 "phpunit/phpunit": "^7.5.20",
-                "slevomat/coding-standard": "^4.5.2",
-                "squizlabs/php_codesniffer": "^3.3.2",
+                "slevomat/coding-standard": "^6.4",
+                "squizlabs/php_codesniffer": "^3.5.6",
                 "symfony/console": "^4.0",
                 "symfony/framework-bundle": "^4.0",
                 "symfony/http-foundation": "^4.0",
@@ -7221,7 +7245,11 @@
                 }
             ],
             "description": "Symfony Framework extensions and rules for PHPStan",
-            "time": "2020-07-21T14:56:43+00:00"
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-symfony/issues",
+                "source": "https://github.com/phpstan/phpstan-symfony/tree/0.12.11"
+            },
+            "time": "2020-10-30T09:50:09+00:00"
         },
         {
             "name": "phpunit/php-code-coverage",

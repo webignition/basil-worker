@@ -16,6 +16,7 @@ use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\ConfigurationInterface;
@@ -88,6 +89,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertIsArray($queue);
 
         $envelope = $queue[0] ?? null;
+        self::assertInstanceOf(Envelope::class, $envelope);
         self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 
@@ -205,6 +207,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);
 
         $envelope = $queue[0] ?? null;
+        self::assertInstanceOf(Envelope::class, $envelope);
         self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 

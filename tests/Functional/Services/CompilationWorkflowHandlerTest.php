@@ -100,9 +100,8 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
-        /** @var Envelope $envelope */
         $envelope = $queue[0] ?? null;
-
+        self::assertInstanceOf(Envelope::class, $envelope);
         self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 
