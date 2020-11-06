@@ -122,8 +122,14 @@ jobs:
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
 
-      - name: Run tests
+      - name: Run synchronous tests
         run: |
           composer test-integration-sync
+        env:
+          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
+
+      - name: Run asynchronous tests
+        run: |
+          composer test-integration-async
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
