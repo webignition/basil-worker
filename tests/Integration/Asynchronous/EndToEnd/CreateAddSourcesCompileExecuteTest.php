@@ -67,7 +67,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
      * @param string $manifestPath
      * @param string[] $sourcePaths
      * @param Job::STATE_* $expectedJobEndState
-     * @param array<Test::_STATE_*> $expectedTestEndStates
+     * @param array<Test::STATE_*> $expectedTestEndStates
      */
     public function testCreateAddSourcesCompileExecute(
         string $label,
