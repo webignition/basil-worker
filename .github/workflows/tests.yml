@@ -22,3 +22,19 @@ jobs:
 
       - name: Run PHPUnit unit tests
         run: composer test-unit
+
+  functional:
+    name: Functional tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Download dependencies
+        uses: php-actions/composer@v2
+        with:
+          args: --ignore-platform-reqs --quiet
+
+      - name: Run PHPUnit unit tests
+        run: composer test-functional
