@@ -1,4 +1,4 @@
-name: Static
+name: Static Analysis
 
 on:
   push:
@@ -7,22 +7,6 @@ on:
   pull_request:
 
 jobs:
-  ecs:
-    name: Easy Coding Standard
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Download dependencies
-        uses: php-actions/composer@v2
-        with:
-          args: --ignore-platform-reqs --quiet
-
-      - name: Run ECS
-        run: composer cs-ecs
-
   phpstan:
     name: PHPStan
     runs-on: ubuntu-latest
