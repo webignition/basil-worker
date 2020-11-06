@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: ECS
-        uses: zingimmick/ecs-action@0.0.6
+        uses: zingimmick/ecs-action@0.0.4
 
   phpstan:
     name: PHPStan
