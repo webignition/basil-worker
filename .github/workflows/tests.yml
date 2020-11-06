@@ -64,7 +64,7 @@ jobs:
 
       - name: Run DB migrations
         run: |
-          php bin/console doctrine:database:create --no-interaction
+#          php bin/console doctrine:database:create --no-interaction
           php bin/conosole doctrine:migrations:migrate --no-interaction
         env:
           DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
