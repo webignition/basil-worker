@@ -6,8 +6,6 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
 use App\Entity\TestConfiguration;
-use App\Event\JobCancelledEvent;
-use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
@@ -320,31 +318,6 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => true,
             ],
         ];
-    }
-
-    public function testSubscribesToJobCancelledEvent()
-    {
-        $this->eventDispatcher->dispatch(new JobCancelledEvent());
-
-        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
-    }
-
-    public function testSubscribesToJobCompletedEvent()
-    {
-        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
-
-        ObjectReflector::setProperty(
-            $this->jobStateMutator,
-            JobStateMutator::class,
-            'executionWorkflowHandler',
-            (new MockExecutionWorkflowHandler())
-                ->withIsCompleteCall(true)
-                ->getMock()
-        );
-
-        $this->eventDispatcher->dispatch(new JobCompletedEvent());
-
-        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
     }
 
     public function testSubscribesToSourceCompileFailureEvent()
