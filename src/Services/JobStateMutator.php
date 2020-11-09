@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Job;
+use App\Event\JobCancelledEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class JobStateMutator
+class JobStateMutator implements EventSubscriberInterface
 {
     private JobStore $jobStore;
     private CompilationWorkflowHandler $compilationWorkflowHandler;
@@ -20,6 +22,15 @@ class JobStateMutator
         $this->jobStore = $jobStore;
         $this->compilationWorkflowHandler = $compilationWorkflowHandler;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            JobCancelledEvent::class => [
+                ['setExecutionCancelled', 0],
+            ],
+        ];
     }
 
     public function setCompilationRunning(): void

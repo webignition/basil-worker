@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
+use App\Event\JobCancelledEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
 use webignition\ObjectReflector\ObjectReflector;
@@ -301,5 +303,15 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => true,
             ],
         ];
+    }
+
+    public function testSubscribesToJobCancelledEvent()
+    {
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $eventDispatcher->dispatch(new JobCancelledEvent());
+        }
+
+        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
     }
 }
