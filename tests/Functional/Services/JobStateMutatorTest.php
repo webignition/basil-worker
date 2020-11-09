@@ -95,61 +95,45 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
     /**
      * @dataProvider setExecutionCompleteDataProvider
-     *
-     * @param Job::STATE_* $startState
-     * @param Job::STATE_* $expectedEndState
      */
-    public function testSetExecutionComplete(string $startState, string $expectedEndState)
-    {
-        $this->job->setState($startState);
-        $this->jobStore->store($this->job);
-        self::assertSame($startState, $this->job->getState());
+    public function testSetExecutionComplete(
+        ExecutionWorkflowHandler $executionWorkflowHandler,
+        bool $expectedStateIsMutated
+    ) {
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            $executionWorkflowHandler
+        );
 
         $this->jobStateMutator->setExecutionComplete();
 
-        self::assertSame($expectedEndState, $this->job->getState());
+        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_COMPLETE === $this->job->getState());
     }
 
     public function setExecutionCompleteDataProvider(): array
     {
         return [
-            'state: compilation-awaiting' => [
-                'startState' => Job::STATE_COMPILATION_AWAITING,
-                'expectedEndState' => Job::STATE_COMPILATION_AWAITING,
+            'compilation workflow not complete' => [
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->withIsCompleteCall(false)
+                    ->getMock(),
+                'expectedStateIsMutated' => false,
             ],
-            'state: compilation-running' => [
-                'startState' => Job::STATE_COMPILATION_RUNNING,
-                'expectedEndState' => Job::STATE_COMPILATION_RUNNING,
-            ],
-            'state: compilation-failed' => [
-                'startState' => Job::STATE_COMPILATION_FAILED,
-                'expectedEndState' => Job::STATE_COMPILATION_FAILED,
-            ],
-            'state: execution-awaiting' => [
-                'startState' => Job::STATE_EXECUTION_AWAITING,
-                'expectedEndState' => Job::STATE_EXECUTION_AWAITING,
-            ],
-            'state: execution-running' => [
-                'startState' => Job::STATE_EXECUTION_RUNNING,
-                'expectedEndState' => Job::STATE_EXECUTION_COMPLETE,
-            ],
-            'state: execution-failed' => [
-                'startState' => Job::STATE_EXECUTION_FAILED,
-                'expectedEndState' => Job::STATE_EXECUTION_FAILED,
-            ],
-            'state: execution-complete' => [
-                'startState' => Job::STATE_EXECUTION_COMPLETE,
-                'expectedEndState' => Job::STATE_EXECUTION_COMPLETE,
-            ],
-            'state: execution-cancelled' => [
-                'startState' => Job::STATE_EXECUTION_CANCELLED,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
+            'compilation workflow complete' => [
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->withIsCompleteCall(true)
+                    ->getMock(),
+                'expectedStateIsMutated' => true,
             ],
         ];
     }
 
     /**
-     * @dataProvider setExecutionCompleteDataProvider
+     * @dataProvider setCompilationFailedDataProvider
      *
      * @param Job::STATE_* $startState
      * @param Job::STATE_* $expectedEndState
@@ -160,7 +144,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->jobStore->store($this->job);
         self::assertSame($startState, $this->job->getState());
 
-        $this->jobStateMutator->setExecutionComplete();
+        $this->jobStateMutator->setCompilationFailed();
 
         self::assertSame($expectedEndState, $this->job->getState());
     }
