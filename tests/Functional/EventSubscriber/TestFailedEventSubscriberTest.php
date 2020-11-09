@@ -24,7 +24,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
     private TestTestFactory $testFactory;
     private Job $job;
     private TestRepository $testRepository;
-    private JobStore $jobStore;
 
     protected function setUp(): void
     {
@@ -40,7 +39,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(JobStore::class, $jobStore);
         if ($jobStore instanceof JobStore) {
             $this->job = $jobStore->create('label content', 'http://example.com/callback');
-            $this->jobStore = $jobStore;
         }
 
         $testFactory = self::$container->get(TestTestFactory::class);
@@ -63,57 +61,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $this->eventSubscriber->setTestStateToFailed(new TestFailedEvent($test));
         self::assertSame(Test::STATE_FAILED, $test->getState());
-    }
-
-    /**
-     * @dataProvider setJobStateToCancelledDataProvider
-     *
-     * @param Job::STATE_* $jobStartState
-     * @param Job::STATE_* $expectedJobEndState
-     */
-    public function testSetJobStateToCancelled(string $jobStartState, string $expectedJobEndState)
-    {
-        $this->job->setState($jobStartState);
-        $this->jobStore->store($this->job);
-        self::assertSame($jobStartState, $this->job->getState());
-
-        $this->eventSubscriber->setJobStateToCancelled();
-
-        self::assertSame($expectedJobEndState, $this->job->getState());
-    }
-
-    public function setJobStateToCancelledDataProvider(): array
-    {
-        return [
-            'job state: compilation awaiting' => [
-                'startState' => Job::STATE_COMPILATION_AWAITING,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
-            ],
-            'job state: compilation running' => [
-                'startState' => Job::STATE_COMPILATION_RUNNING,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
-            ],
-            'job state: compilation failed' => [
-                'startState' => Job::STATE_COMPILATION_FAILED,
-                'expectedEndState' => Job::STATE_COMPILATION_FAILED,
-            ],
-            'job state: execution awaiting' => [
-                'startState' => Job::STATE_EXECUTION_AWAITING,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
-            ],
-            'job state: execution running' => [
-                'startState' => Job::STATE_EXECUTION_RUNNING,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
-            ],
-            'job state: execution complete' => [
-                'startState' => Job::STATE_EXECUTION_COMPLETE,
-                'expectedEndState' => Job::STATE_EXECUTION_COMPLETE,
-            ],
-            'job state: execution cancelled' => [
-                'startState' => Job::STATE_EXECUTION_CANCELLED,
-                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
-            ],
-        ];
     }
 
     /**

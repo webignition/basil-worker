@@ -5,13 +5,25 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
+use App\Entity\TestConfiguration;
+use App\Event\JobCancelledEvent;
+use App\Event\JobCompletedEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Event\SourcesAddedEvent;
+use App\Event\TestExecuteCompleteEvent;
+use App\Event\TestFailedEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
+use App\Tests\Services\TestTestFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
@@ -19,6 +31,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     private JobStateMutator $jobStateMutator;
     private JobStore $jobStore;
     private Job $job;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
@@ -35,6 +48,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         if ($jobStore instanceof JobStore) {
             $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
             $this->jobStore = $jobStore;
+        }
+
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $this->eventDispatcher = $eventDispatcher;
         }
     }
 
@@ -301,5 +320,139 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => true,
             ],
         ];
+    }
+
+    public function testSubscribesToJobCancelledEvent()
+    {
+        $this->eventDispatcher->dispatch(new JobCancelledEvent());
+
+        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
+    }
+
+    public function testSubscribesToJobCompletedEvent()
+    {
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
+
+        $this->eventDispatcher->dispatch(new JobCompletedEvent());
+
+        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+    }
+
+    public function testSubscribesToSourceCompileFailureEvent()
+    {
+        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
+        $this->jobStore->store($this->job);
+
+        $this->eventDispatcher->dispatch(
+            new SourceCompileFailureEvent('source', \Mockery::mock(ErrorOutputInterface::class))
+        );
+
+        self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
+    }
+
+    public function testSubscribesToSourcesAddedEvent()
+    {
+        $this->job->setState(Job::STATE_COMPILATION_AWAITING);
+        $this->job->setSources([
+            'Test/test1.yml',
+        ]);
+        $this->jobStore->store($this->job);
+
+        $this->eventDispatcher->dispatch(new SourcesAddedEvent());
+
+        self::assertSame(Job::STATE_COMPILATION_RUNNING, $this->job->getState());
+    }
+
+    public function testSubscribesToTestFailedEvent()
+    {
+        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $test = $testFactory->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
+                '/app/source/Test/test.yml',
+                '/app/tests/GeneratedTest.php',
+                1,
+            );
+
+            $this->eventDispatcher->dispatch(new TestFailedEvent($test));
+        }
+
+        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
+    }
+
+    public function testSubscribesToSourceCompileSuccessEvent()
+    {
+        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'compilationWorkflowHandler',
+            (new MockCompilationWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsReadyToExecuteCall(true)
+                ->getMock()
+        );
+
+        $event = new SourceCompileSuccessEvent(
+            '/app/source/Test/test.yml',
+            (new MockSuiteManifest())
+                ->withGetTestManifestsCall([])
+                ->getMock()
+        );
+
+        $this->eventDispatcher->dispatch($event);
+
+        self::assertSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+    }
+
+    public function testSubscribesToTestExecuteCompleteEvent()
+    {
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $test = $testFactory->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
+                '/tests/test1.yml',
+                '/generated/GeneratedTest.php',
+                1
+            );
+
+            $event = new TestExecuteCompleteEvent($test);
+            $this->eventDispatcher->dispatch($event);
+        }
+
+        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
     }
 }

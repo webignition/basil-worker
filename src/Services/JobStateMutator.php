@@ -5,8 +5,16 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Job;
+use App\Event\JobCancelledEvent;
+use App\Event\JobCompletedEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Event\SourcesAddedEvent;
+use App\Event\TestExecuteCompleteEvent;
+use App\Event\TestFailedEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class JobStateMutator
+class JobStateMutator implements EventSubscriberInterface
 {
     private JobStore $jobStore;
     private CompilationWorkflowHandler $compilationWorkflowHandler;
@@ -20,6 +28,33 @@ class JobStateMutator
         $this->jobStore = $jobStore;
         $this->compilationWorkflowHandler = $compilationWorkflowHandler;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            SourcesAddedEvent::class => [
+                ['setCompilationRunning', 100],
+            ],
+            SourceCompileFailureEvent::class => [
+                ['setCompilationFailed', 100],
+            ],
+            SourceCompileSuccessEvent::class => [
+                ['setExecutionAwaiting', 0],
+            ],
+            JobCancelledEvent::class => [
+                ['setExecutionCancelled', 0],
+            ],
+            JobCompletedEvent::class => [
+                ['setExecutionComplete', 0],
+            ],
+            TestFailedEvent::class => [
+                ['setExecutionCancelled', 0],
+            ],
+            TestExecuteCompleteEvent::class => [
+                ['setExecutionComplete', 100],
+            ],
+        ];
     }
 
     public function setCompilationRunning(): void
