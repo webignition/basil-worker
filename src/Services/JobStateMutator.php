@@ -33,23 +33,23 @@ class JobStateMutator implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            SourcesAddedEvent::class => [
+                ['setCompilationRunning', 0],
+            ],
+            SourceCompileFailureEvent::class => [
+                ['setCompilationFailed', 0],
+            ],
+            SourceCompileSuccessEvent::class => [
+                ['setExecutionAwaiting', 0],
+            ],
             JobCancelledEvent::class => [
                 ['setExecutionCancelled', 0],
             ],
             JobCompletedEvent::class => [
                 ['setExecutionComplete', 0],
             ],
-            SourceCompileFailureEvent::class => [
-                ['setCompilationFailed', 0],
-            ],
-            SourcesAddedEvent::class => [
-                ['setCompilationRunning', 0],
-            ],
             TestFailedEvent::class => [
                 ['setExecutionCancelled', 0],
-            ],
-            SourceCompileSuccessEvent::class => [
-                ['setExecutionAwaiting', 0],
             ],
             TestExecuteCompleteEvent::class => [
                 ['setExecutionComplete', 0],
