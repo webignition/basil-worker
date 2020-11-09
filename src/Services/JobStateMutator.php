@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Job;
-use App\Event\JobCancelledEvent;
-use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
@@ -41,12 +39,6 @@ class JobStateMutator implements EventSubscriberInterface
             ],
             SourceCompileSuccessEvent::class => [
                 ['setExecutionAwaiting', 0],
-            ],
-            JobCancelledEvent::class => [
-                ['setExecutionCancelled', 0],
-            ],
-            JobCompletedEvent::class => [
-                ['setExecutionComplete', 0],
             ],
             TestFailedEvent::class => [
                 ['setExecutionCancelled', 0],
