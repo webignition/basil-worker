@@ -32,21 +32,11 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
     {
         return [
             TestExecuteCompleteEvent::class => [
-                ['setJobStateToExecutionCompleteIfTestFailed', 10],
                 ['setTestStateToCompleteIfPassed', 10],
                 ['dispatchNextTestExecuteMessageIfPassed', 0],
                 ['setJobStateToExecutionCompleteIfAllTestsFinished', 0],
             ],
         ];
-    }
-
-    public function setJobStateToExecutionCompleteIfTestFailed(TestExecuteCompleteEvent $event): void
-    {
-        $test = $event->getTest();
-
-        if (Test::STATE_FAILED === $test->getState()) {
-            $this->eventDispatcher->dispatch(new JobCompletedEvent());
-        }
     }
 
     public function setTestStateToCompleteIfPassed(TestExecuteCompleteEvent $event): void
