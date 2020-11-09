@@ -5,27 +5,20 @@ declare(strict_types=1);
 namespace App\EventSubscriber;
 
 use App\Entity\Test;
-use App\Event\JobCompletedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\TestStateMutator;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 {
     private ExecutionWorkflowHandler $executionWorkflowHandler;
     private TestStateMutator $testStateMutator;
-    private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(
-        ExecutionWorkflowHandler $executionWorkflowHandler,
-        TestStateMutator $testStateMutator,
-        EventDispatcherInterface $eventDispatcher
-    ) {
+    public function __construct(ExecutionWorkflowHandler $executionWorkflowHandler, TestStateMutator $testStateMutator)
+    {
         $this->executionWorkflowHandler = $executionWorkflowHandler;
         $this->testStateMutator = $testStateMutator;
-        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents()
@@ -34,7 +27,6 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
             TestExecuteCompleteEvent::class => [
                 ['setTestStateToCompleteIfPassed', 10],
                 ['dispatchNextTestExecuteMessageIfPassed', 0],
-                ['setJobStateToExecutionCompleteIfAllTestsFinished', 0],
             ],
         ];
     }
@@ -54,13 +46,6 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 
         if (Test::STATE_COMPLETE === $test->getState()) {
             $this->executionWorkflowHandler->dispatchNextExecuteTestMessage();
-        }
-    }
-
-    public function setJobStateToExecutionCompleteIfAllTestsFinished(): void
-    {
-        if ($this->executionWorkflowHandler->isComplete()) {
-            $this->eventDispatcher->dispatch(new JobCompletedEvent());
         }
     }
 }

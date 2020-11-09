@@ -10,6 +10,7 @@ use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
+use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestFailedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -49,6 +50,9 @@ class JobStateMutator implements EventSubscriberInterface
             ],
             SourceCompileSuccessEvent::class => [
                 ['setExecutionAwaiting', 0],
+            ],
+            TestExecuteCompleteEvent::class => [
+                ['setExecutionComplete', 0],
             ],
         ];
     }

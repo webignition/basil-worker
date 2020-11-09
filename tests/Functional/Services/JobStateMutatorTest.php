@@ -11,6 +11,7 @@ use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
+use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestFailedEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
@@ -330,8 +331,16 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
     public function testSubscribesToJobCompletedEvent()
     {
-        $this->job->setState(Job::STATE_EXECUTION_RUNNING);
-        $this->jobStore->store($this->job);
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
 
         $this->eventDispatcher->dispatch(new JobCompletedEvent());
 
@@ -415,5 +424,35 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->eventDispatcher->dispatch($event);
 
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+    }
+
+    public function testSubscribesToTestExecuteCompleteEvent()
+    {
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $test = $testFactory->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
+                '/tests/test1.yml',
+                '/generated/GeneratedTest.php',
+                1
+            );
+
+            $event = new TestExecuteCompleteEvent($test);
+            $this->eventDispatcher->dispatch($event);
+        }
+
+        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
     }
 }
