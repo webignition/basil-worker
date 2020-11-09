@@ -4,32 +4,32 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Entity\Job;
 use App\Entity\Test;
+use App\Event\JobCompletedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Services\ExecutionWorkflowHandler;
-use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 {
-    private JobStateMutator $jobStateMutator;
     private ExecutionWorkflowHandler $executionWorkflowHandler;
     private TestStateMutator $testStateMutator;
     private JobStore $jobStore;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        JobStateMutator $jobStateMutator,
         ExecutionWorkflowHandler $executionWorkflowHandler,
         TestStateMutator $testStateMutator,
-        JobStore $jobStore
+        JobStore $jobStore,
+        EventDispatcherInterface $eventDispatcher
     ) {
-        $this->jobStateMutator = $jobStateMutator;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
         $this->testStateMutator = $testStateMutator;
         $this->jobStore = $jobStore;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents()
@@ -49,7 +49,7 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
         $test = $event->getTest();
 
         if (Test::STATE_FAILED === $test->getState()) {
-            $this->jobStateMutator->setExecutionComplete();
+            $this->eventDispatcher->dispatch(new JobCompletedEvent());
         }
     }
 
@@ -73,10 +73,8 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 
     public function setJobStateToExecutionCompleteIfAllTestsFinished(): void
     {
-        $job = $this->jobStore->getJob();
-
-        if (Job::STATE_EXECUTION_COMPLETE !== $job->getState() && $this->executionWorkflowHandler->isComplete()) {
-            $this->jobStateMutator->setExecutionComplete();
+        if ($this->executionWorkflowHandler->isComplete()) {
+            $this->eventDispatcher->dispatch(new JobCompletedEvent());
         }
     }
 }
