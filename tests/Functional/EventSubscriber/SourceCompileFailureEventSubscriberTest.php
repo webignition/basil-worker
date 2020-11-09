@@ -23,6 +23,7 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
     private SourceCompileFailureEventSubscriber $eventSubscriber;
     private InMemoryTransport $messengerTransport;
     private Job $job;
+    private JobStore $jobStore;
 
     protected function setUp(): void
     {
@@ -36,6 +37,7 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         if ($jobStore instanceof JobStore) {
             $this->job = $jobStore->create('label content', 'http://example.com/callback');
+            $this->jobStore = $jobStore;
         }
 
         $messengerTransport = self::$container->get('messenger.transport.async');
@@ -46,10 +48,10 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
 
     public function testSetJobState()
     {
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
+        $this->jobStore->store($this->job);
 
         $this->eventSubscriber->setJobState();
-
         $this->assertJobState();
     }
 
@@ -65,7 +67,8 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
 
     public function testIntegration()
     {
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
+        $this->jobStore->store($this->job);
         self::assertCount(0, $this->messengerTransport->get());
 
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);

@@ -142,4 +142,59 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
             ],
         ];
     }
+
+    /**
+     * @dataProvider setExecutionCompleteDataProvider
+     *
+     * @param Job::STATE_* $startState
+     * @param Job::STATE_* $expectedEndState
+     */
+    public function testSetCompilationFailed(string $startState, string $expectedEndState)
+    {
+        $this->job->setState($startState);
+        $this->jobStore->store($this->job);
+        self::assertSame($startState, $this->job->getState());
+
+        $this->jobStateMutator->setExecutionComplete();
+
+        self::assertSame($expectedEndState, $this->job->getState());
+    }
+
+    public function setCompilationFailedDataProvider(): array
+    {
+        return [
+            'state: compilation-awaiting' => [
+                'startState' => Job::STATE_COMPILATION_AWAITING,
+                'expectedEndState' => Job::STATE_COMPILATION_AWAITING,
+            ],
+            'state: compilation-running' => [
+                'startState' => Job::STATE_COMPILATION_RUNNING,
+                'expectedEndState' => Job::STATE_COMPILATION_FAILED,
+            ],
+            'state: compilation-failed' => [
+                'startState' => Job::STATE_COMPILATION_FAILED,
+                'expectedEndState' => Job::STATE_COMPILATION_FAILED,
+            ],
+            'state: execution-awaiting' => [
+                'startState' => Job::STATE_EXECUTION_AWAITING,
+                'expectedEndState' => Job::STATE_EXECUTION_AWAITING,
+            ],
+            'state: execution-running' => [
+                'startState' => Job::STATE_EXECUTION_RUNNING,
+                'expectedEndState' => Job::STATE_EXECUTION_RUNNING,
+            ],
+            'state: execution-failed' => [
+                'startState' => Job::STATE_EXECUTION_FAILED,
+                'expectedEndState' => Job::STATE_EXECUTION_FAILED,
+            ],
+            'state: execution-complete' => [
+                'startState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedEndState' => Job::STATE_EXECUTION_COMPLETE,
+            ],
+            'state: execution-cancelled' => [
+                'startState' => Job::STATE_EXECUTION_CANCELLED,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
+            ],
+        ];
+    }
 }
