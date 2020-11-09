@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
+use App\Services\CompilationWorkflowHandler;
+use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
+use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
+use webignition\ObjectReflector\ObjectReflector;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
 {
@@ -249,6 +254,67 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
             'state: execution-cancelled' => [
                 'startState' => Job::STATE_EXECUTION_CANCELLED,
                 'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider setExecutionAwaitingDataProvider
+     */
+    public function testSetExecutionAwaiting(
+        CompilationWorkflowHandler $compilationWorkflowHandler,
+        ExecutionWorkflowHandler $executionWorkflowHandler,
+        bool $expectedStateIsMutated
+    ) {
+        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'compilationWorkflowHandler',
+            $compilationWorkflowHandler
+        );
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            $executionWorkflowHandler
+        );
+
+        $this->jobStateMutator->setExecutionAwaiting();
+
+        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_AWAITING === $this->job->getState());
+    }
+
+    public function setExecutionAwaitingDataProvider(): array
+    {
+        return [
+            'compilation workflow not complete' => [
+                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
+                    ->withIsCompleteCall(false)
+                    ->getMock(),
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->getMock(),
+                'expectedStateIsMutated' => false,
+            ],
+            'execution workflow not ready to execute' => [
+                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
+                    ->withIsCompleteCall(true)
+                    ->getMock(),
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->withIsReadyToExecuteCall(false)
+                    ->getMock(),
+                'expectedStateIsMutated' => false,
+            ],
+            'compilation workflow complete, execution workflow ready to execute' => [
+                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
+                    ->withIsCompleteCall(true)
+                    ->getMock(),
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->withIsReadyToExecuteCall(true)
+                    ->getMock(),
+                'expectedStateIsMutated' => true,
             ],
         ];
     }
