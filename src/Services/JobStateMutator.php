@@ -9,6 +9,7 @@ use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourcesAddedEvent;
+use App\Event\TestFailedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
@@ -41,6 +42,9 @@ class JobStateMutator implements EventSubscriberInterface
             ],
             SourcesAddedEvent::class => [
                 ['setCompilationRunning', 0],
+            ],
+            TestFailedEvent::class => [
+                ['setExecutionCancelled', 0],
             ],
         ];
     }

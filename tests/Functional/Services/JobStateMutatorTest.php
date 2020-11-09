@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
+use App\Entity\TestConfiguration;
 use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourcesAddedEvent;
+use App\Event\TestFailedEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
@@ -356,5 +359,25 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->eventDispatcher->dispatch(new SourcesAddedEvent());
 
         self::assertSame(Job::STATE_COMPILATION_RUNNING, $this->job->getState());
+    }
+
+    public function testSubscribesToTestFailedEvent()
+    {
+        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $test = $testFactory->create(
+                TestConfiguration::create('chrome', 'http://example.com'),
+                '/app/source/Test/test.yml',
+                '/app/tests/GeneratedTest.php',
+                1,
+            );
+
+            $this->eventDispatcher->dispatch(new TestFailedEvent($test));
+        }
+
+        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
     }
 }
