@@ -46,15 +46,6 @@ class SourceCompileFailureEventSubscriberTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testSetJobState()
-    {
-        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
-        $this->jobStore->store($this->job);
-
-        $this->eventSubscriber->setJobState();
-        $this->assertJobState();
-    }
-
     public function testDispatchSendCallbackMessage()
     {
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);

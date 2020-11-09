@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Job;
 use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
@@ -16,12 +17,14 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\BasilCompilerModels\ErrorOutputInterface;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
 {
     private JobStateMutator $jobStateMutator;
     private JobStore $jobStore;
     private Job $job;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
@@ -38,6 +41,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         if ($jobStore instanceof JobStore) {
             $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
             $this->jobStore = $jobStore;
+        }
+
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $this->eventDispatcher = $eventDispatcher;
         }
     }
 
@@ -308,10 +317,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
     public function testSubscribesToJobCancelledEvent()
     {
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $eventDispatcher->dispatch(new JobCancelledEvent());
-        }
+        $this->eventDispatcher->dispatch(new JobCancelledEvent());
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
     }
@@ -321,11 +327,20 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->job->setState(Job::STATE_EXECUTION_RUNNING);
         $this->jobStore->store($this->job);
 
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $eventDispatcher->dispatch(new JobCompletedEvent());
-        }
+        $this->eventDispatcher->dispatch(new JobCompletedEvent());
 
         self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+    }
+
+    public function testSubscribesToSourceCompileFailureEvent()
+    {
+        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
+        $this->jobStore->store($this->job);
+
+        $this->eventDispatcher->dispatch(
+            new SourceCompileFailureEvent('source', \Mockery::mock(ErrorOutputInterface::class))
+        );
+
+        self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
     }
 }
