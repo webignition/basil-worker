@@ -35,7 +35,7 @@ class JobStateMutator
     public function setExecutionAwaiting(): void
     {
         $this->conditionallySetState(
-            function () {
+            function (): bool {
                 return $this->compilationWorkflowHandler->isComplete()
                     && $this->executionWorkflowHandler->isReadyToExecute();
             },
@@ -50,7 +50,12 @@ class JobStateMutator
 
     public function setExecutionComplete(): void
     {
-        $this->setIfCurrentState(Job::STATE_EXECUTION_RUNNING, Job::STATE_EXECUTION_COMPLETE);
+        $this->conditionallySetState(
+            function (): bool {
+                return $this->executionWorkflowHandler->isComplete();
+            },
+            Job::STATE_EXECUTION_COMPLETE
+        );
     }
 
     public function setExecutionCancelled(): void

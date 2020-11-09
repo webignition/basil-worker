@@ -32,4 +32,13 @@ class MockExecutionWorkflowHandler
 
         return $this;
     }
+
+    public function withIsCompleteCall(bool $isComplete): self
+    {
+        $this->executionWorkflowHandler
+            ->shouldReceive('isComplete')
+            ->andReturn($isComplete);
+
+        return $this;
+    }
 }
