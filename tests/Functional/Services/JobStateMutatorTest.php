@@ -8,6 +8,7 @@ use App\Entity\Job;
 use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourcesAddedEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
@@ -342,5 +343,18 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         );
 
         self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
+    }
+
+    public function testSubscribesToSourcesAddedEvent()
+    {
+        $this->job->setState(Job::STATE_COMPILATION_AWAITING);
+        $this->job->setSources([
+            'Test/test1.yml',
+        ]);
+        $this->jobStore->store($this->job);
+
+        $this->eventDispatcher->dispatch(new SourcesAddedEvent());
+
+        self::assertSame(Job::STATE_COMPILATION_RUNNING, $this->job->getState());
     }
 }

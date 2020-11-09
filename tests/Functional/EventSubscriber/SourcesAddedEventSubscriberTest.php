@@ -34,7 +34,6 @@ class SourcesAddedEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(
             [
                 SourcesAddedEvent::class => [
-                    ['setJobState', 10],
                     ['dispatchNextCompileSourceMessage', 0]
                 ],
             ],

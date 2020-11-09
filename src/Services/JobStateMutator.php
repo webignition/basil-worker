@@ -8,6 +8,7 @@ use App\Entity\Job;
 use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourcesAddedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
@@ -37,6 +38,9 @@ class JobStateMutator implements EventSubscriberInterface
             ],
             SourceCompileFailureEvent::class => [
                 ['setCompilationFailed', 0],
+            ],
+            SourcesAddedEvent::class => [
+                ['setCompilationRunning', 0],
             ],
         ];
     }
