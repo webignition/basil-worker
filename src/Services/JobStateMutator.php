@@ -17,7 +17,7 @@ class JobStateMutator
 
     public function setCompilationRunning(): void
     {
-        $this->set(Job::STATE_COMPILATION_RUNNING);
+        $this->setIfCurrentState(Job::STATE_COMPILATION_AWAITING, Job::STATE_COMPILATION_RUNNING);
     }
 
     public function setCompilationFailed(): void
