@@ -4,30 +4,31 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Event\JobCancelledEvent;
 use App\Event\TestFailedEvent;
 use App\Repository\TestRepository;
-use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestFailedEventSubscriber implements EventSubscriberInterface
 {
-    private JobStateMutator $jobStateMutator;
     private TestStateMutator $testStateMutator;
     private JobStore $jobStore;
     private TestRepository $testRepository;
+    private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
-        JobStateMutator $jobStateMutator,
         TestStateMutator $testStateMutator,
         JobStore $jobStore,
-        TestRepository $testRepository
+        TestRepository $testRepository,
+        EventDispatcherInterface $eventDispatcher
     ) {
-        $this->jobStateMutator = $jobStateMutator;
         $this->testStateMutator = $testStateMutator;
         $this->jobStore = $jobStore;
         $this->testRepository = $testRepository;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents()
@@ -51,7 +52,7 @@ class TestFailedEventSubscriber implements EventSubscriberInterface
         $job = $this->jobStore->getJob();
 
         if (false === $job->isFinished()) {
-            $this->jobStateMutator->setExecutionCancelled();
+            $this->eventDispatcher->dispatch(new JobCancelledEvent());
         }
     }
 
