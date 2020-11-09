@@ -7,9 +7,9 @@ namespace App\Services;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Model\Callback\CallbackInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class CallbackResponseHandler
 {

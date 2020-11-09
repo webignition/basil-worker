@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Entity\Test;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Model\RunnerTest\TestProxy;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\TcpCliProxyClient\Client;
 use webignition\TcpCliProxyClient\Handler;
 use webignition\YamlDocument\Document;

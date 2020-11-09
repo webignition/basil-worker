@@ -9,7 +9,7 @@ use App\Event\JobCompletedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\TestStateMutator;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface

@@ -9,7 +9,7 @@ use App\Event\TestFailedEvent;
 use App\Message\SendCallback;
 use App\Model\Document\Step;
 use App\Services\ExecuteDocumentReceivedCallbackFactory;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 

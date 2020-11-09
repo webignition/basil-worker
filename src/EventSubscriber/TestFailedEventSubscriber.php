@@ -9,7 +9,7 @@ use App\Event\TestFailedEvent;
 use App\Repository\TestRepository;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestFailedEventSubscriber implements EventSubscriberInterface

@@ -13,7 +13,7 @@ use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
 class ExecuteTestHandler implements MessageHandlerInterface
