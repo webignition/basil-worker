@@ -6,17 +6,14 @@ namespace App\EventSubscriber;
 
 use App\Event\JobCancelledEvent;
 use App\Services\JobStateMutator;
-use App\Services\JobStore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobCancelledEventSubscriber implements EventSubscriberInterface
 {
-    private JobStore $jobStore;
     private JobStateMutator $jobStateMutator;
 
-    public function __construct(JobStore $jobStore, JobStateMutator $jobStateMutator)
+    public function __construct(JobStateMutator $jobStateMutator)
     {
-        $this->jobStore = $jobStore;
         $this->jobStateMutator = $jobStateMutator;
     }
 
@@ -31,10 +28,6 @@ class JobCancelledEventSubscriber implements EventSubscriberInterface
 
     public function setJobStateToCancelled(): void
     {
-        $job = $this->jobStore->getJob();
-
-        if (false === $job->isFinished()) {
-            $this->jobStateMutator->setExecutionCancelled();
-        }
+        $this->jobStateMutator->setExecutionCancelled();
     }
 }

@@ -42,7 +42,14 @@ class JobStateMutator
 
     public function setExecutionCancelled(): void
     {
-        $this->set(Job::STATE_EXECUTION_CANCELLED);
+        if ($this->jobStore->hasJob()) {
+            $job = $this->jobStore->getJob();
+
+            if (false === $job->isFinished()) {
+                $job->setState(Job::STATE_EXECUTION_CANCELLED);
+                $this->jobStore->store($job);
+            }
+        }
     }
 
     /**
