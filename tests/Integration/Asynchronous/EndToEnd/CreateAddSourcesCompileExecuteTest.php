@@ -93,10 +93,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $job = $this->jobStore->getJob();
         self::assertSame($sourcePaths, $job->getSources());
 
-        // @todo: replace with less brittle, more elegant solution in #329
-        sleep(6);
+        $this->waitUntil(function () use ($job, $expectedJobEndState): bool {
+            $this->entityManager->refresh($job);
 
-        $this->entityManager->refresh($job);
+            return $expectedJobEndState === $job->getState();
+        });
 
         self::assertSame($expectedJobEndState, $job->getState());
 
@@ -139,5 +140,25 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
         }
+    }
+
+    private function waitUntil(callable $callable, int $maxDurationInSeconds = 30): bool
+    {
+        $duration = 0;
+        $maxDuration = $maxDurationInSeconds * 1000000;
+        $maxDurationReached = $duration >= $maxDuration;
+        $intervalInMicroseconds = 100000;
+
+        while (false === $callable() && false === $maxDurationReached) {
+            usleep($intervalInMicroseconds);
+            $duration += $intervalInMicroseconds;
+            $maxDurationReached = $duration >= $maxDuration;
+
+            if ($maxDurationReached) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
