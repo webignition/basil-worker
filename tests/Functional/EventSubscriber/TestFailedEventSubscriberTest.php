@@ -10,7 +10,6 @@ use App\Entity\TestConfiguration;
 use App\Event\TestFailedEvent;
 use App\EventSubscriber\TestFailedEventSubscriber;
 use App\Repository\TestRepository;
-use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
@@ -23,9 +22,9 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
 
     private TestFailedEventSubscriber $eventSubscriber;
     private TestTestFactory $testFactory;
-    private JobStateMutator $jobStateMutator;
     private Job $job;
     private TestRepository $testRepository;
+    private JobStore $jobStore;
 
     protected function setUp(): void
     {
@@ -41,18 +40,13 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(JobStore::class, $jobStore);
         if ($jobStore instanceof JobStore) {
             $this->job = $jobStore->create('label content', 'http://example.com/callback');
+            $this->jobStore = $jobStore;
         }
 
         $testFactory = self::$container->get(TestTestFactory::class);
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
         if ($testFactory instanceof TestTestFactory) {
             $this->testFactory = $testFactory;
-        }
-
-        $jobStateMutator = self::$container->get(JobStateMutator::class);
-        self::assertInstanceOf(JobStateMutator::class, $jobStateMutator);
-        if ($jobStateMutator instanceof JobStateMutator) {
-            $this->jobStateMutator = $jobStateMutator;
         }
 
         $testRepository = self::$container->get(TestRepository::class);
@@ -73,65 +67,51 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
 
     /**
      * @dataProvider setJobStateToCancelledDataProvider
+     *
+     * @param Job::STATE_* $jobStartState
+     * @param Job::STATE_* $expectedJobEndState
      */
-    public function testSetJobStateToCancelled(callable $jobMutator, string $expectedJobState)
+    public function testSetJobStateToCancelled(string $jobStartState, string $expectedJobEndState)
     {
-        $jobMutator($this->jobStateMutator, $this->job);
+        $this->job->setState($jobStartState);
+        $this->jobStore->store($this->job);
+        self::assertSame($jobStartState, $this->job->getState());
 
         $this->eventSubscriber->setJobStateToCancelled();
 
-        self::assertSame($expectedJobState, $this->job->getState());
+        self::assertSame($expectedJobEndState, $this->job->getState());
     }
 
     public function setJobStateToCancelledDataProvider(): array
     {
         return [
             'job state: compilation awaiting' => [
-                'jobMutator' => function () {
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
+                'startState' => Job::STATE_COMPILATION_AWAITING,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
             ],
             'job state: compilation running' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setCompilationRunning();
-                    self::assertSame(Job::STATE_COMPILATION_RUNNING, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
+                'startState' => Job::STATE_COMPILATION_RUNNING,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
             ],
             'job state: compilation failed' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setCompilationFailed();
-                    self::assertSame(Job::STATE_COMPILATION_FAILED, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_COMPILATION_FAILED,
+                'startState' => Job::STATE_COMPILATION_FAILED,
+                'expectedEndState' => Job::STATE_COMPILATION_FAILED,
             ],
             'job state: execution awaiting' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setExecutionAwaiting();
-                    self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
+                'startState' => Job::STATE_EXECUTION_AWAITING,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
             ],
             'job state: execution running' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setExecutionRunning();
-                    self::assertSame(Job::STATE_EXECUTION_RUNNING, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
+                'startState' => Job::STATE_EXECUTION_RUNNING,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
             ],
             'job state: execution complete' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setExecutionComplete();
-                    self::assertSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
+                'startState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedEndState' => Job::STATE_EXECUTION_COMPLETE,
             ],
             'job state: execution cancelled' => [
-                'jobMutator' => function (JobStateMutator $jobStateMutator, Job $job) {
-                    $jobStateMutator->setExecutionCancelled();
-                    self::assertSame(Job::STATE_EXECUTION_CANCELLED, $job->getState());
-                },
-                'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
+                'startState' => Job::STATE_EXECUTION_CANCELLED,
+                'expectedEndState' => Job::STATE_EXECUTION_CANCELLED,
             ],
         ];
     }

@@ -4,20 +4,16 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
-use App\Entity\Job;
 use App\Event\JobCompletedEvent;
 use App\Services\JobStateMutator;
-use App\Services\JobStore;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobCompletedEventSubscriber implements EventSubscriberInterface
 {
-    private JobStore $jobStore;
     private JobStateMutator $jobStateMutator;
 
-    public function __construct(JobStore $jobStore, JobStateMutator $jobStateMutator)
+    public function __construct(JobStateMutator $jobStateMutator)
     {
-        $this->jobStore = $jobStore;
         $this->jobStateMutator = $jobStateMutator;
     }
 
@@ -32,10 +28,6 @@ class JobCompletedEventSubscriber implements EventSubscriberInterface
 
     public function setJobStateToCompleted(): void
     {
-        $job = $this->jobStore->getJob();
-
-        if (Job::STATE_EXECUTION_RUNNING === $job->getState()) {
-            $this->jobStateMutator->setExecutionComplete();
-        }
+        $this->jobStateMutator->setExecutionComplete();
     }
 }
