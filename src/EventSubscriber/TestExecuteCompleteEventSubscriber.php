@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Event\JobCompletedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Services\ExecutionWorkflowHandler;
-use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,18 +16,15 @@ class TestExecuteCompleteEventSubscriber implements EventSubscriberInterface
 {
     private ExecutionWorkflowHandler $executionWorkflowHandler;
     private TestStateMutator $testStateMutator;
-    private JobStore $jobStore;
     private EventDispatcherInterface $eventDispatcher;
 
     public function __construct(
         ExecutionWorkflowHandler $executionWorkflowHandler,
         TestStateMutator $testStateMutator,
-        JobStore $jobStore,
         EventDispatcherInterface $eventDispatcher
     ) {
         $this->executionWorkflowHandler = $executionWorkflowHandler;
         $this->testStateMutator = $testStateMutator;
-        $this->jobStore = $jobStore;
         $this->eventDispatcher = $eventDispatcher;
     }
 
