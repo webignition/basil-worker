@@ -9,10 +9,17 @@ use App\Entity\Job;
 class JobStateMutator
 {
     private JobStore $jobStore;
+    private CompilationWorkflowHandler $compilationWorkflowHandler;
+    private ExecutionWorkflowHandler $executionWorkflowHandler;
 
-    public function __construct(JobStore $jobStore)
-    {
+    public function __construct(
+        JobStore $jobStore,
+        CompilationWorkflowHandler $compilationWorkflowHandler,
+        ExecutionWorkflowHandler $executionWorkflowHandler
+    ) {
         $this->jobStore = $jobStore;
+        $this->compilationWorkflowHandler = $compilationWorkflowHandler;
+        $this->executionWorkflowHandler = $executionWorkflowHandler;
     }
 
     public function setCompilationRunning(): void
@@ -27,7 +34,13 @@ class JobStateMutator
 
     public function setExecutionAwaiting(): void
     {
-        $this->set(Job::STATE_EXECUTION_AWAITING);
+        $this->conditionallySetState(
+            function () {
+                return $this->compilationWorkflowHandler->isComplete()
+                    && $this->executionWorkflowHandler->isReadyToExecute();
+            },
+            Job::STATE_EXECUTION_AWAITING
+        );
     }
 
     public function setExecutionRunning(): void
