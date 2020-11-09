@@ -7,7 +7,6 @@ namespace App\Tests\Mock\Services;
 use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use Mockery\MockInterface;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 
 class MockCallbackResponseHandler
@@ -45,14 +44,12 @@ class MockCallbackResponseHandler
         return $this;
     }
 
-    public function withHandleClientExceptionCall(
-        CallbackInterface $callback,
-        ClientExceptionInterface $exception
-    ): self {
+    public function withHandleClientExceptionCall(CallbackInterface $callback): self
+    {
         $this->callbackResponseHandler
             ->shouldReceive('handleClientException')
             ->once()
-            ->with($callback, $exception);
+            ->with($callback);
 
         return $this;
     }

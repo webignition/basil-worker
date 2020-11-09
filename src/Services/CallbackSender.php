@@ -45,7 +45,7 @@ class CallbackSender
             $response = $this->httpClient->sendRequest($request);
             $this->callbackResponseHandler->handleResponse($callback, $response);
         } catch (ClientExceptionInterface $httpClientException) {
-            $this->callbackResponseHandler->handleClientException($callback, $httpClientException);
+            $this->callbackResponseHandler->handleClientException($callback);
         }
     }
 }

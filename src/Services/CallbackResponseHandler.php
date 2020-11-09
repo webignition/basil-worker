@@ -4,20 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\Callback\CallbackHttpExceptionEvent;
-use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Message\SendCallback;
 use App\Model\Callback\CallbackInterface;
-use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 
 class CallbackResponseHandler
 {
-    private EventDispatcherInterface $eventDispatcher;
+    private MessageBusInterface $messageBus;
 
-    public function __construct(EventDispatcherInterface $eventDispatcher)
+    public function __construct(MessageBusInterface $messageBus)
     {
-        $this->eventDispatcher = $eventDispatcher;
+        $this->messageBus = $messageBus;
     }
 
     public function handleResponse(CallbackInterface $callback, ResponseInterface $response): void
@@ -27,14 +25,14 @@ class CallbackResponseHandler
         if ($statusCode >= 300) {
             $callback->incrementRetryCount();
 
-            $this->eventDispatcher->dispatch(new CallbackHttpResponseEvent($callback, $response));
+            $this->messageBus->dispatch(new SendCallback($callback));
         }
     }
 
-    public function handleClientException(CallbackInterface $callback, ClientExceptionInterface $clientException): void
+    public function handleClientException(CallbackInterface $callback): void
     {
         $callback->incrementRetryCount();
 
-        $this->eventDispatcher->dispatch(new CallbackHttpExceptionEvent($callback, $clientException));
+        $this->messageBus->dispatch(new SendCallback($callback));
     }
 }

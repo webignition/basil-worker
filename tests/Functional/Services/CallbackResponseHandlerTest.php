@@ -4,59 +4,53 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Event\Callback\CallbackHttpExceptionEvent;
-use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Message\SendCallback;
 use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
-use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
-use App\Tests\Services\CallbackHttpResponseEventSubscriber;
-use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
 class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
 
     private CallbackResponseHandler $callbackResponseHandler;
-    private CallbackHttpExceptionEventSubscriber $exceptionEventSubscriber;
-    private CallbackHttpResponseEventSubscriber $responseEventSubscriber;
+    private InMemoryTransport $messengerTransport;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $callbackResponseHandler = self::$container->get(CallbackResponseHandler::class);
+        self::assertInstanceOf(CallbackResponseHandler::class, $callbackResponseHandler);
         if ($callbackResponseHandler instanceof CallbackResponseHandler) {
             $this->callbackResponseHandler = $callbackResponseHandler;
         }
 
-        $exceptionEventSubscriber = self::$container->get(CallbackHttpExceptionEventSubscriber::class);
-        if ($exceptionEventSubscriber instanceof CallbackHttpExceptionEventSubscriber) {
-            $this->exceptionEventSubscriber = $exceptionEventSubscriber;
-        }
-
-        $responseEventSubscriber = self::$container->get(CallbackHttpResponseEventSubscriber::class);
-        if ($responseEventSubscriber instanceof CallbackHttpResponseEventSubscriber) {
-            $this->responseEventSubscriber = $responseEventSubscriber;
+        $messengerTransport = self::$container->get('messenger.transport.async');
+        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
+        if ($messengerTransport instanceof InMemoryTransport) {
+            $this->messengerTransport = $messengerTransport;
         }
     }
 
     /**
-     * @dataProvider handleResponseNoEventDispatchedDataProvider
+     * @dataProvider handleResponseNoMessageDispatchedDataProvider
      */
-    public function testHandleResponseNoEventDispatched(CallbackInterface $callback, ResponseInterface $response)
+    public function testHandleResponseNoMessageDispatched(CallbackInterface $callback, ResponseInterface $response)
     {
+        self::assertCount(0, $this->messengerTransport->get());
+
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
-        self::assertNull($this->exceptionEventSubscriber->getEvent());
-        self::assertNull($this->responseEventSubscriber->getEvent());
+        self::assertCount(0, $this->messengerTransport->get());
     }
 
-    public function handleResponseNoEventDispatchedDataProvider(): array
+    public function handleResponseNoMessageDispatchedDataProvider(): array
     {
         $dataSets = [];
 
@@ -70,39 +64,39 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         return $dataSets;
     }
 
-    public function testHandleResponseEventDispatched()
+    public function testHandleResponseMessageDispatched()
     {
+        self::assertCount(0, $this->messengerTransport->get());
+
         $response = new Response(404);
         $callback = new TestCallback();
         self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
-        self::assertNull($this->exceptionEventSubscriber->getEvent());
-
-        $event = $this->responseEventSubscriber->getEvent();
-        self::assertInstanceOf(CallbackHttpResponseEvent::class, $event);
-
-        self::assertSame($callback, $event->getCallback());
-        self::assertSame($response, $event->getResponse());
-        self::assertSame(1, $callback->getRetryCount());
+        $this->assertMessageTransportQueue($callback);
     }
 
-    public function testHandleExceptionEventDispatched()
+    public function testHandleExceptionMessageDispatched()
     {
-        $exception = \Mockery::mock(ConnectException::class);
+        self::assertCount(0, $this->messengerTransport->get());
+
         $callback = new TestCallback();
         self::assertSame(0, $callback->getRetryCount());
 
-        $this->callbackResponseHandler->handleClientException($callback, $exception);
+        $this->callbackResponseHandler->handleClientException($callback);
 
-        self::assertNull($this->responseEventSubscriber->getEvent());
+        $this->assertMessageTransportQueue($callback);
+    }
 
-        $event = $this->exceptionEventSubscriber->getEvent();
-        self::assertInstanceOf(CallbackHttpExceptionEvent::class, $event);
+    private function assertMessageTransportQueue(CallbackInterface $expectedCallback): void
+    {
+        $queue = $this->messengerTransport->get();
+        self::assertCount(1, $queue);
+        self::assertIsArray($queue);
 
-        self::assertSame($callback, $event->getCallback());
-        self::assertSame($exception, $event->getException());
-        self::assertSame(1, $callback->getRetryCount());
+        $expectedQueuedMessage = new SendCallback($expectedCallback);
+
+        self::assertEquals($expectedQueuedMessage, $queue[0]->getMessage());
     }
 }
