@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Entity\Job;
 use App\Event\JobCancelledEvent;
+use App\Event\JobCompletedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
@@ -29,6 +30,9 @@ class JobStateMutator implements EventSubscriberInterface
         return [
             JobCancelledEvent::class => [
                 ['setExecutionCancelled', 0],
+            ],
+            JobCompletedEvent::class => [
+                ['setExecutionComplete', 0],
             ],
         ];
     }
