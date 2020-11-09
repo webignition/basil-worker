@@ -126,7 +126,7 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                     $testStateMutator->setFailed($tests[0]);
                 },
                 'testIndex' => 0,
-                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
                 'expectedTestSTate' => Test::STATE_FAILED,
                 'expectedMessageQueueCount' => 0,
             ],
