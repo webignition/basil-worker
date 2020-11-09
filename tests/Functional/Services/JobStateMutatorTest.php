@@ -9,6 +9,7 @@ use App\Entity\TestConfiguration;
 use App\Event\JobCancelledEvent;
 use App\Event\JobCompletedEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestFailedEvent;
 use App\Services\CompilationWorkflowHandler;
@@ -16,12 +17,13 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\TestTestFactory;
-use Psr\EventDispatcher\EventDispatcherInterface;
+use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
-use webignition\ObjectReflector\ObjectReflector;
+use App\Tests\Services\TestTestFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\ObjectReflector\ObjectReflector;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
 {
@@ -379,5 +381,39 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         }
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
+    }
+
+    public function testSubscribesToSourceCompileSuccessEvent()
+    {
+        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'compilationWorkflowHandler',
+            (new MockCompilationWorkflowHandler())
+                ->withIsCompleteCall(true)
+                ->getMock()
+        );
+
+        ObjectReflector::setProperty(
+            $this->jobStateMutator,
+            JobStateMutator::class,
+            'executionWorkflowHandler',
+            (new MockExecutionWorkflowHandler())
+                ->withIsReadyToExecuteCall(true)
+                ->getMock()
+        );
+
+        $event = new SourceCompileSuccessEvent(
+            '/app/source/Test/test.yml',
+            (new MockSuiteManifest())
+                ->withGetTestManifestsCall([])
+                ->getMock()
+        );
+
+        $this->eventDispatcher->dispatch($event);
+
+        self::assertSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
     }
 }

@@ -46,7 +46,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                 SourceCompileSuccessEvent::class => [
                     ['createTests', 30],
                     ['dispatchNextCompileSourceMessage', 20],
-                    ['setJobStateToExecutionAwaitingIfCompilationComplete', 10],
                     ['dispatchNextTestExecuteMessage', 0],
                 ],
             ],
