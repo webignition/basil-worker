@@ -112,7 +112,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleResponseCall()
-            ->withHandleClientExceptionCall($callback)
+            ->withHandleClientExceptionCall($callback, $exception)
             ->getMock();
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
