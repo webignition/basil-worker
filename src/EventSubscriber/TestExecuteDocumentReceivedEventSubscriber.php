@@ -30,18 +30,11 @@ class TestExecuteDocumentReceivedEventSubscriber implements EventSubscriberInter
 
     public function dispatchTestFailedEventIfStepFailed(TestExecuteDocumentReceivedEvent $event): void
     {
-        $this->executeIfStepFailed($event, function (TestExecuteDocumentReceivedEvent $event) {
-            $this->eventDispatcher->dispatch(new TestFailedEvent($event->getTest()));
-        });
-    }
-
-    private function executeIfStepFailed(TestExecuteDocumentReceivedEvent $event, callable $callback): void
-    {
         $document = $event->getDocument();
 
         $step = new Step($document);
         if ($step->isStep() && $step->statusIsFailed()) {
-            $callback($event);
+            $this->eventDispatcher->dispatch(new TestFailedEvent($event->getTest()));
         }
     }
 }
