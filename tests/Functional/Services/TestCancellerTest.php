@@ -6,14 +6,18 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\YamlDocument\Document;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest
 {
     private TestCanceller $testCanceller;
     private TestTestFactory $testFactory;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
@@ -29,6 +33,12 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
         if ($testFactory instanceof TestTestFactory) {
             $this->testFactory = $testFactory;
+        }
+
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $this->eventDispatcher = $eventDispatcher;
         }
     }
 
@@ -131,6 +141,161 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
         ];
+    }
+
+    /**
+     * @dataProvider cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider
+     *
+     * @param callable $setup
+     * @param array<Test::STATE_*> $expectedInitialStates
+     * @param array<Test::STATE_*> $expectedStates
+     */
+    public function testCancelAwaitingFromTestExecuteDocumentReceivedEvent(
+        callable $setup,
+        array $expectedInitialStates,
+        array $expectedStates
+    ) {
+        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+            function () use ($setup) {
+                return $setup($this->testFactory);
+            },
+            $expectedInitialStates,
+            function (TestExecuteDocumentReceivedEvent $event) {
+                $this->testCanceller->cancelAwaitingFromTestExecuteDocumentReceivedEvent($event);
+            },
+            $expectedStates
+        );
+    }
+
+    /**
+     * @dataProvider cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider
+     *
+     * @param callable $setup
+     * @param array<Test::STATE_*> $expectedInitialStates
+     * @param array<Test::STATE_*> $expectedStates
+     */
+    public function testSubscribesToTestExecuteDocumentReceivedEvent(
+        callable $setup,
+        array $expectedInitialStates,
+        array $expectedStates
+    ) {
+        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+            function () use ($setup) {
+                return $setup($this->testFactory);
+            },
+            $expectedInitialStates,
+            function (TestExecuteDocumentReceivedEvent $event) {
+                $this->eventDispatcher->dispatch($event);
+            },
+            $expectedStates
+        );
+    }
+
+    public function cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider(): array
+    {
+        return [
+            'no awaiting tests, test not failed' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    return $this->createTestsWithStates($testFactory, [
+                        Test::STATE_RUNNING,
+                        Test::STATE_COMPLETE,
+                    ]);
+                },
+                'expectedInitialStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_COMPLETE,
+                ],
+                'expectedStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_COMPLETE,
+                ],
+            ],
+            'has awaiting tests, test not failed' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    return $this->createTestsWithStates($testFactory, [
+                        Test::STATE_RUNNING,
+                        Test::STATE_AWAITING,
+                        Test::STATE_AWAITING,
+                    ]);
+                },
+                'expectedInitialStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_AWAITING,
+                    Test::STATE_AWAITING,
+                ],
+                'expectedStates' => [
+                    Test::STATE_RUNNING,
+                    Test::STATE_AWAITING,
+                    Test::STATE_AWAITING,
+                ],
+            ],
+            'no awaiting tests, test failed' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    return $this->createTestsWithStates($testFactory, [
+                        Test::STATE_FAILED,
+                        Test::STATE_COMPLETE,
+                    ]);
+                },
+                'expectedInitialStates' => [
+                    Test::STATE_FAILED,
+                    Test::STATE_COMPLETE,
+                ],
+                'expectedStates' => [
+                    Test::STATE_FAILED,
+                    Test::STATE_COMPLETE,
+                ],
+            ],
+            'has awaiting tests, test failed' => [
+                'setup' => function (TestTestFactory $testFactory) {
+                    return $this->createTestsWithStates($testFactory, [
+                        Test::STATE_FAILED,
+                        Test::STATE_AWAITING,
+                        Test::STATE_AWAITING,
+                    ]);
+                },
+                'expectedInitialStates' => [
+                    Test::STATE_FAILED,
+                    Test::STATE_AWAITING,
+                    Test::STATE_AWAITING,
+                ],
+                'expectedStates' => [
+                    Test::STATE_FAILED,
+                    Test::STATE_CANCELLED,
+                    Test::STATE_CANCELLED,
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @param callable $setup
+     * @param array<Test::STATE_*> $expectedInitialStates
+     * @param callable $execute
+     * @param array<Test::STATE_*> $expectedStates
+     */
+    private function doTestExecuteDocumentReceivedEventDrivenTest(
+        callable $setup,
+        array $expectedInitialStates,
+        callable $execute,
+        array $expectedStates
+    ): void {
+        /** @var Test[] $tests */
+        $tests = $setup($this->testFactory);
+        foreach ($tests as $testIndex => $test) {
+            $expectedInitialState = $expectedInitialStates[$testIndex] ?? null;
+            self::assertSame($expectedInitialState, $test->getState());
+        }
+
+        $test = $tests[0];
+        self::assertInstanceOf(Test::class, $test);
+
+        $event = new TestExecuteDocumentReceivedEvent($test, new Document(''));
+        $execute($event);
+
+        foreach ($tests as $testIndex => $test) {
+            $expectedState = $expectedStates[$testIndex] ?? null;
+            self::assertSame($expectedState, $test->getState());
+        }
     }
 
     /**
