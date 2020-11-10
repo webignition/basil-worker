@@ -26,10 +26,10 @@ class CompilationWorkflowHandler implements EventSubscriberInterface
     {
         return [
             SourceCompileSuccessEvent::class => [
-                ['dispatchNextCompileSourceMessage', 100],
+                ['dispatchNextCompileSourceMessage', 50],
             ],
             SourcesAddedEvent::class => [
-                ['dispatchNextCompileSourceMessage', 100],
+                ['dispatchNextCompileSourceMessage', 50],
             ],
         ];
     }
