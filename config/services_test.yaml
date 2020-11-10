@@ -65,19 +65,13 @@ services:
     App\EventSubscriber\CallbackHttpResponseEventSubscriber:
         public: true
 
-    App\EventSubscriber\CallbackHttpExceptionEventSubscriber:
-        public: true
-
     App\Services\SourceCompileEventDispatcher:
         public: true
 
     App\EventSubscriber\TestFailedEventSubscriber:
         public: true
 
-    App\EventSubscriber\JobCompletedEventSubscriber:
-        public: true
-
-    App\EventSubscriber\JobCancelledEventSubscriber:
+    App\MessageDispatcher\SendCallbackMessageDispatcher:
         public: true
 
     App\Tests\Services\BasilFixtureHandler:
