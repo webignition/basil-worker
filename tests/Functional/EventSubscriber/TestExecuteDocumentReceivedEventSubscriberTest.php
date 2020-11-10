@@ -10,8 +10,6 @@ use App\Entity\TestConfiguration;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Event\TestFailedEvent;
 use App\EventSubscriber\TestExecuteDocumentReceivedEventSubscriber;
-use App\Message\SendCallback;
-use App\Model\Callback\ExecuteDocumentReceived;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockEventDispatcher;
@@ -20,7 +18,6 @@ use App\Tests\Model\ExpectedDispatchedEventCollection;
 use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\YamlDocument\Document;
 
@@ -29,7 +26,6 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     use MockeryPHPUnitIntegration;
 
     private TestExecuteDocumentReceivedEventSubscriber $eventSubscriber;
-    private InMemoryTransport $messengerTransport;
     private Test $test;
     private JobStore $jobStore;
 
@@ -61,21 +57,6 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
         if ($eventSubscriber instanceof TestExecuteDocumentReceivedEventSubscriber) {
             $this->eventSubscriber = $eventSubscriber;
         }
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        if ($messengerTransport instanceof InMemoryTransport) {
-            $this->messengerTransport = $messengerTransport;
-        }
-    }
-
-    public function testDispatchSendCallbackMessage()
-    {
-        $document = new Document();
-        $event = $this->createEvent($document);
-
-        $this->eventSubscriber->dispatchSendCallbackMessage($event);
-
-        $this->assertMessageTransportQueue($document);
     }
 
     /**
@@ -147,14 +128,9 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
     /**
      * @dataProvider integrationDataProvider
      */
-    public function testIntegration(
-        Document $document,
-        string $expectedTestState,
-        Document $expectedQueuedDocument,
-        string $expectedJobState
-    ) {
+    public function testIntegration(Document $document, string $expectedTestState, string $expectedJobState)
+    {
         self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
-        self::assertCount(0, $this->messengerTransport->get());
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
         if ($eventDispatcher instanceof EventDispatcherInterface) {
@@ -163,7 +139,6 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
             $eventDispatcher->dispatch($event);
         }
 
-        $this->assertMessageTransportQueue($expectedQueuedDocument);
         self::assertSame($expectedTestState, $this->test->getState());
 
         $job = $this->jobStore->getJob();
@@ -172,42 +147,23 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
     public function integrationDataProvider(): array
     {
-        $test = new Document('{ type: test, path: Test/test.yml }');
-        $stepPassed = new Document('{ type: step, status: passed }');
-        $stepFailed = new Document('{ type: step, status: failed }');
-
         return [
             'test document' => [
-                'document' => $test,
+                'document' => new Document('{ type: test, path: Test/test.yml }'),
                 'expectedTestState' => Test::STATE_AWAITING,
-                'expectedQueuedDocument' => $test,
                 'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'step status passed' => [
-                'document' => $stepPassed,
+                'document' => new Document('{ type: step, status: passed }'),
                 'expectedTestState' => Test::STATE_AWAITING,
-                'expectedQueuedDocument' => $stepPassed,
                 'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'step status failed' => [
-                'document' => $stepFailed,
+                'document' => new Document('{ type: step, status: failed }'),
                 'expectedTestState' => Test::STATE_FAILED,
-                'expectedQueuedDocument' => $stepFailed,
                 'expectedJobState' => Job::STATE_EXECUTION_CANCELLED,
             ],
         ];
-    }
-
-    private function assertMessageTransportQueue(Document $document): void
-    {
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
-
-        $expectedCallback = new ExecuteDocumentReceived($document);
-        $expectedQueuedMessage = new SendCallback($expectedCallback);
-
-        self::assertEquals($expectedQueuedMessage, $queue[0]->getMessage());
     }
 
     private function createEvent(Document $document): TestExecuteDocumentReceivedEvent

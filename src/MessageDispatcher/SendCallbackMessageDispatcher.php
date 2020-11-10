@@ -8,6 +8,7 @@ use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Event\CallbackEventInterface;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -31,6 +32,9 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
                 ['dispatchForCallbackEvent', 0],
             ],
             SourceCompileFailureEvent::class => [
+                ['dispatchForCallbackEvent', 0],
+            ],
+            TestExecuteDocumentReceivedEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
         ];
