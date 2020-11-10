@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Functional\MessageDispatcher;
 
 use App\Event\Callback\CallbackHttpExceptionEvent;
+use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Model\Callback\CallbackInterface;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
@@ -57,6 +59,17 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $this->assertMessageTransportQueue($callback);
     }
 
+    public function testDispatchForHttpResponseEvent()
+    {
+        $callback = new TestCallback();
+        $response = new Response(503);
+        $event = new CallbackHttpResponseEvent($callback, $response);
+
+        $this->messageDispatcher->dispatchForHttpResponseEvent($event);
+
+        $this->assertMessageTransportQueue($callback);
+    }
+
     public function testSubscribesToCallbackHttpExceptionEvent()
     {
         self::assertCount(0, $this->messengerTransport->get());
@@ -64,6 +77,19 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $callback = new TestCallback();
         $exception = \Mockery::mock(ConnectException::class);
         $event = new CallbackHttpExceptionEvent($callback, $exception);
+
+        $this->eventDispatcher->dispatch($event);
+
+        $this->assertMessageTransportQueue($callback);
+    }
+
+    public function testSubscribesToCallbackHttpResponseEvent()
+    {
+        self::assertCount(0, $this->messengerTransport->get());
+
+        $callback = new TestCallback();
+        $response = new Response(503);
+        $event = new CallbackHttpResponseEvent($callback, $response);
 
         $this->eventDispatcher->dispatch($event);
 
