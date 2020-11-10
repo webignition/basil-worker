@@ -26,15 +26,9 @@ class SourceCompileSuccessEventSubscriber implements EventSubscriberInterface
     {
         return [
             SourceCompileSuccessEvent::class => [
-                ['dispatchNextCompileSourceMessage', 20],
                 ['dispatchNextTestExecuteMessage', 0],
             ],
         ];
-    }
-
-    public function dispatchNextCompileSourceMessage(): void
-    {
-        $this->compilationWorkflowHandler->dispatchNextCompileSourceMessage();
     }
 
     public function dispatchNextTestExecuteMessage(): void

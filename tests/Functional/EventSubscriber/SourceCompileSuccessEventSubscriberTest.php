@@ -9,11 +9,9 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\EventSubscriber\SourceCompileSuccessEventSubscriber;
-use App\Message\CompileSource;
 use App\Message\ExecuteTest;
 use App\Repository\TestRepository;
 use App\Services\JobStore;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -27,7 +25,6 @@ use webignition\BasilModels\Test\Configuration;
 class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 {
     private JobStore $jobStore;
-    private TestStore $testStore;
     private EventDispatcherInterface $eventDispatcher;
     private TestTestFactory $testFactory;
     private InMemoryTransport $messengerTransport;
@@ -42,12 +39,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         if ($jobStore instanceof JobStore) {
             $jobStore->create('label content', 'http://example.com/callback');
             $this->jobStore = $jobStore;
-        }
-
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
         }
 
         $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
@@ -80,7 +71,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(
             [
                 SourceCompileSuccessEvent::class => [
-                    ['dispatchNextCompileSourceMessage', 20],
                     ['dispatchNextTestExecuteMessage', 0],
                 ],
             ],
@@ -89,98 +79,9 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider integrationNotFinalEventDataProvider
+     * @dataProvider integrationDataProvider
      */
-    public function testIntegrationNotFinalEvent(
-        callable $setup,
-        SourceCompileSuccessEvent $event,
-        CompileSource $expectedQueuedMessage
-    ) {
-        $setup($this->jobStore, $this->testStore);
-
-        $this->eventDispatcher->dispatch($event);
-
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
-
-        $envelope = $queue[0] ?? null;
-        self::assertInstanceOf(Envelope::class, $envelope);
-        self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
-    }
-
-    public function integrationNotFinalEventDataProvider(): array
-    {
-        return [
-            'two sources, event is for first' => [
-                'setup' => function (JobStore $jobStore): void {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]);
-                    $jobStore->store($job);
-                },
-                'event' => new SourceCompileSuccessEvent(
-                    'Test/test1.yml',
-                    new SuiteManifest(
-                        \Mockery::mock(ConfigurationInterface::class),
-                        [
-                            new TestManifest(
-                                new Configuration('chrome', 'http://example.com'),
-                                '/app/source/Test/test1.yml',
-                                '/app/tests/GeneratedChromeTest.php',
-                                2
-                            ),
-                            new TestManifest(
-                                new Configuration('firefox', 'http://example.com'),
-                                '/app/source/Test/test1.yml',
-                                '/app/tests/GeneratedFirefoxTest.php',
-                                2
-                            ),
-                        ]
-                    )
-                ),
-                'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),
-            ],
-            'two sources, event is for second' => [
-                'setup' => function (JobStore $jobStore): void {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]);
-                    $jobStore->store($job);
-                },
-                'event' => new SourceCompileSuccessEvent(
-                    'Test/test2.yml',
-                    new SuiteManifest(
-                        \Mockery::mock(ConfigurationInterface::class),
-                        [
-                            new TestManifest(
-                                new Configuration('chrome', 'http://example.com'),
-                                '/app/source/Test/test2.yml',
-                                '/app/tests/GeneratedChromeTest.php',
-                                2
-                            ),
-                            new TestManifest(
-                                new Configuration('firefox', 'http://example.com'),
-                                '/app/source/Test/test2.yml',
-                                '/app/tests/GeneratedFirefoxTest.php',
-                                2
-                            ),
-                        ]
-                    )
-                ),
-                'expectedQueuedMessage' => new CompileSource('Test/test1.yml'),
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider integrationFinalEventDataProvider
-     */
-    public function testIntegrationFinalEvent(callable $setup, SourceCompileSuccessEvent $event)
+    public function testIntegration(callable $setup, SourceCompileSuccessEvent $event)
     {
         $setup($this->jobStore, $this->testFactory);
         $job = $this->jobStore->getJob();
@@ -192,7 +93,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
 
         $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
+        self::assertCount(2, $queue);
         self::assertIsArray($queue);
 
         $nextAwaitingTest = $this->testRepository->findNextAwaiting();
@@ -200,12 +101,12 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);
 
-        $envelope = $queue[0] ?? null;
+        $envelope = $queue[1] ?? null;
         self::assertInstanceOf(Envelope::class, $envelope);
         self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
 
-    public function integrationFinalEventDataProvider(): array
+    public function integrationDataProvider(): array
     {
         return [
             'single source' => [
