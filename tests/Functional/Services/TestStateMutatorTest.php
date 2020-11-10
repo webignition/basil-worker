@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
-use App\Event\TestFailedEvent;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -55,31 +54,6 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         if ($testStore instanceof TestStore) {
             $this->testStore = $testStore;
         }
-    }
-
-    public function testSetFailedFromTestFailedEvent()
-    {
-        $this->doTestFailedEventDrivenTest(function (TestFailedEvent $event) {
-            $this->mutator->setFailedFromTestFailedEvent($event);
-        });
-    }
-
-    public function testSubscribesToTestFailedEvent()
-    {
-        $this->doTestFailedEventDrivenTest(function (TestFailedEvent $event) {
-            $this->eventDispatcher->dispatch($event);
-        });
-    }
-
-    private function doTestFailedEventDrivenTest(callable $callable): void
-    {
-        self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
-
-        $event = new TestFailedEvent($this->test);
-
-        $callable($event);
-
-        self::assertSame(Test::STATE_FAILED, $this->test->getState());
     }
 
     /**

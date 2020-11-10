@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
-use App\Event\TestFailedEvent;
 use App\Model\Document\Step;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,9 +22,6 @@ class TestStateMutator implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TestFailedEvent::class => [
-                ['setFailedFromTestFailedEvent', 0],
-            ],
             TestExecuteCompleteEvent::class => [
                 ['setCompleteFromTestExecuteCompleteEvent', 100],
             ],
@@ -33,11 +29,6 @@ class TestStateMutator implements EventSubscriberInterface
                 ['setFailedFromTestExecuteDocumentReceivedEvent', 50],
             ],
         ];
-    }
-
-    public function setFailedFromTestFailedEvent(TestFailedEvent $event): void
-    {
-        $this->setFailed($event->getTest());
     }
 
     public function setCompleteFromTestExecuteCompleteEvent(TestExecuteCompleteEvent $event): void
