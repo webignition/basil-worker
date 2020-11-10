@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Job;
+use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestFailedEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
@@ -40,13 +41,23 @@ class JobStateMutator implements EventSubscriberInterface
             SourceCompileSuccessEvent::class => [
                 ['setExecutionAwaiting', 0],
             ],
-            TestFailedEvent::class => [
-                ['setExecutionCancelled', 0],
-            ],
             TestExecuteCompleteEvent::class => [
                 ['setExecutionComplete', 100],
             ],
+            TestExecuteDocumentReceivedEvent::class => [
+                ['setExecutionCancelledFromTestExecuteDocumentReceivedEvent', 10],
+            ],
         ];
+    }
+
+    public function setExecutionCancelledFromTestExecuteDocumentReceivedEvent(
+        TestExecuteDocumentReceivedEvent $event
+    ): void {
+        $test = $event->getTest();
+
+        if (Test::STATE_FAILED === $test->getState()) {
+            $this->setExecutionCancelled();
+        }
     }
 
     public function setCompilationRunning(): void

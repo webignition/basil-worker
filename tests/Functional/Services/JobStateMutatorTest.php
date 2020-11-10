@@ -10,7 +10,7 @@ use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestFailedEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
@@ -23,6 +23,7 @@ use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\YamlDocument\Document;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
 {
@@ -345,7 +346,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         self::assertSame(Job::STATE_COMPILATION_RUNNING, $this->job->getState());
     }
 
-    public function testSubscribesToTestFailedEvent()
+    public function testSubscribesToTestExecuteDocumentReceivedEvent()
     {
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
 
@@ -359,7 +360,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 1,
             );
 
-            $this->eventDispatcher->dispatch(new TestFailedEvent($test));
+            $event = new TestExecuteDocumentReceivedEvent(
+                $test,
+                new Document('{ type: step, status: failed }')
+            );
+
+            $this->eventDispatcher->dispatch($event);
         }
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
