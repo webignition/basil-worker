@@ -69,58 +69,50 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $this->assertMessageTransportQueue($callback);
     }
 
-    public function testSubscribesToCallbackHttpExceptionEvent()
-    {
+    /**
+     * @dataProvider subscribesToEventDataProvider
+     */
+    public function testSubscribesToEvent(
+        CallbackEventInterface $event,
+        CallbackInterface $expectedQueuedMessageCallback
+    ) {
         self::assertCount(0, $this->messengerTransport->get());
-
-        $callback = new TestCallback();
-        $exception = \Mockery::mock(ConnectException::class);
-        $event = new CallbackHttpExceptionEvent($callback, $exception);
-
         $this->eventDispatcher->dispatch($event);
 
-        $this->assertMessageTransportQueue($callback);
+        $this->assertMessageTransportQueue($expectedQueuedMessageCallback);
     }
 
-    public function testSubscribesToCallbackHttpResponseEvent()
+    public function subscribesToEventDataProvider(): array
     {
-        self::assertCount(0, $this->messengerTransport->get());
+        $httpExceptionEventCallback = new TestCallback();
+        $httpResponseExceptionCallback = new TestCallback();
 
-        $callback = new TestCallback();
-        $response = new Response(503);
-        $event = new CallbackHttpResponseEvent($callback, $response);
+        $sourceCompileFailureEventOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $sourceCompileFailureEventCallback = new CompileFailure($sourceCompileFailureEventOutput);
 
-        $this->eventDispatcher->dispatch($event);
+        $document = new Document('data');
 
-        $this->assertMessageTransportQueue($callback);
-    }
-
-    public function testSubscribesToSourceCompileFailureEvent()
-    {
-        self::assertCount(0, $this->messengerTransport->get());
-
-        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
-        $callback = new CompileFailure($errorOutput);
-        $event = new SourceCompileFailureEvent('/app/source/Test/test.yml', $errorOutput);
-
-        $this->eventDispatcher->dispatch($event);
-
-        $this->assertMessageTransportQueue($callback);
-    }
-
-    public function testSubscribesToTestExecuteDocumentReceivedEvent()
-    {
-        self::assertCount(0, $this->messengerTransport->get());
-
-        $test = \Mockery::mock(Test::class);
-        $document = new Document('');
-
-        $event = new TestExecuteDocumentReceivedEvent($test, $document);
-        $callback = new ExecuteDocumentReceived($document);
-
-        $this->eventDispatcher->dispatch($event);
-
-        $this->assertMessageTransportQueue($callback);
+        return [
+            CallbackHttpExceptionEvent::class => [
+                'event' => new CallbackHttpExceptionEvent(
+                    $httpExceptionEventCallback,
+                    \Mockery::mock(ConnectException::class)
+                ),
+                'expectedQueuedMessageCallback' => $httpExceptionEventCallback,
+            ],
+            CallbackHttpResponseEvent::class => [
+                'event' => new CallbackHttpResponseEvent($httpResponseExceptionCallback, new Response(503)),
+                'expectedQueuedMessageCallback' => $httpResponseExceptionCallback,
+            ],
+            SourceCompileFailureEvent::class => [
+                'event' => new SourceCompileFailureEvent('/app/source/Test/test.yml', $sourceCompileFailureEventOutput),
+                'expectedQueuedMessageCallback' => $sourceCompileFailureEventCallback,
+            ],
+            ExecuteDocumentReceived::class => [
+                'event' => new TestExecuteDocumentReceivedEvent(\Mockery::mock(Test::class), $document),
+                'expectedQueuedMessageCallback' => new ExecuteDocumentReceived($document),
+            ],
+        ];
     }
 
     private function assertMessageTransportQueue(CallbackInterface $expectedCallback): void
