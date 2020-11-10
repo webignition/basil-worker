@@ -93,7 +93,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
 
         $queue = $this->messengerTransport->get();
-        self::assertCount(2, $queue);
+        self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
         $nextAwaitingTest = $this->testRepository->findNextAwaiting();
@@ -101,7 +101,7 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 
         $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);
 
-        $envelope = $queue[1] ?? null;
+        $envelope = $queue[0] ?? null;
         self::assertInstanceOf(Envelope::class, $envelope);
         self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
     }
