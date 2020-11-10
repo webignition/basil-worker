@@ -172,23 +172,15 @@ class TestExecuteDocumentReceivedEventSubscriberTest extends AbstractBaseFunctio
 
     public function integrationDataProvider(): array
     {
-        $testWithoutPrefixedPath = new Document('{ type: test, path: Test/test.yml }');
-        $testWithPrefixedPath = new Document('{ type: test, path: /app/source/Test/test.yml }');
-
+        $test = new Document('{ type: test, path: Test/test.yml }');
         $stepPassed = new Document('{ type: step, status: passed }');
         $stepFailed = new Document('{ type: step, status: failed }');
 
         return [
-            'test document, path is not prefixed with compiler source directory' => [
-                'document' => $testWithoutPrefixedPath,
+            'test document' => [
+                'document' => $test,
                 'expectedTestState' => Test::STATE_AWAITING,
-                'expectedQueuedDocument' => $testWithoutPrefixedPath,
-                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
-            ],
-            'test document, path prefixed with compiler source directory' => [
-                'document' => $testWithPrefixedPath,
-                'expectedTestState' => Test::STATE_AWAITING,
-                'expectedQueuedDocument' => $testWithoutPrefixedPath,
+                'expectedQueuedDocument' => $test,
                 'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
             ],
             'step status passed' => [

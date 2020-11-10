@@ -4,40 +4,39 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Services;
 
-use App\Model\Callback\ExecuteDocumentReceived;
-use App\Services\ExecuteDocumentReceivedCallbackFactory;
 use App\Services\SourcePathTranslator;
+use App\Services\TestDocumentMutator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceivedCallbackFactoryTest extends TestCase
+class TestDocumentMutatorTest extends TestCase
 {
     private const COMPILER_SOURCE_DIRECTORY = '/app/source';
 
-    private ExecuteDocumentReceivedCallbackFactory $factory;
+    private TestDocumentMutator $mutator;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->factory = new ExecuteDocumentReceivedCallbackFactory(
+        $this->mutator = new TestDocumentMutator(
             new SourcePathTranslator(self::COMPILER_SOURCE_DIRECTORY),
             new Dumper()
         );
     }
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider removeCompilerSourceDirectoryFromSourceDataProvider
      */
-    public function testCreate(Document $document, ExecuteDocumentReceived $expectedCallback)
+    public function testRemoveCompilerSourceDirectoryFromSource(Document $document, Document $expectedDocument)
     {
-        $callback = $this->factory->create($document);
+        $mutatedDocument = $this->mutator->removeCompilerSourceDirectoryFromSource($document);
 
-        self::assertEquals($expectedCallback, $callback);
+        self::assertEquals($mutatedDocument, $expectedDocument);
     }
 
-    public function createDataProvider(): array
+    public function removeCompilerSourceDirectoryFromSourceDataProvider(): array
     {
         $step = new Document('{ type: step }');
         $testWithoutPrefixedPath = new Document('{ type: test, path: /path/to/test.yml }');
@@ -45,17 +44,17 @@ class ExecuteDocumentReceivedCallbackFactoryTest extends TestCase
         return [
             'document is step' => [
                 'document' => $step,
-                'expectedCallback' => new ExecuteDocumentReceived($step),
+                'expectedDocument' => $step,
             ],
             'test without prefixed path' => [
                 'document' => $testWithoutPrefixedPath,
-                'expectedCallback' => new ExecuteDocumentReceived($testWithoutPrefixedPath),
+                'expectedDocument' => $testWithoutPrefixedPath,
             ],
             'test with prefixed path' => [
                 'document' => new Document(
                     '{ type: test, path: ' . self::COMPILER_SOURCE_DIRECTORY . '/Test/test.yml }'
                 ),
-                'expectedCallback' => new ExecuteDocumentReceived(new Document('{ type: test, path: Test/test.yml }')),
+                'expectedDocument' => new Document('{ type: test, path: Test/test.yml }'),
             ],
         ];
     }
