@@ -6,6 +6,7 @@ namespace App\Tests\Functional\MessageDispatcher;
 
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Event\CallbackEventInterface;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Model\Callback\CallbackInterface;
@@ -48,24 +49,15 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testDispatchForHttpExceptionEvent()
+    public function testDispatchForCallbackEvent()
     {
-        $callback = new TestCallback();
-        $exception = \Mockery::mock(ConnectException::class);
-        $event = new CallbackHttpExceptionEvent($callback, $exception);
+        $callback = \Mockery::mock(CallbackInterface::class);
+        $event = \Mockery::mock(CallbackEventInterface::class);
+        $event
+            ->shouldReceive('getCallback')
+            ->andReturn($callback);
 
-        $this->messageDispatcher->dispatchForHttpExceptionEvent($event);
-
-        $this->assertMessageTransportQueue($callback);
-    }
-
-    public function testDispatchForHttpResponseEvent()
-    {
-        $callback = new TestCallback();
-        $response = new Response(503);
-        $event = new CallbackHttpResponseEvent($callback, $response);
-
-        $this->messageDispatcher->dispatchForHttpResponseEvent($event);
+        $this->messageDispatcher->dispatchForCallbackEvent($event);
 
         $this->assertMessageTransportQueue($callback);
     }
