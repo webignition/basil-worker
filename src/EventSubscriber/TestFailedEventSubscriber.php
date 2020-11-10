@@ -26,15 +26,9 @@ class TestFailedEventSubscriber implements EventSubscriberInterface
     {
         return [
             TestFailedEvent::class => [
-                ['setTestStateToFailed', 0],
                 ['cancelAwaitingTests', 0],
             ],
         ];
-    }
-
-    public function setTestStateToFailed(TestFailedEvent $event): void
-    {
-        $this->testStateMutator->setFailed($event->getTest());
     }
 
     public function cancelAwaitingTests(): void

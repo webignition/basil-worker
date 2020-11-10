@@ -5,14 +5,30 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
+use App\Event\TestFailedEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
-class TestStateMutator
+class TestStateMutator implements EventSubscriberInterface
 {
     private TestStore $testStore;
 
     public function __construct(TestStore $testStore)
     {
         $this->testStore = $testStore;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            TestFailedEvent::class => [
+                ['setFailedFromTestFailedEvent', 0],
+            ],
+        ];
+    }
+
+    public function setFailedFromTestFailedEvent(TestFailedEvent $event): void
+    {
+        $this->setFailed($event->getTest());
     }
 
     public function setRunning(Test $test): void
