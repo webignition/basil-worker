@@ -62,9 +62,6 @@ services:
     App\Services\CallbackResponseHandler:
         public: true
 
-    App\EventSubscriber\CallbackHttpResponseEventSubscriber:
-        public: true
-
     App\Services\SourceCompileEventDispatcher:
         public: true
 

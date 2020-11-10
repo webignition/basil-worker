@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Event\SourcesAddedEvent;
 use App\Message\CompileSource;
 use App\Model\Workflow\CompilationWorkflow;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class CompilationWorkflowHandler
+class CompilationWorkflowHandler implements EventSubscriberInterface
 {
     private MessageBusInterface $messageBus;
     private CompilationWorkflowFactory $compilationWorkflowFactory;
@@ -17,6 +20,18 @@ class CompilationWorkflowHandler
     {
         $this->messageBus = $messageBus;
         $this->compilationWorkflowFactory = $compilationWorkflowFactory;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            SourceCompileSuccessEvent::class => [
+                ['dispatchNextCompileSourceMessage', 50],
+            ],
+            SourcesAddedEvent::class => [
+                ['dispatchNextCompileSourceMessage', 50],
+            ],
+        ];
     }
 
     public function dispatchNextCompileSourceMessage(): void
