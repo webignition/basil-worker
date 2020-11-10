@@ -33,9 +33,6 @@ class CallbackSender
         if (false === $this->jobStore->hasJob()) {
             return;
         }
-//
-//        var_dump($callback);
-//        exit();
 
         if ($callback->hasReachedRetryLimit($this->retryLimit)) {
             return;
