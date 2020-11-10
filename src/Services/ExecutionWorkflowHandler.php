@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
 use App\Model\Workflow\ExecutionWorkflow;
 use App\Repository\TestRepository;
@@ -37,7 +38,19 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
             SourceCompileSuccessEvent::class => [
                 ['dispatchNextExecuteTestMessage', 0],
             ],
+            TestExecuteCompleteEvent::class => [
+                ['dispatchNextExecuteTestMessageFromTestExecuteCompleteEvent', 0],
+            ],
         ];
+    }
+
+    public function dispatchNextExecuteTestMessageFromTestExecuteCompleteEvent(TestExecuteCompleteEvent $event): void
+    {
+        $test = $event->getTest();
+
+        if (Test::STATE_COMPLETE === $test->getState()) {
+            $this->dispatchNextExecuteTestMessage();
+        }
     }
 
     public function dispatchNextExecuteTestMessage(): void

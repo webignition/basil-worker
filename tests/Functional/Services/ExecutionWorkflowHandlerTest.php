@@ -6,13 +6,16 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Services\TestTestFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
@@ -22,8 +25,8 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     private InMemoryTransport $messengerTransport;
     private TestTestFactory $testFactory;
     private TestStateMutator $testStateMutator;
-    private TestRepository $testRepository;
     private JobStore $jobStore;
+    private EventDispatcherInterface $eventDispatcher;
 
     protected function setUp(): void
     {
@@ -60,10 +63,10 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             $this->testStateMutator = $testStateMutator;
         }
 
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-        if ($testRepository instanceof TestRepository) {
-            $this->testRepository = $testRepository;
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $this->eventDispatcher = $eventDispatcher;
         }
     }
 
@@ -78,12 +81,12 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
      * @dataProvider dispatchNextExecuteTestMessageMessageDispatchedDataProvider
      */
     public function testDispatchNextExecuteTestMessageMessageDispatched(
-        callable $initializer,
+        callable $setup,
         int $expectedNextTestIndex
     ) {
         $this->doSourceCompileSuccessEventDrivenTest(
-            function () use ($initializer) {
-                $initializer($this->jobStore, $this->testFactory, $this->testStateMutator);
+            function () use ($setup) {
+                return $setup($this->jobStore, $this->testFactory, $this->testStateMutator);
             },
             function () {
                 $this->handler->dispatchNextExecuteTestMessage();
@@ -96,7 +99,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         return [
             'two tests, none run' => [
-                'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->getJob();
                     $job->setSources([
                         'Test/test1.yml',
@@ -104,24 +107,25 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test1.yml',
-                        '/generated/GeneratedTest1.php',
-                        1
-                    );
-
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test2.yml',
-                        '/generated/GeneratedTest2.php',
-                        1
-                    );
+                    return [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test2.yml',
+                            '/generated/GeneratedTest2.php',
+                            1
+                        ),
+                    ];
                 },
                 'expectedNextTestIndex' => 0,
             ],
             'three tests, first complete' => [
-                'initializer' => function (
+                'setup' => function (
                     JobStore $jobStore,
                     TestTestFactory $testFactory,
                     TestStateMutator $testStateMutator
@@ -134,34 +138,36 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $firstTest = $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test1.yml',
-                        '/generated/GeneratedTest1.php',
-                        1
-                    );
+                    $tests = [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test2.yml',
+                            '/generated/GeneratedTest2.php',
+                            1
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test3.yml',
+                            '/generated/GeneratedTest3.php',
+                            1
+                        ),
+                    ];
 
-                    $testStateMutator->setRunning($firstTest);
-                    $testStateMutator->setComplete($firstTest);
+                    $testStateMutator->setRunning($tests[0]);
+                    $testStateMutator->setComplete($tests[0]);
 
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test2.yml',
-                        '/generated/GeneratedTest2.php',
-                        1
-                    );
-
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test3.yml',
-                        '/generated/GeneratedTest3.php',
-                        1
-                    );
+                    return $tests;
                 },
                 'expectedNextTestIndex' => 1,
             ],
             'three tests, first, second complete' => [
-                'initializer' => function (
+                'setup' => function (
                     JobStore $jobStore,
                     TestTestFactory $testFactory,
                     TestStateMutator $testStateMutator
@@ -174,33 +180,33 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
 
-                    $firstTest = $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test1.yml',
-                        '/generated/GeneratedTest1.php',
-                        1
-                    );
+                    $tests = [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test2.yml',
+                            '/generated/GeneratedTest2.php',
+                            1
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test3.yml',
+                            '/generated/GeneratedTest3.php',
+                            1
+                        )
+                    ];
 
-                    $testStateMutator->setRunning($firstTest);
-                    $testStateMutator->setComplete($firstTest);
+                    $testStateMutator->setRunning($tests[0]);
+                    $testStateMutator->setComplete($tests[0]);
+                    $testStateMutator->setRunning($tests[1]);
+                    $testStateMutator->setComplete($tests[1]);
 
-
-                    $secondTest = $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test2.yml',
-                        '/generated/GeneratedTest2.php',
-                        1
-                    );
-
-                    $testStateMutator->setRunning($secondTest);
-                    $testStateMutator->setComplete($secondTest);
-
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test3.yml',
-                        '/generated/GeneratedTest3.php',
-                        1
-                    );
+                    return $tests;
                 },
                 'expectedNextTestIndex' => 2,
             ],
@@ -214,20 +220,38 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 $job = $this->jobStore->getJob();
                 $job->setSources([
                     'Test/test1.yml',
+                    'Test/test2.yml',
                 ]);
                 $this->jobStore->store($job);
 
-                $this->testFactory->create(
-                    TestConfiguration::create('chrome', 'http://example.com'),
-                    '/app/source/Test/test1.yml',
-                    '/generated/GeneratedTest1.php',
-                    1
-                );
+                return [
+                    $this->testFactory->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
+                        '/app/source/Test/test1.yml',
+                        '/generated/GeneratedTest1.php',
+                        1,
+                        Test::STATE_COMPLETE
+                    ),
+                    $this->testFactory->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
+                        '/app/source/Test/test2.yml',
+                        '/generated/GeneratedTest2.php',
+                        1,
+                        Test::STATE_AWAITING
+                    ),
+                ];
             },
             function () {
-                $this->handler->dispatchNextExecuteTestMessage();
+                $this->eventDispatcher->dispatch(
+                    new SourceCompileSuccessEvent(
+                        '/app/source/Test/test1.yml',
+                        (new MockSuiteManifest())
+                            ->withGetTestManifestsCall([])
+                            ->getMock()
+                    ),
+                );
             },
-            0,
+            1,
         );
     }
 
@@ -238,15 +262,14 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     ): void {
         self::assertCount(0, $this->messengerTransport->get());
 
-        $setup();
+        $tests = $setup();
         $execute();
 
         $queue = $this->messengerTransport->get();
         self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
-        $allTests = $this->testRepository->findAll();
-        $expectedNextTest = $allTests[$expectedNextTestIndex] ?? null;
+        $expectedNextTest = $tests[$expectedNextTestIndex] ?? null;
         self::assertInstanceOf(Test::class, $expectedNextTest);
 
         $envelope = $queue[0] ?? null;
@@ -255,5 +278,203 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             new ExecuteTest((int) $expectedNextTest->getId()),
             $envelope->getMessage()
         );
+    }
+
+    /**
+     * @dataProvider dispatchNextExecuteTestMessageFromTestExecuteCompleteEventDataProvider
+     */
+    public function testDispatchNextExecuteTestMessageFromTestExecuteCompleteEvent(
+        callable $setup,
+        int $eventTestIndex,
+        int $expectedQueuedMessageCount,
+        ?int $expectedNextTestIndex
+    ) {
+        $this->doTestExecuteCompleteEventDrivenTest(
+            function () use ($setup) {
+                return $setup($this->jobStore, $this->testFactory);
+            },
+            $eventTestIndex,
+            function (TestExecuteCompleteEvent $event) {
+                $this->handler->dispatchNextExecuteTestMessageFromTestExecuteCompleteEvent($event);
+            },
+            $expectedQueuedMessageCount,
+            $expectedNextTestIndex
+        );
+    }
+
+    public function dispatchNextExecuteTestMessageFromTestExecuteCompleteEventDataProvider(): array
+    {
+        return [
+            'single test, not complete' => [
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
+                    $job = $jobStore->getJob();
+                    $job->setSources([
+                        'Test/test1.yml',
+                    ]);
+                    $jobStore->store($job);
+
+                    return [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1,
+                            Test::STATE_FAILED
+                        ),
+                    ];
+                },
+                'eventTestIndex' => 0,
+                'expectedQueuedMessageCount' => 0,
+                'expectedNextTestIndex' => null,
+            ],
+            'single test, is complete' => [
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
+                    $job = $jobStore->getJob();
+                    $job->setSources([
+                        'Test/test1.yml',
+                    ]);
+                    $jobStore->store($job);
+
+                    return [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1,
+                            Test::STATE_COMPLETE
+                        ),
+                    ];
+                },
+                'eventTestIndex' => 0,
+                'expectedQueuedMessageCount' => 0,
+                'expectedNextTestIndex' => null,
+            ],
+            'multiple tests, not complete' => [
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
+                    $job = $jobStore->getJob();
+                    $job->setSources([
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                    ]);
+                    $jobStore->store($job);
+
+                    return [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1,
+                            Test::STATE_FAILED
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test2.yml',
+                            '/generated/GeneratedTest2.php',
+                            1
+                        ),
+                    ];
+                },
+                'eventTestIndex' => 0,
+                'expectedQueuedMessageCount' => 0,
+                'expectedNextTestIndex' => null,
+            ],
+            'multiple tests, complete' => [
+                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
+                    $job = $jobStore->getJob();
+                    $job->setSources([
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                    ]);
+                    $jobStore->store($job);
+
+                    return [
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test1.yml',
+                            '/generated/GeneratedTest1.php',
+                            1,
+                            Test::STATE_COMPLETE
+                        ),
+                        $testFactory->create(
+                            TestConfiguration::create('chrome', 'http://example.com'),
+                            '/app/source/Test/test2.yml',
+                            '/generated/GeneratedTest2.php',
+                            1
+                        ),
+                    ];
+                },
+                'eventTestIndex' => 0,
+                'expectedQueuedMessageCount' => 1,
+                'expectedNextTestIndex' => 1,
+            ],
+        ];
+    }
+
+    public function testSubscribesToTestExecuteCompleteEvent()
+    {
+        $this->doTestExecuteCompleteEventDrivenTest(
+            function () {
+                $job = $this->jobStore->getJob();
+                $job->setSources([
+                    'Test/test1.yml',
+                    'Test/test2.yml',
+                ]);
+                $this->jobStore->store($job);
+
+                return [
+                    $this->testFactory->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
+                        '/app/source/Test/test1.yml',
+                        '/generated/GeneratedTest1.php',
+                        1,
+                        Test::STATE_COMPLETE
+                    ),
+                    $this->testFactory->create(
+                        TestConfiguration::create('chrome', 'http://example.com'),
+                        '/app/source/Test/test2.yml',
+                        '/generated/GeneratedTest2.php',
+                        1
+                    )
+                ];
+            },
+            0,
+            function (TestExecuteCompleteEvent $event) {
+                $this->eventDispatcher->dispatch($event);
+            },
+            1,
+            1
+        );
+    }
+
+    private function doTestExecuteCompleteEventDrivenTest(
+        callable $setup,
+        int $eventTestIndex,
+        callable $execute,
+        int $expectedQueuedMessageCount,
+        ?int $expectedNextTestIndex
+    ): void {
+        $tests = $setup($this->jobStore, $this->testFactory);
+        self::assertCount(0, $this->messengerTransport->get());
+
+        $test = $tests[$eventTestIndex];
+        $event = new TestExecuteCompleteEvent($test);
+
+        $execute($event);
+
+        $queue = $this->messengerTransport->get();
+        self::assertIsArray($queue);
+        self::assertCount($expectedQueuedMessageCount, $queue);
+
+        if (is_int($expectedNextTestIndex)) {
+            $expectedNextTest = $tests[$expectedNextTestIndex] ?? null;
+            self::assertInstanceOf(Test::class, $expectedNextTest);
+
+            $envelope = $queue[0] ?? null;
+            self::assertInstanceOf(Envelope::class, $envelope);
+            self::assertEquals(
+                new ExecuteTest((int) $expectedNextTest->getId()),
+                $envelope->getMessage()
+            );
+        }
     }
 }

@@ -53,9 +53,6 @@ services:
     App\Services\ExecutionWorkflowFactory:
         public: true
 
-    App\EventSubscriber\TestExecuteCompleteEventSubscriber:
-        public: true
-
     App\Services\TestFactory:
         public: true
 
