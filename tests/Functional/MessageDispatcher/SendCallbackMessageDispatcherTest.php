@@ -7,9 +7,11 @@ namespace App\Tests\Functional\MessageDispatcher;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Event\CallbackEventInterface;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Model\Callback\CallbackInterface;
+use App\Model\Callback\CompileFailure;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
@@ -17,6 +19,7 @@ use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
+use webignition\BasilCompilerModels\ErrorOutputInterface;
 
 class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 {
@@ -82,6 +85,19 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $callback = new TestCallback();
         $response = new Response(503);
         $event = new CallbackHttpResponseEvent($callback, $response);
+
+        $this->eventDispatcher->dispatch($event);
+
+        $this->assertMessageTransportQueue($callback);
+    }
+
+    public function testSubscribesToSourceCompileFailureEvent()
+    {
+        self::assertCount(0, $this->messengerTransport->get());
+
+        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $callback = new CompileFailure($errorOutput);
+        $event = new SourceCompileFailureEvent('/app/source/Test/test.yml', $errorOutput);
 
         $this->eventDispatcher->dispatch($event);
 
