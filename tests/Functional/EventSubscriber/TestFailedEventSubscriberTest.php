@@ -54,15 +54,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         }
     }
 
-    public function testSetTestStateToFailed()
-    {
-        $test = $this->createTest();
-        self::assertNotSame(Test::STATE_FAILED, $test->getState());
-
-        $this->eventSubscriber->setTestStateToFailed(new TestFailedEvent($test));
-        self::assertSame(Test::STATE_FAILED, $test->getState());
-    }
-
     /**
      * @dataProvider cancelAwaitingTestsDataProvider
      *
@@ -141,8 +132,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
 
     public function testIntegration()
     {
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
-
         $configuration = TestConfiguration::create('chrome', 'http://example.com');
         $this->testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
         $this->testFactory->create($configuration, '', '', 1, Test::STATE_AWAITING);
@@ -156,7 +145,6 @@ class TestFailedEventSubscriberTest extends AbstractBaseFunctionalTest
         }
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
-        self::assertSame(Test::STATE_FAILED, $test->getState());
 
         $this->assertTestStates(
             $this->testRepository->findAll(),
