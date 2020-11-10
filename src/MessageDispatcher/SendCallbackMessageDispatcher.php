@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\EventSubscriber;
+namespace App\MessageDispatcher;
 
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Message\SendCallback;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
-class CallbackHttpExceptionEventSubscriber implements EventSubscriberInterface
+class SendCallbackMessageDispatcher implements EventSubscriberInterface
 {
     private MessageBusInterface $messageBus;
 
@@ -22,12 +22,12 @@ class CallbackHttpExceptionEventSubscriber implements EventSubscriberInterface
     {
         return [
             CallbackHttpExceptionEvent::class => [
-                ['dispatchSendCallbackMessage', 0],
+                ['dispatchForHttpExceptionEvent', 0],
             ],
         ];
     }
 
-    public function dispatchSendCallbackMessage(CallbackHttpExceptionEvent $event): void
+    public function dispatchForHttpExceptionEvent(CallbackHttpExceptionEvent $event): void
     {
         $message = new SendCallback($event->getCallback());
 
