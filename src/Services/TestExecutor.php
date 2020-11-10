@@ -19,17 +19,20 @@ class TestExecutor
     private EventDispatcherInterface $eventDispatcher;
     private YamlDocumentFactory $yamlDocumentFactory;
     private YamlGenerator $yamlGenerator;
+    private TestDocumentMutator $testDocumentMutator;
 
     public function __construct(
         Client $delegatorClient,
         YamlDocumentFactory $yamlDocumentFactory,
         EventDispatcherInterface $eventDispatcher,
-        YamlGenerator $yamlGenerator
+        YamlGenerator $yamlGenerator,
+        TestDocumentMutator $testDocumentMutator
     ) {
         $this->delegatorClient = $delegatorClient;
         $this->yamlDocumentFactory = $yamlDocumentFactory;
         $this->eventDispatcher = $eventDispatcher;
         $this->yamlGenerator = $yamlGenerator;
+        $this->testDocumentMutator = $testDocumentMutator;
     }
 
     public function execute(Test $test): void
@@ -46,7 +49,10 @@ class TestExecutor
         $runnerTestString = $this->yamlGenerator->generate($runnerTest);
 
         $this->eventDispatcher->dispatch(
-            new TestExecuteDocumentReceivedEvent($test, new Document($runnerTestString))
+            new TestExecuteDocumentReceivedEvent(
+                $test,
+                $this->testDocumentMutator->removeCompilerSourceDirectoryFromSource(new Document($runnerTestString))
+            )
         );
 
         $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) use ($test) {

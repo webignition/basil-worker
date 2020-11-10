@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\Callback\ExecuteDocumentReceived;
 use App\Model\Document\Test;
 use Symfony\Component\Yaml\Dumper;
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceivedCallbackFactory
+class TestDocumentMutator
 {
     private SourcePathTranslator $sourcePathTranslator;
     private Dumper $yamlDumper;
@@ -20,7 +19,7 @@ class ExecuteDocumentReceivedCallbackFactory
         $this->yamlDumper = $yamlDumper;
     }
 
-    public function create(Document $document): ExecuteDocumentReceived
+    public function removeCompilerSourceDirectoryFromSource(Document $document): Document
     {
         $test = new Test($document);
         if ($test->isTest()) {
@@ -36,6 +35,6 @@ class ExecuteDocumentReceivedCallbackFactory
             }
         }
 
-        return new ExecuteDocumentReceived($document);
+        return $document;
     }
 }

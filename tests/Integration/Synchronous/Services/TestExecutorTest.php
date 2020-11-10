@@ -12,6 +12,7 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
+use Symfony\Component\Yaml\Yaml;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\TcpCliProxyClient\Client;
@@ -94,15 +95,17 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                 'source' => 'Test/chrome-open-index.yml',
                 'expectedDispatchedEventDocumentsPerTest' => [
                     [
-                        new Document(
-                            '---' . "\n" .
-                            'type: test' . "\n" .
-                            'path: /app/source/Test/chrome-open-index.yml' . "\n" .
-                            'config:' . "\n" .
-                            '  browser: chrome' . "\n" .
-                            '  url: \'http://nginx/index.html\'' . "\n" .
-                            '...' . "\n"
-                        ),
+                        new Document(Yaml::dump(
+                            [
+                                'type' => 'test',
+                                'path' => 'Test/chrome-open-index.yml',
+                                'config' => [
+                                    'browser' => 'chrome',
+                                    'url' => 'http://nginx/index.html',
+                                ],
+                            ],
+                            0
+                        )),
                         new Document(
                             'type: step' . "\n" .
                             'name: \'verify page is open\'' . "\n" .
@@ -120,15 +123,17 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                 'source' => 'Test/firefox-open-index.yml',
                 'expectedDispatchedEventDocuments' => [
                     [
-                        new Document(
-                            '---' . "\n" .
-                            'type: test' . "\n" .
-                            'path: /app/source/Test/firefox-open-index.yml' . "\n" .
-                            'config:' . "\n" .
-                            '  browser: firefox' . "\n" .
-                            '  url: \'http://nginx/index.html\'' . "\n" .
-                            '...' . "\n"
-                        ),
+                        new Document(Yaml::dump(
+                            [
+                                'type' => 'test',
+                                'path' => 'Test/firefox-open-index.yml',
+                                'config' => [
+                                    'browser' => 'firefox',
+                                    'url' => 'http://nginx/index.html',
+                                ],
+                            ],
+                            0
+                        )),
                         new Document(
                             'type: step' . "\n" .
                             'name: \'verify page is open\'' . "\n" .
@@ -146,15 +151,17 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                 'source' => 'Test/chrome-firefox-open-index.yml',
                 'expectedDispatchedEventDocuments' => [
                     [
-                        new Document(
-                            '---' . "\n" .
-                            'type: test' . "\n" .
-                            'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
-                            'config:' . "\n" .
-                            '  browser: chrome' . "\n" .
-                            '  url: \'http://nginx/index.html\'' . "\n" .
-                            '...' . "\n"
-                        ),
+                        new Document(Yaml::dump(
+                            [
+                                'type' => 'test',
+                                'path' => 'Test/chrome-firefox-open-index.yml',
+                                'config' => [
+                                    'browser' => 'chrome',
+                                    'url' => 'http://nginx/index.html',
+                                ],
+                            ],
+                            0
+                        )),
                         new Document(
                             'type: step' . "\n" .
                             'name: \'verify page is open\'' . "\n" .
@@ -167,15 +174,17 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                         ),
                     ],
                     [
-                        new Document(
-                            '---' . "\n" .
-                            'type: test' . "\n" .
-                            'path: /app/source/Test/chrome-firefox-open-index.yml' . "\n" .
-                            'config:' . "\n" .
-                            '  browser: firefox' . "\n" .
-                            '  url: \'http://nginx/index.html\'' . "\n" .
-                            '...' . "\n"
-                        ),
+                        new Document(Yaml::dump(
+                            [
+                                'type' => 'test',
+                                'path' => 'Test/chrome-firefox-open-index.yml',
+                                'config' => [
+                                    'browser' => 'firefox',
+                                    'url' => 'http://nginx/index.html',
+                                ],
+                            ],
+                            0
+                        )),
                         new Document(
                             'type: step' . "\n" .
                             'name: \'verify page is open\'' . "\n" .
