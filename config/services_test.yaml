@@ -68,6 +68,9 @@ services:
     App\MessageDispatcher\SendCallbackMessageDispatcher:
         public: true
 
+    App\Services\TestCanceller:
+        public: true
+
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
