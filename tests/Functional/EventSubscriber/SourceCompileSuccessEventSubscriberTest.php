@@ -16,9 +16,9 @@ use App\Services\JobStore;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\ConfigurationInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\BasilCompilerModels\TestManifest;
@@ -27,15 +27,51 @@ use webignition\BasilModels\Test\Configuration;
 class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
 {
     private JobStore $jobStore;
+    private TestStore $testStore;
+    private EventDispatcherInterface $eventDispatcher;
+    private TestTestFactory $testFactory;
+    private InMemoryTransport $messengerTransport;
+    private TestRepository $testRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $jobStore = self::$container->get(JobStore::class);
+        self::assertInstanceOf(JobStore::class, $jobStore);
         if ($jobStore instanceof JobStore) {
             $jobStore->create('label content', 'http://example.com/callback');
             $this->jobStore = $jobStore;
+        }
+
+        $testStore = self::$container->get(TestStore::class);
+        self::assertInstanceOf(TestStore::class, $testStore);
+        if ($testStore instanceof TestStore) {
+            $this->testStore = $testStore;
+        }
+
+        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
+        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        if ($eventDispatcher instanceof EventDispatcherInterface) {
+            $this->eventDispatcher = $eventDispatcher;
+        }
+
+        $testFactory = self::$container->get(TestTestFactory::class);
+        self::assertInstanceOf(TestTestFactory::class, $testFactory);
+        if ($testFactory instanceof TestTestFactory) {
+            $this->testFactory = $testFactory;
+        }
+
+        $messengerTransport = self::$container->get('messenger.transport.async');
+        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
+        if ($messengerTransport instanceof InMemoryTransport) {
+            $this->messengerTransport = $messengerTransport;
+        }
+
+        $testRepository = self::$container->get(TestRepository::class);
+        self::assertInstanceOf(TestRepository::class, $testRepository);
+        if ($testRepository instanceof TestRepository) {
+            $this->testRepository = $testRepository;
         }
     }
 
@@ -44,7 +80,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
         self::assertSame(
             [
                 SourceCompileSuccessEvent::class => [
-                    ['createTests', 30],
                     ['dispatchNextCompileSourceMessage', 20],
                     ['dispatchNextTestExecuteMessage', 0],
                 ],
@@ -58,32 +93,14 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
      */
     public function testIntegrationNotFinalEvent(
         callable $setup,
-        int $expectedInitialTestCount,
         SourceCompileSuccessEvent $event,
-        int $expectedTestCount,
         CompileSource $expectedQueuedMessage
     ) {
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
+        $setup($this->jobStore, $this->testStore);
 
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
+        $this->eventDispatcher->dispatch($event);
 
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
-
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-
-        $setup($this->jobStore, $testStore);
-
-        self::assertCount($expectedInitialTestCount, $testRepository->findAll());
-
-        $eventDispatcher->dispatch($event);
-
-        self::assertCount($expectedTestCount, $testRepository->findAll());
-
-        $queue = $messengerTransport->get();
+        $queue = $this->messengerTransport->get();
         self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
@@ -104,7 +121,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
                 },
-                'expectedInitialTestCount' => 0,
                 'event' => new SourceCompileSuccessEvent(
                     'Test/test1.yml',
                     new SuiteManifest(
@@ -125,7 +141,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                         ]
                     )
                 ),
-                'expectedTestCount' => 2,
                 'expectedQueuedMessage' => new CompileSource('Test/test2.yml'),
             ],
             'two sources, event is for second' => [
@@ -137,7 +152,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
                 },
-                'expectedInitialTestCount' => 0,
                 'event' => new SourceCompileSuccessEvent(
                     'Test/test2.yml',
                     new SuiteManifest(
@@ -158,7 +172,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                         ]
                     )
                 ),
-                'expectedTestCount' => 2,
                 'expectedQueuedMessage' => new CompileSource('Test/test1.yml'),
             ],
         ];
@@ -167,40 +180,22 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider integrationFinalEventDataProvider
      */
-    public function testIntegrationFinalEvent(
-        callable $setup,
-        int $expectedInitialTestCount,
-        SourceCompileSuccessEvent $event,
-        int $expectedTestCount
-    ) {
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
-
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-
-        $setup($this->jobStore, $testFactory);
+    public function testIntegrationFinalEvent(callable $setup, SourceCompileSuccessEvent $event)
+    {
+        $setup($this->jobStore, $this->testFactory);
         $job = $this->jobStore->getJob();
 
         self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
-        self::assertCount($expectedInitialTestCount, $testRepository->findAll());
 
-        $eventDispatcher->dispatch($event);
+        $this->eventDispatcher->dispatch($event);
 
-        self::assertCount($expectedTestCount, $testRepository->findAll());
         self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
 
-        $queue = $messengerTransport->get();
+        $queue = $this->messengerTransport->get();
         self::assertCount(1, $queue);
         self::assertIsArray($queue);
 
-        $nextAwaitingTest = $testRepository->findNextAwaiting();
+        $nextAwaitingTest = $this->testRepository->findNextAwaiting();
         $nextAwaitingTestId = $nextAwaitingTest instanceof Test ? (int) $nextAwaitingTest->getId() : 0;
 
         $expectedQueuedMessage = new ExecuteTest($nextAwaitingTestId);
@@ -221,7 +216,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                     ]);
                     $jobStore->store($job);
                 },
-                'expectedInitialTestCount' => 0,
                 'event' => new SourceCompileSuccessEvent(
                     'Test/test1.yml',
                     new SuiteManifest(
@@ -236,7 +230,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                         ]
                     )
                 ),
-                'expectedTestCount' => 1,
             ],
             'two sources, first is compiled, event is for second' => [
                 'setup' => function (JobStore $jobStore, TestTestFactory $testFactory): void {
@@ -254,7 +247,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                         3
                     );
                 },
-                'expectedInitialTestCount' => 1,
                 'event' => new SourceCompileSuccessEvent(
                     'Test/test2.yml',
                     new SuiteManifest(
@@ -269,7 +261,6 @@ class SourceCompileSuccessEventSubscriberTest extends AbstractBaseFunctionalTest
                         ]
                     )
                 ),
-                'expectedTestCount' => 2,
             ],
         ];
     }

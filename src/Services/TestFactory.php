@@ -6,10 +6,12 @@ namespace App\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Repository\TestRepository;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use webignition\BasilCompilerModels\TestManifest;
 
-class TestFactory
+class TestFactory implements EventSubscriberInterface
 {
     private TestStore $testStore;
     private TestRepository $testRepository;
@@ -23,6 +25,27 @@ class TestFactory
         $this->testStore = $testStore;
         $this->testRepository = $testRepository;
         $this->testConfigurationStore = $testConfigurationStore;
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            SourceCompileSuccessEvent::class => [
+                ['createFromSourceCompileSuccessEvent', 100],
+            ],
+        ];
+    }
+
+    /**
+     * @param SourceCompileSuccessEvent $event
+     *
+     * @return Test[]
+     */
+    public function createFromSourceCompileSuccessEvent(SourceCompileSuccessEvent $event): array
+    {
+        $suiteManifest = $event->getOutput();
+
+        return $this->createFromManifestCollection($suiteManifest->getTestManifests());
     }
 
     /**
