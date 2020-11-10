@@ -23,7 +23,6 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
     use MockeryPHPUnitIntegration;
 
     private InMemoryTransport $messengerTransport;
-    private Job $job;
     private TestStateMutator $testStateMutator;
     private TestRepository $testRepository;
 
@@ -39,13 +38,13 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
 
-        $this->job = $jobStore->create('label content', 'http://example.com/callback');
-        $this->job->setSources([
+        $job = $jobStore->create('label content', 'http://example.com/callback');
+        $job->setSources([
             'Test/test1.yml',
             'Test/test2.yml',
         ]);
-        $this->job->setState(Job::STATE_EXECUTION_RUNNING);
-        $jobStore->store($this->job);
+        $job->setState(Job::STATE_EXECUTION_RUNNING);
+        $jobStore->store($job);
 
         $testFactory = self::$container->get(TestTestFactory::class);
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
@@ -89,8 +88,6 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
     public function testHandleEvent(
         callable $setup,
         int $testIndex,
-        string $expectedJobState,
-        string $expectedTestState,
         int $expectedMessageQueueCount,
         ?callable $expectedMessageQueueMessageCreator = null
     ) {
@@ -103,9 +100,6 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
 
             $eventDispatcher->dispatch($event);
         }
-
-        self::assertSame($expectedJobState, $this->job->getState());
-        self::assertSame($expectedTestState, $test->getState());
 
         $queue = $this->messengerTransport->get();
         self::assertCount($expectedMessageQueueCount, $queue);
@@ -126,18 +120,15 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                     $testStateMutator->setFailed($tests[0]);
                 },
                 'testIndex' => 0,
-                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
-                'expectedTestSTate' => Test::STATE_FAILED,
                 'expectedMessageQueueCount' => 0,
             ],
             'test failed, is final test' => [
                 'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setRunning($tests[0]);
                     $testStateMutator->setComplete($tests[0]);
                     $testStateMutator->setFailed($tests[1]);
                 },
                 'testIndex' => 1,
-                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
-                'expectedTestSTate' => Test::STATE_FAILED,
                 'expectedMessageQueueCount' => 0,
             ],
             'test passed, not final test' => [
@@ -145,8 +136,6 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
                     $testStateMutator->setRunning($tests[0]);
                 },
                 'testIndex' => 0,
-                'expectedJobState' => Job::STATE_EXECUTION_RUNNING,
-                'expectedTestSTate' => Test::STATE_COMPLETE,
                 'expectedMessageQueueCount' => 1,
                 'expectedMessageQueueMessageCreator' => function (TestRepository $testRepository) {
                     $nextAwaitingTest = $testRepository->findNextAwaiting();
@@ -157,12 +146,11 @@ class TestExecuteCompleteEventSubscriberTest extends AbstractBaseFunctionalTest
             ],
             'test passed, final test' => [
                 'setup' => function (TestStateMutator $testStateMutator, array $tests) {
+                    $testStateMutator->setRunning($tests[0]);
                     $testStateMutator->setComplete($tests[0]);
                     $testStateMutator->setRunning($tests[1]);
                 },
                 'testIndex' => 1,
-                'expectedJobState' => Job::STATE_EXECUTION_COMPLETE,
-                'expectedTestSTate' => Test::STATE_COMPLETE,
                 'expectedMessageQueueCount' => 0,
             ],
         ];

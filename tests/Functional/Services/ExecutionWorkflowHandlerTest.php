@@ -141,6 +141,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
 
+                    $testStateMutator->setRunning($firstTest);
                     $testStateMutator->setComplete($firstTest);
 
                     $testFactory->create(
@@ -180,7 +181,9 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
 
+                    $testStateMutator->setRunning($firstTest);
                     $testStateMutator->setComplete($firstTest);
+
 
                     $secondTest = $testFactory->create(
                         TestConfiguration::create('chrome', 'http://example.com'),
@@ -189,6 +192,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         1
                     );
 
+                    $testStateMutator->setRunning($secondTest);
                     $testStateMutator->setComplete($secondTest);
 
                     $testFactory->create(
