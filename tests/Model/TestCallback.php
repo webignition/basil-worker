@@ -8,13 +8,42 @@ use App\Model\Callback\AbstractCallback;
 
 class TestCallback extends AbstractCallback
 {
+    private const ID = 'id';
     private const TYPE = 'test';
 
-    public function __construct(int $retryCount = 0)
+    /**
+     * @var array<mixed>
+     */
+    private array $data = [];
+
+    public function __construct()
     {
+        $this->data = [
+            self::ID => random_bytes(16),
+        ];
+    }
+
+    public function withRetryCount(int $retryCount): self
+    {
+        $new = clone $this;
         for ($i = 0; $i < $retryCount; $i++) {
-            $this->incrementRetryCount();
+            $new->incrementRetryCount();
         }
+
+        return $new;
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return $this
+     */
+    public function withData(array $data): self
+    {
+        $new = clone $this;
+        $new->data = $data;
+
+        return $new;
     }
 
     public function getType(): string
@@ -24,6 +53,6 @@ class TestCallback extends AbstractCallback
 
     public function getData(): array
     {
-        return [];
+        return $this->data;
     }
 }

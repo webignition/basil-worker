@@ -87,6 +87,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
     public function testSendCallbackRetryLimitReached()
     {
+        $this->createJob();
+
         $retryLimit = (int) self::$container->getParameter('callback_retry_limit');
 
         $responseHandler = (new MockCallbackResponseHandler())
@@ -96,7 +98,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send(new TestCallback($retryLimit));
+        $this->callbackSender->send((new TestCallback())->withRetryCount($retryLimit));
     }
 
     /**
