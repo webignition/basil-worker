@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
+use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
@@ -357,9 +358,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 '/app/source/Test/test.yml',
                 '/app/tests/GeneratedTest.php',
                 1,
+                Test::STATE_FAILED
             );
 
-            $this->eventDispatcher->dispatch(new TestFailedEvent($test));
+            $event = new TestFailedEvent($test);
+
+            $this->eventDispatcher->dispatch($event);
         }
 
         self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());

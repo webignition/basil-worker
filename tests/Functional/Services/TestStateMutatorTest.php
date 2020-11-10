@@ -7,12 +7,13 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestFailedEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\YamlDocument\Document;
 
 class TestStateMutatorTest extends AbstractBaseFunctionalTest
 {
@@ -53,31 +54,6 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         if ($testStore instanceof TestStore) {
             $this->testStore = $testStore;
         }
-    }
-
-    public function testSetFailedFromTestFailedEvent()
-    {
-        $this->doTestFailedEventDrivenTest(function (TestFailedEvent $event) {
-            $this->mutator->setFailedFromTestFailedEvent($event);
-        });
-    }
-
-    public function testSubscribesToTestFailedEvent()
-    {
-        $this->doTestFailedEventDrivenTest(function (TestFailedEvent $event) {
-            $this->eventDispatcher->dispatch($event);
-        });
-    }
-
-    private function doTestFailedEventDrivenTest(callable $callable): void
-    {
-        self::assertNotSame(Test::STATE_FAILED, $this->test->getState());
-
-        $event = new TestFailedEvent($this->test);
-
-        $callable($event);
-
-        self::assertSame(Test::STATE_FAILED, $this->test->getState());
     }
 
     /**
@@ -148,5 +124,64 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         $callable($event);
 
         self::assertSame(Test::STATE_COMPLETE, $this->test->getState());
+    }
+
+    /**
+     * @dataProvider handleTestExecuteDocumentReceivedEventDataProvider
+     */
+    public function testSetFailedFromTestExecuteDocumentReceivedEvent(Document $document, string $expectedState)
+    {
+        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+            $document,
+            $expectedState,
+            function (TestExecuteDocumentReceivedEvent $event) {
+                $this->mutator->setFailedFromTestExecuteDocumentReceivedEvent($event);
+            }
+        );
+    }
+
+    /**
+     * @dataProvider handleTestExecuteDocumentReceivedEventDataProvider
+     */
+    public function testSubscribesToTestExecuteDocumentReceivedEvent(Document $document, string $expectedState)
+    {
+        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+            $document,
+            $expectedState,
+            function (TestExecuteDocumentReceivedEvent $event) {
+                $this->eventDispatcher->dispatch($event);
+            }
+        );
+    }
+
+    private function doTestExecuteDocumentReceivedEventDrivenTest(
+        Document $document,
+        string $expectedState,
+        callable $execute
+    ): void {
+        self::assertSame(Test::STATE_AWAITING, $this->test->getState());
+
+        $event = new TestExecuteDocumentReceivedEvent($this->test, $document);
+        $execute($event);
+
+        self::assertSame($expectedState, $this->test->getState());
+    }
+
+    public function handleTestExecuteDocumentReceivedEventDataProvider(): array
+    {
+        return [
+            'not a step' => [
+                'document' => new Document('{ type: test }'),
+                'expectedState' => Test::STATE_AWAITING,
+            ],
+            'step passed' => [
+                'document' => new Document('{ type: step, status: passed }'),
+                'expectedState' => Test::STATE_AWAITING,
+            ],
+            'step failed' => [
+                'document' => new Document('{ type: step, status: failed }'),
+                'expectedState' => Test::STATE_FAILED,
+            ],
+        ];
     }
 }
