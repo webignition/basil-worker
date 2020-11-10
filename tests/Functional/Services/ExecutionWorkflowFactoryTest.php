@@ -98,6 +98,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
                     $nextTest = $testRepository->findNextAwaiting();
                     if ($nextTest instanceof Test) {
+                        $testStateMutator->setRunning($nextTest);
                         $testStateMutator->setComplete($nextTest);
                     }
                 },
@@ -117,11 +118,13 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
                     $nextTest = $testRepository->findNextAwaiting();
                     if ($nextTest instanceof Test) {
+                        $testStateMutator->setRunning($nextTest);
                         $testStateMutator->setComplete($nextTest);
                     }
 
                     $nextTest = $testRepository->findNextAwaiting();
                     if ($nextTest instanceof Test) {
+                        $testStateMutator->setRunning($nextTest);
                         $testStateMutator->setComplete($nextTest);
                     }
                 },
