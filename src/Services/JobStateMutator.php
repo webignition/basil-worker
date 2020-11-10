@@ -10,7 +10,7 @@ use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
@@ -44,15 +44,14 @@ class JobStateMutator implements EventSubscriberInterface
             TestExecuteCompleteEvent::class => [
                 ['setExecutionComplete', 100],
             ],
-            TestExecuteDocumentReceivedEvent::class => [
-                ['setExecutionCancelledFromTestExecuteDocumentReceivedEvent', 10],
+            TestFailedEvent::class => [
+                ['setExecutionCancelledFromTestFailedEvent', 10],
             ],
         ];
     }
 
-    public function setExecutionCancelledFromTestExecuteDocumentReceivedEvent(
-        TestExecuteDocumentReceivedEvent $event
-    ): void {
+    public function setExecutionCancelledFromTestFailedEvent(TestFailedEvent $event): void
+    {
         $test = $event->getTest();
 
         if (Test::STATE_FAILED === $test->getState()) {

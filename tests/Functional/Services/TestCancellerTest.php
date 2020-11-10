@@ -6,12 +6,11 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use webignition\YamlDocument\Document;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest
 {
@@ -144,31 +143,31 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider
+     * @dataProvider cancelAwaitingFromTestFailedEventDataProvider
      *
      * @param callable $setup
      * @param array<Test::STATE_*> $expectedInitialStates
      * @param array<Test::STATE_*> $expectedStates
      */
-    public function testCancelAwaitingFromTestExecuteDocumentReceivedEvent(
+    public function testCancelAwaitingFromTestFailedEvent(
         callable $setup,
         array $expectedInitialStates,
         array $expectedStates
     ) {
-        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+        $this->doTestFailedEventDrivenTest(
             function () use ($setup) {
                 return $setup($this->testFactory);
             },
             $expectedInitialStates,
-            function (TestExecuteDocumentReceivedEvent $event) {
-                $this->testCanceller->cancelAwaitingFromTestExecuteDocumentReceivedEvent($event);
+            function (TestFailedEvent $event) {
+                $this->testCanceller->cancelAwaitingFromTestFailedEvent($event);
             },
             $expectedStates
         );
     }
 
     /**
-     * @dataProvider cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider
+     * @dataProvider cancelAwaitingFromTestFailedEventDataProvider
      *
      * @param callable $setup
      * @param array<Test::STATE_*> $expectedInitialStates
@@ -179,19 +178,19 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         array $expectedInitialStates,
         array $expectedStates
     ) {
-        $this->doTestExecuteDocumentReceivedEventDrivenTest(
+        $this->doTestFailedEventDrivenTest(
             function () use ($setup) {
                 return $setup($this->testFactory);
             },
             $expectedInitialStates,
-            function (TestExecuteDocumentReceivedEvent $event) {
+            function (TestFailedEvent $event) {
                 $this->eventDispatcher->dispatch($event);
             },
             $expectedStates
         );
     }
 
-    public function cancelAwaitingFromTestExecuteDocumentReceivedEventDataProvider(): array
+    public function cancelAwaitingFromTestFailedEventDataProvider(): array
     {
         return [
             'no awaiting tests, test not failed' => [
@@ -273,7 +272,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
      * @param callable $execute
      * @param array<Test::STATE_*> $expectedStates
      */
-    private function doTestExecuteDocumentReceivedEventDrivenTest(
+    private function doTestFailedEventDrivenTest(
         callable $setup,
         array $expectedInitialStates,
         callable $execute,
@@ -289,7 +288,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         $test = $tests[0];
         self::assertInstanceOf(Test::class, $test);
 
-        $event = new TestExecuteDocumentReceivedEvent($test, new Document(''));
+        $event = new TestFailedEvent($test);
         $execute($event);
 
         foreach ($tests as $testIndex => $test) {

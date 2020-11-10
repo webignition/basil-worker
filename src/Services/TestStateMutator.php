@@ -7,16 +7,20 @@ namespace App\Services;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use App\Model\Document\Step;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TestStateMutator implements EventSubscriberInterface
 {
     private TestStore $testStore;
+    private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(TestStore $testStore)
+    public function __construct(TestStore $testStore, EventDispatcherInterface $eventDispatcher)
     {
         $this->testStore = $testStore;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     public static function getSubscribedEvents()
@@ -42,7 +46,10 @@ class TestStateMutator implements EventSubscriberInterface
 
         $step = new Step($document);
         if ($step->isStep() && $step->statusIsFailed()) {
-            $this->setFailed($event->getTest());
+            $test = $event->getTest();
+
+            $this->setFailed($test);
+            $this->eventDispatcher->dispatch(new TestFailedEvent($test));
         }
     }
 

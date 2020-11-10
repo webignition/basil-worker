@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
-use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\TestFailedEvent;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -23,13 +23,13 @@ class TestCanceller implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TestExecuteDocumentReceivedEvent::class => [
-                ['cancelAwaitingFromTestExecuteDocumentReceivedEvent', 10],
+            TestFailedEvent::class => [
+                ['cancelAwaitingFromTestFailedEvent', 0],
             ],
         ];
     }
 
-    public function cancelAwaitingFromTestExecuteDocumentReceivedEvent(TestExecuteDocumentReceivedEvent $event): void
+    public function cancelAwaitingFromTestFailedEvent(TestFailedEvent $event): void
     {
         $test = $event->getTest();
 
