@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Job;
 use App\Tests\Integration\AbstractEndToEndTest;
+use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use GuzzleHttp\Psr7\Request;
@@ -35,23 +36,17 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param string $label
-     * @param string $callbackUrl
-     * @param string $manifestPath
+     * @param \App\Tests\Model\EndToEndJob\JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
      * @param HttpTransactionCollection $expectedHttpTransactions
      */
     public function testCreateAddSourcesCompileExecute(
-        string $label,
-        string $callbackUrl,
-        string $manifestPath,
+        JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
         HttpTransactionCollection $expectedHttpTransactions
     ) {
         $this->doCreateJobAddSourcesTest(
-            $label,
-            $callbackUrl,
-            $manifestPath,
+            $jobConfiguration,
             $expectedSourcePaths,
             function () {
                 return true;
@@ -84,9 +79,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 
         return [
             'default' => [
-                'label' => $label,
-                'callbackUrl' => 'http://example.com/callback/1',
-                'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
+                'jobConfiguration' => new JobConfiguration(
+                    $label,
+                    $callbackUrl,
+                    getcwd() . '/tests/Fixtures/Manifest/manifest.txt'
+                ),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',

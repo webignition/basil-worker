@@ -6,6 +6,7 @@ namespace App\Tests\Integration;
 
 use App\Entity\Job;
 use App\Services\JobStore;
+use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourceStoreInitializer;
@@ -51,9 +52,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     }
 
     protected function doCreateJobAddSourcesTest(
-        string $label,
-        string $callbackUrl,
-        string $manifestPath,
+        JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
         callable $waitUntil,
         array $waitUntilArgs,
@@ -61,12 +60,12 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         callable $postAssertions,
         array $postAssertionsArgs
     ) {
-        $this->createJob($label, $callbackUrl);
+        $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
         $job = $this->jobStore->getJob();
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
-        $this->addJobSources($manifestPath);
+        $this->addJobSources($jobConfiguration->getManifestPath());
 
         $job = $this->jobStore->getJob();
         self::assertSame($expectedSourcePaths, $job->getSources());
