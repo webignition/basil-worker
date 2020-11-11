@@ -8,6 +8,7 @@ use App\Entity\Job;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Model\EndToEndJob\PostAssertions;
+use App\Tests\Model\EndToEndJob\WaitUntil;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourceStoreInitializer;
@@ -55,8 +56,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected function doCreateJobAddSourcesTest(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        callable $waitUntil,
-        array $waitUntilArgs,
+        WaitUntil $waitUntil,
         string $expectedJobEndState,
         PostAssertions $postAssertions
     ) {
@@ -71,8 +71,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         self::assertSame($expectedSourcePaths, $job->getSources());
 
         $this->waitUntil(
-            function (Job $job) use ($waitUntil, $waitUntilArgs): bool {
-                return $waitUntil($job, ...$waitUntilArgs);
+            function (Job $job) use ($waitUntil): bool {
+                return $waitUntil($job);
             }
         );
 

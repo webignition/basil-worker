@@ -8,6 +8,7 @@ use App\Entity\Job;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Model\EndToEndJob\PostAssertions;
+use App\Tests\Model\EndToEndJob\WaitUntil;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use GuzzleHttp\Psr7\Request;
@@ -49,10 +50,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            function () {
-                return true;
-            },
-            [],
+            WaitUntil::createSynchronous(),
             Job::STATE_EXECUTION_COMPLETE,
             new PostAssertions(
                 function (HttpTransactionCollection $expectedHttpTransactions) {
