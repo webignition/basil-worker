@@ -82,7 +82,9 @@ class JobStateMutator implements EventSubscriberInterface
 
     public function setExecutionRunning(): void
     {
-        $this->set(Job::STATE_EXECUTION_RUNNING);
+        if ($this->jobStore->hasJob()) {
+            $this->set($this->jobStore->getJob(), Job::STATE_EXECUTION_RUNNING);
+        }
     }
 
     public function setExecutionComplete(): void
@@ -108,13 +110,10 @@ class JobStateMutator implements EventSubscriberInterface
     /**
      * @param Job::STATE_* $state
      */
-    private function set(string $state): void
+    private function set(Job $job, string $state): void
     {
-        if ($this->jobStore->hasJob()) {
-            $job = $this->jobStore->getJob();
-            $job->setState($state);
-            $this->jobStore->store($job);
-        }
+        $job->setState($state);
+        $this->jobStore->store($job);
     }
 
     /**
@@ -141,8 +140,7 @@ class JobStateMutator implements EventSubscriberInterface
             $job = $this->jobStore->getJob();
 
             if (true === $conditional($job)) {
-                $job->setState($state);
-                $this->jobStore->store($job);
+                $this->set($job, $state);
             }
         }
     }
