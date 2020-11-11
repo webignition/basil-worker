@@ -33,7 +33,16 @@ class InvokableCollection implements InvokableInterface
 
     public function getServiceReferences(): array
     {
-        return [];
+        $serviceReferences = [];
+        foreach ($this->items as $invokable) {
+            $itemServiceReferences = $invokable->getServiceReferences();
+
+            foreach ($itemServiceReferences as $id => $serviceReference) {
+                $serviceReferences[$id] = $serviceReference;
+            }
+        }
+
+        return $serviceReferences;
     }
 
     public function replaceServiceReference(ServiceReference $serviceReference, object $service): void

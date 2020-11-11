@@ -53,7 +53,7 @@ class Invokable implements InvokableInterface, InvokableItemInterface
         $serviceReferences = [];
         foreach ($this->arguments as $argument) {
             if ($argument instanceof ServiceReference) {
-                $serviceReferences[] = $argument;
+                $serviceReferences[$argument->getId()] = $argument;
             }
         }
 
