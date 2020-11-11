@@ -9,6 +9,7 @@ use App\Entity\Test;
 use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
+use App\Tests\Model\EndToEndJob\PostAssertions;
 use App\Tests\Services\SourceStoreInitializer;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
@@ -54,18 +55,20 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 $expectedJobEndState,
             ],
             $expectedJobEndState,
-            function (array $expectedTestEndStates) {
-                $tests = $this->testRepository->findAll();
-                self::assertCount(count($expectedTestEndStates), $tests);
+            new PostAssertions(
+                function (array $expectedTestEndStates) {
+                    $tests = $this->testRepository->findAll();
+                    self::assertCount(count($expectedTestEndStates), $tests);
 
-                foreach ($tests as $testIndex => $test) {
-                    $expectedTestEndState = $expectedTestEndStates[$testIndex] ?? null;
-                    self::assertSame($expectedTestEndState, $test->getState());
-                }
-            },
-            [
-                $expectedTestEndStates,
-            ]
+                    foreach ($tests as $testIndex => $test) {
+                        $expectedTestEndState = $expectedTestEndStates[$testIndex] ?? null;
+                        self::assertSame($expectedTestEndState, $test->getState());
+                    }
+                },
+                [
+                    $expectedTestEndStates,
+                ]
+            )
         );
     }
 

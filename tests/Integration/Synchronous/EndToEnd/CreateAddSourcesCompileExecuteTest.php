@@ -7,6 +7,7 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 use App\Entity\Job;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
+use App\Tests\Model\EndToEndJob\PostAssertions;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use GuzzleHttp\Psr7\Request;
@@ -36,7 +37,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param \App\Tests\Model\EndToEndJob\JobConfiguration $jobConfiguration
+     * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
      * @param HttpTransactionCollection $expectedHttpTransactions
      */
@@ -53,22 +54,24 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
             },
             [],
             Job::STATE_EXECUTION_COMPLETE,
-            function (HttpTransactionCollection $expectedHttpTransactions) {
-                $transactions = $this->httpLogReader->getTransactions();
-                $this->httpLogReader->reset();
+            new PostAssertions(
+                function (HttpTransactionCollection $expectedHttpTransactions) {
+                    $transactions = $this->httpLogReader->getTransactions();
+                    $this->httpLogReader->reset();
 
-                self::assertCount(count($expectedHttpTransactions), $transactions);
+                    self::assertCount(count($expectedHttpTransactions), $transactions);
 
-                foreach ($expectedHttpTransactions as $transactionIndex => $expectedTransaction) {
-                    $transaction = $transactions->get($transactionIndex);
-                    self::assertInstanceOf(HttpTransaction::class, $transaction);
+                    foreach ($expectedHttpTransactions as $transactionIndex => $expectedTransaction) {
+                        $transaction = $transactions->get($transactionIndex);
+                        self::assertInstanceOf(HttpTransaction::class, $transaction);
 
-                    $this->assertTransactionsAreEquivalent($expectedTransaction, $transaction, $transactionIndex);
-                }
-            },
-            [
-                $expectedHttpTransactions,
-            ]
+                        $this->assertTransactionsAreEquivalent($expectedTransaction, $transaction, $transactionIndex);
+                    }
+                },
+                [
+                    $expectedHttpTransactions,
+                ]
+            )
         );
     }
 
