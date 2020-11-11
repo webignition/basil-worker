@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model\EndToEndJob;
 
-class Invokable
+class Invokable implements InvokableInterface
 {
     /**
      * @var callable
