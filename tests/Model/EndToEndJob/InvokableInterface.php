@@ -12,4 +12,11 @@ interface InvokableInterface
      * @return mixed
      */
     public function __invoke(...$args);
+
+    /**
+     * @return ServiceReference[]
+     */
+    public function getServiceReferences(): array;
+
+    public function replaceServiceReference(ServiceReference $serviceReference, object $service): void;
 }

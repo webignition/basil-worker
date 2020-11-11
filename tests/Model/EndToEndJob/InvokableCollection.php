@@ -7,14 +7,14 @@ namespace App\Tests\Model\EndToEndJob;
 class InvokableCollection implements InvokableInterface
 {
     /**
-     * @var Invokable
+     * @var InvokableItemInterface
      */
     private array $items = [];
 
     public function __construct(array $items)
     {
         foreach ($items as $invokable) {
-            if ($invokable instanceof InvokableInterface) {
+            if ($invokable instanceof InvokableItemInterface) {
                 $this->items[] = $invokable;
             }
         }
@@ -29,5 +29,17 @@ class InvokableCollection implements InvokableInterface
         }
 
         return $return;
+    }
+
+    public function getServiceReferences(): array
+    {
+        return [];
+    }
+
+    public function replaceServiceReference(ServiceReference $serviceReference, object $service): void
+    {
+        foreach ($this->items as $invokable) {
+            $invokable->replaceServiceReference($serviceReference, $service);
+        }
     }
 }

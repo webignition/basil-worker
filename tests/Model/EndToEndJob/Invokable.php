@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model\EndToEndJob;
 
-class Invokable implements InvokableInterface
+class Invokable implements InvokableInterface, InvokableItemInterface
 {
     /**
      * @var callable
@@ -43,5 +43,34 @@ class Invokable implements InvokableInterface
     public function __invoke(...$args)
     {
         return ($this->callable)(...$args, ...$this->arguments);
+    }
+
+    /**
+     * @return ServiceReference[]
+     */
+    public function getServiceReferences(): array
+    {
+        $serviceReferences = [];
+        foreach ($this->arguments as $argument) {
+            if ($argument instanceof ServiceReference) {
+                $serviceReferences[] = $argument;
+            }
+        }
+
+        return $serviceReferences;
+    }
+
+    public function getArguments(): array
+    {
+        return $this->arguments;
+    }
+
+    public function replaceServiceReference(ServiceReference $serviceReference, object $service): void
+    {
+        foreach ($this->arguments as $argumentIndex => $argument) {
+            if ($argument instanceof ServiceReference && $argument->getId() === $serviceReference->getId()) {
+                $this->arguments[$argumentIndex] = $service;
+            }
+        }
     }
 }
