@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStateMutator;
 use App\Services\CallbackStore;
@@ -36,13 +37,7 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetQueued(string $initialState, string $expectedState)
     {
-        $callbacks = [
-            $this->createCallbackEntity(),
-            $this->createCompileFailureCallback(),
-            $this->createExecuteDocumentReceivedCallback(),
-        ];
-
-        foreach ($callbacks as $callback) {
+        foreach ($this->createCallbacks() as $callback) {
             $this->doSetAsStateTest(
                 $callback,
                 $initialState,
@@ -88,13 +83,7 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetSending(string $initialState, string $expectedState)
     {
-        $callbacks = [
-            $this->createCallbackEntity(),
-            $this->createCompileFailureCallback(),
-            $this->createExecuteDocumentReceivedCallback(),
-        ];
-
-        foreach ($callbacks as $callback) {
+        foreach ($this->createCallbacks() as $callback) {
             $this->doSetAsStateTest(
                 $callback,
                 $initialState,
@@ -140,13 +129,7 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetFailed(string $initialState, string $expectedState)
     {
-        $callbacks = [
-            $this->createCallbackEntity(),
-            $this->createCompileFailureCallback(),
-            $this->createExecuteDocumentReceivedCallback(),
-        ];
-
-        foreach ($callbacks as $callback) {
+        foreach ($this->createCallbacks() as $callback) {
             $this->doSetAsStateTest(
                 $callback,
                 $initialState,
@@ -192,13 +175,7 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetComplete(string $initialState, string $expectedState)
     {
-        $callbacks = [
-            $this->createCallbackEntity(),
-            $this->createCompileFailureCallback(),
-            $this->createExecuteDocumentReceivedCallback(),
-        ];
-
-        foreach ($callbacks as $callback) {
+        foreach ($this->createCallbacks() as $callback) {
             $this->doSetAsStateTest(
                 $callback,
                 $initialState,
@@ -257,6 +234,27 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
         $setter($callback);
 
         self::assertSame($expectedState, $callback->getState());
+    }
+
+    /**
+     * @return CallbackInterface[]
+     */
+    private function createCallbacks(): array
+    {
+        return [
+            'default entity' => $this->createCallbackEntity(),
+            'compile failure' => $this->createCompileFailureCallback(),
+            'execute document received' => $this->createExecuteDocumentReceivedCallback(),
+            'delayed default entity' => DelayedCallback::create(
+                $this->createCallbackEntity()
+            ),
+            'delayed compile failure' => DelayedCallback::create(
+                $this->createCompileFailureCallback()
+            ),
+            'delayed execute document received' => DelayedCallback::create(
+                $this->createExecuteDocumentReceivedCallback()
+            ),
+        ];
     }
 
     private function createCallbackEntity(): CallbackEntity
