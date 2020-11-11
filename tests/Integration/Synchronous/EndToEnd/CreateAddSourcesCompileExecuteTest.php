@@ -38,21 +38,21 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      * @param string $label
      * @param string $callbackUrl
      * @param string $manifestPath
-     * @param string[] $sourcePaths
+     * @param string[] $expectedSourcePaths
      * @param HttpTransactionCollection $expectedHttpTransactions
      */
     public function testCreateAddSourcesCompileExecute(
         string $label,
         string $callbackUrl,
         string $manifestPath,
-        array $sourcePaths,
+        array $expectedSourcePaths,
         HttpTransactionCollection $expectedHttpTransactions
     ) {
         $this->doCreateJobAddSourcesTest(
             $label,
             $callbackUrl,
             $manifestPath,
-            $sourcePaths,
+            $expectedSourcePaths,
             function () {
                 return true;
             },
@@ -87,7 +87,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'label' => $label,
                 'callbackUrl' => 'http://example.com/callback/1',
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
-                'sourcePaths' => [
+                'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',

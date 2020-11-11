@@ -54,7 +54,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         string $label,
         string $callbackUrl,
         string $manifestPath,
-        array $sourcePaths,
+        array $expectedSourcePaths,
         callable $waitUntil,
         array $waitUntilArgs,
         string $expectedJobEndState,
@@ -66,10 +66,10 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $job = $this->jobStore->getJob();
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
-        $this->addJobSources($manifestPath, $sourcePaths);
+        $this->addJobSources($manifestPath);
 
         $job = $this->jobStore->getJob();
-        self::assertSame($sourcePaths, $job->getSources());
+        self::assertSame($expectedSourcePaths, $job->getSources());
 
         $this->waitUntil(
             function (Job $job) use ($waitUntil, $waitUntilArgs): bool {
@@ -92,8 +92,11 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         return $response;
     }
 
-    protected function addJobSources(string $manifestPath, array $sourcePaths): JsonResponse
+    protected function addJobSources(string $manifestPath): JsonResponse
     {
+        $manifestContent = file_get_contents($manifestPath);
+        $sourcePaths = array_filter(explode("\n", $manifestContent));
+
         $response = $this->clientRequestSender->addJobSources(
             $this->uploadedFileFactory->createForManifest($manifestPath),
             $this->basilFixtureHandler->createUploadFileCollection($sourcePaths)

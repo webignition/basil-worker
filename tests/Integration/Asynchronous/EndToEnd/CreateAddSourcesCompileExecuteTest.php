@@ -33,7 +33,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      * @param string $label
      * @param string $callbackUrl
      * @param string $manifestPath
-     * @param string[] $sourcePaths
+     * @param string[] $expectedSourcePaths
      * @param Job::STATE_* $expectedJobEndState
      * @param array<Test::STATE_*> $expectedTestEndStates
      */
@@ -41,7 +41,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         string $label,
         string $callbackUrl,
         string $manifestPath,
-        array $sourcePaths,
+        array $expectedSourcePaths,
         string $expectedJobEndState,
         array $expectedTestEndStates
     ) {
@@ -49,7 +49,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
             $label,
             $callbackUrl,
             $manifestPath,
-            $sourcePaths,
+            $expectedSourcePaths,
             function (Job $job, string $expectedJobEndState) {
                 $this->entityManager->refresh($job);
 
@@ -81,7 +81,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'label' => md5('label content'),
                 'callbackUrl' => 'http://example.com/callback',
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
-                'sourcePaths' => [
+                'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
