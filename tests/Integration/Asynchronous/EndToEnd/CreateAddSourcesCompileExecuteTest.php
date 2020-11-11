@@ -7,48 +7,16 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 use App\Entity\Job;
 use App\Entity\Test;
 use App\Repository\TestRepository;
-use App\Services\JobStore;
-use App\Tests\Integration\AbstractBaseIntegrationTest;
-use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\ClientRequestSender;
+use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Services\SourceStoreInitializer;
-use App\Tests\Services\UploadedFileFactory;
 
-class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
+class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 {
-    private ClientRequestSender $clientRequestSender;
-    private JobStore $jobStore;
-    private UploadedFileFactory $uploadedFileFactory;
-    private BasilFixtureHandler $basilFixtureHandler;
     private TestRepository $testRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $clientRequestSender = self::$container->get(ClientRequestSender::class);
-        self::assertInstanceOf(ClientRequestSender::class, $clientRequestSender);
-        if ($clientRequestSender instanceof ClientRequestSender) {
-            $this->clientRequestSender = $clientRequestSender;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
-
-        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
-        self::assertInstanceOf(UploadedFileFactory::class, $uploadedFileFactory);
-        if ($uploadedFileFactory instanceof UploadedFileFactory) {
-            $this->uploadedFileFactory = $uploadedFileFactory;
-        }
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        self::assertInstanceOf(BasilFixtureHandler::class, $basilFixtureHandler);
-        if ($basilFixtureHandler instanceof BasilFixtureHandler) {
-            $this->basilFixtureHandler = $basilFixtureHandler;
-        }
 
         $testRepository = self::$container->get(TestRepository::class);
         self::assertInstanceOf(TestRepository::class, $testRepository);
@@ -77,18 +45,12 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         string $expectedJobEndState,
         array $expectedTestEndStates
     ) {
-        $createJobResponse = $this->clientRequestSender->createJob($label, $callbackUrl);
-        self::assertSame(200, $createJobResponse->getStatusCode());
-        self::assertTrue($this->jobStore->hasJob());
+        $this->createJob($label, $callbackUrl);
 
         $job = $this->jobStore->getJob();
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
-        $addJobSourcesResponse = $this->clientRequestSender->addJobSources(
-            $this->uploadedFileFactory->createForManifest($manifestPath),
-            $this->basilFixtureHandler->createUploadFileCollection($sourcePaths)
-        );
-        self::assertSame(200, $addJobSourcesResponse->getStatusCode());
+        $this->addJobSources($manifestPath, $sourcePaths);
 
         $job = $this->jobStore->getJob();
         self::assertSame($sourcePaths, $job->getSources());

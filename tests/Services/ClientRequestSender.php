@@ -8,6 +8,7 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class ClientRequestSender
@@ -19,14 +20,19 @@ class ClientRequestSender
         $this->client = $client;
     }
 
-    public function createJob(string $label, string $callbackUrl): Response
+    public function createJob(string $label, string $callbackUrl): JsonResponse
     {
         $this->client->request('POST', '/create', [
             JobCreateRequest::KEY_LABEL => $label,
             JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
         ]);
 
-        return $this->client->getResponse();
+        /**
+         * @var JsonResponse $response
+         */
+        $response = $this->client->getResponse();
+
+        return $response;
     }
 
     /**
@@ -34,7 +40,7 @@ class ClientRequestSender
      *
      * @return Response
      */
-    public function addJobSources(UploadedFile $manifest, array $sourceUploadedFiles): Response
+    public function addJobSources(UploadedFile $manifest, array $sourceUploadedFiles): JsonResponse
     {
         $requestFiles = array_merge(
             [
@@ -50,6 +56,11 @@ class ClientRequestSender
             $requestFiles
         );
 
-        return $this->client->getResponse();
+        /**
+         * @var JsonResponse $response
+         */
+        $response = $this->client->getResponse();
+
+        return $response;
     }
 }
