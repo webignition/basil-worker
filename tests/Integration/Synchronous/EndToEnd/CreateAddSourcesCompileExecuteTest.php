@@ -48,28 +48,33 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         array $sourcePaths,
         HttpTransactionCollection $expectedHttpTransactions
     ) {
-        $this->createJob($label, $callbackUrl);
+        $this->doCreateJobAddSourcesTest(
+            $label,
+            $callbackUrl,
+            $manifestPath,
+            $sourcePaths,
+            function () {
+                return true;
+            },
+            [],
+            Job::STATE_EXECUTION_COMPLETE,
+            function (HttpTransactionCollection $expectedHttpTransactions) {
+                $transactions = $this->httpLogReader->getTransactions();
+                $this->httpLogReader->reset();
 
-        $job = $this->jobStore->getJob();
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
+                self::assertCount(count($expectedHttpTransactions), $transactions);
 
-        $this->addJobSources($manifestPath, $sourcePaths);
+                foreach ($expectedHttpTransactions as $transactionIndex => $expectedTransaction) {
+                    $transaction = $transactions->get($transactionIndex);
+                    self::assertInstanceOf(HttpTransaction::class, $transaction);
 
-        $job = $this->jobStore->getJob();
-        self::assertSame($sourcePaths, $job->getSources());
-        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
-
-        $transactions = $this->httpLogReader->getTransactions();
-        $this->httpLogReader->reset();
-
-        self::assertCount(count($expectedHttpTransactions), $transactions);
-
-        foreach ($expectedHttpTransactions as $transactionIndex => $expectedTransaction) {
-            $transaction = $transactions->get($transactionIndex);
-            self::assertInstanceOf(HttpTransaction::class, $transaction);
-
-            $this->assertTransactionsAreEquivalent($expectedTransaction, $transaction, $transactionIndex);
-        }
+                    $this->assertTransactionsAreEquivalent($expectedTransaction, $transaction, $transactionIndex);
+                }
+            },
+            [
+                $expectedHttpTransactions,
+            ]
+        );
     }
 
     public function createAddSourcesCompileExecuteDataProvider(): array

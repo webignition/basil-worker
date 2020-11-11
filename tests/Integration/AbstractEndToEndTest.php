@@ -6,20 +6,11 @@ namespace App\Tests\Integration;
 
 use App\Entity\Job;
 use App\Services\JobStore;
-use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
-use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpKernel\HttpCache\ResponseCacheStrategyInterface;
-use webignition\HttpHistoryContainer\Collection\HttpTransactionCollection;
-use webignition\HttpHistoryContainer\Transaction\HttpTransaction;
 
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 {
@@ -59,6 +50,38 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $this->initializeSourceStore();
     }
 
+    protected function doCreateJobAddSourcesTest(
+        string $label,
+        string $callbackUrl,
+        string $manifestPath,
+        array $sourcePaths,
+        callable $waitUntil,
+        array $waitUntilArgs,
+        string $expectedJobEndState,
+        callable $postAssertions,
+        array $postAssertionsArgs
+    ) {
+        $this->createJob($label, $callbackUrl);
+
+        $job = $this->jobStore->getJob();
+        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
+
+        $this->addJobSources($manifestPath, $sourcePaths);
+
+        $job = $this->jobStore->getJob();
+        self::assertSame($sourcePaths, $job->getSources());
+
+        $this->waitUntil(
+            function (Job $job) use ($waitUntil, $waitUntilArgs): bool {
+                return $waitUntil($job, ...$waitUntilArgs);
+            }
+        );
+
+        self::assertSame($expectedJobEndState, $job->getState());
+
+        $postAssertions(...$postAssertionsArgs);
+    }
+
     protected function createJob(string $label, string $callbackUrl): JsonResponse
     {
         $response = $this->clientRequestSender->createJob($label, $callbackUrl);
@@ -88,5 +111,29 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
         }
+    }
+
+    private function waitUntil(callable $callable, int $maxDurationInSeconds = 30): bool
+    {
+        $duration = 0;
+        $maxDuration = $maxDurationInSeconds * 1000000;
+        $maxDurationReached = $duration >= $maxDuration;
+        $intervalInMicroseconds = 100000;
+
+        $job = $this->jobStore->getJob();
+
+        while (false === $callable($job) && false === $maxDurationReached) {
+            usleep($intervalInMicroseconds);
+            $duration += $intervalInMicroseconds;
+            $maxDurationReached = $duration >= $maxDuration;
+
+            if ($maxDurationReached) {
+                return false;
+            }
+
+            $job = $this->jobStore->getJob();
+        }
+
+        return true;
     }
 }

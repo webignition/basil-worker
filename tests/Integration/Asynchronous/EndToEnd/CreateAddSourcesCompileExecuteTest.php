@@ -45,31 +45,33 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         string $expectedJobEndState,
         array $expectedTestEndStates
     ) {
-        $this->createJob($label, $callbackUrl);
+        $this->doCreateJobAddSourcesTest(
+            $label,
+            $callbackUrl,
+            $manifestPath,
+            $sourcePaths,
+            function (Job $job, string $expectedJobEndState) {
+                $this->entityManager->refresh($job);
 
-        $job = $this->jobStore->getJob();
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
+                return $expectedJobEndState === $job->getState();
+            },
+            [
+                $expectedJobEndState,
+            ],
+            $expectedJobEndState,
+            function (array $expectedTestEndStates) {
+                $tests = $this->testRepository->findAll();
+                self::assertCount(count($expectedTestEndStates), $tests);
 
-        $this->addJobSources($manifestPath, $sourcePaths);
-
-        $job = $this->jobStore->getJob();
-        self::assertSame($sourcePaths, $job->getSources());
-
-        $this->waitUntil(function () use ($job, $expectedJobEndState): bool {
-            $this->entityManager->refresh($job);
-
-            return $expectedJobEndState === $job->getState();
-        });
-
-        self::assertSame($expectedJobEndState, $job->getState());
-
-        $tests = $this->testRepository->findAll();
-        self::assertCount(count($expectedTestEndStates), $tests);
-
-        foreach ($tests as $testIndex => $test) {
-            $expectedTestEndState = $expectedTestEndStates[$testIndex] ?? null;
-            self::assertSame($expectedTestEndState, $test->getState());
-        }
+                foreach ($tests as $testIndex => $test) {
+                    $expectedTestEndState = $expectedTestEndStates[$testIndex] ?? null;
+                    self::assertSame($expectedTestEndState, $test->getState());
+                }
+            },
+            [
+                $expectedTestEndStates,
+            ]
+        );
     }
 
     public function createAddSourcesCompileExecuteDataProvider(): array
@@ -102,25 +104,5 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
         }
-    }
-
-    private function waitUntil(callable $callable, int $maxDurationInSeconds = 30): bool
-    {
-        $duration = 0;
-        $maxDuration = $maxDurationInSeconds * 1000000;
-        $maxDurationReached = $duration >= $maxDuration;
-        $intervalInMicroseconds = 100000;
-
-        while (false === $callable() && false === $maxDurationReached) {
-            usleep($intervalInMicroseconds);
-            $duration += $intervalInMicroseconds;
-            $maxDurationReached = $duration >= $maxDuration;
-
-            if ($maxDurationReached) {
-                return false;
-            }
-        }
-
-        return true;
     }
 }
