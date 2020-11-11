@@ -115,10 +115,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      * @dataProvider setExecutionCompleteDataProvider
      */
     public function testSetExecutionComplete(
+        callable $setup,
         ExecutionWorkflowHandler $executionWorkflowHandler,
         bool $expectedStateIsMutated
     ) {
         self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+
+        $setup($this->jobStore);
 
         ObjectReflector::setProperty(
             $this->jobStateMutator,
@@ -136,16 +139,31 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     {
         return [
             'compilation workflow not complete' => [
+                'setup' => function () {
+                },
                 'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
                     ->withIsCompleteCall(false)
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
             'compilation workflow complete' => [
+                'setup' => function () {
+                },
                 'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
                     ->withIsCompleteCall(true)
                     ->getMock(),
                 'expectedStateIsMutated' => true,
+            ],
+            'compilation workflow complete, job is already cancelled' => [
+                'setup' => function (JobStore $jobStore) {
+                    $job = $jobStore->getJob();
+                    $job->setState(Job::STATE_EXECUTION_CANCELLED);
+                    $jobStore->store($job);
+                },
+                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                    ->withIsCompleteCall(true)
+                    ->getMock(),
+                'expectedStateIsMutated' => false,
             ],
         ];
     }

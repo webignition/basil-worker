@@ -90,8 +90,8 @@ class JobStateMutator implements EventSubscriberInterface
     public function setExecutionComplete(): void
     {
         $this->conditionallySetState(
-            function (): bool {
-                return $this->executionWorkflowHandler->isComplete();
+            function (Job $job): bool {
+                return false === $job->isFinished() && $this->executionWorkflowHandler->isComplete();
             },
             Job::STATE_EXECUTION_COMPLETE
         );
