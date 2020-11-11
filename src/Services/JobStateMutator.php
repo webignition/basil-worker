@@ -39,7 +39,7 @@ class JobStateMutator implements EventSubscriberInterface
                 ['setCompilationFailed', 100],
             ],
             SourceCompileSuccessEvent::class => [
-                ['setExecutionAwaiting', 0],
+                ['setExecutionAwaiting', 50],
             ],
             TestExecuteCompleteEvent::class => [
                 ['setExecutionComplete', 100],
