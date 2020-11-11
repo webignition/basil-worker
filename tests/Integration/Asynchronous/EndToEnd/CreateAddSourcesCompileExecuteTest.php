@@ -8,9 +8,8 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
+use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
-use App\Tests\Model\EndToEndJob\PostAssertions;
-use App\Tests\Model\EndToEndJob\WaitUntil;
 use App\Tests\Services\SourceStoreInitializer;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
@@ -47,7 +46,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            new WaitUntil(
+            new Invokable(
                 function (Job $job, string $expectedJobEndState) {
                     $this->entityManager->refresh($job);
 
@@ -58,7 +57,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ]
             ),
             $expectedJobEndState,
-            new PostAssertions(
+            new Invokable(
                 function (array $expectedTestEndStates) {
                     $tests = $this->testRepository->findAll();
                     self::assertCount(count($expectedTestEndStates), $tests);

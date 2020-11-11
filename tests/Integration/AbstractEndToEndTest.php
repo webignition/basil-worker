@@ -6,9 +6,8 @@ namespace App\Tests\Integration;
 
 use App\Entity\Job;
 use App\Services\JobStore;
+use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
-use App\Tests\Model\EndToEndJob\PostAssertions;
-use App\Tests\Model\EndToEndJob\WaitUntil;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourceStoreInitializer;
@@ -56,9 +55,9 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected function doCreateJobAddSourcesTest(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        WaitUntil $waitUntil,
+        Invokable $waitUntil,
         string $expectedJobEndState,
-        PostAssertions $postAssertions
+        Invokable $postAssertions
     ) {
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
