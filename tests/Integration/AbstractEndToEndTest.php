@@ -84,6 +84,14 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         );
 
         self::assertSame($expectedJobEndState, $job->getState());
+
+        foreach ($postAssertions->getServiceReferences() as $serviceReference) {
+            $service = self::$container->get($serviceReference->getId());
+            if (null !== $service) {
+                $postAssertions->replaceServiceReference($serviceReference, $service);
+            }
+        }
+
         $postAssertions();
     }
 
