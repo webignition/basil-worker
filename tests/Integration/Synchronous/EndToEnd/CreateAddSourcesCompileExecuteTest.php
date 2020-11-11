@@ -196,6 +196,76 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     ),
                 ]),
             ],
+            'step failed' => [
+                'jobConfiguration' => new JobConfiguration(
+                    $label,
+                    $callbackUrl,
+                    getcwd() . '/tests/Fixtures/Manifest/manifest-step-failure.txt'
+                ),
+                'expectedSourcePaths' => [
+                    'Test/chrome-open-index-with-step-failure.yml',
+                ],
+                'expectedHttpTransactions' => $this->createHttpTransactionCollection([
+                    $this->createHttpTransaction(
+                        $this->createExpectedRequest($label, $callbackUrl, [
+                            'type' => 'test',
+                            'path' => 'Test/chrome-open-index-with-step-failure.yml',
+                            'config' => [
+                                'browser' => 'chrome',
+                                'url' => 'http://nginx/index.html',
+                            ],
+                        ]),
+                        new Response()
+                    ),
+                    $this->createHttpTransaction(
+                        $this->createExpectedRequest($label, $callbackUrl, [
+                            'type' => 'step',
+                            'name' => 'verify page is open',
+                            'status' => 'passed',
+                            'statements' => [
+                                [
+                                    'type' => 'assertion',
+                                    'source' => '$page.url is "http://nginx/index.html"',
+                                    'status' => 'passed',
+                                ],
+                            ],
+                        ]),
+                        new Response()
+                    ),
+                    $this->createHttpTransaction(
+                        $this->createExpectedRequest($label, $callbackUrl, [
+                            'type' => 'step',
+                            'name' => 'fail on intentionally-missing element',
+                            'status' => 'failed',
+                            'statements' => [
+                                [
+                                    'type' => 'assertion',
+                                    'source' => '$".non-existent" exists',
+                                    'status' => 'failed',
+                                    'summary' => [
+                                        'operator' => 'exists',
+                                        'source' => [
+                                            'type' => 'node',
+                                            'body' => [
+                                                'type' => 'element',
+                                                'identifier' => [
+                                                    'source' => '$".non-existent"',
+                                                    'properties' => [
+                                                        'type' => 'css',
+                                                        'locator' => '.non-existent',
+                                                        'position' => 1,
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ]),
+                        new Response()
+                    ),
+                ]),
+            ],
         ];
     }
 
