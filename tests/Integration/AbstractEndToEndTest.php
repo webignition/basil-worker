@@ -13,6 +13,7 @@ use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 {
@@ -52,13 +53,20 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $this->initializeSourceStore();
     }
 
+    /**
+     * @param JobConfiguration $jobConfiguration
+     * @param string[] $expectedSourcePaths
+     * @param Invokable $waitUntil
+     * @param Job::STATE_* $expectedJobEndState
+     * @param Invokable $postAssertions
+     */
     protected function doCreateJobAddSourcesTest(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
         Invokable $waitUntil,
         string $expectedJobEndState,
         Invokable $postAssertions
-    ) {
+    ): void {
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
         $job = $this->jobStore->getJob();
@@ -79,19 +87,20 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $postAssertions();
     }
 
-    protected function createJob(string $label, string $callbackUrl): JsonResponse
+    protected function createJob(string $label, string $callbackUrl): Response
     {
         $response = $this->clientRequestSender->createJob($label, $callbackUrl);
 
+        self::assertInstanceOf(JsonResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());
         self::assertTrue($this->jobStore->hasJob());
 
         return $response;
     }
 
-    protected function addJobSources(string $manifestPath): JsonResponse
+    protected function addJobSources(string $manifestPath): Response
     {
-        $manifestContent = file_get_contents($manifestPath);
+        $manifestContent = (string) file_get_contents($manifestPath);
         $sourcePaths = array_filter(explode("\n", $manifestContent));
 
         $response = $this->clientRequestSender->addJobSources(
@@ -99,6 +108,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
             $this->basilFixtureHandler->createUploadFileCollection($sourcePaths)
         );
 
+        self::assertInstanceOf(JsonResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());
 
         return $response;

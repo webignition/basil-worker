@@ -16,6 +16,10 @@ class Invokable
      */
     private array $arguments;
 
+    /**
+     * @param callable $callable
+     * @param array<mixed> $arguments
+     */
     public function __construct(callable $callable, array $arguments = [])
     {
         $this->callable = $callable;
