@@ -10,6 +10,7 @@ use App\Event\TestFailedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\TestTestFactory;
+use App\Tests\Services\TestTestRepository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest
@@ -17,6 +18,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     private TestCanceller $testCanceller;
     private TestTestFactory $testFactory;
     private EventDispatcherInterface $eventDispatcher;
+    private TestTestRepository $testTestRepository;
 
     protected function setUp(): void
     {
@@ -39,6 +41,12 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         if ($eventDispatcher instanceof EventDispatcherInterface) {
             $this->eventDispatcher = $eventDispatcher;
         }
+
+        $testTestRepository = self::$container->get(TestTestRepository::class);
+        self::assertInstanceOf(TestTestRepository::class, $testTestRepository);
+        if ($testTestRepository instanceof TestTestRepository) {
+            $this->testTestRepository = $testTestRepository;
+        }
     }
 
     /**
@@ -50,20 +58,12 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
      */
     public function testCancelAwaiting(callable $setup, array $expectedInitialStates, array $expectedStates)
     {
-        /** @var Test[] $tests */
-        $tests = $setup($this->testFactory);
-
-        foreach ($tests as $testIndex => $test) {
-            $expectedInitialState = $expectedInitialStates[$testIndex] ?? null;
-            self::assertSame($expectedInitialState, $test->getState());
-        }
+        $setup($this->testFactory);
+        self::assertSame($this->testTestRepository->getStates(), $expectedInitialStates);
 
         $this->testCanceller->cancelAwaiting();
 
-        foreach ($tests as $testIndex => $test) {
-            $expectedState = $expectedStates[$testIndex] ?? null;
-            self::assertSame($expectedState, $test->getState());
-        }
+        self::assertSame($this->testTestRepository->getStates(), $expectedStates);
     }
 
     public function cancelAwaitingDataProvider(): array
@@ -280,10 +280,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     ): void {
         /** @var Test[] $tests */
         $tests = $setup($this->testFactory);
-        foreach ($tests as $testIndex => $test) {
-            $expectedInitialState = $expectedInitialStates[$testIndex] ?? null;
-            self::assertSame($expectedInitialState, $test->getState());
-        }
+        self::assertSame($this->testTestRepository->getStates(), $expectedInitialStates);
 
         $test = $tests[0];
         self::assertInstanceOf(Test::class, $test);
@@ -291,10 +288,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         $event = new TestFailedEvent($test);
         $execute($event);
 
-        foreach ($tests as $testIndex => $test) {
-            $expectedState = $expectedStates[$testIndex] ?? null;
-            self::assertSame($expectedState, $test->getState());
-        }
+        self::assertSame($this->testTestRepository->getStates(), $expectedStates);
     }
 
     /**
