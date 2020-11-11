@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Job;
+use App\Entity\Test;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\TestTestRepository;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
@@ -25,18 +28,20 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
+     * @param string $expectedJobEndState
      * @param HttpTransactionCollection $expectedHttpTransactions
      */
     public function testCreateAddSourcesCompileExecute(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
+        string $expectedJobEndState,
         InvokableInterface $postAssertions
     ) {
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
             Invokable::createEmpty(),
-            Job::STATE_EXECUTION_COMPLETE,
+            $expectedJobEndState,
             $postAssertions
         );
     }
@@ -58,6 +63,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
+                'expectedJobEndState' => Job::STATE_EXECUTION_COMPLETE,
                 'postAssertions' => new Invokable(
                     function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
                         $transactions = $httpLogReader->getTransactions();
@@ -185,79 +191,97 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index-with-step-failure.yml',
+                    'Test/chrome-open-index.yml',
                 ],
-                'postAssertions' => new Invokable(
-                    function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
-                        $transactions = $httpLogReader->getTransactions();
-                        $httpLogReader->reset();
+                'expectedJobEndState' => Job::STATE_EXECUTION_CANCELLED,
+                'postAssertions' => new InvokableCollection([
+                    'verify http transactions' => new Invokable(
+                        function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
+                            $transactions = $httpLogReader->getTransactions();
+                            $httpLogReader->reset();
 
-                        self::assertCount(count($expectedHttpTransactions), $transactions);
-                        $this->assertTransactionCollectionsAreEquivalent($expectedHttpTransactions, $transactions);
-                    },
-                    [
-                        $this->createHttpTransactionCollection([
-                            $this->createHttpTransaction(
-                                $this->createExpectedRequest($label, $callbackUrl, [
-                                    'type' => 'test',
-                                    'path' => 'Test/chrome-open-index-with-step-failure.yml',
-                                    'config' => [
-                                        'browser' => 'chrome',
-                                        'url' => 'http://nginx/index.html',
-                                    ],
-                                ]),
-                                new Response()
-                            ),
-                            $this->createHttpTransaction(
-                                $this->createExpectedRequest($label, $callbackUrl, [
-                                    'type' => 'step',
-                                    'name' => 'verify page is open',
-                                    'status' => 'passed',
-                                    'statements' => [
-                                        [
-                                            'type' => 'assertion',
-                                            'source' => '$page.url is "http://nginx/index.html"',
-                                            'status' => 'passed',
+                            self::assertCount(count($expectedHttpTransactions), $transactions);
+                            $this->assertTransactionCollectionsAreEquivalent($expectedHttpTransactions, $transactions);
+                        },
+                        [
+                            $this->createHttpTransactionCollection([
+                                $this->createHttpTransaction(
+                                    $this->createExpectedRequest($label, $callbackUrl, [
+                                        'type' => 'test',
+                                        'path' => 'Test/chrome-open-index-with-step-failure.yml',
+                                        'config' => [
+                                            'browser' => 'chrome',
+                                            'url' => 'http://nginx/index.html',
                                         ],
-                                    ],
-                                ]),
-                                new Response()
-                            ),
-                            $this->createHttpTransaction(
-                                $this->createExpectedRequest($label, $callbackUrl, [
-                                    'type' => 'step',
-                                    'name' => 'fail on intentionally-missing element',
-                                    'status' => 'failed',
-                                    'statements' => [
-                                        [
-                                            'type' => 'assertion',
-                                            'source' => '$".non-existent" exists',
-                                            'status' => 'failed',
-                                            'summary' => [
-                                                'operator' => 'exists',
-                                                'source' => [
-                                                    'type' => 'node',
-                                                    'body' => [
-                                                        'type' => 'element',
-                                                        'identifier' => [
-                                                            'source' => '$".non-existent"',
-                                                            'properties' => [
-                                                                'type' => 'css',
-                                                                'locator' => '.non-existent',
-                                                                'position' => 1,
+                                    ]),
+                                    new Response()
+                                ),
+                                $this->createHttpTransaction(
+                                    $this->createExpectedRequest($label, $callbackUrl, [
+                                        'type' => 'step',
+                                        'name' => 'verify page is open',
+                                        'status' => 'passed',
+                                        'statements' => [
+                                            [
+                                                'type' => 'assertion',
+                                                'source' => '$page.url is "http://nginx/index.html"',
+                                                'status' => 'passed',
+                                            ],
+                                        ],
+                                    ]),
+                                    new Response()
+                                ),
+                                $this->createHttpTransaction(
+                                    $this->createExpectedRequest($label, $callbackUrl, [
+                                        'type' => 'step',
+                                        'name' => 'fail on intentionally-missing element',
+                                        'status' => 'failed',
+                                        'statements' => [
+                                            [
+                                                'type' => 'assertion',
+                                                'source' => '$".non-existent" exists',
+                                                'status' => 'failed',
+                                                'summary' => [
+                                                    'operator' => 'exists',
+                                                    'source' => [
+                                                        'type' => 'node',
+                                                        'body' => [
+                                                            'type' => 'element',
+                                                            'identifier' => [
+                                                                'source' => '$".non-existent"',
+                                                                'properties' => [
+                                                                    'type' => 'css',
+                                                                    'locator' => '.non-existent',
+                                                                    'position' => 1,
+                                                                ],
                                                             ],
                                                         ],
                                                     ],
                                                 ],
                                             ],
                                         ],
-                                    ],
-                                ]),
-                                new Response()
-                            ),
-                        ]),
-                        new ServiceReference(HttpLogReader::class),
-                    ]
-                ),
+                                    ]),
+                                    new Response()
+                                ),
+                            ]),
+                            new ServiceReference(HttpLogReader::class),
+                        ]
+                    ),
+                    'verify test states' => new Invokable(
+                        function (TestTestRepository $testTestRepository) {
+                            self::assertSame(
+                                $testTestRepository->getStates(),
+                                [
+                                    Test::STATE_FAILED,
+                                    Test::STATE_CANCELLED,
+                                ]
+                            );
+                        },
+                        [
+                            new ServiceReference(TestTestRepository::class),
+                        ]
+                    ),
+                ]),
             ],
         ];
     }

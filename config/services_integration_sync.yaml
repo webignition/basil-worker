@@ -55,3 +55,6 @@ services:
         public: true
         arguments:
             $path: '%kernel.project_dir%/%integration_http_log_path%'
+
+    App\Tests\Services\TestTestRepository:
+        public: true
