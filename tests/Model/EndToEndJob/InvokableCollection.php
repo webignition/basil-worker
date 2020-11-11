@@ -7,10 +7,13 @@ namespace App\Tests\Model\EndToEndJob;
 class InvokableCollection implements InvokableInterface
 {
     /**
-     * @var InvokableItemInterface
+     * @var InvokableItemInterface[]
      */
     private array $items = [];
 
+    /**
+     * @param array<mixed> $items
+     */
     public function __construct(array $items)
     {
         foreach ($items as $invokable) {

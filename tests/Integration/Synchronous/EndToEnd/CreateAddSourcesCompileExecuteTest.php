@@ -28,8 +28,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param string $expectedJobEndState
-     * @param HttpTransactionCollection $expectedHttpTransactions
+     * @param Job::STATE_* $expectedJobEndState
+     * @param InvokableInterface $postAssertions
      */
     public function testCreateAddSourcesCompileExecute(
         JobConfiguration $jobConfiguration,
