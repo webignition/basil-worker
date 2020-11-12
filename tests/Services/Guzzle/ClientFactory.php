@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Services\Integration;
+namespace App\Tests\Services\Guzzle;
 
 use GuzzleHttp\Client as GuzzleHttpClient;
 use GuzzleHttp\HandlerStack;
 
-class GuzzleClientFactory
+class ClientFactory
 {
     private GuzzleHttpClient $guzzleHttpClient;
 

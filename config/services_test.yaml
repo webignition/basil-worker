@@ -99,11 +99,11 @@ services:
         arguments:
             $handler: '@GuzzleHttp\Handler\MockHandler'
 
-    App\Tests\Services\Integration\GuzzleClientFactory: ~
+    App\Tests\Services\Guzzle\ClientFactory: ~
 
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
-        factory: [ '@App\Tests\Services\Integration\GuzzleClientFactory', 'get' ]
+        factory: [ '@App\Tests\Services\Guzzle\ClientFactory', 'get' ]
 
     App\Tests\Services\ClientRequestSender:
         public: true
