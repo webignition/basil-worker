@@ -35,10 +35,11 @@ services:
         arguments:
             $logger: '@app.tests.services.integration.httplogger'
 
-    App\Tests\Services\Integration\GuzzleMockHandlerFactory: ~
+    App\Tests\Services\Integration\GuzzleHandlerFactory: ~
 
-    TijmenWierenga\Guzzle\Mocking\MockHandler:
-        factory: [ '@App\Tests\Services\Integration\GuzzleMockHandlerFactory', 'create' ]
+    app.tests.services.guzzle.handler:
+        class: TijmenWierenga\Guzzle\Mocking\MockHandler
+        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerFactory', 'createAlwaysOkMockHandler' ]
 
     App\Tests\Services\Integration\HistoryMiddlewareFactory:
 
@@ -47,7 +48,7 @@ services:
     GuzzleHttp\HandlerStack:
         factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
         arguments:
-            $handler: '@TijmenWierenga\Guzzle\Mocking\MockHandler'
+            $handler: '@app.tests.services.guzzle.handler'
             $middlewareFactories:
                 - '@App\Tests\Services\Integration\HistoryMiddlewareFactory'
 

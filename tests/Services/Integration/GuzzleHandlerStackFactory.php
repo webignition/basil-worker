@@ -14,7 +14,7 @@ class GuzzleHandlerStackFactory
      *
      * @return HandlerStack
      */
-    public function create(callable $handler, array $middlewareFactories): HandlerStack
+    public function create(callable $handler, array $middlewareFactories = []): HandlerStack
     {
         $handlerStack = HandlerStack::create($handler);
 

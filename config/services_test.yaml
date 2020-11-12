@@ -86,13 +86,24 @@ services:
     App\Tests\Services\CallbackHttpResponseEventSubscriber:
         public: true
 
-    GuzzleHttp\Handler\MockHandler: ~
+    App\Tests\Services\Integration\GuzzleHandlerFactory: ~
 
-    App\Tests\Services\GuzzleClientFactory: ~
+    GuzzleHttp\Handler\MockHandler:
+        class: GuzzleHttp\Handler\MockHandler
+        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerFactory', 'createQueuingMockHandler' ]
+
+    App\Tests\Services\Integration\GuzzleHandlerStackFactory: ~
+
+    GuzzleHttp\HandlerStack:
+        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
+        arguments:
+            $handler: '@GuzzleHttp\Handler\MockHandler'
+
+    App\Tests\Services\Integration\GuzzleClientFactory: ~
 
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
-        factory: [ '@App\Tests\Services\GuzzleClientFactory', 'get' ]
+        factory: [ '@App\Tests\Services\Integration\GuzzleClientFactory', 'get' ]
 
     App\Tests\Services\ClientRequestSender:
         public: true
