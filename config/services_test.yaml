@@ -77,14 +77,10 @@ services:
     App\Tests\Services\CallbackHttpResponseEventSubscriber:
         public: true
 
-    GuzzleHttp\Handler\MockHandler:
-        class: GuzzleHttp\Handler\MockHandler
-        factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
-
     GuzzleHttp\HandlerStack:
         factory: [ '@App\Tests\Services\Guzzle\HandlerStackFactory', 'create' ]
         arguments:
-            $handler: '@GuzzleHttp\Handler\MockHandler'
+            $handler: '@app.tests.services.guzzle.handler.queuing'
 
     App\Tests\Services\TestTestFactory:
         public: true

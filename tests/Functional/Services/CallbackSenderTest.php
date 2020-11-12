@@ -34,7 +34,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
             $this->callbackSender = $callbackSender;
         }
 
-        $mockHandler = self::$container->get(MockHandler::class);
+        $mockHandler = self::$container->get('app.tests.services.guzzle.handler.queuing');
         if ($mockHandler instanceof MockHandler) {
             $this->mockHandler = $mockHandler;
         }
