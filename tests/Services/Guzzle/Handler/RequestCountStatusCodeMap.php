@@ -6,6 +6,9 @@ namespace App\Tests\Services\Guzzle\Handler;
 
 class RequestCountStatusCodeMap
 {
+    /**
+     * @var int[]
+     */
     private array $statusCodes = [];
 
     public function __construct(string $hostname)
