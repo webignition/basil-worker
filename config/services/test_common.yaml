@@ -1,0 +1,31 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Tests\Services\BasilFixtureHandler:
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/basil'
+            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+
+    App\Tests\Services\SourceStoreInitializer:
+        public: true
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
+    App\Tests\Services\UploadedFileFactory:
+        public: true
+
+    App\Tests\Services\Guzzle\HandlerFactory: ~
+
+    App\Tests\Services\Guzzle\HandlerStackFactory: ~
+
+    App\Tests\Services\Guzzle\ClientFactory: ~
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+        factory: [ '@App\Tests\Services\Guzzle\ClientFactory', 'get' ]
