@@ -10,7 +10,6 @@ use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
-use App\Tests\Services\SourceStoreInitializer;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 {
@@ -25,8 +24,6 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         if ($testRepository instanceof TestRepository) {
             $this->testRepository = $testRepository;
         }
-
-        $this->initializeSourceStore();
     }
 
     /**
@@ -97,14 +94,5 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
             ],
         ];
-    }
-
-    private function initializeSourceStore(): void
-    {
-        $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
-        self::assertInstanceOf(SourceStoreInitializer::class, $sourceStoreInitializer);
-        if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
-            $sourceStoreInitializer->initialize();
-        }
     }
 }
