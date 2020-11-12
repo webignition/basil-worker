@@ -92,10 +92,10 @@ services:
         class: GuzzleHttp\Handler\MockHandler
         factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
 
-    App\Tests\Services\Integration\GuzzleHandlerStackFactory: ~
+    App\Tests\Services\Guzzle\HandlerStackFactory: ~
 
     GuzzleHttp\HandlerStack:
-        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
+        factory: [ '@App\Tests\Services\Guzzle\HandlerStackFactory', 'create' ]
         arguments:
             $handler: '@GuzzleHttp\Handler\MockHandler'
 

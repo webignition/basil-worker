@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Services\Integration;
+namespace App\Tests\Services\Guzzle;
 
+use App\Tests\Services\Integration\MiddlewareFactoryInterface;
 use GuzzleHttp\HandlerStack;
 
-class GuzzleHandlerStackFactory
+class HandlerStackFactory
 {
     /**
      * @param callable $handler
