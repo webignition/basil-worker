@@ -41,7 +41,7 @@ services:
         class: TijmenWierenga\Guzzle\Mocking\MockHandler
         factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createAlwaysOkMockHandler' ]
 
-    App\Tests\Services\Integration\HistoryMiddlewareFactory:
+    App\Tests\Services\Guzzle\Middleware\Factory\HistoryMiddlewareFactory:
 
     App\Tests\Services\Guzzle\HandlerStackFactory: ~
 
@@ -50,7 +50,7 @@ services:
         arguments:
             $handler: '@app.tests.services.guzzle.handler'
             $middlewareFactories:
-                - '@App\Tests\Services\Integration\HistoryMiddlewareFactory'
+                - '@App\Tests\Services\Guzzle\Middleware\Factory\HistoryMiddlewareFactory'
 
     App\Tests\Services\Guzzle\ClientFactory: ~
 

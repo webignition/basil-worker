@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\Guzzle;
 
-use App\Tests\Services\Integration\MiddlewareFactoryInterface;
+use App\Tests\Services\Guzzle\Middleware\Factory\MiddlewareFactoryInterface;
 use GuzzleHttp\HandlerStack;
 
 class HandlerStackFactory
