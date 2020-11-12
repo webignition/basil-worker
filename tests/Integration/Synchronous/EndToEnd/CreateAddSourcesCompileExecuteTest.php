@@ -49,7 +49,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     public function createAddSourcesCompileExecuteDataProvider(): array
     {
         $label = md5('label content');
-        $callbackUrl = 'http://example.com/callback/1';
+        $callbackUrl = 'http://200.example.com/callback/1';
 
         return [
             'default' => [

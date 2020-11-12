@@ -533,9 +533,6 @@
     "theseer/tokenizer": {
         "version": "1.2.0"
     },
-    "tijmenwierenga/guzzle-mock-handler": {
-        "version": "v0.0.2"
-    },
     "webignition/basil-compiler-models": {
         "version": "0.14"
     },

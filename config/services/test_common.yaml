@@ -25,9 +25,8 @@ services:
         class: GuzzleHttp\Handler\MockHandler
         factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
 
-    app.tests.services.guzzle.handler.always_ok:
-        class: TijmenWierenga\Guzzle\Mocking\MockHandler
-        factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createAlwaysOkMockHandler' ]
+    app.tests.services.guzzle.handler.status_code_from_hostname:
+        class: App\Tests\Services\Guzzle\Handler\StatusCodeFromHostnameHandler
 
     App\Tests\Services\Guzzle\HandlerFactory: ~
 

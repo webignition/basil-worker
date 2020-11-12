@@ -77,7 +77,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
             'default' => [
                 'jobConfiguration' => new JobConfiguration(
                     md5('label content'),
-                    'http://example.com/callback',
+                    'http://200.example.com/callback',
                     getcwd() . '/tests/Fixtures/Manifest/manifest.txt'
                 ),
                 'expectedSourcePaths' => [

@@ -44,7 +44,6 @@
         "symfony/browser-kit": "5.1.*",
         "symfony/maker-bundle": "^1.21",
         "symplify/easy-coding-standard": "^8.3",
-        "tijmenwierenga/guzzle-mock-handler": "^0.0.2",
         "webignition/http-history-container": "^1.7",
         "webignition/object-reflector": "^0.2.0"
     },
