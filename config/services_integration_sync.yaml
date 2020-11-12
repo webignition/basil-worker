@@ -40,12 +40,16 @@ services:
     TijmenWierenga\Guzzle\Mocking\MockHandler:
         factory: [ '@App\Tests\Services\Integration\GuzzleMockHandlerFactory', 'create' ]
 
+    App\Tests\Services\Integration\HistoryMiddlewareFactory:
+
     App\Tests\Services\Integration\GuzzleHandlerStackFactory: ~
 
     GuzzleHttp\HandlerStack:
         factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
         arguments:
             $handler: '@TijmenWierenga\Guzzle\Mocking\MockHandler'
+            $middlewareFactories:
+                - '@App\Tests\Services\Integration\HistoryMiddlewareFactory'
 
     App\Tests\Services\Integration\GuzzleClientFactory: ~
 

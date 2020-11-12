@@ -5,18 +5,28 @@ declare(strict_types=1);
 namespace App\Tests\Services\Integration;
 
 use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Middleware;
-use webignition\HttpHistoryContainer\LoggableContainer;
 
 class GuzzleHandlerStackFactory
 {
-    public function create(callable $handler, LoggableContainer $historyContainer): HandlerStack
+    /**
+     * @param callable $handler
+     * @param MiddlewareFactoryInterface[] $middlewareFactories
+     *
+     * @return HandlerStack
+     */
+    public function create(callable $handler, array $middlewareFactories): HandlerStack
     {
         $handlerStack = HandlerStack::create($handler);
-        $handlerStack->push(
-            Middleware::history($historyContainer),
-            'history'
-        );
+
+        foreach ($middlewareFactories as $middlewareFactory) {
+            if ($middlewareFactory instanceof MiddlewareFactoryInterface) {
+                $arguments = $middlewareFactory->create();
+                $handlerStack->push(
+                    $arguments->getMiddleware(),
+                    $arguments->getName()
+                );
+            }
+        }
 
         return $handlerStack;
     }
