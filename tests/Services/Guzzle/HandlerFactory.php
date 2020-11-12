@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Services\Integration;
+namespace App\Tests\Services\Guzzle;
 
 use GuzzleHttp\Handler\MockHandler as QueuingMockHandler;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use TijmenWierenga\Guzzle\Mocking\MockHandler as ClosureMockHandler;
 
-class GuzzleHandlerFactory
+class HandlerFactory
 {
     public function createAlwaysOkMockHandler(): ClosureMockHandler
     {

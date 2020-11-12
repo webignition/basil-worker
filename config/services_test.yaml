@@ -86,11 +86,11 @@ services:
     App\Tests\Services\CallbackHttpResponseEventSubscriber:
         public: true
 
-    App\Tests\Services\Integration\GuzzleHandlerFactory: ~
+    App\Tests\Services\Guzzle\HandlerFactory: ~
 
     GuzzleHttp\Handler\MockHandler:
         class: GuzzleHttp\Handler\MockHandler
-        factory: [ '@App\Tests\Services\Integration\GuzzleHandlerFactory', 'createQueuingMockHandler' ]
+        factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
 
     App\Tests\Services\Integration\GuzzleHandlerStackFactory: ~
 
