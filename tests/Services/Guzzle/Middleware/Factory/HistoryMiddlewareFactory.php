@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Services\Guzzle\Middleware\Factory;
 
 use App\Tests\Services\Guzzle\Middleware\Factory\MiddlewareFactoryInterface;
-use App\Tests\Services\Integration\MiddlewareArguments;
+use App\Tests\Services\Guzzle\Middleware\MiddlewareArguments;
 use GuzzleHttp\Middleware;
 use webignition\HttpHistoryContainer\LoggableContainer;
 
