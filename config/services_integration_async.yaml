@@ -44,6 +44,8 @@ services:
 
     GuzzleHttp\HandlerStack:
         factory: [ '@App\Tests\Services\Integration\GuzzleHandlerStackFactory', 'create' ]
+        arguments:
+            $handler: '@TijmenWierenga\Guzzle\Mocking\MockHandler'
 
     App\Tests\Services\Integration\GuzzleClientFactory: ~
 
