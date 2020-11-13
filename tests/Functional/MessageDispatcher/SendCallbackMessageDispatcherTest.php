@@ -16,6 +16,7 @@ use App\Model\Callback\CallbackInterface;
 use App\Model\Callback\CompileFailure;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
@@ -28,6 +29,7 @@ use webignition\YamlDocument\Document;
 class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private SendCallbackMessageDispatcher $messageDispatcher;
     private InMemoryTransport $messengerTransport;
@@ -36,24 +38,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $messageDispatcher = self::$container->get(SendCallbackMessageDispatcher::class);
-        self::assertInstanceOf(SendCallbackMessageDispatcher::class, $messageDispatcher);
-        if ($messageDispatcher instanceof SendCallbackMessageDispatcher) {
-            $this->messageDispatcher = $messageDispatcher;
-        }
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
-        if ($messengerTransport instanceof InMemoryTransport) {
-            $this->messengerTransport = $messengerTransport;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     public function testDispatchForCallbackEvent()
