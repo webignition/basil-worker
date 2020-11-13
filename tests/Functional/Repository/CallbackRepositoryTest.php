@@ -27,7 +27,7 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     {
         self::assertNull($this->repository->find(0));
 
-        $callback = CallbackEntity::create('type', []);
+        $callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
         $this->store->store($callback);
 
         $retrievedCallback = $this->repository->find($callback->getId());

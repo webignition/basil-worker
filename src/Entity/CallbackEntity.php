@@ -17,6 +17,9 @@ class CallbackEntity
     public const STATE_FAILED = 'failed';
     public const STATE_COMPLETE = 'complete';
 
+    public const TYPE_COMPILE_FAILURE = 'compile-failure';
+    public const TYPE_EXECUTE_DOCUMENT_RECEIVED = 'execute-document-received';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -38,6 +41,8 @@ class CallbackEntity
 
     /**
      * @ORM\Column(type="string", length=255)
+     *
+     * @var CallbackEntity::TYPE_*
      */
     private string $type;
 
@@ -49,7 +54,7 @@ class CallbackEntity
     private array $payload;
 
     /**
-     * @param string $type
+     * @param CallbackEntity::TYPE_* $type
      * @param array<mixed> $payload
      *
      * @return self

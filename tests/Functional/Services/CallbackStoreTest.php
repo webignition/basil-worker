@@ -29,7 +29,7 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
 
         self::assertCount(0, $callbackRepository->findAll());
 
-        $type = 'type';
+        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
         $payload = [
             'key1' => 'value1',
             'key2' => 'value2',
