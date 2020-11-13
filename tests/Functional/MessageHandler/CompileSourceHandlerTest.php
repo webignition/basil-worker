@@ -10,6 +10,7 @@ use App\MessageHandler\CompileSourceHandler;
 use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
@@ -23,17 +24,14 @@ use webignition\ObjectReflector\ObjectReflector;
 class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private CompileSourceHandler $handler;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $handler = self::$container->get(CompileSourceHandler::class);
-        if ($handler instanceof CompileSourceHandler) {
-            $this->handler = $handler;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $jobStore = self::$container->get(JobStore::class);
         if ($jobStore instanceof JobStore) {

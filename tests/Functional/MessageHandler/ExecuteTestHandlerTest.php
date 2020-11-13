@@ -11,6 +11,7 @@ use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Services\MockTestExecutor;
 use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -19,6 +20,7 @@ use webignition\ObjectReflector\ObjectReflector;
 class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private ExecuteTestHandler $handler;
     private Job $job;
@@ -27,13 +29,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $handler = self::$container->get(ExecuteTestHandler::class);
-        self::assertInstanceOf(ExecuteTestHandler::class, $handler);
-
-        if ($handler instanceof ExecuteTestHandler) {
-            $this->handler = $handler;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
