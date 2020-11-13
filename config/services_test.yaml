@@ -68,6 +68,9 @@ services:
     App\Services\TestCanceller:
         public: true
 
+    App\Services\CallbackStore:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
