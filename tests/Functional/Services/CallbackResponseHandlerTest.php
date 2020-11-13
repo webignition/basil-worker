@@ -33,31 +33,6 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
     }
 
-    /**
-     * @dataProvider handleResponseNoEventDispatchedDataProvider
-     */
-    public function testHandleResponseNoEventDispatched(CallbackInterface $callback, ResponseInterface $response)
-    {
-        $this->callbackResponseHandler->handleResponse($callback, $response);
-
-        self::assertNull($this->exceptionEventSubscriber->getEvent());
-        self::assertNull($this->responseEventSubscriber->getEvent());
-    }
-
-    public function handleResponseNoEventDispatchedDataProvider(): array
-    {
-        $dataSets = [];
-
-        for ($statusCode = 100; $statusCode < 300; $statusCode++) {
-            $dataSets[(string) $statusCode] = [
-                'callback' => new TestCallback(),
-                'response' => new Response($statusCode),
-            ];
-        }
-
-        return $dataSets;
-    }
-
     public function testHandleResponseEventDispatched()
     {
         $response = new Response(404);
