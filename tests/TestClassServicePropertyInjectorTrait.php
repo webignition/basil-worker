@@ -24,11 +24,7 @@ trait TestClassServicePropertyInjectorTrait
                 $propertyName = $property->getName();
 
                 if (self::$container->has($typeClass)) {
-                    $service = self::$container->get($typeClass);
-
-                    if ($service instanceof $typeClass) {
-                        $this->{$propertyName} = $service;
-                    }
+                    $this->{$propertyName} = self::$container->get($typeClass);
                 }
             }
         }
