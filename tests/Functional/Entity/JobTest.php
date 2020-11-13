@@ -6,19 +6,18 @@ namespace App\Tests\Functional\Entity;
 
 use App\Entity\Job;
 use App\Services\JobStore;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 
 class JobTest extends AbstractEntityTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private JobStore $jobStore;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $jobStore = self::$container->get(JobStore::class);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**
