@@ -13,7 +13,7 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;

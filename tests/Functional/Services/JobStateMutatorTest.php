@@ -17,7 +17,7 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;

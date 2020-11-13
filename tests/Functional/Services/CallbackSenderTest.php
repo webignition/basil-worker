@@ -8,7 +8,7 @@ use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;

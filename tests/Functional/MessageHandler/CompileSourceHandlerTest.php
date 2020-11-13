@@ -10,7 +10,7 @@ use App\MessageHandler\CompileSourceHandler;
 use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;

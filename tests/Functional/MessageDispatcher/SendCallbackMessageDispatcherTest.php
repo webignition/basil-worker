@@ -16,7 +16,7 @@ use App\Model\Callback\CallbackInterface;
 use App\Model\Callback\CompileFailure;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;

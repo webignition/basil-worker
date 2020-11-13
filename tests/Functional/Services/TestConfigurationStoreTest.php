@@ -7,7 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Entity\TestConfiguration;
 use App\Services\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 
 class TestConfigurationStoreTest extends AbstractBaseFunctionalTest
 {

@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Entity;
 
 use App\Entity\Job;
 use App\Services\JobStore;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 
 class JobTest extends AbstractEntityTest
 {

@@ -9,7 +9,7 @@ use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Model\TestCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;

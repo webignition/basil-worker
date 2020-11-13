@@ -7,7 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Job;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 
 class JobStoreTest extends AbstractBaseFunctionalTest

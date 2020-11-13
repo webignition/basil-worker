@@ -9,7 +9,7 @@ use App\Event\SourcesAddedEvent;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourcesAddedEventSubscriber;

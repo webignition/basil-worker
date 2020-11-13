@@ -13,7 +13,7 @@ use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 
 class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest

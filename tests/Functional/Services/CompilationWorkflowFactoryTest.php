@@ -9,7 +9,7 @@ use App\Model\Workflow\CompilationWorkflow;
 use App\Services\CompilationWorkflowFactory;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 
 class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
