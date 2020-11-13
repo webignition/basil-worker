@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\CallbackEntity;
+use App\Entity\CallbackEntityInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 class CallbackStore
@@ -16,7 +16,7 @@ class CallbackStore
         $this->entityManager = $entityManager;
     }
 
-    public function store(CallbackEntity $callback): CallbackEntity
+    public function store(CallbackEntityInterface $callback): CallbackEntityInterface
     {
         $this->entityManager->persist($callback);
         $this->entityManager->flush();

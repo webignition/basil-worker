@@ -42,7 +42,7 @@ abstract class AbstractCallbackEntityWrapper implements CallbackEntityWrapperInt
 
     public function getType(): string
     {
-        return CallbackEntityInterface::TYPE_COMPILE_FAILURE;
+        return $this->entity->getType();
     }
 
     public function getPayload(): array
