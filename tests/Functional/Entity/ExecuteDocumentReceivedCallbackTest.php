@@ -4,17 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Entity;
 
-use App\Entity\CallbackEntity;
-use App\Services\TestConfigurationStore;
+use App\Entity\CallbackEntityInterface;
+use App\Entity\ExecuteDocumentReceivedCallback;
+use Symfony\Component\Yaml\Yaml;
+use webignition\YamlDocument\Document;
 
-class CallbackEntityTest extends AbstractEntityTest
+class ExecuteDocumentReceivedCallbackTest extends AbstractEntityTest
 {
     public function testCreate()
     {
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
-
-        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
         $payload = [
             'key1' => 'value1',
             'key2' => [
@@ -23,11 +21,13 @@ class CallbackEntityTest extends AbstractEntityTest
             ],
         ];
 
-        $callback = CallbackEntity::create($type, $payload);
+        $document = new Document(Yaml::dump($payload));
+        $callback = ExecuteDocumentReceivedCallback::create($document);
+
         self::assertNull($callback->getId());
-        self::assertSame(CallbackEntity::STATE_AWAITING, $callback->getState());
+        self::assertSame(CallbackEntityInterface::STATE_AWAITING, $callback->getState());
         self::assertSame(0, $callback->getRetryCount());
-        self::assertSame($type, $callback->getType());
+        self::assertSame(CallbackEntityInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED, $callback->getType());
         self::assertSame($payload, $callback->getPayload());
 
         $this->entityManager->persist($callback);
