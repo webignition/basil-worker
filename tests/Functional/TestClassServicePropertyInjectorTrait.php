@@ -14,7 +14,7 @@ trait TestClassServicePropertyInjectorTrait
         );
 
         $properties = array_filter($properties, function (\ReflectionProperty $property) {
-            return $property->getDeclaringClass()->getName() === self::class;
+            return $property->getType() instanceof \ReflectionNamedType;
         });
 
         foreach ($properties as $property) {
