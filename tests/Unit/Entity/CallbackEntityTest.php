@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\ExecuteDocumentReceivedCallback;
+use App\Entity\CallbackEntity;
 use PHPUnit\Framework\TestCase;
-use webignition\YamlDocument\Document;
 
 class CallbackEntityTest extends TestCase
 {
     public function testIncrementRetryCount()
     {
-        $callback = ExecuteDocumentReceivedCallback::create(new Document(''));
+        $callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
         self::assertSame(0, $callback->getRetryCount());
 
         $callback->incrementRetryCount();

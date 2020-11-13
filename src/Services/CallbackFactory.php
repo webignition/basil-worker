@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\CallbackEntityInterface;
-use App\Entity\CompileFailureCallback;
-use App\Entity\ExecuteDocumentReceivedCallback;
+use App\Entity\CallbackEntity;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\YamlDocument\Document;
 
@@ -19,17 +17,29 @@ class CallbackFactory
         $this->callbackStore = $callbackStore;
     }
 
-    public function createForCompileFailure(ErrorOutputInterface $errorOutput): CallbackEntityInterface
+    public function createForCompileFailure(ErrorOutputInterface $errorOutput): CallbackEntity
     {
-        $callback = CompileFailureCallback::create($errorOutput);
-
-        return $this->callbackStore->store($callback);
+        return $this->create(CallbackEntity::TYPE_COMPILE_FAILURE, $errorOutput->getData());
     }
 
-    public function createForExecuteDocumentReceived(Document $document): CallbackEntityInterface
+    public function createForExecuteDocumentReceived(Document $document): CallbackEntity
     {
-        $callback = ExecuteDocumentReceivedCallback::create($document);
+        $documentData = $document->parse();
+        $documentData = is_array($documentData) ? $documentData : [];
 
-        return $this->callbackStore->store($callback);
+        return $this->create(CallbackEntity::TYPE_EXECUTE_DOCUMENT_RECEIVED, $documentData);
+    }
+
+    /**
+     * @param CallbackEntity::TYPE_* $type
+     * @param array<mixed> $payload
+     *
+     * @return CallbackEntity
+     */
+    private function create(string $type, array $payload): CallbackEntity
+    {
+        return $this->callbackStore->store(
+            CallbackEntity::create($type, $payload)
+        );
     }
 }
