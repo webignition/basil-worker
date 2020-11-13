@@ -8,7 +8,6 @@ use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
@@ -19,6 +18,7 @@ use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\OutputInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
 {

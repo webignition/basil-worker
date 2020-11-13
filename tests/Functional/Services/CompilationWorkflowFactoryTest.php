@@ -9,8 +9,8 @@ use App\Model\Workflow\CompilationWorkflow;
 use App\Services\CompilationWorkflowFactory;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {

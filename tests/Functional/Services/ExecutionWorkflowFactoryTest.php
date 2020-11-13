@@ -13,8 +13,8 @@ use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {

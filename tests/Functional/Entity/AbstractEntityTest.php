@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use Doctrine\ORM\EntityManagerInterface;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 abstract class AbstractEntityTest extends AbstractBaseFunctionalTest
 {

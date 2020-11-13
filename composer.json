@@ -45,7 +45,8 @@
         "symfony/maker-bundle": "^1.21",
         "symplify/easy-coding-standard": "^8.3",
         "webignition/http-history-container": "^1.7",
-        "webignition/object-reflector": "^0.2.0"
+        "webignition/object-reflector": "^0.2.0",
+        "webignition/symfony-test-service-injector-trait": "^0.1.0"
     },
     "config": {
         "optimize-autoloader": true,

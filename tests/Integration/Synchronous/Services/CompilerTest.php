@@ -6,9 +6,9 @@ namespace App\Tests\Integration\Synchronous\Services;
 
 use App\Services\Compiler;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\TcpCliProxyClient\Client;
 
 class CompilerTest extends AbstractBaseIntegrationTest

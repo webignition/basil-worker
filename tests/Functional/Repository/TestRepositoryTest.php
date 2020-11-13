@@ -9,9 +9,9 @@ use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use App\Services\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class TestRepositoryTest extends AbstractBaseFunctionalTest
 {

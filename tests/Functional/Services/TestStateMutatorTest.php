@@ -11,9 +11,9 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
 
 class TestStateMutatorTest extends AbstractBaseFunctionalTest

@@ -11,11 +11,11 @@ use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Services\MockTestExecutor;
 use App\Tests\Services\TestTestFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
 {

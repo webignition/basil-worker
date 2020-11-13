@@ -10,7 +10,6 @@ use App\MessageHandler\CompileSourceHandler;
 use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
@@ -20,6 +19,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 {

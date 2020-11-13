@@ -8,10 +8,10 @@ use App\Entity\Job;
 use App\Entity\TestConfiguration;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\TestTestFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
 {

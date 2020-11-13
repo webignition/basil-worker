@@ -12,10 +12,10 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use Symfony\Component\Yaml\Yaml;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\TcpCliProxyClient\Client;
 use webignition\YamlDocument\Document;
 

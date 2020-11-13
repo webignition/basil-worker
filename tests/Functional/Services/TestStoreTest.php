@@ -9,8 +9,8 @@ use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class TestStoreTest extends AbstractBaseFunctionalTest
 {

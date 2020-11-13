@@ -9,10 +9,10 @@ use App\Entity\TestConfiguration;
 use App\Event\TestFailedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 use App\Tests\Services\TestTestRepository;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest
 {

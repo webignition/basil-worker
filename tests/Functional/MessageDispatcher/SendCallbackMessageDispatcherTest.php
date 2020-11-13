@@ -16,7 +16,6 @@ use App\Model\Callback\CallbackInterface;
 use App\Model\Callback\CompileFailure;
 use App\Model\Callback\ExecuteDocumentReceived;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\TestClassServicePropertyInjectorTrait;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
@@ -24,6 +23,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
 
 class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest

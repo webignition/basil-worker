@@ -10,7 +10,7 @@ use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
-use App\Tests\TestClassServicePropertyInjectorTrait;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 {
