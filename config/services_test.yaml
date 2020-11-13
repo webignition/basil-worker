@@ -74,6 +74,9 @@ services:
     App\Services\CallbackStateMutator:
         public: true
 
+    App\Repository\CallbackRepository:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
