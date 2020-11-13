@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\CallbackEntity;
+use App\Model\Callback\CallbackModelInterface;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -29,7 +30,7 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
 
         self::assertCount(0, $callbackRepository->findAll());
 
-        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
+        $type = CallbackModelInterface::TYPE_COMPILE_FAILURE;
         $payload = [
             'key1' => 'value1',
             'key2' => 'value2',
@@ -41,9 +42,9 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
         $this->callbackStore->store($callback);
         self::assertNotNull($callback->getId());
 
-        self::assertSame(CallbackEntity::STATE_AWAITING, $callback->getState());
+        self::assertSame(CallbackModelInterface::STATE_AWAITING, $callback->getState());
 
-        $callback->setState(CallbackEntity::STATE_QUEUED);
+        $callback->setState(CallbackModelInterface::STATE_QUEUED);
         $this->callbackStore->store($callback);
 
         $retrievedCallback = $callbackRepository->find($callback->getId());

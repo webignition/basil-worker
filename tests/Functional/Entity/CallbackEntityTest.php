@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\CallbackEntity;
+use App\Model\Callback\CallbackModelInterface;
 use App\Services\TestConfigurationStore;
 
 class CallbackEntityTest extends AbstractEntityTest
@@ -14,7 +15,7 @@ class CallbackEntityTest extends AbstractEntityTest
         $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
         self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
 
-        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
+        $type = CallbackModelInterface::TYPE_COMPILE_FAILURE;
         $payload = [
             'key1' => 'value1',
             'key2' => [
@@ -25,7 +26,7 @@ class CallbackEntityTest extends AbstractEntityTest
 
         $callback = CallbackEntity::create($type, $payload);
         self::assertNull($callback->getId());
-        self::assertSame(CallbackEntity::STATE_AWAITING, $callback->getState());
+        self::assertSame(CallbackModelInterface::STATE_AWAITING, $callback->getState());
         self::assertSame(0, $callback->getRetryCount());
         self::assertSame($type, $callback->getType());
         self::assertSame($payload, $callback->getPayload());
