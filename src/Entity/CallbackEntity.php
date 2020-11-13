@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class Callback
+class CallbackEntity
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_QUEUED = 'queued';
@@ -27,7 +27,7 @@ class Callback
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @var Callback::STATE_*
+     * @var CallbackEntity::STATE_*
      */
     private string $state;
 
@@ -56,7 +56,7 @@ class Callback
      */
     public static function create(string $type, array $payload): self
     {
-        $callback = new Callback();
+        $callback = new CallbackEntity();
         $callback->state = self::STATE_AWAITING;
         $callback->retryCount = 0;
         $callback->type = $type;
@@ -71,7 +71,7 @@ class Callback
     }
 
     /**
-     * @return Callback::STATE_*
+     * @return CallbackEntity::STATE_*
      */
     public function getState(): string
     {
@@ -79,7 +79,7 @@ class Callback
     }
 
     /**
-     * @param Callback::STATE_* $state
+     * @param CallbackEntity::STATE_* $state
      */
     public function setState(string $state): void
     {

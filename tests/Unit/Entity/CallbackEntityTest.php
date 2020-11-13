@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\Callback;
+use App\Entity\CallbackEntity;
 use PHPUnit\Framework\TestCase;
 
-class CallbackTest extends TestCase
+class CallbackEntityTest extends TestCase
 {
     public function testIncrementRetryCount()
     {
-        $callback = Callback::create('type', []);
+        $callback = CallbackEntity::create('type', []);
         self::assertSame(0, $callback->getRetryCount());
 
         $callback->incrementRetryCount();

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Entity;
 
-use App\Entity\Callback;
+use App\Entity\CallbackEntity;
 use App\Services\TestConfigurationStore;
 
-class CallbackTest extends AbstractEntityTest
+class CallbackEntityTest extends AbstractEntityTest
 {
     public function testCreate()
     {
@@ -23,9 +23,9 @@ class CallbackTest extends AbstractEntityTest
             ],
         ];
 
-        $callback = Callback::create($type, $payload);
+        $callback = CallbackEntity::create($type, $payload);
         self::assertNull($callback->getId());
-        self::assertSame(Callback::STATE_AWAITING, $callback->getState());
+        self::assertSame(CallbackEntity::STATE_AWAITING, $callback->getState());
         self::assertSame(0, $callback->getRetryCount());
         self::assertSame($type, $callback->getType());
         self::assertSame($payload, $callback->getPayload());

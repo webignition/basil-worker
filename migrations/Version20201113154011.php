@@ -17,7 +17,7 @@ final class Version20201113154011 extends AbstractMigration
     public function up(Schema $schema): void
     {
         $this->addSql('
-            CREATE TABLE callback (
+            CREATE TABLE callback_entity (
                 id SERIAL NOT NULL, 
                 state VARCHAR(255) NOT NULL,
                 retry_count SMALLINT NOT NULL, 
