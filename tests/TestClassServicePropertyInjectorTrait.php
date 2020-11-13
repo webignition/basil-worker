@@ -6,7 +6,7 @@ namespace App\Tests;
 
 trait TestClassServicePropertyInjectorTrait
 {
-    protected function injectContainerServicesIntoClassProperties()
+    protected function injectContainerServicesIntoClassProperties(): void
     {
         $reflectionClass = new \ReflectionClass($this);
         $properties = $reflectionClass->getProperties(
