@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\CallbackEntityInterface;
-use App\Entity\CompileFailureCallback;
-use App\Entity\ExecuteDocumentReceivedCallback;
+use App\Entity\CallbackEntity;
 use App\Repository\CallbackRepository;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use Symfony\Component\Yaml\Yaml;
-use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
-use webignition\YamlDocument\Document;
 
 class CallbackRepositoryTest extends AbstractBaseFunctionalTest
 {
@@ -28,30 +23,11 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
     }
 
-    public function testFindCompileFailureCallback()
+    public function testFind()
     {
-        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
-        $errorOutput
-            ->shouldReceive('getData')
-            ->andReturn([]);
+        self::assertNull($this->repository->find(0));
 
-        $callback = CompileFailureCallback::create($errorOutput);
-
-        $this->doFindEntity($callback);
-    }
-
-    public function testFindExecuteDocumentReceivedCallback()
-    {
-        $document = new Document(Yaml::dump([]));
-        $callback = ExecuteDocumentReceivedCallback::create($document);
-
-        $this->doFindEntity($callback);
-    }
-
-    private function doFindEntity(CallbackEntityInterface $callback): void
-    {
-        self::assertNull($this->repository->find((int) $callback->getId()));
-
+        $callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
         $this->store->store($callback);
 
         $retrievedCallback = $this->repository->find($callback->getId());

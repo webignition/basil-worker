@@ -5,13 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\CallbackEntity;
-use App\Entity\CallbackEntityInterface;
-use App\Entity\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
-use webignition\YamlDocument\Document;
 
 class CallbackStoreTest extends AbstractBaseFunctionalTest
 {
@@ -32,16 +29,21 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
 
         self::assertCount(0, $callbackRepository->findAll());
 
-        $callback = ExecuteDocumentReceivedCallback::create(new Document('[]'));
+        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
+        $payload = [
+            'key1' => 'value1',
+            'key2' => 'value2',
+        ];
 
+        $callback = CallbackEntity::create($type, $payload);
         self::assertNull($callback->getId());
 
         $this->callbackStore->store($callback);
         self::assertNotNull($callback->getId());
 
-        self::assertSame(CallbackEntityInterface::STATE_AWAITING, $callback->getState());
+        self::assertSame(CallbackEntity::STATE_AWAITING, $callback->getState());
 
-        $callback->setState(CallbackEntityInterface::STATE_QUEUED);
+        $callback->setState(CallbackEntity::STATE_QUEUED);
         $this->callbackStore->store($callback);
 
         $retrievedCallback = $callbackRepository->find($callback->getId());

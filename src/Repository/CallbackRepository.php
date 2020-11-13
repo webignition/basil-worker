@@ -3,16 +3,15 @@
 namespace App\Repository;
 
 use App\Entity\CallbackEntity;
-use App\Entity\CallbackEntityInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method CallbackEntityInterface|null find($id, $lockMode = null, $lockVersion = null)
- * @method CallbackEntityInterface|null findOneBy(array $criteria, array $orderBy = null)
- * @method CallbackEntityInterface[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CallbackEntity|null find($id, $lockMode = null, $lockVersion = null)
+ * @method CallbackEntity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CallbackEntity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *
- * @extends ServiceEntityRepository<CallbackEntityInterface>
+ * @extends ServiceEntityRepository<CallbackEntity>
  */
 class CallbackRepository extends ServiceEntityRepository
 {
