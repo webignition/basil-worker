@@ -8,6 +8,7 @@ use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
@@ -22,17 +23,19 @@ use webignition\ObjectReflector\ObjectReflector;
 class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private SourceCompileEventDispatcher $dispatcher;
 
     protected function setUp(): void
     {
         parent::setUp();
+        $this->injectContainerServicesIntoClassProperties();
 
-        $dispatcher = self::$container->get(SourceCompileEventDispatcher::class);
-        if ($dispatcher instanceof SourceCompileEventDispatcher) {
-            $this->dispatcher = $dispatcher;
-        }
+//        $dispatcher = self::$container->get(SourceCompileEventDispatcher::class);
+//        if ($dispatcher instanceof SourceCompileEventDispatcher) {
+//            $this->dispatcher = $dispatcher;
+//        }
     }
 
     public function testDispatchEventNotDispatched()

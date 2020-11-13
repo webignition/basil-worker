@@ -8,10 +8,13 @@ use App\Entity\TestConfiguration;
 use App\Services\JobSourceFinder;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 
 class JobSourceFinderTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private JobSourceFinder $jobSourceFinder;
     private JobStore $jobStore;
     private TestTestFactory $testFactory;
@@ -19,24 +22,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $jobSourceFinder = self::$container->get(JobSourceFinder::class);
-        self::assertInstanceOf(JobSourceFinder::class, $jobSourceFinder);
-        if ($jobSourceFinder instanceof JobSourceFinder) {
-            $this->jobSourceFinder = $jobSourceFinder;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**

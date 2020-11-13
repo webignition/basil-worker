@@ -10,6 +10,7 @@ use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Repository\TestRepository;
 use App\Services\TestFactory;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
@@ -18,6 +19,8 @@ use webignition\BasilModels\Test\Configuration;
 
 class TestFactoryTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestFactory $factory;
     private EventDispatcherInterface $eventDispatcher;
     private TestRepository $testRepository;
@@ -35,24 +38,7 @@ class TestFactoryTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $factory = self::$container->get(TestFactory::class);
-        self::assertInstanceOf(TestFactory::class, $factory);
-        if ($factory instanceof TestFactory) {
-            $this->factory = $factory;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
-
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-        if ($testRepository instanceof TestRepository) {
-            $this->testRepository = $testRepository;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $this->testManifests = [
             'chrome' => new TestManifest(

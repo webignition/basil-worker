@@ -11,12 +11,15 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\YamlDocument\Document;
 
 class TestStateMutatorTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestStateMutator $mutator;
     private EventDispatcherInterface $eventDispatcher;
     private Test $test;
@@ -25,12 +28,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $mutator = self::$container->get(TestStateMutator::class);
-        self::assertInstanceOf(TestStateMutator::class, $mutator);
-        if ($mutator instanceof TestStateMutator) {
-            $this->mutator = $mutator;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $testFactory = self::$container->get(TestTestFactory::class);
         self::assertInstanceOf(TestTestFactory::class, $testFactory);
@@ -41,18 +39,6 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
                 '/app/tests/GeneratedTest.php',
                 1
             );
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
-
-        $testStore = self::$container->get(TestStore::class);
-        self::assertInstanceOf(TestStore::class, $testStore);
-        if ($testStore instanceof TestStore) {
-            $this->testStore = $testStore;
         }
     }
 

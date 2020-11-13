@@ -13,6 +13,7 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -21,6 +22,8 @@ use Symfony\Component\Messenger\Transport\InMemoryTransport;
 
 class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private ExecutionWorkflowHandler $handler;
     private InMemoryTransport $messengerTransport;
     private TestTestFactory $testFactory;
@@ -31,43 +34,9 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
+        $this->injectContainerServicesIntoClassProperties();
 
-        $handler = self::$container->get(ExecutionWorkflowHandler::class);
-        self::assertInstanceOf(ExecutionWorkflowHandler::class, $handler);
-        if ($handler instanceof ExecutionWorkflowHandler) {
-            $this->handler = $handler;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $jobStore->create('label content', 'http://example.com/callback');
-            $this->jobStore = $jobStore;
-        }
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        self::assertInstanceOf(InMemoryTransport::class, $messengerTransport);
-        if ($messengerTransport instanceof InMemoryTransport) {
-            $this->messengerTransport = $messengerTransport;
-        }
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-        }
-
-        $testStateMutator = self::$container->get(TestStateMutator::class);
-        self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
-        if ($testStateMutator instanceof TestStateMutator) {
-            $this->testStateMutator = $testStateMutator;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
+        $this->jobStore->create('label content', 'http://example.com/callback');
     }
 
     public function testDispatchNextExecuteTestMessageNoMessageDispatched()

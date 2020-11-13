@@ -7,21 +7,18 @@ namespace App\Tests\Functional\Services;
 use App\Entity\TestConfiguration;
 use App\Services\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 
 class TestConfigurationStoreTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestConfigurationStore $store;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $store = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $store);
-
-        if ($store instanceof TestConfigurationStore) {
-            $this->store = $store;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     public function testFind()

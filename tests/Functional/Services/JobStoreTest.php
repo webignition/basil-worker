@@ -7,21 +7,19 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Job;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 
 class JobStoreTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private JobStore $store;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $store = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $store);
-        if ($store instanceof JobStore) {
-            $this->store = $store;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         self::assertFalse($this->store->hasJob());
     }

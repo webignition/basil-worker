@@ -9,10 +9,13 @@ use App\Model\Workflow\CompilationWorkflow;
 use App\Services\CompilationWorkflowFactory;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 
 class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private CompilationWorkflowFactory $compilationWorkflowFactory;
     private JobStore $jobStore;
     private TestTestFactory $testFactory;
@@ -20,24 +23,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $compilationWorkflowFactory = self::$container->get(CompilationWorkflowFactory::class);
-        self::assertInstanceOf(CompilationWorkflowFactory::class, $compilationWorkflowFactory);
-        if ($compilationWorkflowFactory instanceof CompilationWorkflowFactory) {
-            $this->compilationWorkflowFactory = $compilationWorkflowFactory;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**

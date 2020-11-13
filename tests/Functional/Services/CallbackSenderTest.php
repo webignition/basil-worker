@@ -8,6 +8,7 @@ use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
@@ -21,6 +22,7 @@ use webignition\ObjectReflector\ObjectReflector;
 class CallbackSenderTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private CallbackSender $callbackSender;
     private MockHandler $mockHandler;
@@ -28,11 +30,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $callbackSender = self::$container->get(CallbackSender::class);
-        if ($callbackSender instanceof CallbackSender) {
-            $this->callbackSender = $callbackSender;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $mockHandler = self::$container->get('app.tests.services.guzzle.handler.queuing');
         if ($mockHandler instanceof MockHandler) {

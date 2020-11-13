@@ -11,6 +11,7 @@ use App\Message\CompileSource;
 use App\Services\CompilationWorkflowHandler;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -20,6 +21,8 @@ use Symfony\Contracts\EventDispatcher\Event;
 
 class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private CompilationWorkflowHandler $handler;
     private JobStore $jobStore;
     private InMemoryTransport $messengerTransport;
@@ -29,34 +32,9 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
+        $this->injectContainerServicesIntoClassProperties();
 
-        $handler = self::$container->get(CompilationWorkflowHandler::class);
-        if ($handler instanceof CompilationWorkflowHandler) {
-            $this->handler = $handler;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        if ($jobStore instanceof JobStore) {
-            $jobStore->create('label content', 'http://example.com/callback');
-            $this->jobStore = $jobStore;
-        }
-
-        $messengerTransport = self::$container->get('messenger.transport.async');
-        if ($messengerTransport instanceof InMemoryTransport) {
-            $this->messengerTransport = $messengerTransport;
-        }
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
+        $this->jobStore->create('label content', 'http://example.com/callback');
     }
 
     /**

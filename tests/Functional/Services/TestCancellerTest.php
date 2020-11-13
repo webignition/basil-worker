@@ -9,12 +9,15 @@ use App\Entity\TestConfiguration;
 use App\Event\TestFailedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 use App\Tests\Services\TestTestRepository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestCanceller $testCanceller;
     private TestTestFactory $testFactory;
     private EventDispatcherInterface $eventDispatcher;
@@ -23,30 +26,7 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $testCanceller = self::$container->get(TestCanceller::class);
-        self::assertInstanceOf(TestCanceller::class, $testCanceller);
-        if ($testCanceller instanceof TestCanceller) {
-            $this->testCanceller = $testCanceller;
-        }
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
-
-        $testTestRepository = self::$container->get(TestTestRepository::class);
-        self::assertInstanceOf(TestTestRepository::class, $testTestRepository);
-        if ($testTestRepository instanceof TestTestRepository) {
-            $this->testTestRepository = $testTestRepository;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**

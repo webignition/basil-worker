@@ -13,10 +13,13 @@ use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\TestTestFactory;
 
 class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private const JOB_SOURCES = [
         '/tests/test1.yml',
         '/tests/test2.yml',
@@ -30,12 +33,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $executionWorkflowFactory = self::$container->get(ExecutionWorkflowFactory::class);
-        self::assertInstanceOf(ExecutionWorkflowFactory::class, $executionWorkflowFactory);
-        if ($executionWorkflowFactory instanceof ExecutionWorkflowFactory) {
-            $this->executionWorkflowFactory = $executionWorkflowFactory;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
@@ -44,24 +42,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
             $job->setSources(self::JOB_SOURCES);
         }
 
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->testFactory = $testFactory;
-            $this->createTests();
-        }
-
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-        if ($testRepository instanceof TestRepository) {
-            $this->testRepository = $testRepository;
-        }
-
-        $testStateMutator = self::$container->get(TestStateMutator::class);
-        self::assertInstanceOf(TestStateMutator::class, $testStateMutator);
-        if ($testStateMutator instanceof TestStateMutator) {
-            $this->testStateMutator = $testStateMutator;
-        }
+        $this->createTests();
     }
 
     /**

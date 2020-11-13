@@ -6,35 +6,27 @@ namespace App\Tests\Functional\Services;
 
 use App\Services\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use Symfony\Component\HttpFoundation\File\File;
 
 class SourceStoreTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private SourceStore $store;
     private BasilFixtureHandler $basilFixtureHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $store = self::$container->get(SourceStore::class);
-        self::assertInstanceOf(SourceStore::class, $store);
-        if ($store instanceof SourceStore) {
-            $this->store = $store;
-        }
+        $this->injectContainerServicesIntoClassProperties();
 
         $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
         self::assertInstanceOf(SourceStoreInitializer::class, $sourceStoreInitializer);
         if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
             $sourceStoreInitializer->initialize();
-        }
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        self::assertInstanceOf(BasilFixtureHandler::class, $basilFixtureHandler);
-        if ($basilFixtureHandler instanceof BasilFixtureHandler) {
-            $this->basilFixtureHandler = $basilFixtureHandler;
         }
     }
 

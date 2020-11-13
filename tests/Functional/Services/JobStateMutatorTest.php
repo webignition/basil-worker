@@ -17,6 +17,7 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
@@ -27,6 +28,8 @@ use webignition\ObjectReflector\ObjectReflector;
 
 class JobStateMutatorTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private JobStateMutator $jobStateMutator;
     private JobStore $jobStore;
     private Job $job;
@@ -35,25 +38,9 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
+        $this->injectContainerServicesIntoClassProperties();
 
-        $jobStateMutator = self::$container->get(JobStateMutator::class);
-        self::assertInstanceOf(JobStateMutator::class, $jobStateMutator);
-        if ($jobStateMutator instanceof JobStateMutator) {
-            $this->jobStateMutator = $jobStateMutator;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
-            $this->jobStore = $jobStore;
-        }
-
-        $eventDispatcher = self::$container->get(EventDispatcherInterface::class);
-        self::assertInstanceOf(EventDispatcherInterface::class, $eventDispatcher);
-        if ($eventDispatcher instanceof EventDispatcherInterface) {
-            $this->eventDispatcher = $eventDispatcher;
-        }
+        $this->job = $this->jobStore->create(md5('label content'), 'http://example.com/callback');
     }
 
     /**
