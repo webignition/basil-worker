@@ -23,7 +23,7 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $this->callback = CallbackEntity::create('type', []);
+        $this->callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
         $this->callbackStore->store($this->callback);
     }
 

@@ -14,7 +14,7 @@ class CallbackEntityTest extends AbstractEntityTest
         $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
         self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
 
-        $type = 'type';
+        $type = CallbackEntity::TYPE_COMPILE_FAILURE;
         $payload = [
             'key1' => 'value1',
             'key2' => [
