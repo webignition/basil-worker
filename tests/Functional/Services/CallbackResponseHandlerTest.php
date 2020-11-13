@@ -9,6 +9,7 @@ use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Model\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Model\TestCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;
@@ -20,6 +21,7 @@ use Psr\Http\Message\ResponseInterface;
 class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 {
     use MockeryPHPUnitIntegration;
+    use TestClassServicePropertyInjectorTrait;
 
     private CallbackResponseHandler $callbackResponseHandler;
     private CallbackHttpExceptionEventSubscriber $exceptionEventSubscriber;
@@ -28,21 +30,7 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $callbackResponseHandler = self::$container->get(CallbackResponseHandler::class);
-        if ($callbackResponseHandler instanceof CallbackResponseHandler) {
-            $this->callbackResponseHandler = $callbackResponseHandler;
-        }
-
-        $exceptionEventSubscriber = self::$container->get(CallbackHttpExceptionEventSubscriber::class);
-        if ($exceptionEventSubscriber instanceof CallbackHttpExceptionEventSubscriber) {
-            $this->exceptionEventSubscriber = $exceptionEventSubscriber;
-        }
-
-        $responseEventSubscriber = self::$container->get(CallbackHttpResponseEventSubscriber::class);
-        if ($responseEventSubscriber instanceof CallbackHttpResponseEventSubscriber) {
-            $this->responseEventSubscriber = $responseEventSubscriber;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**
