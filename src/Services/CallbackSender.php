@@ -43,7 +43,11 @@ class CallbackSender
 
         try {
             $response = $this->httpClient->sendRequest($request);
-            $this->callbackResponseHandler->handleResponse($callback, $response);
+            $statusCode = $response->getStatusCode();
+
+            if ($statusCode >= 300) {
+                $this->callbackResponseHandler->handleResponse($callback, $response);
+            }
         } catch (ClientExceptionInterface $httpClientException) {
             $this->callbackResponseHandler->handleClientException($callback, $httpClientException);
         }

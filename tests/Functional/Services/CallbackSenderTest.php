@@ -39,9 +39,43 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider sendResponseReceivedDataProvider
+     * @dataProvider sendResponseSuccessDataProvider
      */
-    public function testSendResponseReceived(ResponseInterface $response)
+    public function testSendResponseSuccess(ResponseInterface $response)
+    {
+        $callback = new TestCallback();
+
+        $this->mockHandler->append($response);
+
+        $responseHandler = (new MockCallbackResponseHandler())
+            ->withoutHandleResponseCall()
+            ->withoutHandleClientExceptionCall()
+            ->getMock();
+
+        $this->createJob();
+        $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
+
+        $this->mockHandler->append($response);
+        $this->callbackSender->send($callback);
+    }
+
+    public function sendResponseSuccessDataProvider(): array
+    {
+        $dataSets = [];
+
+        for ($statusCode = 100; $statusCode < 300; $statusCode++) {
+            $dataSets[(string) $statusCode] = [
+                'response' => new Response($statusCode),
+            ];
+        }
+
+        return $dataSets;
+    }
+
+    /**
+     * @dataProvider sendResponseNonSuccessResponseDataProvider
+     */
+    public function testSendResponseNonSuccessResponse(ResponseInterface $response)
     {
         $callback = new TestCallback();
 
@@ -59,12 +93,9 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->callbackSender->send($callback);
     }
 
-    public function sendResponseReceivedDataProvider(): array
+    public function sendResponseNonSuccessResponseDataProvider(): array
     {
         return [
-            'HTTP 200' => [
-                'response' => new Response(200),
-            ],
             'HTTP 400' => [
                 'response' => new Response(400),
             ],
