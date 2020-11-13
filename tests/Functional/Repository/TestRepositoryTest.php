@@ -9,11 +9,14 @@ use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use App\Services\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use webignition\ObjectReflector\ObjectReflector;
 
 class TestRepositoryTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private EntityManagerInterface $entityManager;
     private TestRepository $repository;
     private TestConfigurationStore $testConfigurationStore;
@@ -21,24 +24,7 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $entityManager = self::$container->get(EntityManagerInterface::class);
-        self::assertInstanceOf(EntityManagerInterface::class, $entityManager);
-        if ($entityManager instanceof EntityManagerInterface) {
-            $this->entityManager = $entityManager;
-        }
-
-        $repository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $repository);
-        if ($repository instanceof TestRepository) {
-            $this->repository = $repository;
-        }
-
-        $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
-        if ($testConfigurationStore instanceof TestConfigurationStore) {
-            $this->testConfigurationStore = $testConfigurationStore;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**
