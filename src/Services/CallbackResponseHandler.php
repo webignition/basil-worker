@@ -10,6 +10,7 @@ use App\Model\Callback\CallbackInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class CallbackResponseHandler
 {
@@ -22,13 +23,17 @@ class CallbackResponseHandler
 
     public function handleResponse(CallbackInterface $callback, ResponseInterface $response): void
     {
-        $callback->incrementRetryCount();
-        $this->eventDispatcher->dispatch(new CallbackHttpResponseEvent($callback, $response));
+        $this->incrementRetryCountAndDispatch($callback, new CallbackHttpResponseEvent($callback, $response));
     }
 
     public function handleClientException(CallbackInterface $callback, ClientExceptionInterface $clientException): void
     {
+        $this->incrementRetryCountAndDispatch($callback, new CallbackHttpExceptionEvent($callback, $clientException));
+    }
+
+    private function incrementRetryCountAndDispatch(CallbackInterface $callback, Event $event): void
+    {
         $callback->incrementRetryCount();
-        $this->eventDispatcher->dispatch(new CallbackHttpExceptionEvent($callback, $clientException));
+        $this->eventDispatcher->dispatch($event);
     }
 }
