@@ -10,20 +10,18 @@ use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestRepository $testRepository;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $testRepository = self::$container->get(TestRepository::class);
-        self::assertInstanceOf(TestRepository::class, $testRepository);
-        if ($testRepository instanceof TestRepository) {
-            $this->testRepository = $testRepository;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**

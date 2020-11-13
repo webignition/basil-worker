@@ -12,6 +12,7 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use Symfony\Component\Yaml\Yaml;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
@@ -20,6 +21,8 @@ use webignition\YamlDocument\Document;
 
 class TestExecutorTest extends AbstractBaseIntegrationTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private TestExecutor $testExecutor;
     private Compiler $compiler;
     private TestFactory $testFactory;
@@ -27,24 +30,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
     protected function setUp(): void
     {
         parent::setUp();
-
-        $testExecutor = self::$container->get(TestExecutor::class);
-        self::assertInstanceOf(TestExecutor::class, $testExecutor);
-        if ($testExecutor instanceof TestExecutor) {
-            $this->testExecutor = $testExecutor;
-        }
-
-        $compiler = self::$container->get(Compiler::class);
-        self::assertInstanceOf(Compiler::class, $compiler);
-        if ($compiler instanceof Compiler) {
-            $this->compiler = $compiler;
-        }
-
-        $testFactory = self::$container->get(TestFactory::class);
-        self::assertInstanceOf(TestFactory::class, $testFactory);
-        if ($testFactory instanceof TestFactory) {
-            $this->testFactory = $testFactory;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**

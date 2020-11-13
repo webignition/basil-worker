@@ -6,22 +6,21 @@ namespace App\Tests\Integration\Synchronous\Services;
 
 use App\Services\Compiler;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
+use App\Tests\TestClassServicePropertyInjectorTrait;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\TcpCliProxyClient\Client;
 
 class CompilerTest extends AbstractBaseIntegrationTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private Compiler $compiler;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $compiler = self::$container->get(Compiler::class);
-        if ($compiler instanceof Compiler) {
-            $this->compiler = $compiler;
-        }
+        $this->injectContainerServicesIntoClassProperties();
     }
 
     /**
