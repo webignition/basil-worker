@@ -22,10 +22,13 @@ trait TestClassServicePropertyInjectorTrait
             if ($type instanceof \ReflectionNamedType) {
                 $typeClass = $type->getName();
                 $propertyName = $property->getName();
-                $service = self::$container->get($typeClass);
 
-                if ($service instanceof $typeClass) {
-                    $this->{$propertyName} = $service;
+                if (self::$container->has($typeClass)) {
+                    $service = self::$container->get($typeClass);
+
+                    if ($service instanceof $typeClass) {
+                        $this->{$propertyName} = $service;
+                    }
                 }
             }
         }
