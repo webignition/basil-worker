@@ -9,6 +9,7 @@ use App\Event\SourcesAddedEvent;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Functional\TestClassServicePropertyInjectorTrait;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\SourcesAddedEventSubscriber;
@@ -18,6 +19,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     private const EXPECTED_SOURCES = [
         'Test/chrome-open-index.yml',
         'Test/chrome-firefox-open-index.yml',
@@ -35,41 +38,11 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     protected function setUp(): void
     {
         parent::setUp();
+        $this->injectContainerServicesIntoClassProperties();
+        $this->initializeSourceStore();
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        self::assertInstanceOf(BasilFixtureHandler::class, $basilFixtureHandler);
-        if ($basilFixtureHandler instanceof BasilFixtureHandler) {
-            $this->basilFixtureHandler = $basilFixtureHandler;
-        }
-
-        $sourceStore = self::$container->get(SourceStore::class);
-        self::assertInstanceOf(SourceStore::class, $sourceStore);
-        if ($sourceStore instanceof SourceStore) {
-            $this->sourceStore = $sourceStore;
-        }
-
-        $sourcesAddedEventSubscriber = self::$container->get(SourcesAddedEventSubscriber::class);
-        self::assertInstanceOf(SourcesAddedEventSubscriber::class, $sourcesAddedEventSubscriber);
-        if ($sourcesAddedEventSubscriber instanceof SourcesAddedEventSubscriber) {
-            $this->sourcesAddedEventSubscriber = $sourcesAddedEventSubscriber;
-        }
-
-        $clientRequestSender = self::$container->get(ClientRequestSender::class);
-        self::assertInstanceOf(ClientRequestSender::class, $clientRequestSender);
-        if ($clientRequestSender instanceof ClientRequestSender) {
-            $this->clientRequestSender = $clientRequestSender;
-        }
-
-        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
-        self::assertInstanceOf(UploadedFileFactory::class, $uploadedFileFactory);
-        if ($uploadedFileFactory instanceof UploadedFileFactory) {
-            $this->uploadedFileFactory = $uploadedFileFactory;
-        }
-
-        $this->initializeSourceStore();
 
         $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
         self::assertSame([], $this->job->getSources());
