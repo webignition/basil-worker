@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\CallbackEntity;
+use App\Entity\CallbackEntityInterface;
+use App\Model\Callback\CallbackModelInterface;
 
 class CallbackStateMutator
 {
@@ -15,32 +16,36 @@ class CallbackStateMutator
         $this->callbackStore = $callbackStore;
     }
 
-    public function setQueued(CallbackEntity $callback): void
+    public function setQueued(CallbackEntityInterface $callback): void
     {
-        $this->setStateIfState($callback, CallbackEntity::STATE_AWAITING, CallbackEntity::STATE_QUEUED);
+        $this->setStateIfState($callback, CallbackModelInterface::STATE_AWAITING, CallbackModelInterface::STATE_QUEUED);
     }
 
-    public function setSending(CallbackEntity $callback): void
+    public function setSending(CallbackEntityInterface $callback): void
     {
-        $this->setStateIfState($callback, CallbackEntity::STATE_QUEUED, CallbackEntity::STATE_SENDING);
+        $this->setStateIfState($callback, CallbackModelInterface::STATE_QUEUED, CallbackModelInterface::STATE_SENDING);
     }
 
-    public function setFailed(CallbackEntity $callback): void
+    public function setFailed(CallbackEntityInterface $callback): void
     {
-        $this->setStateIfState($callback, CallbackEntity::STATE_SENDING, CallbackEntity::STATE_FAILED);
+        $this->setStateIfState($callback, CallbackModelInterface::STATE_SENDING, CallbackModelInterface::STATE_FAILED);
     }
 
-    public function setComplete(CallbackEntity $callback): void
+    public function setComplete(CallbackEntityInterface $callback): void
     {
-        $this->setStateIfState($callback, CallbackEntity::STATE_SENDING, CallbackEntity::STATE_COMPLETE);
+        $this->setStateIfState(
+            $callback,
+            CallbackModelInterface::STATE_SENDING,
+            CallbackModelInterface::STATE_COMPLETE
+        );
     }
 
     /**
-     * @param CallbackEntity $callback
-     * @param CallbackEntity::STATE_* $currentState
-     * @param CallbackEntity::STATE_* $newState
+     * @param CallbackEntityInterface $callback
+     * @param CallbackModelInterface::STATE_* $currentState
+     * @param CallbackModelInterface::STATE_* $newState
      */
-    private function setStateIfState(CallbackEntity $callback, string $currentState, string $newState): void
+    private function setStateIfState(CallbackEntityInterface $callback, string $currentState, string $newState): void
     {
         if ($currentState === $callback->getState()) {
             $this->set($callback, $newState);
@@ -48,10 +53,10 @@ class CallbackStateMutator
     }
 
     /**
-     * @param CallbackEntity $callback
-     * @param CallbackEntity::STATE_* $state
+     * @param CallbackEntityInterface $callback
+     * @param CallbackModelInterface::STATE_* $state
      */
-    private function set(CallbackEntity $callback, string $state): void
+    private function set(CallbackEntityInterface $callback, string $state): void
     {
         $callback->setState($state);
         $this->callbackStore->store($callback);
