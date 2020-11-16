@@ -17,6 +17,12 @@ class TestCallbackEventFactory
         $this->callbackEventFactory = $callbackEventFactory;
     }
 
+    /**
+     * @param string $source
+     * @param array<mixed> $errorOutputData
+     *
+     * @return FooSourceCompileFailureEvent
+     */
     public function createSourceCompileFailureEvent(
         string $source,
         array $errorOutputData

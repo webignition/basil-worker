@@ -10,15 +10,13 @@ use App\Entity\Callback\CallbackInterface;
 
 class TestCallbackEntity extends AbstractCallbackEntityWrapper implements CallbackInterface
 {
-    private const TYPE = 'test-type';
-
     private ?int $id = null;
 
     public static function createWithUniquePayload(): self
     {
         return new TestCallbackEntity(
             CallbackEntity::create(
-                self::TYPE,
+                CallbackInterface::TYPE_COMPILE_FAILURE,
                 [
                     'unique' => random_bytes(16),
                 ]

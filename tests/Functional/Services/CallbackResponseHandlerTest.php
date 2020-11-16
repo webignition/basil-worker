@@ -9,7 +9,6 @@ use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\FooTestCallback;
-use App\Tests\Model\TestCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;
 use GuzzleHttp\Exception\ConnectException;

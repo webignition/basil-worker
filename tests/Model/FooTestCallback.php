@@ -6,11 +6,11 @@ namespace App\Tests\Model;
 
 use App\Entity\Callback\AbstractCallbackEntityWrapper;
 use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 
 class FooTestCallback extends AbstractCallbackEntityWrapper
 {
     private const ID = 'id';
-    private const TYPE = 'test';
 
     /**
      * @var array<mixed>
@@ -24,7 +24,7 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
         ];
 
         parent::__construct(CallbackEntity::create(
-            self::TYPE,
+            CallbackInterface::TYPE_COMPILE_FAILURE,
             $this->payload
         ));
     }
@@ -37,11 +37,6 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
         }
 
         return $new;
-    }
-
-    public function getType(): string
-    {
-        return self::TYPE;
     }
 
     public function getPayload(): array
