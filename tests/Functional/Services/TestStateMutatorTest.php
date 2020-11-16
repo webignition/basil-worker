@@ -6,8 +6,10 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Event\FooTestExecuteDocumentReceivedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Services\CallbackEventFactory;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -24,6 +26,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
     private EventDispatcherInterface $eventDispatcher;
     private Test $test;
     private TestStore $testStore;
+    private CallbackEventFactory $callbackEventFactory;
 
     protected function setUp(): void
     {
@@ -120,7 +123,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         $this->doTestExecuteDocumentReceivedEventDrivenTest(
             $document,
             $expectedState,
-            function (TestExecuteDocumentReceivedEvent $event) {
+            function (FooTestExecuteDocumentReceivedEvent $event) {
                 $this->mutator->setFailedFromTestExecuteDocumentReceivedEvent($event);
             }
         );
@@ -134,7 +137,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         $this->doTestExecuteDocumentReceivedEventDrivenTest(
             $document,
             $expectedState,
-            function (TestExecuteDocumentReceivedEvent $event) {
+            function (FooTestExecuteDocumentReceivedEvent $event) {
                 $this->eventDispatcher->dispatch($event);
             }
         );
@@ -147,7 +150,10 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
     ): void {
         self::assertSame(Test::STATE_AWAITING, $this->test->getState());
 
-        $event = new TestExecuteDocumentReceivedEvent($this->test, $document);
+        $event = $this->callbackEventFactory->createTestExecuteDocumentReceivedEvent(
+            $this->test,
+            $document
+        );
         $execute($event);
 
         self::assertSame($expectedState, $this->test->getState());

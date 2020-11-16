@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
+use App\Event\FooTestExecuteDocumentReceivedEvent;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Event\TestFailedEvent;
 use App\Model\Document\Step;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -29,7 +29,7 @@ class TestStateMutator implements EventSubscriberInterface
             TestExecuteCompleteEvent::class => [
                 ['setCompleteFromTestExecuteCompleteEvent', 100],
             ],
-            TestExecuteDocumentReceivedEvent::class => [
+            FooTestExecuteDocumentReceivedEvent::class => [
                 ['setFailedFromTestExecuteDocumentReceivedEvent', 50],
             ],
         ];
@@ -40,7 +40,7 @@ class TestStateMutator implements EventSubscriberInterface
         $this->setComplete($event->getTest());
     }
 
-    public function setFailedFromTestExecuteDocumentReceivedEvent(TestExecuteDocumentReceivedEvent $event): void
+    public function setFailedFromTestExecuteDocumentReceivedEvent(FooTestExecuteDocumentReceivedEvent $event): void
     {
         $document = $event->getDocument();
 
