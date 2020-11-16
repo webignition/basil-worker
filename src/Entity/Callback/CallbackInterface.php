@@ -36,4 +36,5 @@ interface CallbackInterface
      */
     public function getPayload(): array;
     public function incrementRetryCount(): void;
+    public function hasReachedRetryLimit(int $limit): bool;
 }

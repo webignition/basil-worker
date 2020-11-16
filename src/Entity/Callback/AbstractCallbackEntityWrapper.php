@@ -52,4 +52,9 @@ abstract class AbstractCallbackEntityWrapper implements CallbackInterface
     {
         $this->entity->incrementRetryCount();
     }
+
+    public function hasReachedRetryLimit(int $limit): bool
+    {
+        return $this->entity->hasReachedRetryLimit($limit);
+    }
 }
