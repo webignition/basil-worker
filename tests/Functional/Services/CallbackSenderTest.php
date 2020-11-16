@@ -9,6 +9,7 @@ use App\Services\CallbackSender;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
+use App\Tests\Model\FooTestCallback;
 use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
@@ -43,7 +44,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
      */
     public function testSendResponseSuccess(ResponseInterface $response)
     {
-        $callback = new TestCallback();
+        $callback = new FooTestCallback();
 
         $this->mockHandler->append($response);
 
@@ -77,7 +78,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
      */
     public function testSendResponseNonSuccessResponse(ResponseInterface $response)
     {
-        $callback = new TestCallback();
+        $callback = new FooTestCallback();
 
         $this->mockHandler->append($response);
 
@@ -111,7 +112,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send(new TestCallback());
+        $this->callbackSender->send(new FooTestCallback());
     }
 
     public function testSendCallbackRetryLimitReached()
@@ -127,7 +128,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send((new TestCallback())->withRetryCount($retryLimit));
+        $this->callbackSender->send((new FooTestCallback())->withRetryCount($retryLimit));
     }
 
     /**
@@ -139,7 +140,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->mockHandler->append($exception);
 
-        $callback = new TestCallback();
+        $callback = new FooTestCallback();
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleResponseCall()
