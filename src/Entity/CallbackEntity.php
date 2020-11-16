@@ -4,22 +4,14 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Model\Callback\CallbackModelInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CallbackEntity
+class CallbackEntity implements CallbackEntityInterface
 {
-    public const STATE_AWAITING = 'awaiting';
-    public const STATE_QUEUED = 'queued';
-    public const STATE_SENDING = 'sending';
-    public const STATE_FAILED = 'failed';
-    public const STATE_COMPLETE = 'complete';
-
-    public const TYPE_COMPILE_FAILURE = 'compile-failure';
-    public const TYPE_EXECUTE_DOCUMENT_RECEIVED = 'execute-document-received';
-
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
@@ -30,7 +22,7 @@ class CallbackEntity
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @var CallbackEntity::STATE_*
+     * @var CallbackModelInterface::STATE_*
      */
     private string $state;
 
@@ -42,7 +34,7 @@ class CallbackEntity
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @var CallbackEntity::TYPE_*
+     * @var CallbackModelInterface::TYPE_*
      */
     private string $type;
 
@@ -54,7 +46,7 @@ class CallbackEntity
     private array $payload;
 
     /**
-     * @param CallbackEntity::TYPE_* $type
+     * @param CallbackModelInterface::TYPE_* $type
      * @param array<mixed> $payload
      *
      * @return self
@@ -76,7 +68,7 @@ class CallbackEntity
     }
 
     /**
-     * @return CallbackEntity::STATE_*
+     * @return CallbackModelInterface::STATE_*
      */
     public function getState(): string
     {
@@ -84,7 +76,7 @@ class CallbackEntity
     }
 
     /**
-     * @param CallbackEntity::STATE_* $state
+     * @param CallbackModelInterface::STATE_* $state
      */
     public function setState(string $state): void
     {
