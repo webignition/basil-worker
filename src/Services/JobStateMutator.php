@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\SourceCompile\FooSourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
@@ -35,7 +35,7 @@ class JobStateMutator implements EventSubscriberInterface
             SourcesAddedEvent::class => [
                 ['setCompilationRunning', 100],
             ],
-            SourceCompileFailureEvent::class => [
+            FooSourceCompileFailureEvent::class => [
                 ['setCompilationFailed', 100],
             ],
             SourceCompileSuccessEvent::class => [

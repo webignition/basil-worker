@@ -105,3 +105,6 @@ services:
 
     Symfony\Component\Messenger\Transport\InMemoryTransport:
         alias: 'messenger.transport.async'
+
+    App\Tests\Services\TestCallbackEventFactory:
+        public: true
