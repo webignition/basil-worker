@@ -46,8 +46,11 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     public function testDispatchForCallbackEvent()
     {
         $event = $this->testCallbackEventFactory->createEmptyPayloadSourceCompileFailureEvent();
-        $this->messageDispatcher->dispatchForCallbackEvent($event);
+        $callback = $event->getCallback();
+        self::assertSame(CallbackInterface::STATE_AWAITING, $callback->getState());
 
+        $this->messageDispatcher->dispatchForCallbackEvent($event);
+        self::assertSame(CallbackInterface::STATE_QUEUED, $callback->getState());
         $this->assertMessageTransportQueue($event->getCallback());
     }
 
@@ -58,9 +61,12 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         CallbackEventInterface $event,
         CallbackInterface $expectedQueuedMessageCallback
     ) {
+        $callback = $event->getCallback();
+        self::assertSame(CallbackInterface::STATE_AWAITING, $callback->getState());
         self::assertCount(0, $this->messengerTransport->get());
-        $this->eventDispatcher->dispatch($event);
 
+        $this->eventDispatcher->dispatch($event);
+        self::assertSame(CallbackInterface::STATE_QUEUED, $callback->getState());
         $this->assertMessageTransportQueue($expectedQueuedMessageCallback);
     }
 
@@ -73,7 +79,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $sourceCompileFailureEventOutput
             ->shouldReceive('getData')
             ->andReturn([
-                'unique' => random_bytes(16),
+                'unique' => md5(random_bytes(16)),
             ]);
 
         $sourceCompileFailureEventCallback = new CompileFailureCallback($sourceCompileFailureEventOutput);

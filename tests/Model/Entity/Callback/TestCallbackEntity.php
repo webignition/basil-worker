@@ -18,7 +18,7 @@ class TestCallbackEntity extends AbstractCallbackEntityWrapper implements Callba
             CallbackEntity::create(
                 CallbackInterface::TYPE_COMPILE_FAILURE,
                 [
-                    'unique' => random_bytes(16),
+                    'unique' => md5(random_bytes(16)),
                 ]
             )
         );
