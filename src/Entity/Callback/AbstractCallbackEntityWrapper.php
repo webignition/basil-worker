@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-use App\Entity\CallbackEntity;
-
-abstract class AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+abstract class AbstractCallbackEntityWrapper implements CallbackInterface
 {
     private CallbackEntity $entity;
 

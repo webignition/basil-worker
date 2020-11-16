@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-interface CallbackModelInterface
+interface CallbackInterface
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_QUEUED = 'queued';
@@ -15,13 +15,16 @@ interface CallbackModelInterface
     public const TYPE_COMPILE_FAILURE = 'compile-failure';
     public const TYPE_EXECUTE_DOCUMENT_RECEIVED = 'execute-document-received';
 
+    public function getId(): ?int;
+    public function getEntity(): CallbackEntity;
+
     /**
-     * @return CallbackModelInterface::STATE_*
+     * @return CallbackInterface::STATE_*
      */
     public function getState(): string;
 
     /**
-     * @param CallbackModelInterface::STATE_* $state
+     * @param CallbackInterface::STATE_* $state
      */
     public function setState(string $state): void;
 

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-use App\Entity\CallbackEntity;
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper
 {
     private Document $document;
 
@@ -18,7 +17,7 @@ class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper impl
         $documentData = is_array($documentData) ? $documentData : [];
 
         parent::__construct(CallbackEntity::create(
-            CallbackModelInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+            CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
             $documentData
         ));
     }

@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Entity\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

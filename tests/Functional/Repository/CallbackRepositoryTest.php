@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\CallbackEntity;
-use App\Model\Callback\CallbackModelInterface;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 use App\Repository\CallbackRepository;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -28,7 +28,7 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     {
         self::assertNull($this->repository->find(0));
 
-        $callback = CallbackEntity::create(CallbackModelInterface::TYPE_COMPILE_FAILURE, []);
+        $callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
         $this->store->store($callback);
 
         $retrievedCallback = $this->repository->find($callback->getId());

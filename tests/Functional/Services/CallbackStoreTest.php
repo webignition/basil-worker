@@ -4,11 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\CallbackEntity;
-use App\Entity\StorableCallbackInterface;
-use App\Model\Callback\CallbackModelInterface;
-use App\Model\Callback\CompileFailureCallback;
-use App\Model\Callback\ExecuteDocumentReceivedCallback;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,7 +32,7 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider storeDataProvider
      */
-    public function testStore(StorableCallbackInterface $callback)
+    public function testStore(CallbackInterface $callback)
     {
         $callbackRepository = $this->entityManager->getRepository(CallbackEntity::class);
         self::assertCount(0, $callbackRepository->findAll());
@@ -65,7 +64,7 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
         return [
             CallbackEntity::class => [
                 'callback' => CallbackEntity::create(
-                    CallbackModelInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
                     [
                         'callbackEntityKey1' => 'callbackEntityValue1',
                         'callbackEntityKey2' => 'callbackEntityValue2',

@@ -2,12 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-use App\Entity\CallbackEntity;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
-class CompileFailureCallback extends AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+class CompileFailureCallback extends AbstractCallbackEntityWrapper
 {
     private ErrorOutputInterface $errorOutput;
 
@@ -16,7 +15,7 @@ class CompileFailureCallback extends AbstractCallbackEntityWrapper implements Ca
         $this->errorOutput = $errorOutput;
 
         parent::__construct(CallbackEntity::create(
-            CallbackModelInterface::TYPE_COMPILE_FAILURE,
+            CallbackInterface::TYPE_COMPILE_FAILURE,
             $errorOutput->getData()
         ));
     }
