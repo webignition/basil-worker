@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity
  */
-class CallbackEntity implements IdentifiedCallbackInterface
+class CallbackEntity implements IdentifiedCallbackInterface, StorableCallbackInterface
 {
     /**
      * @ORM\Id
@@ -61,6 +61,11 @@ class CallbackEntity implements IdentifiedCallbackInterface
         $callback->payload = $payload;
 
         return $callback;
+    }
+
+    public function getEntity(): CallbackEntity
+    {
+        return $this;
     }
 
     public function getId(): ?int
