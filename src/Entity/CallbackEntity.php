@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Model\Callback\CallbackModelInterface;
+use App\Model\Callback\IdentifiedCallbackInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CallbackEntity implements CallbackEntityInterface
+class CallbackEntity implements IdentifiedCallbackInterface
 {
     /**
      * @ORM\Id

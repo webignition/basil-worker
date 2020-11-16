@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Model\Callback;
 
-use App\Entity\CallbackEntityInterface;
+use App\Entity\CallbackEntity;
 
 abstract class AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
 {
-    private CallbackEntityInterface $entity;
+    private CallbackEntity $entity;
 
-    public function __construct(CallbackEntityInterface $entity)
+    public function __construct(CallbackEntity $entity)
     {
         $this->entity = $entity;
     }
 
-    public function getEntity(): CallbackEntityInterface
+    public function getEntity(): CallbackEntity
     {
         return $this->entity;
     }
