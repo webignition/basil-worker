@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Entity\Callback;
 
-use App\Entity\StorableCallbackInterface;
-use App\Model\Callback\CallbackModelInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CallbackEntity implements CallbackModelInterface, StorableCallbackInterface
+class CallbackEntity implements CallbackInterface
 {
     /**
      * @ORM\Id
@@ -23,7 +21,7 @@ class CallbackEntity implements CallbackModelInterface, StorableCallbackInterfac
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @var CallbackModelInterface::STATE_*
+     * @var CallbackInterface::STATE_*
      */
     private string $state;
 
@@ -35,7 +33,7 @@ class CallbackEntity implements CallbackModelInterface, StorableCallbackInterfac
     /**
      * @ORM\Column(type="string", length=255)
      *
-     * @var CallbackModelInterface::TYPE_*
+     * @var CallbackInterface::TYPE_*
      */
     private string $type;
 
@@ -47,7 +45,7 @@ class CallbackEntity implements CallbackModelInterface, StorableCallbackInterfac
     private array $payload;
 
     /**
-     * @param CallbackModelInterface::TYPE_* $type
+     * @param CallbackInterface::TYPE_* $type
      * @param array<mixed> $payload
      *
      * @return self
@@ -74,7 +72,7 @@ class CallbackEntity implements CallbackModelInterface, StorableCallbackInterfac
     }
 
     /**
-     * @return CallbackModelInterface::STATE_*
+     * @return CallbackInterface::STATE_*
      */
     public function getState(): string
     {
@@ -82,7 +80,7 @@ class CallbackEntity implements CallbackModelInterface, StorableCallbackInterfac
     }
 
     /**
-     * @param CallbackModelInterface::STATE_* $state
+     * @param CallbackInterface::STATE_* $state
      */
     public function setState(string $state): void
     {

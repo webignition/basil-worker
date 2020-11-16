@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Model\Callback\CallbackModelInterface;
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -43,7 +43,7 @@ class CallbackFactoryTest extends AbstractBaseFunctionalTest
 
         $callback = $this->callbackFactory->createForCompileFailure($errorOutput);
 
-        self::assertSame(CallbackModelInterface::TYPE_COMPILE_FAILURE, $callback->getType());
+        self::assertSame(CallbackInterface::TYPE_COMPILE_FAILURE, $callback->getType());
         self::assertSame($errorOutputData, $callback->getPayload());
     }
 
@@ -60,7 +60,7 @@ class CallbackFactoryTest extends AbstractBaseFunctionalTest
         $document = new Document(Yaml::dump($documentData));
         $callback = $this->callbackFactory->createForExecuteDocumentReceived($document);
 
-        self::assertSame(CallbackModelInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED, $callback->getType());
+        self::assertSame(CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED, $callback->getType());
         self::assertSame($documentData, $callback->getPayload());
     }
 }

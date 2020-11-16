@@ -4,14 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use App\Model\Callback\CallbackModelInterface;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 use PHPUnit\Framework\TestCase;
 
 class CallbackEntityTest extends TestCase
 {
     public function testIncrementRetryCount()
     {
-        $callback = \App\Entity\Callback\CallbackEntity::create(CallbackModelInterface::TYPE_COMPILE_FAILURE, []);
+        $callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
         self::assertSame(0, $callback->getRetryCount());
 
         $callback->incrementRetryCount();
