@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\MessageHandler;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Message\SendCallback;
 use App\MessageHandler\SendCallbackHandler;
-use App\Model\Callback\CallbackInterface;
 use App\Tests\Mock\Services\MockCallbackSender;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
