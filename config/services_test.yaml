@@ -83,6 +83,9 @@ services:
     App\Services\CallbackEventFactory:
         public: true
 
+    App\Services\SourceCompileEventFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
