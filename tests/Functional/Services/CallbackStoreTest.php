@@ -5,11 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\CallbackEntity;
+use App\Entity\StorableCallbackInterface;
 use App\Model\Callback\CallbackModelInterface;
+use App\Model\Callback\CompileFailureCallback;
+use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Yaml\Yaml;
+use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
+use webignition\YamlDocument\Document;
 
 class CallbackStoreTest extends AbstractBaseFunctionalTest
 {
@@ -24,30 +30,54 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
     }
 
-    public function testStore()
+    /**
+     * @dataProvider storeDataProvider
+     */
+    public function testStore(StorableCallbackInterface $callback)
     {
         $callbackRepository = $this->entityManager->getRepository(CallbackEntity::class);
-
         self::assertCount(0, $callbackRepository->findAll());
 
-        $type = CallbackModelInterface::TYPE_COMPILE_FAILURE;
-        $payload = [
-            'key1' => 'value1',
-            'key2' => 'value2',
-        ];
-
-        $callback = CallbackEntity::create($type, $payload);
         self::assertNull($callback->getId());
 
         $this->callbackStore->store($callback);
         self::assertNotNull($callback->getId());
 
-        self::assertSame(CallbackModelInterface::STATE_AWAITING, $callback->getState());
-
-        $callback->setState(CallbackModelInterface::STATE_QUEUED);
-        $this->callbackStore->store($callback);
-
         $retrievedCallback = $callbackRepository->find($callback->getId());
-        self::assertEquals($callback, $retrievedCallback);
+        self::assertEquals($callback->getEntity(), $retrievedCallback);
+    }
+
+    public function storeDataProvider(): array
+    {
+        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $errorOutput
+            ->shouldReceive('getData')
+            ->andReturn([
+                'errorOutputKey1' => 'errorOutputValue1',
+                'errorOutputKey2' => 'errorOutputValue2',
+            ]);
+
+        $document = new Document(Yaml::dump([
+            'documentKey1' => 'documentValue1',
+            'documentKey2' => 'documentValue2',
+        ]));
+
+        return [
+            CallbackEntity::class => [
+                'callback' => CallbackEntity::create(
+                    CallbackModelInterface::TYPE_COMPILE_FAILURE,
+                    [
+                        'callbackEntityKey1' => 'callbackEntityValue1',
+                        'callbackEntityKey2' => 'callbackEntityValue2',
+                    ]
+                ),
+            ],
+            CompileFailureCallback::class => [
+                'callback' => new CompileFailureCallback($errorOutput),
+            ],
+            ExecuteDocumentReceivedCallback::class => [
+                'callback' => new ExecuteDocumentReceivedCallback($document),
+            ],
+        ];
     }
 }

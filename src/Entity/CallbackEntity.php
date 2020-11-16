@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace App\Entity;
 
 use App\Model\Callback\CallbackModelInterface;
-use App\Model\Callback\IdentifiedCallbackInterface;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity
  */
-class CallbackEntity implements IdentifiedCallbackInterface
+class CallbackEntity implements CallbackModelInterface, StorableCallbackInterface
 {
     /**
      * @ORM\Id
@@ -61,6 +60,11 @@ class CallbackEntity implements IdentifiedCallbackInterface
         $callback->payload = $payload;
 
         return $callback;
+    }
+
+    public function getEntity(): CallbackEntity
+    {
+        return $this;
     }
 
     public function getId(): ?int
