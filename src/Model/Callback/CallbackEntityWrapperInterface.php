@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Model\Callback;
 
-use App\Entity\CallbackEntityInterface;
+use App\Entity\CallbackEntity;
 
 interface CallbackEntityWrapperInterface extends CallbackModelInterface
 {
-    public function getEntity(): CallbackEntityInterface;
+    public function getEntity(): CallbackEntity;
 }
