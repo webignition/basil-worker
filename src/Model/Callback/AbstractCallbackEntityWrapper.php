@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace App\Model\Callback;
 
 use App\Entity\Callback\CallbackEntity;
+use App\Entity\StorableCallbackInterface;
 
-abstract class AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+abstract class AbstractCallbackEntityWrapper implements CallbackModelInterface, StorableCallbackInterface
 {
     private CallbackEntity $entity;
 

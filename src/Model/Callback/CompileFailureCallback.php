@@ -7,7 +7,7 @@ namespace App\Model\Callback;
 use App\Entity\Callback\CallbackEntity;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
-class CompileFailureCallback extends AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+class CompileFailureCallback extends AbstractCallbackEntityWrapper
 {
     private ErrorOutputInterface $errorOutput;
 

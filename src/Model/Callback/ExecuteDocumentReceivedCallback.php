@@ -7,7 +7,7 @@ namespace App\Model\Callback;
 use App\Entity\Callback\CallbackEntity;
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface
+class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper
 {
     private Document $document;
 
