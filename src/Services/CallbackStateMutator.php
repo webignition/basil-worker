@@ -18,7 +18,9 @@ class CallbackStateMutator
 
     public function setQueued(CallbackEntity $callback): void
     {
-        $this->setStateIfState($callback, CallbackInterface::STATE_AWAITING, CallbackInterface::STATE_QUEUED);
+        if (in_array($callback->getState(), [CallbackInterface::STATE_AWAITING, CallbackInterface::STATE_SENDING])) {
+            $this->set($callback, CallbackInterface::STATE_QUEUED);
+        }
     }
 
     public function setSending(CallbackEntity $callback): void
@@ -53,7 +55,7 @@ class CallbackStateMutator
     }
 
     /**
-     * @param \App\Entity\Callback\CallbackEntity $callback
+     * @param CallbackEntity $callback
      * @param CallbackInterface::STATE_* $state
      */
     private function set(CallbackEntity $callback, string $state): void
