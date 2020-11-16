@@ -6,7 +6,7 @@ namespace App\Model\Callback;
 
 use App\Entity\CallbackEntity;
 
-interface CallbackEntityWrapperInterface extends CallbackModelInterface
+interface CallbackEntityWrapperInterface extends IdentifiedCallbackInterface
 {
     public function getEntity(): CallbackEntity;
 }
