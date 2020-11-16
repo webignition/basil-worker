@@ -33,4 +33,12 @@ class MockCallbackSender
 
         return $this;
     }
+
+    public function withoutSendCall(): self
+    {
+        $this->callbackSender
+            ->shouldNotReceive('send');
+
+        return $this;
+    }
 }
