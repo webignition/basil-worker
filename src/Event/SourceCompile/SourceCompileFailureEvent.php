@@ -6,10 +6,10 @@ namespace App\Event\SourceCompile;
 
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
-use App\Event\FooCallbackEventInterface;
+use App\Event\CallbackEventInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
-class FooSourceCompileFailureEvent extends AbstractSourceCompileEvent implements FooCallbackEventInterface
+class SourceCompileFailureEvent extends AbstractSourceCompileEvent implements CallbackEventInterface
 {
     private ErrorOutputInterface $errorOutput;
     private CallbackInterface $callback;

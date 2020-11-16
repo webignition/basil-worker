@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
-use App\Event\SourceCompile\FooSourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Services\CallbackEventFactory;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
@@ -21,12 +21,12 @@ class TestCallbackEventFactory
      * @param string $source
      * @param array<mixed> $errorOutputData
      *
-     * @return FooSourceCompileFailureEvent
+     * @return SourceCompileFailureEvent
      */
     public function createSourceCompileFailureEvent(
         string $source,
         array $errorOutputData
-    ): FooSourceCompileFailureEvent {
+    ): SourceCompileFailureEvent {
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
         $errorOutput
             ->shouldReceive('getData')
@@ -35,7 +35,7 @@ class TestCallbackEventFactory
         return $this->callbackEventFactory->createSourceCompileFailureEvent($source, $errorOutput);
     }
 
-    public function createEmptyPayloadSourceCompileFailureEvent(): FooSourceCompileFailureEvent
+    public function createEmptyPayloadSourceCompileFailureEvent(): SourceCompileFailureEvent
     {
         return $this->createSourceCompileFailureEvent('/app/source/Test/test.yml', []);
     }

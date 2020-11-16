@@ -6,8 +6,8 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Event\FooTestExecuteDocumentReceivedEvent;
 use App\Event\TestExecuteCompleteEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\CallbackEventFactory;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
@@ -122,7 +122,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         $this->doTestExecuteDocumentReceivedEventDrivenTest(
             $document,
             $expectedState,
-            function (FooTestExecuteDocumentReceivedEvent $event) {
+            function (TestExecuteDocumentReceivedEvent $event) {
                 $this->mutator->setFailedFromTestExecuteDocumentReceivedEvent($event);
             }
         );
@@ -136,7 +136,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         $this->doTestExecuteDocumentReceivedEventDrivenTest(
             $document,
             $expectedState,
-            function (FooTestExecuteDocumentReceivedEvent $event) {
+            function (TestExecuteDocumentReceivedEvent $event) {
                 $this->eventDispatcher->dispatch($event);
             }
         );
