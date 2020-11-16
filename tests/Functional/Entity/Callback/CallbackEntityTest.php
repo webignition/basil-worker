@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Entity;
+namespace App\Tests\Functional\Entity\Callback;
 
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Services\TestConfigurationStore;
+use App\Tests\Functional\Entity\AbstractEntityTest;
 
 class CallbackEntityTest extends AbstractEntityTest
 {

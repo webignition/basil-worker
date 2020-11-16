@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity;
+namespace App\Tests\Unit\Entity\Callback;
 
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
