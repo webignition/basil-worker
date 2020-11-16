@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 
 class CallbackStateMutator
@@ -16,24 +15,24 @@ class CallbackStateMutator
         $this->callbackStore = $callbackStore;
     }
 
-    public function setQueued(CallbackEntity $callback): void
+    public function setQueued(CallbackInterface $callback): void
     {
         if (in_array($callback->getState(), [CallbackInterface::STATE_AWAITING, CallbackInterface::STATE_SENDING])) {
             $this->set($callback, CallbackInterface::STATE_QUEUED);
         }
     }
 
-    public function setSending(CallbackEntity $callback): void
+    public function setSending(CallbackInterface $callback): void
     {
         $this->setStateIfState($callback, CallbackInterface::STATE_QUEUED, CallbackInterface::STATE_SENDING);
     }
 
-    public function setFailed(CallbackEntity $callback): void
+    public function setFailed(CallbackInterface $callback): void
     {
         $this->setStateIfState($callback, CallbackInterface::STATE_SENDING, CallbackInterface::STATE_FAILED);
     }
 
-    public function setComplete(CallbackEntity $callback): void
+    public function setComplete(CallbackInterface $callback): void
     {
         $this->setStateIfState(
             $callback,
@@ -43,11 +42,11 @@ class CallbackStateMutator
     }
 
     /**
-     * @param CallbackEntity $callback
+     * @param CallbackInterface $callback
      * @param CallbackInterface::STATE_* $currentState
      * @param CallbackInterface::STATE_* $newState
      */
-    private function setStateIfState(CallbackEntity $callback, string $currentState, string $newState): void
+    private function setStateIfState(CallbackInterface $callback, string $currentState, string $newState): void
     {
         if ($currentState === $callback->getState()) {
             $this->set($callback, $newState);
@@ -55,10 +54,10 @@ class CallbackStateMutator
     }
 
     /**
-     * @param CallbackEntity $callback
+     * @param CallbackInterface $callback
      * @param CallbackInterface::STATE_* $state
      */
-    private function set(CallbackEntity $callback, string $state): void
+    private function set(CallbackInterface $callback, string $state): void
     {
         $callback->setState($state);
         $this->callbackStore->store($callback);

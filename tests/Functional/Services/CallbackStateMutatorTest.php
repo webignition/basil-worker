@@ -6,26 +6,26 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStateMutator;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
+use webignition\YamlDocument\Document;
 
 class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
     private CallbackStateMutator $mutator;
-    private CallbackEntity $callback;
     private CallbackStore $callbackStore;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
-
-        $this->callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
-        $this->callbackStore->store($this->callback);
     }
 
     /**
@@ -36,9 +36,22 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetQueued(string $initialState, string $expectedState)
     {
-        $this->doSetAsStateTest($initialState, $expectedState, function () {
-            $this->mutator->setQueued($this->callback);
-        });
+        $callbacks = [
+            $this->createCallbackEntity(),
+            $this->createCompileFailureCallback(),
+            $this->createExecuteDocumentReceivedCallback(),
+        ];
+
+        foreach ($callbacks as $callback) {
+            $this->doSetAsStateTest(
+                $callback,
+                $initialState,
+                $expectedState,
+                function (CallbackInterface $callback) {
+                    $this->mutator->setQueued($callback);
+                }
+            );
+        }
     }
 
     public function setQueuedDataProvider(): array
@@ -75,9 +88,22 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetSending(string $initialState, string $expectedState)
     {
-        $this->doSetAsStateTest($initialState, $expectedState, function () {
-            $this->mutator->setSending($this->callback);
-        });
+        $callbacks = [
+            $this->createCallbackEntity(),
+            $this->createCompileFailureCallback(),
+            $this->createExecuteDocumentReceivedCallback(),
+        ];
+
+        foreach ($callbacks as $callback) {
+            $this->doSetAsStateTest(
+                $callback,
+                $initialState,
+                $expectedState,
+                function (CallbackInterface $callback) {
+                    $this->mutator->setSending($callback);
+                }
+            );
+        }
     }
 
     public function setSendingDataProvider(): array
@@ -114,9 +140,22 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetFailed(string $initialState, string $expectedState)
     {
-        $this->doSetAsStateTest($initialState, $expectedState, function () {
-            $this->mutator->setFailed($this->callback);
-        });
+        $callbacks = [
+            $this->createCallbackEntity(),
+            $this->createCompileFailureCallback(),
+            $this->createExecuteDocumentReceivedCallback(),
+        ];
+
+        foreach ($callbacks as $callback) {
+            $this->doSetAsStateTest(
+                $callback,
+                $initialState,
+                $expectedState,
+                function (CallbackInterface $callback) {
+                    $this->mutator->setFailed($callback);
+                }
+            );
+        }
     }
 
     public function setFailedDataProvider(): array
@@ -153,9 +192,22 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetComplete(string $initialState, string $expectedState)
     {
-        $this->doSetAsStateTest($initialState, $expectedState, function () {
-            $this->mutator->setComplete($this->callback);
-        });
+        $callbacks = [
+            $this->createCallbackEntity(),
+            $this->createCompileFailureCallback(),
+            $this->createExecuteDocumentReceivedCallback(),
+        ];
+
+        foreach ($callbacks as $callback) {
+            $this->doSetAsStateTest(
+                $callback,
+                $initialState,
+                $expectedState,
+                function (CallbackInterface $callback) {
+                    $this->mutator->setComplete($callback);
+                }
+            );
+        }
     }
 
     public function setCompleteDataProvider(): array
@@ -187,18 +239,43 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider setSendingDataProvider
      *
+     * @param CallbackInterface $callback
      * @param CallbackInterface::STATE_* $initialState
      * @param CallbackInterface::STATE_* $expectedState
      * @param callable $setter
      */
-    private function doSetAsStateTest(string $initialState, string $expectedState, callable $setter): void
+    private function doSetAsStateTest(
+        CallbackInterface $callback,
+        string $initialState,
+        string $expectedState,
+        callable $setter
+    ): void {
+        $callback->setState($initialState);
+        $this->callbackStore->store($callback);
+        self::assertSame($initialState, $callback->getState());
+
+        $setter($callback);
+
+        self::assertSame($expectedState, $callback->getState());
+    }
+
+    private function createCallbackEntity(): CallbackEntity
     {
-        $this->callback->setState($initialState);
-        $this->callbackStore->store($this->callback);
-        self::assertSame($initialState, $this->callback->getState());
+        return CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
+    }
 
-        $setter();
+    private function createCompileFailureCallback(): CompileFailureCallback
+    {
+        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $errorOutput
+            ->shouldReceive('getData')
+            ->andReturn([]);
 
-        self::assertSame($expectedState, $this->callback->getState());
+        return new CompileFailureCallback($errorOutput);
+    }
+
+    private function createExecuteDocumentReceivedCallback(): ExecuteDocumentReceivedCallback
+    {
+        return new ExecuteDocumentReceivedCallback(new Document());
     }
 }
