@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
-use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Model\RunnerTest\TestProxy;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\TcpCliProxyClient\Client;
@@ -20,19 +19,22 @@ class TestExecutor
     private YamlDocumentFactory $yamlDocumentFactory;
     private YamlGenerator $yamlGenerator;
     private TestDocumentMutator $testDocumentMutator;
+    private CallbackEventFactory $callbackEventFactory;
 
     public function __construct(
         Client $delegatorClient,
         YamlDocumentFactory $yamlDocumentFactory,
         EventDispatcherInterface $eventDispatcher,
         YamlGenerator $yamlGenerator,
-        TestDocumentMutator $testDocumentMutator
+        TestDocumentMutator $testDocumentMutator,
+        CallbackEventFactory $callbackEventFactory
     ) {
         $this->delegatorClient = $delegatorClient;
         $this->yamlDocumentFactory = $yamlDocumentFactory;
         $this->eventDispatcher = $eventDispatcher;
         $this->yamlGenerator = $yamlGenerator;
         $this->testDocumentMutator = $testDocumentMutator;
+        $this->callbackEventFactory = $callbackEventFactory;
     }
 
     public function execute(Test $test): void
@@ -49,16 +51,15 @@ class TestExecutor
         $runnerTestString = $this->yamlGenerator->generate($runnerTest);
 
         $this->eventDispatcher->dispatch(
-            new TestExecuteDocumentReceivedEvent(
+            $this->callbackEventFactory->createTestExecuteDocumentReceivedEvent(
                 $test,
                 $this->testDocumentMutator->removeCompilerSourceDirectoryFromSource(new Document($runnerTestString))
             )
         );
 
         $this->yamlDocumentFactory->setOnDocumentCreated(function (Document $document) use ($test) {
-            $this->eventDispatcher->dispatch(
-                new TestExecuteDocumentReceivedEvent($test, $document)
-            );
+            $event = $this->callbackEventFactory->createTestExecuteDocumentReceivedEvent($test, $document);
+            $this->eventDispatcher->dispatch($event);
         });
 
         $this->yamlDocumentFactory->start();

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Model\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use Mockery\MockInterface;
 use Psr\Http\Client\ClientExceptionInterface;

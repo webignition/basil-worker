@@ -38,7 +38,7 @@ class MockEventDispatcher
                 $expectedDispatchedEvent = $expectedDispatchedEvents[$dispatchCallIndex];
 
                 if ($expectedDispatchedEvent instanceof ExpectedDispatchedEvent) {
-                    TestCase::assertEquals($expectedDispatchedEvent->getEvent(), $passedEvent);
+                    TestCase::assertTrue($expectedDispatchedEvent->matches($passedEvent));
                 }
 
                 $dispatchCallIndex++;

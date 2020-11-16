@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Model\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackSender;
 use Mockery\MockInterface;
 
@@ -30,6 +30,14 @@ class MockCallbackSender
         $this->callbackSender
             ->shouldReceive('send')
             ->with($callback);
+
+        return $this;
+    }
+
+    public function withoutSendCall(): self
+    {
+        $this->callbackSender
+            ->shouldNotReceive('send');
 
         return $this;
     }

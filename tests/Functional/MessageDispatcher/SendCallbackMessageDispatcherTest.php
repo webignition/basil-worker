@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageDispatcher;
 
-use App\Entity\Test;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
-use App\Event\CallbackEventInterface;
-use App\Event\SourceCompile\SourceCompileFailureEvent;
-use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\FooCallbackEventInterface;
+use App\Event\FooTestExecuteDocumentReceivedEvent;
+use App\Event\SourceCompile\FooSourceCompileFailureEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
-use App\Model\Callback\CallbackInterface;
-use App\Model\Callback\CompileFailure;
-use App\Model\Callback\ExecuteDocumentReceived;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Model\TestCallback;
+use App\Tests\Mock\Entity\MockTest;
+use App\Tests\Model\Entity\Callback\TestCallbackEntity;
+use App\Tests\Services\TestCallbackEventFactory;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -34,6 +35,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     private SendCallbackMessageDispatcher $messageDispatcher;
     private InMemoryTransport $messengerTransport;
     private EventDispatcherInterface $eventDispatcher;
+    private TestCallbackEventFactory $testCallbackEventFactory;
 
     protected function setUp(): void
     {
@@ -43,22 +45,17 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 
     public function testDispatchForCallbackEvent()
     {
-        $callback = \Mockery::mock(CallbackInterface::class);
-        $event = \Mockery::mock(CallbackEventInterface::class);
-        $event
-            ->shouldReceive('getCallback')
-            ->andReturn($callback);
-
+        $event = $this->testCallbackEventFactory->createEmptyPayloadSourceCompileFailureEvent();
         $this->messageDispatcher->dispatchForCallbackEvent($event);
 
-        $this->assertMessageTransportQueue($callback);
+        $this->assertMessageTransportQueue($event->getCallback());
     }
 
     /**
      * @dataProvider subscribesToEventDataProvider
      */
     public function testSubscribesToEvent(
-        CallbackEventInterface $event,
+        FooCallbackEventInterface $event,
         CallbackInterface $expectedQueuedMessageCallback
     ) {
         self::assertCount(0, $this->messengerTransport->get());
@@ -69,13 +66,20 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 
     public function subscribesToEventDataProvider(): array
     {
-        $httpExceptionEventCallback = new TestCallback();
-        $httpResponseExceptionCallback = new TestCallback();
+        $httpExceptionEventCallback = TestCallbackEntity::createWithUniquePayload();
+        $httpResponseExceptionCallback = TestCallbackEntity::createWithUniquePayload();
 
         $sourceCompileFailureEventOutput = \Mockery::mock(ErrorOutputInterface::class);
-        $sourceCompileFailureEventCallback = new CompileFailure($sourceCompileFailureEventOutput);
+        $sourceCompileFailureEventOutput
+            ->shouldReceive('getData')
+            ->andReturn([
+                'unique' => random_bytes(16),
+            ]);
+
+        $sourceCompileFailureEventCallback = new CompileFailureCallback($sourceCompileFailureEventOutput);
 
         $document = new Document('data');
+        $testExecuteDocumentReceivedEventCallback = new ExecuteDocumentReceivedCallback($document);
 
         return [
             CallbackHttpExceptionEvent::class => [
@@ -89,13 +93,21 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
                 'event' => new CallbackHttpResponseEvent($httpResponseExceptionCallback, new Response(503)),
                 'expectedQueuedMessageCallback' => $httpResponseExceptionCallback,
             ],
-            SourceCompileFailureEvent::class => [
-                'event' => new SourceCompileFailureEvent('/app/source/Test/test.yml', $sourceCompileFailureEventOutput),
+            FooSourceCompileFailureEvent::class => [
+                'event' => new FooSourceCompileFailureEvent(
+                    '/app/source/Test/test.yml',
+                    $sourceCompileFailureEventOutput,
+                    $sourceCompileFailureEventCallback
+                ),
                 'expectedQueuedMessageCallback' => $sourceCompileFailureEventCallback,
             ],
-            ExecuteDocumentReceived::class => [
-                'event' => new TestExecuteDocumentReceivedEvent(\Mockery::mock(Test::class), $document),
-                'expectedQueuedMessageCallback' => new ExecuteDocumentReceived($document),
+            FooTestExecuteDocumentReceivedEvent::class => [
+                'event' => new FooTestExecuteDocumentReceivedEvent(
+                    (new MockTest())->getMock(),
+                    $document,
+                    $testExecuteDocumentReceivedEventCallback
+                ),
+                'expectedQueuedMessageCallback' => $testExecuteDocumentReceivedEventCallback,
             ],
         ];
     }

@@ -7,7 +7,6 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Job;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
@@ -20,9 +19,9 @@ use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
+use App\Tests\Services\TestCallbackEventFactory;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -34,6 +33,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     private JobStore $jobStore;
     private Job $job;
     private EventDispatcherInterface $eventDispatcher;
+    private TestCallbackEventFactory $testCallbackEventFactory;
 
     protected function setUp(): void
     {
@@ -331,9 +331,9 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->job->setState(Job::STATE_COMPILATION_RUNNING);
         $this->jobStore->store($this->job);
 
-        $this->eventDispatcher->dispatch(
-            new SourceCompileFailureEvent('source', \Mockery::mock(ErrorOutputInterface::class))
-        );
+        $event = $this->testCallbackEventFactory->createEmptyPayloadSourceCompileFailureEvent();
+
+        $this->eventDispatcher->dispatch($event);
 
         self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
     }

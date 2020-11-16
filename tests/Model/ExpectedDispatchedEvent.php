@@ -4,19 +4,34 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
+use PHPUnit\Framework\TestCase;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class ExpectedDispatchedEvent
 {
-    private Event $event;
+    /**
+     * @var callable
+     */
+    private $assertions;
 
-    public function __construct(Event $event)
+    public function __construct(callable $assertions)
     {
-        $this->event = $event;
+        $this->assertions = $assertions;
     }
 
-    public function getEvent(): Event
+    public static function createAssertEquals(Event $expectedEvent): self
     {
-        return $this->event;
+        return new ExpectedDispatchedEvent(
+            function (Event $actualEvent) use ($expectedEvent) {
+                TestCase::assertEquals($expectedEvent, $actualEvent);
+
+                return true;
+            }
+        );
+    }
+
+    public function matches(Event $actual): bool
+    {
+        return ($this->assertions)($actual);
     }
 }

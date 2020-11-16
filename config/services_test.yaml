@@ -83,6 +83,9 @@ services:
     App\Services\CallbackEventFactory:
         public: true
 
+    App\Services\SourceCompileEventFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
@@ -105,3 +108,6 @@ services:
 
     Symfony\Component\Messenger\Transport\InMemoryTransport:
         alias: 'messenger.transport.async'
+
+    App\Tests\Services\TestCallbackEventFactory:
+        public: true

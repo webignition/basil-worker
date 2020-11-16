@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-use App\Model\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class SendCallback
 {
-    private CallbackInterface $callback;
+    private int $callbackId;
 
     public function __construct(CallbackInterface $callback)
     {
-        $this->callback = $callback;
+        $this->callbackId = (int) $callback->getId();
     }
 
-    public function getCallback(): CallbackInterface
+    public function getCallbackId(): int
     {
-        return $this->callback;
+        return $this->callbackId;
     }
 }

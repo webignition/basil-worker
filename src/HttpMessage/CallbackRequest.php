@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\HttpMessage;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Entity\Job;
-use App\Model\Callback\CallbackInterface;
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
 
 class CallbackRequest extends GuzzleRequest
@@ -23,7 +23,7 @@ class CallbackRequest extends GuzzleRequest
             (string) json_encode([
                 'label' => $job->getLabel(),
                 'type' => $callback->getType(),
-                'payload' => $callback->getData(),
+                'payload' => $callback->getPayload(),
             ])
         );
     }

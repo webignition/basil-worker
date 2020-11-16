@@ -6,9 +6,9 @@ namespace App\MessageDispatcher;
 
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
-use App\Event\CallbackEventInterface;
-use App\Event\SourceCompile\SourceCompileFailureEvent;
-use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Event\FooCallbackEventInterface;
+use App\Event\FooTestExecuteDocumentReceivedEvent;
+use App\Event\SourceCompile\FooSourceCompileFailureEvent;
 use App\Message\SendCallback;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -31,16 +31,16 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
             CallbackHttpResponseEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
-            SourceCompileFailureEvent::class => [
+            FooSourceCompileFailureEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
-            TestExecuteDocumentReceivedEvent::class => [
+            FooTestExecuteDocumentReceivedEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
         ];
     }
 
-    public function dispatchForCallbackEvent(CallbackEventInterface $event): void
+    public function dispatchForCallbackEvent(FooCallbackEventInterface $event): void
     {
         $this->messageBus->dispatch(
             new SendCallback($event->getCallback())
