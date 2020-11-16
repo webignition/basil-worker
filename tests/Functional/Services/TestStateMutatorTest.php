@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\FooTestExecuteDocumentReceivedEvent;
 use App\Event\TestExecuteCompleteEvent;
-use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\CallbackEventFactory;
 use App\Services\TestStateMutator;
 use App\Services\TestStore;
