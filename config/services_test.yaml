@@ -80,6 +80,9 @@ services:
     App\Services\CallbackFactory:
         public: true
 
+    App\Services\CallbackEventFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
