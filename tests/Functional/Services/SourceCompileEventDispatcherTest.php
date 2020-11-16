@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Event\SourceCompile\FooSourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -31,11 +32,6 @@ class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
-
-//        $dispatcher = self::$container->get(SourceCompileEventDispatcher::class);
-//        if ($dispatcher instanceof SourceCompileEventDispatcher) {
-//            $this->dispatcher = $dispatcher;
-//        }
     }
 
     public function testDispatchEventNotDispatched()
@@ -60,11 +56,11 @@ class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
     public function testDispatchEventDispatched(
         string $source,
         OutputInterface $output,
-        Event $expectedEvent
+        ExpectedDispatchedEvent $expectedDispatchedEvent
     ) {
         $eventDispatcher = (new MockEventDispatcher())
             ->withDispatchCalls(new ExpectedDispatchedEventCollection([
-                new ExpectedDispatchedEvent($expectedEvent)
+                $expectedDispatchedEvent,
             ]))
             ->getMock();
 
@@ -75,18 +71,43 @@ class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
 
     public function dispatchEventDispatchedDataProvider(): array
     {
-        $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $compileFailureErrorOutput = \Mockery::mock(ErrorOutputInterface::class);
+        $compileFailureErrorOutput
+            ->shouldReceive('getData')
+            ->andReturn([
+                'foo' => 'bar',
+            ]);
+
         $successOutput = \Mockery::mock(SuiteManifest::class);
 
         return [
             'error output' => [
                 'source' => 'Test/test1.yml',
-                'output' => $errorOutput,
-                'expectedEvent' => new SourceCompileFailureEvent('Test/test1.yml', $errorOutput),
+                'output' => $compileFailureErrorOutput,
+                'expectedDispatchedEvent' => new ExpectedDispatchedEvent(
+                    function (Event $actualEvent) use ($compileFailureErrorOutput) {
+                        self::assertInstanceOf(FooSourceCompileFailureEvent::class, $actualEvent);
+
+                        if ($actualEvent instanceof FooSourceCompileFailureEvent) {
+                            self::assertSame('Test/test1.yml', $actualEvent->getSource());
+                            self::assertSame($actualEvent->getOutput(), $compileFailureErrorOutput);
+
+                            $callback = $actualEvent->getCallback();
+                            self::assertIsInt($callback->getId());
+                            self::assertSame(CompileFailureCallback::TYPE_COMPILE_FAILURE, $callback->getType());
+                            self::assertSame($compileFailureErrorOutput->getData(), $callback->getPayload());
+                        }
+
+                        return true;
+                    },
+                ),
             ],
             'success output' => [
                 'source' => 'Test/test2.yml',
                 'output' => $successOutput,
+                'expectedDispatchedEvent' => ExpectedDispatchedEvent::createAssertEquals(
+                    new SourceCompileSuccessEvent('Test/test2.yml', $successOutput)
+                ),
                 'expectedEvent' => new SourceCompileSuccessEvent('Test/test2.yml', $successOutput),
             ],
         ];
