@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-use App\Entity\Callback\CallbackEntity;
 use App\Entity\StorableCallbackInterface;
+use App\Model\Callback\CallbackModelInterface;
 
 abstract class AbstractCallbackEntityWrapper implements CallbackModelInterface, StorableCallbackInterface
 {

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Entity\StorableCallbackInterface;
 use App\Model\Callback\CallbackModelInterface;
-use App\Model\Callback\CompileFailureCallback;
-use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Model\Callback;
+namespace App\Entity\Callback;
 
-use App\Entity\Callback\CallbackEntity;
+use App\Model\Callback\CallbackModelInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 
 class CompileFailureCallback extends AbstractCallbackEntityWrapper

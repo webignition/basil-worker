@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\Callback\CompileFailureCallback;
-use App\Model\Callback\ExecuteDocumentReceivedCallback;
+use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\YamlDocument\Document;
 
