@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 use App\Model\Callback\CallbackModelInterface;
 use App\Repository\CallbackRepository;
 use App\Services\CallbackStore;

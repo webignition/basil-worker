@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Entity;
 
-use App\Entity\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 use App\Model\Callback\CallbackModelInterface;
 use App\Services\TestConfigurationStore;
 

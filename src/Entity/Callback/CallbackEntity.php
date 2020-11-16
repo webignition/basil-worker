@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Entity;
+namespace App\Entity\Callback;
 
+use App\Entity\StorableCallbackInterface;
 use App\Model\Callback\CallbackModelInterface;
 use Doctrine\ORM\Mapping as ORM;
 

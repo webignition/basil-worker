@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Model\Callback;
 
-use App\Entity\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 use webignition\YamlDocument\Document;
 
 class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper implements CallbackEntityWrapperInterface

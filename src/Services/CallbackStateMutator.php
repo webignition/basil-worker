@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 use App\Model\Callback\CallbackModelInterface;
 
 class CallbackStateMutator
@@ -53,7 +53,7 @@ class CallbackStateMutator
     }
 
     /**
-     * @param CallbackEntity $callback
+     * @param \App\Entity\Callback\CallbackEntity $callback
      * @param CallbackModelInterface::STATE_* $state
      */
     private function set(CallbackEntity $callback, string $state): void
