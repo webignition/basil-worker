@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CompileFailureCallback;
-use App\Event\SourceCompile\FooSourceCompileFailureEvent;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -86,9 +86,9 @@ class SourceCompileEventDispatcherTest extends AbstractBaseFunctionalTest
                 'output' => $compileFailureErrorOutput,
                 'expectedDispatchedEvent' => new ExpectedDispatchedEvent(
                     function (Event $actualEvent) use ($compileFailureErrorOutput) {
-                        self::assertInstanceOf(FooSourceCompileFailureEvent::class, $actualEvent);
+                        self::assertInstanceOf(SourceCompileFailureEvent::class, $actualEvent);
 
-                        if ($actualEvent instanceof FooSourceCompileFailureEvent) {
+                        if ($actualEvent instanceof SourceCompileFailureEvent) {
                             self::assertSame('Test/test1.yml', $actualEvent->getSource());
                             self::assertSame($actualEvent->getOutput(), $compileFailureErrorOutput);
 

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Synchronous\Services;
 
-use App\Event\FooTestExecuteDocumentReceivedEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
 use App\Services\TestFactory;
@@ -55,9 +55,9 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
             foreach ($expectedDispatchedEventDocuments as $expectedDispatchedEventDocument) {
                 $expectedDispatchedEvents[] = new ExpectedDispatchedEvent(
                     function (Event $actualEvent) use ($expectedDispatchedEventDocument): bool {
-                        self::assertInstanceOf(FooTestExecuteDocumentReceivedEvent::class, $actualEvent);
+                        self::assertInstanceOf(TestExecuteDocumentReceivedEvent::class, $actualEvent);
 
-                        if ($actualEvent instanceof FooTestExecuteDocumentReceivedEvent) {
+                        if ($actualEvent instanceof TestExecuteDocumentReceivedEvent) {
                             self::assertEquals($actualEvent->getDocument(), $expectedDispatchedEventDocument);
                         }
 

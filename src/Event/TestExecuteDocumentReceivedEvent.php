@@ -9,7 +9,7 @@ use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
-class FooTestExecuteDocumentReceivedEvent extends AbstractTestEvent implements FooCallbackEventInterface
+class TestExecuteDocumentReceivedEvent extends AbstractTestEvent implements CallbackEventInterface
 {
     private Document $document;
     private CallbackInterface $callback;

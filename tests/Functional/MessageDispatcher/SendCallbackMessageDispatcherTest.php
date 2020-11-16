@@ -9,9 +9,9 @@ use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
-use App\Event\FooCallbackEventInterface;
-use App\Event\FooTestExecuteDocumentReceivedEvent;
-use App\Event\SourceCompile\FooSourceCompileFailureEvent;
+use App\Event\CallbackEventInterface;
+use App\Event\SourceCompile\SourceCompileFailureEvent;
+use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -55,7 +55,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
      * @dataProvider subscribesToEventDataProvider
      */
     public function testSubscribesToEvent(
-        FooCallbackEventInterface $event,
+        CallbackEventInterface $event,
         CallbackInterface $expectedQueuedMessageCallback
     ) {
         self::assertCount(0, $this->messengerTransport->get());
@@ -93,16 +93,16 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
                 'event' => new CallbackHttpResponseEvent($httpResponseExceptionCallback, new Response(503)),
                 'expectedQueuedMessageCallback' => $httpResponseExceptionCallback,
             ],
-            FooSourceCompileFailureEvent::class => [
-                'event' => new FooSourceCompileFailureEvent(
+            SourceCompileFailureEvent::class => [
+                'event' => new SourceCompileFailureEvent(
                     '/app/source/Test/test.yml',
                     $sourceCompileFailureEventOutput,
                     $sourceCompileFailureEventCallback
                 ),
                 'expectedQueuedMessageCallback' => $sourceCompileFailureEventCallback,
             ],
-            FooTestExecuteDocumentReceivedEvent::class => [
-                'event' => new FooTestExecuteDocumentReceivedEvent(
+            TestExecuteDocumentReceivedEvent::class => [
+                'event' => new TestExecuteDocumentReceivedEvent(
                     (new MockTest())->getMock(),
                     $document,
                     $testExecuteDocumentReceivedEventCallback
