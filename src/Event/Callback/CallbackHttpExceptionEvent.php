@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Event\Callback;
 
-use App\Model\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 
 class CallbackHttpExceptionEvent extends AbstractCallbackEvent

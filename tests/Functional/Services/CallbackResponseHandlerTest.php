@@ -8,6 +8,7 @@ use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Model\FooTestCallback;
 use App\Tests\Model\TestCallback;
 use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
 use App\Tests\Services\CallbackHttpResponseEventSubscriber;
@@ -34,7 +35,8 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     public function testHandleResponseEventDispatched()
     {
         $response = new Response(404);
-        $callback = new TestCallback();
+        $callback = new FooTestCallback();
+
         self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
@@ -52,7 +54,7 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     public function testHandleExceptionEventDispatched()
     {
         $exception = \Mockery::mock(ConnectException::class);
-        $callback = new TestCallback();
+        $callback = new FooTestCallback();
         self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleClientException($callback, $exception);

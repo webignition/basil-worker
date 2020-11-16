@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Event\Callback;
 
-use App\Event\CallbackEventInterface;
-use App\Model\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
+use App\Event\FooCallbackEventInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 
-abstract class AbstractCallbackEvent extends Event implements CallbackEventInterface
+abstract class AbstractCallbackEvent extends Event implements FooCallbackEventInterface
 {
     private CallbackInterface $callback;
 
