@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -18,5 +19,15 @@ class CallbackRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, CallbackEntity::class);
+    }
+
+    public function getFinishedCount(): int
+    {
+        return count($this->findBy([
+            'state' => [
+                CallbackInterface::STATE_FAILED,
+                CallbackInterface::STATE_COMPLETE,
+            ],
+        ]));
     }
 }

@@ -2,21 +2,22 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Functional\Repository;
+namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
-use App\Repository\CallbackRepository;
+use App\Model\Workflow\CallbackWorkflow;
 use App\Services\CallbackStore;
+use App\Services\CallbackWorkflowFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class CallbackRepositoryTest extends AbstractBaseFunctionalTest
+class CallbackWorkflowFactoryTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private CallbackRepository $repository;
-    private CallbackStore $store;
+    private CallbackWorkflowFactory $callbackWorkflowFactory;
+    private CallbackStore $callbackStore;
 
     protected function setUp(): void
     {
@@ -24,79 +25,68 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
     }
 
-    public function testFind()
-    {
-        self::assertNull($this->repository->find(0));
-
-        $callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
-        $this->store->store($callback);
-
-        $retrievedCallback = $this->repository->find($callback->getId());
-        self::assertEquals($callback, $retrievedCallback);
-    }
-
     /**
-     * @dataProvider getFinishedCountDataProvider
+     * @dataProvider createDataProvider
      *
      * @param array<CallbackInterface::STATE_*> $callbackStates
-     * @param int $expectedFinishedCount
+     * @param CallbackWorkflow $expectedWorkflow
      */
-    public function testGetFinishedCount(array $callbackStates, int $expectedFinishedCount)
+    public function testCreate(array $callbackStates, CallbackWorkflow $expectedWorkflow)
     {
         foreach ($callbackStates as $callbackState) {
-            $callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
+            $callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
             $callback->setState($callbackState);
-            $this->store->store($callback);
+            $this->callbackStore->store($callback);
         }
 
-        self::assertSame($expectedFinishedCount, $this->repository->getFinishedCount());
+        self::assertEquals($expectedWorkflow, $this->callbackWorkflowFactory->create());
     }
 
-    public function getFinishedCountDataProvider(): array
+    public function createDataProvider(): array
     {
         return [
             'no callbacks' => [
                 'callbackStates' => [],
-                'expectedFinishedCount' => 0,
+                'expectedWorkflow' => new CallbackWorkflow(0, 0),
             ],
-            'none finished' => [
+            'three total, none finished' => [
                 'callbackStates' => [
                     CallbackInterface::STATE_AWAITING,
                     CallbackInterface::STATE_QUEUED,
                     CallbackInterface::STATE_SENDING,
                 ],
-                'expectedFinishedCount' => 0,
+                'expectedWorkflow' => new CallbackWorkflow(3, 0),
             ],
-            'one complete' => [
-                'callbackStates' => [
-                    CallbackInterface::STATE_AWAITING,
-                    CallbackInterface::STATE_QUEUED,
-                    CallbackInterface::STATE_SENDING,
-                    CallbackInterface::STATE_COMPLETE,
-                ],
-                'expectedFinishedCount' => 1,
-            ],
-            'one failed' => [
-                'callbackStates' => [
-                    CallbackInterface::STATE_AWAITING,
-                    CallbackInterface::STATE_QUEUED,
-                    CallbackInterface::STATE_SENDING,
-                    CallbackInterface::STATE_FAILED,
-                ],
-                'expectedFinishedCount' => 1,
-            ],
-            'two complete, three failed' => [
+            'four total, one complete' => [
                 'callbackStates' => [
                     CallbackInterface::STATE_AWAITING,
                     CallbackInterface::STATE_QUEUED,
                     CallbackInterface::STATE_SENDING,
                     CallbackInterface::STATE_COMPLETE,
+                ],
+                'expectedWorkflow' => new CallbackWorkflow(4, 1),
+            ],
+            'four total, one failed' => [
+                'callbackStates' => [
+                    CallbackInterface::STATE_AWAITING,
+                    CallbackInterface::STATE_QUEUED,
+                    CallbackInterface::STATE_SENDING,
+                    CallbackInterface::STATE_FAILED,
+                ],
+                'expectedWorkflow' => new CallbackWorkflow(4, 1),
+            ],
+            'eight total, two complete, three failed' => [
+                'callbackStates' => [
+                    CallbackInterface::STATE_AWAITING,
+                    CallbackInterface::STATE_QUEUED,
+                    CallbackInterface::STATE_SENDING,
+                    CallbackInterface::STATE_COMPLETE,
                     CallbackInterface::STATE_COMPLETE,
                     CallbackInterface::STATE_FAILED,
                     CallbackInterface::STATE_FAILED,
                     CallbackInterface::STATE_FAILED,
                 ],
-                'expectedFinishedCount' => 5,
+                'expectedWorkflow' => new CallbackWorkflow(8, 5),
             ],
         ];
     }
