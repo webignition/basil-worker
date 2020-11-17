@@ -3,6 +3,8 @@ parameters:
   paths:
     - src
     - tests
+  excludes_analyse:
+    - tests/build/*
   inferPrivatePropertyTypeFromConstructor: true
   ignoreErrors:
     # Test methods with intentionally no return type
@@ -14,3 +16,8 @@ parameters:
     -
       message: '#DataProvider\(\) return type has no value type specified in iterable type array#'
       path: 'tests'
+
+    # src/Model/Workflow/CallbackWorkflow::deriveState() return type is not correctly understood
+    -
+      message: '#Method App\\Model\\Workflow\\CallbackWorkflow::deriveState\(\) never returns string#'
+      path: 'src/Model/Workflow/CallbackWorkflow.php'

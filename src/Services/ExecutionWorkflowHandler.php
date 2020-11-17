@@ -8,7 +8,7 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\Workflow\ExecutionWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -79,7 +79,7 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
     {
         $workflow = $this->executionWorkflowFactory->create();
 
-        return ExecutionWorkflow::STATE_COMPLETE === $workflow->getState();
+        return WorkflowInterface::STATE_COMPLETE === $workflow->getState();
     }
 
     public function isReadyToExecute(): bool
@@ -89,8 +89,8 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
         return in_array(
             $workflow->getState(),
             [
-                ExecutionWorkflow::STATE_NOT_STARTED,
-                ExecutionWorkflow::STATE_IN_PROGRESS,
+                WorkflowInterface::STATE_NOT_STARTED,
+                WorkflowInterface::STATE_IN_PROGRESS,
             ]
         );
     }

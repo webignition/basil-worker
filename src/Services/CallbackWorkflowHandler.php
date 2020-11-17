@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\Workflow\CallbackWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 
 class CallbackWorkflowHandler
 {
@@ -17,6 +17,6 @@ class CallbackWorkflowHandler
 
     public function isComplete(): bool
     {
-        return CallbackWorkflow::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState();
+        return WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState();
     }
 }

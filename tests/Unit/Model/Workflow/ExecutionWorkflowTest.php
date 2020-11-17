@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Model\Workflow;
 
-use App\Model\Workflow\CompilationWorkflow;
 use App\Model\Workflow\ExecutionWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 use PHPUnit\Framework\TestCase;
 
 class ExecutionWorkflowTest extends TestCase
@@ -21,21 +21,21 @@ class ExecutionWorkflowTest extends TestCase
     public function getStateDataProvider(): array
     {
         return [
-            ExecutionWorkflow::STATE_NOT_READY => [
-                'workflow' => new ExecutionWorkflow(CompilationWorkflow::STATE_IN_PROGRESS, 0, 0, null),
-                'expectedState' => ExecutionWorkflow::STATE_NOT_READY,
+            WorkflowInterface::STATE_NOT_READY => [
+                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_IN_PROGRESS, 0, 0, null),
+                'expectedState' => WorkflowInterface::STATE_NOT_READY,
             ],
-            ExecutionWorkflow::STATE_NOT_STARTED => [
-                'workflow' => new ExecutionWorkflow(CompilationWorkflow::STATE_COMPLETE, 3, 3, null),
-                'expectedState' => ExecutionWorkflow::STATE_NOT_STARTED,
+            WorkflowInterface::STATE_NOT_STARTED => [
+                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 3, null),
+                'expectedState' => WorkflowInterface::STATE_NOT_STARTED,
             ],
-            ExecutionWorkflow::STATE_IN_PROGRESS => [
-                'workflow' => new ExecutionWorkflow(CompilationWorkflow::STATE_COMPLETE, 3, 2, null),
-                'expectedState' => ExecutionWorkflow::STATE_IN_PROGRESS,
+            WorkflowInterface::STATE_IN_PROGRESS => [
+                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 2, null),
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
-            ExecutionWorkflow::STATE_COMPLETE => [
-                'workflow' => new ExecutionWorkflow(CompilationWorkflow::STATE_COMPLETE, 3, 0, null),
-                'expectedState' => ExecutionWorkflow::STATE_COMPLETE,
+            WorkflowInterface::STATE_COMPLETE => [
+                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 0, null),
+                'expectedState' => WorkflowInterface::STATE_COMPLETE,
             ],
         ];
     }

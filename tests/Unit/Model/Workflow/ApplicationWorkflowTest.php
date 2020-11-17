@@ -6,6 +6,7 @@ namespace App\Tests\Unit\Model\Workflow;
 
 use App\Entity\Job;
 use App\Model\Workflow\ApplicationWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 use App\Tests\Mock\Entity\MockJob;
 use PHPUnit\Framework\TestCase;
 
@@ -24,7 +25,7 @@ class ApplicationWorkflowTest extends TestCase
         return [
             'job does not exist' => [
                 'workflow' => new ApplicationWorkflow(null, false),
-                'expectedState' => ApplicationWorkflow::STATE_NOT_READY,
+                'expectedState' => WorkflowInterface::STATE_NOT_READY,
             ],
             'job state: compilation-awaiting' => [
                 'workflow' => new ApplicationWorkflow(
@@ -33,7 +34,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     false
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_NOT_STARTED,
+                'expectedState' => WorkflowInterface::STATE_NOT_STARTED,
             ],
             'job state: compilation-running' => [
                 'workflow' => new ApplicationWorkflow(
@@ -43,7 +44,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     false
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_IN_PROGRESS,
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
             'job state: execution-running' => [
                 'workflow' => new ApplicationWorkflow(
@@ -53,7 +54,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     false
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_IN_PROGRESS,
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
             'job state: execution-cancelled' => [
                 'workflow' => new ApplicationWorkflow(
@@ -63,7 +64,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     false
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_COMPLETE,
+                'expectedState' => WorkflowInterface::STATE_COMPLETE,
             ],
             'job finished, callback workflow incomplete' => [
                 'workflow' => new ApplicationWorkflow(
@@ -73,7 +74,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     false
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_IN_PROGRESS,
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
             'job finished, callback workflow complete' => [
                 'workflow' => new ApplicationWorkflow(
@@ -83,7 +84,7 @@ class ApplicationWorkflowTest extends TestCase
                         ->getMock(),
                     true
                 ),
-                'expectedState' => ApplicationWorkflow::STATE_COMPLETE,
+                'expectedState' => WorkflowInterface::STATE_COMPLETE,
             ],
         ];
     }

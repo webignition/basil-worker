@@ -4,17 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-class CompilationWorkflow
+class CompilationWorkflow extends AbstractWorkflow
 {
-    public const STATE_NOT_READY = 'not-ready';
-    public const STATE_NOT_STARTED = 'not-started';
-    public const STATE_IN_PROGRESS = 'in-progress';
-    public const STATE_COMPLETE = 'complete';
-
-    /**
-     * @var string[]
-     */
-    private array $compiledSources;
     private ?string $nextSource;
 
     /**
@@ -23,28 +14,35 @@ class CompilationWorkflow
      */
     public function __construct(array $compiledSources, ?string $nextSource)
     {
-        $this->compiledSources = $compiledSources;
+        parent::__construct($this->deriveState($compiledSources, $nextSource));
+
         $this->nextSource = $nextSource;
     }
 
-    public function getState(): string
+    /**
+     * @param string[] $compiledSources
+     * @param string|null $nextSource
+     *
+     * @return WorkflowInterface::STATE_*
+     */
+    private function deriveState(array $compiledSources, ?string $nextSource): string
     {
-        $hasCompiledSources = [] !== $this->compiledSources;
-        $hasNextSource = is_string($this->nextSource);
+        $hasCompiledSources = [] !== $compiledSources;
+        $hasNextSource = is_string($nextSource);
 
         if (false === $hasCompiledSources && false === $hasNextSource) {
-            return self::STATE_NOT_READY;
+            return WorkflowInterface::STATE_NOT_READY;
         }
 
         if (false === $hasCompiledSources && true === $hasNextSource) {
-            return self::STATE_NOT_STARTED;
+            return WorkflowInterface::STATE_NOT_STARTED;
         }
 
         if (true === $hasCompiledSources && true === $hasNextSource) {
-            return self::STATE_IN_PROGRESS;
+            return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
-        return self::STATE_COMPLETE;
+        return WorkflowInterface::STATE_COMPLETE;
     }
 
     public function getNextSource(): ?string

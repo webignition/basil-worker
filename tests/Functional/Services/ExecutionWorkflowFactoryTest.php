@@ -6,8 +6,8 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
-use App\Model\Workflow\CompilationWorkflow;
 use App\Model\Workflow\ExecutionWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStore;
@@ -68,7 +68,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
                     return new ExecutionWorkflow(
-                        CompilationWorkflow::STATE_COMPLETE,
+                        WorkflowInterface::STATE_COMPLETE,
                         2,
                         2,
                         $nextTestId
@@ -88,7 +88,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
                     return new ExecutionWorkflow(
-                        CompilationWorkflow::STATE_COMPLETE,
+                        WorkflowInterface::STATE_COMPLETE,
                         2,
                         1,
                         $nextTestId
@@ -111,7 +111,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 },
                 'expectedWorkflowCreator' => function () {
                     return new ExecutionWorkflow(
-                        CompilationWorkflow::STATE_COMPLETE,
+                        WorkflowInterface::STATE_COMPLETE,
                         2,
                         0,
                         null
