@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Model\Workflow;
 
 use App\Model\Workflow\CallbackWorkflow;
-use App\Model\Workflow\ExecutionWorkflow;
 use PHPUnit\Framework\TestCase;
 
 class CallbackWorkflowTest extends TestCase
@@ -23,15 +22,15 @@ class CallbackWorkflowTest extends TestCase
         return [
             CallbackWorkflow::STATE_NOT_STARTED => [
                 'workflow' => new CallbackWorkflow(0, 0),
-                'expectedState' => ExecutionWorkflow::STATE_NOT_STARTED,
+                'expectedState' => CallbackWorkflow::STATE_NOT_STARTED,
             ],
             CallbackWorkflow::STATE_IN_PROGRESS => [
                 'workflow' => new CallbackWorkflow(1, 0),
-                'expectedState' => ExecutionWorkflow::STATE_IN_PROGRESS,
+                'expectedState' => CallbackWorkflow::STATE_IN_PROGRESS,
             ],
             CallbackWorkflow::STATE_COMPLETE => [
                 'workflow' => new CallbackWorkflow(1, 1),
-                'expectedState' => ExecutionWorkflow::STATE_COMPLETE,
+                'expectedState' => CallbackWorkflow::STATE_COMPLETE,
             ],
         ];
     }
