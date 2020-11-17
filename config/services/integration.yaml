@@ -9,6 +9,12 @@ services:
         autowire: true
         autoconfigure: true
 
+    App\Services\ApplicationWorkflowHandler:
+        public: true
+
+    App\Tests\Services\EntityRefresher:
+        public: true
+
     App\Tests\Services\Integration\HttpLoggerFactory:
 
     app.tests.services.integration.httplogger:
