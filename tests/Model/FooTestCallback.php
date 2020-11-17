@@ -39,6 +39,19 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
         return $new;
     }
 
+    /**
+     * @param CallbackInterface::STATE_* $state
+     *
+     * @return $this
+     */
+    public function withState(string $state): self
+    {
+        $new = clone $this;
+        $new->setState($state);
+
+        return $new;
+    }
+
     public function getPayload(): array
     {
         return $this->payload;

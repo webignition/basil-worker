@@ -14,17 +14,20 @@ class CallbackSender
     private HttpClientInterface $httpClient;
     private JobStore $jobStore;
     private CallbackResponseHandler $callbackResponseHandler;
+    private CallbackStateMutator $callbackStateMutator;
     private int $retryLimit;
 
     public function __construct(
         HttpClientInterface $httpClient,
         JobStore $jobStore,
         CallbackResponseHandler $callbackResponseHandler,
+        CallbackStateMutator $callbackStateMutator,
         int $retryLimit
     ) {
         $this->httpClient = $httpClient;
         $this->jobStore = $jobStore;
         $this->callbackResponseHandler = $callbackResponseHandler;
+        $this->callbackStateMutator = $callbackStateMutator;
         $this->retryLimit = $retryLimit;
     }
 
@@ -35,6 +38,8 @@ class CallbackSender
         }
 
         if ($callback->hasReachedRetryLimit($this->retryLimit)) {
+            $this->callbackStateMutator->setFailed($callback);
+
             return;
         }
 

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
 use App\Services\JobStore;
@@ -127,7 +128,13 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send((new FooTestCallback())->withRetryCount($retryLimit));
+        $callback = new FooTestCallback();
+        $callback = $callback->withRetryCount($retryLimit);
+        $callback = $callback->withState(CallbackInterface::STATE_SENDING);
+
+        $this->callbackSender->send($callback);
+
+        self::assertSame(CallbackInterface::STATE_FAILED, $callback->getState());
     }
 
     /**
