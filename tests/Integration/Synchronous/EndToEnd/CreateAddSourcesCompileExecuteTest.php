@@ -40,7 +40,6 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            Invokable::createEmpty(),
             $expectedJobEndState,
             $postAssertions
         );

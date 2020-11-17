@@ -41,16 +41,6 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            new Invokable(
-                function (Job $job, string $expectedJobEndState) {
-                    $this->entityManager->refresh($job);
-
-                    return $expectedJobEndState === $job->getState();
-                },
-                [
-                    $expectedJobEndState,
-                ]
-            ),
             $expectedJobEndState,
             new Invokable(
                 function (array $expectedTestEndStates) {

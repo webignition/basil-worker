@@ -4,12 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
+use App\Entity\Test;
+use App\Services\ApplicationWorkflowHandler;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
+use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +28,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected JobStore $jobStore;
     protected UploadedFileFactory $uploadedFileFactory;
     protected BasilFixtureHandler $basilFixtureHandler;
+    protected ApplicationWorkflowHandler $applicationWorkflowHandler;
+    protected EntityRefresher $entityRefresher;
 
     protected function setUp(): void
     {
@@ -42,7 +48,6 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected function doCreateJobAddSourcesTest(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        InvokableInterface $waitUntil,
         string $expectedJobEndState,
         InvokableInterface $postAssertions
     ): void {
@@ -56,11 +61,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $job = $this->jobStore->getJob();
         self::assertSame($expectedSourcePaths, $job->getSources());
 
-        $this->waitUntil(
-            function (Job $job) use ($waitUntil): bool {
-                return $waitUntil($job);
-            }
-        );
+        $this->waitUntilApplicationWorkflowIsComplete();
 
         self::assertSame($expectedJobEndState, $job->getState());
 
@@ -110,16 +111,14 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         }
     }
 
-    private function waitUntil(callable $callable, int $maxDurationInSeconds = 30): bool
+    private function waitUntilApplicationWorkflowIsComplete(int $maxDurationInSeconds = 30): bool
     {
         $duration = 0;
         $maxDuration = $maxDurationInSeconds * 1000000;
         $maxDurationReached = $duration >= $maxDuration;
         $intervalInMicroseconds = 100000;
 
-        $job = $this->jobStore->getJob();
-
-        while (false === $callable($job) && false === $maxDurationReached) {
+        while (false === $this->applicationWorkflowHandler->isComplete() && false === $maxDurationReached) {
             usleep($intervalInMicroseconds);
             $duration += $intervalInMicroseconds;
             $maxDurationReached = $duration >= $maxDuration;
@@ -128,7 +127,11 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
                 return false;
             }
 
-            $job = $this->jobStore->getJob();
+            $this->entityRefresher->refreshForEntities([
+                Job::class,
+                Test::class,
+                CallbackEntity::class,
+            ]);
         }
 
         return true;
