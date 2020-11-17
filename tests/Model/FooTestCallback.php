@@ -20,7 +20,7 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
     public function __construct()
     {
         $this->payload = [
-            self::ID => random_bytes(16),
+            self::ID => md5(random_bytes(16)),
         ];
 
         parent::__construct(CallbackEntity::create(
