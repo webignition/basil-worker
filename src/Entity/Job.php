@@ -20,6 +20,11 @@ class Job implements \JsonSerializable
     public const STATE_EXECUTION_COMPLETE = 'execution-complete';
     public const STATE_EXECUTION_CANCELLED = 'execution-cancelled';
 
+    private const RUNNING_STATES = [
+        self::STATE_COMPILATION_RUNNING,
+        self::STATE_EXECUTION_RUNNING,
+    ];
+
     private const FINISHED_STATES = [
         self::STATE_COMPILATION_FAILED,
         self::STATE_EXECUTION_FAILED,
@@ -114,6 +119,11 @@ class Job implements \JsonSerializable
     public function setState(string $state): void
     {
         $this->state = $state;
+    }
+
+    public function isRunning(): bool
+    {
+        return in_array($this->state, self::RUNNING_STATES);
     }
 
     public function isFinished(): bool
