@@ -10,7 +10,7 @@ use App\Services\CallbackSender;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
-use App\Tests\Model\FooTestCallback;
+use App\Tests\Model\TestCallback;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
@@ -44,7 +44,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
      */
     public function testSendResponseSuccess(ResponseInterface $response)
     {
-        $callback = new FooTestCallback();
+        $callback = new TestCallback();
         $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
         $this->mockHandler->append($response);
@@ -81,7 +81,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
      */
     public function testSendResponseNonSuccessResponse(ResponseInterface $response)
     {
-        $callback = new FooTestCallback();
+        $callback = new TestCallback();
 
         $this->mockHandler->append($response);
 
@@ -115,7 +115,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->callbackSender->send(new FooTestCallback());
+        $this->callbackSender->send(new TestCallback());
     }
 
     public function testSendCallbackRetryLimitReached()
@@ -131,7 +131,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $callback = new FooTestCallback();
+        $callback = new TestCallback();
         $callback = $callback->withRetryCount($retryLimit);
         $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
@@ -149,7 +149,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->mockHandler->append($exception);
 
-        $callback = new FooTestCallback();
+        $callback = new TestCallback();
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleResponseCall()

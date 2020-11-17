@@ -8,7 +8,7 @@ use App\Entity\Callback\AbstractCallbackEntityWrapper;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 
-class FooTestCallback extends AbstractCallbackEntityWrapper
+class TestCallback extends AbstractCallbackEntityWrapper
 {
     private const ID = 'id';
 
