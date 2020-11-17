@@ -64,4 +64,13 @@ class MockJob
 
         return $this;
     }
+
+    public function withIsRunningCall(bool $isRunning): self
+    {
+        $this->job
+            ->shouldReceive('isRunning')
+            ->andReturn($isRunning);
+
+        return $this;
+    }
 }

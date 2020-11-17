@@ -80,6 +80,58 @@ class JobTest extends TestCase
     }
 
     /**
+     * @dataProvider isRunningDataProvider
+     *
+     * @param Job::STATE_* $jobState
+     * @param bool $expectedIsRunning
+     */
+    public function testIsRunning(string $jobState, bool $expectedIsRunning)
+    {
+        $job = Job::create('', '');
+        $job->setState($jobState);
+
+        self::assertSame($expectedIsRunning, $job->isRunning());
+    }
+
+    public function isRunningDataProvider(): array
+    {
+        return [
+            Job::STATE_COMPILATION_AWAITING => [
+                'jobState' => Job::STATE_COMPILATION_AWAITING,
+                'expectedIsRunning' => false,
+            ],
+            Job::STATE_COMPILATION_RUNNING => [
+                'jobState' => Job::STATE_COMPILATION_RUNNING,
+                'expectedIsRunning' => true,
+            ],
+            Job::STATE_COMPILATION_FAILED => [
+                'jobState' => Job::STATE_COMPILATION_FAILED,
+                'expectedIsRunning' => false,
+            ],
+            Job::STATE_EXECUTION_AWAITING => [
+                'jobState' => Job::STATE_EXECUTION_AWAITING,
+                'expectedIsRunning' => false,
+            ],
+            Job::STATE_EXECUTION_RUNNING => [
+                'jobState' => Job::STATE_EXECUTION_RUNNING,
+                'expectedIsRunning' => true,
+            ],
+            Job::STATE_EXECUTION_FAILED => [
+                'jobState' => Job::STATE_EXECUTION_FAILED,
+                'expectedIsRunning' => false,
+            ],
+            Job::STATE_EXECUTION_COMPLETE => [
+                'jobState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedIsRunning' => false,
+            ],
+            Job::STATE_EXECUTION_CANCELLED => [
+                'jobState' => Job::STATE_EXECUTION_CANCELLED,
+                'expectedIsRunning' => false,
+            ],
+        ];
+    }
+
+    /**
      * @param Job $job
      * @param string[] $sources
      *
