@@ -14,42 +14,21 @@ use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 {
+    use TestClassServicePropertyInjectorTrait;
+
     protected ClientRequestSender $clientRequestSender;
     protected JobStore $jobStore;
-    private UploadedFileFactory $uploadedFileFactory;
-    private BasilFixtureHandler $basilFixtureHandler;
+    protected UploadedFileFactory $uploadedFileFactory;
+    protected BasilFixtureHandler $basilFixtureHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
-
-        $clientRequestSender = self::$container->get(ClientRequestSender::class);
-        self::assertInstanceOf(ClientRequestSender::class, $clientRequestSender);
-        if ($clientRequestSender instanceof ClientRequestSender) {
-            $this->clientRequestSender = $clientRequestSender;
-        }
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $this->jobStore = $jobStore;
-        }
-
-        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
-        self::assertInstanceOf(UploadedFileFactory::class, $uploadedFileFactory);
-        if ($uploadedFileFactory instanceof UploadedFileFactory) {
-            $this->uploadedFileFactory = $uploadedFileFactory;
-        }
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        self::assertInstanceOf(BasilFixtureHandler::class, $basilFixtureHandler);
-        if ($basilFixtureHandler instanceof BasilFixtureHandler) {
-            $this->basilFixtureHandler = $basilFixtureHandler;
-        }
-
+        $this->injectContainerServicesIntoClassProperties();
         $this->initializeSourceStore();
     }
 
