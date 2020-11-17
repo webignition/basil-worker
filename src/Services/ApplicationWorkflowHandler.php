@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\Workflow\ApplicationWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 
 class ApplicationWorkflowHandler
 {
@@ -17,6 +17,6 @@ class ApplicationWorkflowHandler
 
     public function isComplete(): bool
     {
-        return ApplicationWorkflow::STATE_COMPLETE === $this->applicationWorkflowFactory->create()->getState();
+        return WorkflowInterface::STATE_COMPLETE === $this->applicationWorkflowFactory->create()->getState();
     }
 }

@@ -4,16 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-class ExecutionWorkflow
+class ExecutionWorkflow extends AbstractWorkflow
 {
-    public const STATE_NOT_READY = 'not-ready';
-    public const STATE_NOT_STARTED = 'not-started';
-    public const STATE_IN_PROGRESS = 'in-progress';
-    public const STATE_COMPLETE = 'complete';
-
-    private string $compilationWorkflowState;
-    private int $totalTestCount;
-    private int $awaitingTestCount;
     private ?int $nextTestId;
 
     public function __construct(
@@ -22,27 +14,29 @@ class ExecutionWorkflow
         int $awaitingTestCount,
         ?int $nextTestId
     ) {
-        $this->compilationWorkflowState = $compilationWorkflowState;
-        $this->totalTestCount = $totalTestCount;
-        $this->awaitingTestCount = $awaitingTestCount;
+        parent::__construct($this->deriveState($compilationWorkflowState, $totalTestCount, $awaitingTestCount));
+
         $this->nextTestId = $nextTestId;
     }
 
-    public function getState(): string
+    /**
+     * @return WorkflowInterface::STATE_*
+     */
+    private function deriveState(string $compilationWorkflowState, int $totalTestCount, int $awaitingTestCount): string
     {
-        if (CompilationWorkflow::STATE_COMPLETE !== $this->compilationWorkflowState) {
-            return self::STATE_NOT_READY;
+        if (WorkflowInterface::STATE_COMPLETE !== $compilationWorkflowState) {
+            return WorkflowInterface::STATE_NOT_READY;
         }
 
-        if ($this->totalTestCount === $this->awaitingTestCount) {
-            return self::STATE_NOT_STARTED;
+        if ($totalTestCount === $awaitingTestCount) {
+            return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        if ($this->awaitingTestCount > 0) {
-            return self::STATE_IN_PROGRESS;
+        if ($awaitingTestCount > 0) {
+            return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
-        return self::STATE_COMPLETE;
+        return WorkflowInterface::STATE_COMPLETE;
     }
 
     public function getNextTestId(): ?int

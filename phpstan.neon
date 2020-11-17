@@ -16,3 +16,8 @@ parameters:
     -
       message: '#DataProvider\(\) return type has no value type specified in iterable type array#'
       path: 'tests'
+
+    # foo
+    -
+      message: '#Method App\\Model\\Workflow\\CallbackWorkflow::deriveState\(\) never returns string#'
+      path: 'src/Model/Workflow/CallbackWorkflow.php'

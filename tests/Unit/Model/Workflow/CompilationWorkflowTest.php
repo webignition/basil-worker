@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Model\Workflow;
 
 use App\Model\Workflow\CompilationWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 use PHPUnit\Framework\TestCase;
 
 class CompilationWorkflowTest extends TestCase
@@ -20,21 +21,21 @@ class CompilationWorkflowTest extends TestCase
     public function getStateDataProvider(): array
     {
         return [
-            CompilationWorkflow::STATE_NOT_READY => [
+            WorkflowInterface::STATE_NOT_READY => [
                 'workflow' => new CompilationWorkflow([], null),
-                'expectedState' => CompilationWorkflow::STATE_NOT_READY,
+                'expectedState' => WorkflowInterface::STATE_NOT_READY,
             ],
-            CompilationWorkflow::STATE_NOT_STARTED => [
+            WorkflowInterface::STATE_NOT_STARTED => [
                 'workflow' => new CompilationWorkflow([], ''),
-                'expectedState' => CompilationWorkflow::STATE_NOT_STARTED,
+                'expectedState' => WorkflowInterface::STATE_NOT_STARTED,
             ],
-            CompilationWorkflow::STATE_IN_PROGRESS => [
+            WorkflowInterface::STATE_IN_PROGRESS => [
                 'workflow' => new CompilationWorkflow([''], ''),
-                'expectedState' => CompilationWorkflow::STATE_IN_PROGRESS,
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
-            CompilationWorkflow::STATE_COMPLETE => [
+            WorkflowInterface::STATE_COMPLETE => [
                 'workflow' => new CompilationWorkflow([''], null),
-                'expectedState' => CompilationWorkflow::STATE_COMPLETE,
+                'expectedState' => WorkflowInterface::STATE_COMPLETE,
             ],
         ];
     }
