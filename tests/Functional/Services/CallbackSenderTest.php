@@ -45,6 +45,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     public function testSendResponseSuccess(ResponseInterface $response)
     {
         $callback = new FooTestCallback();
+        $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
         $this->mockHandler->append($response);
 
@@ -58,6 +59,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->mockHandler->append($response);
         $this->callbackSender->send($callback);
+
+        self::assertSame(CallbackInterface::STATE_COMPLETE, $callback->getState());
     }
 
     public function sendResponseSuccessDataProvider(): array
