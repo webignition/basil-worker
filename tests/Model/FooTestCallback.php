@@ -20,7 +20,7 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
     public function __construct()
     {
         $this->payload = [
-            self::ID => random_bytes(16),
+            self::ID => md5(random_bytes(16)),
         ];
 
         parent::__construct(CallbackEntity::create(
@@ -35,6 +35,19 @@ class FooTestCallback extends AbstractCallbackEntityWrapper
         for ($i = 0; $i < $retryCount; $i++) {
             $new->incrementRetryCount();
         }
+
+        return $new;
+    }
+
+    /**
+     * @param CallbackInterface::STATE_* $state
+     *
+     * @return $this
+     */
+    public function withState(string $state): self
+    {
+        $new = clone $this;
+        $new->setState($state);
 
         return $new;
     }
