@@ -41,7 +41,6 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     /**
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param InvokableInterface $waitUntil
      * @param Job::STATE_* $expectedJobEndState
      * @param InvokableInterface $postAssertions
      */
