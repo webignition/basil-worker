@@ -14,13 +14,12 @@ class ApplicationWorkflow
     public const STATE_COMPLETE = 'complete';
 
     private ?Job $job;
-    private string $callbackWorkflowState;
+    private bool $callbackWorkflowIsComplete;
 
-
-    public function __construct(?Job $job, string $callbackWorkflowState)
+    public function __construct(?Job $job, bool $callbackWorkflowIsComplete)
     {
         $this->job = $job;
-        $this->callbackWorkflowState = $callbackWorkflowState;
+        $this->callbackWorkflowIsComplete = $callbackWorkflowIsComplete;
     }
 
     public function getState(): string
@@ -43,7 +42,7 @@ class ApplicationWorkflow
             return self::STATE_COMPLETE;
         }
 
-        return CallbackWorkflow::STATE_COMPLETE === $this->callbackWorkflowState
+        return $this->callbackWorkflowIsComplete
             ? self::STATE_COMPLETE
             : self::STATE_IN_PROGRESS;
     }
