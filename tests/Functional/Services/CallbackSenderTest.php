@@ -82,6 +82,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     public function testSendResponseNonSuccessResponse(ResponseInterface $response)
     {
         $callback = new TestCallback();
+        $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
         $this->mockHandler->append($response);
 
@@ -95,6 +96,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $this->mockHandler->append($response);
         $this->callbackSender->send($callback);
+
+        self::assertSame(CallbackInterface::STATE_SENDING, $callback->getState());
     }
 
     public function sendResponseNonSuccessResponseDataProvider(): array
@@ -150,6 +153,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->mockHandler->append($exception);
 
         $callback = new TestCallback();
+        $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleResponseCall()
@@ -159,6 +163,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
         $this->callbackSender->send($callback);
+
+        self::assertSame(CallbackInterface::STATE_SENDING, $callback->getState());
     }
 
     public function sendFailureHttpClientExceptionThrownDataProvider(): array
