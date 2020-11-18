@@ -6,55 +6,55 @@ namespace App\Entity\Callback;
 
 abstract class AbstractCallbackEntityWrapper implements CallbackInterface
 {
-    private CallbackInterface $entity;
+    private CallbackInterface $callback;
 
-    public function __construct(CallbackInterface $entity)
+    public function __construct(CallbackInterface $callback)
     {
-        $this->entity = $entity;
+        $this->callback = $callback;
     }
 
     public function getEntity(): CallbackEntity
     {
-        return $this->entity->getEntity();
+        return $this->callback->getEntity();
     }
 
     public function getId(): ?int
     {
-        return $this->entity->getId();
+        return $this->callback->getId();
     }
 
     public function getState(): string
     {
-        return $this->entity->getState();
+        return $this->callback->getState();
     }
 
     public function setState(string $state): void
     {
-        $this->entity->setState($state);
+        $this->callback->setState($state);
     }
 
     public function getRetryCount(): int
     {
-        return $this->entity->getRetryCount();
+        return $this->callback->getRetryCount();
     }
 
     public function getType(): string
     {
-        return $this->entity->getType();
+        return $this->callback->getType();
     }
 
     public function getPayload(): array
     {
-        return $this->entity->getPayload();
+        return $this->callback->getPayload();
     }
 
     public function incrementRetryCount(): void
     {
-        $this->entity->incrementRetryCount();
+        $this->callback->incrementRetryCount();
     }
 
     public function hasReachedRetryLimit(int $limit): bool
     {
-        return $this->entity->hasReachedRetryLimit($limit);
+        return $this->callback->hasReachedRetryLimit($limit);
     }
 }
