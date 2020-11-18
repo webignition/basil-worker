@@ -33,6 +33,6 @@ class HttpLogReader
 
     public function reset(): void
     {
-        unlink($this->path);
+        file_put_contents($this->path, '');
     }
 }
