@@ -14,6 +14,7 @@ use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
+use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -30,12 +31,20 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected BasilFixtureHandler $basilFixtureHandler;
     protected ApplicationWorkflowHandler $applicationWorkflowHandler;
     protected EntityRefresher $entityRefresher;
+    protected HttpLogReader $httpLogReader;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
         $this->initializeSourceStore();
+    }
+
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+
+        $this->httpLogReader->reset();
     }
 
     /**
