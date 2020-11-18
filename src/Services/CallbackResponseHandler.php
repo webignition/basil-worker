@@ -20,28 +20,17 @@ class CallbackResponseHandler
         $this->eventDispatcher = $eventDispatcher;
     }
 
-    public function handleResponse(CallbackInterface $callback, ResponseInterface $response): void
+    /**
+     * @param CallbackInterface $callback
+     * @param ClientExceptionInterface|ResponseInterface $context
+     */
+    public function handle(CallbackInterface $callback, object $context): void
     {
         $callback->incrementRetryCount();
-        $callback = $this->createNextCallback($callback);
-
-        $this->eventDispatcher->dispatch(new CallbackHttpErrorEvent($callback, $response));
-    }
-
-    public function handleClientException(CallbackInterface $callback, ClientExceptionInterface $clientException): void
-    {
-        $callback->incrementRetryCount();
-        $callback = $this->createNextCallback($callback);
-
-        $this->eventDispatcher->dispatch(new CallbackHttpErrorEvent($callback, $clientException));
-    }
-
-    private function createNextCallback(CallbackInterface $callback): CallbackInterface
-    {
-        if (0 === $callback->getRetryCount()) {
-            return $callback;
+        if (0 !== $callback->getRetryCount()) {
+            $callback = DelayedCallback::create($callback);
         }
 
-        return DelayedCallback::create($callback);
+        $this->eventDispatcher->dispatch(new CallbackHttpErrorEvent($callback, $context));
     }
 }

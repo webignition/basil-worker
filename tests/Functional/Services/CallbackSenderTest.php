@@ -15,7 +15,6 @@ use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -50,8 +49,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->mockHandler->append($response);
 
         $responseHandler = (new MockCallbackResponseHandler())
-            ->withoutHandleResponseCall()
-            ->withoutHandleClientExceptionCall()
+            ->withoutHandleCall()
             ->getMock();
 
         $this->createJob();
@@ -77,34 +75,36 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider sendResponseNonSuccessResponseDataProvider
+     * @dataProvider sendResponseErrorResponseDataProvider
      */
-    public function testSendResponseNonSuccessResponse(ResponseInterface $response)
+    public function testSendResponseErrorResponse(object $httpFixture)
     {
         $callback = new TestCallback();
         $callback = $callback->withState(CallbackInterface::STATE_SENDING);
 
-        $this->mockHandler->append($response);
+        $this->mockHandler->append($httpFixture);
 
         $responseHandler = (new MockCallbackResponseHandler())
-            ->withHandleResponseCall($callback, $response)
-            ->withoutHandleClientExceptionCall()
+            ->withHandleCall($callback, $httpFixture)
             ->getMock();
 
         $this->createJob();
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 
-        $this->mockHandler->append($response);
+        $this->mockHandler->append($httpFixture);
         $this->callbackSender->send($callback);
 
         self::assertSame(CallbackInterface::STATE_SENDING, $callback->getState());
     }
 
-    public function sendResponseNonSuccessResponseDataProvider(): array
+    public function sendResponseErrorResponseDataProvider(): array
     {
         return [
             'HTTP 400' => [
                 'response' => new Response(400),
+            ],
+            'Guzzle ConnectException' => [
+                'exception' => \Mockery::mock(ConnectException::class),
             ],
         ];
     }
@@ -112,8 +112,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     public function testSendNoJob()
     {
         $responseHandler = (new MockCallbackResponseHandler())
-            ->withoutHandleResponseCall()
-            ->withoutHandleClientExceptionCall()
+            ->withoutHandleCall()
             ->getMock();
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
@@ -128,8 +127,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $retryLimit = (int) self::$container->getParameter('callback_retry_limit');
 
         $responseHandler = (new MockCallbackResponseHandler())
-            ->withoutHandleResponseCall()
-            ->withoutHandleClientExceptionCall()
+            ->withoutHandleCall()
             ->getMock();
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
@@ -141,39 +139,6 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
         $this->callbackSender->send($callback);
 
         self::assertSame(CallbackInterface::STATE_FAILED, $callback->getState());
-    }
-
-    /**
-     * @dataProvider sendFailureHttpClientExceptionThrownDataProvider
-     */
-    public function testSendFailureHttpClientExceptionThrown(ClientExceptionInterface $exception)
-    {
-        $this->createJob();
-
-        $this->mockHandler->append($exception);
-
-        $callback = new TestCallback();
-        $callback = $callback->withState(CallbackInterface::STATE_SENDING);
-
-        $responseHandler = (new MockCallbackResponseHandler())
-            ->withoutHandleResponseCall()
-            ->withHandleClientExceptionCall($callback, $exception)
-            ->getMock();
-
-        $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
-
-        $this->callbackSender->send($callback);
-
-        self::assertSame(CallbackInterface::STATE_SENDING, $callback->getState());
-    }
-
-    public function sendFailureHttpClientExceptionThrownDataProvider(): array
-    {
-        return [
-            'Guzzle ConnectException' => [
-                'exception' => \Mockery::mock(ConnectException::class),
-            ],
-        ];
     }
 
     private function createJob(): void

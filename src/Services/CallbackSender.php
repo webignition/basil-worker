@@ -51,12 +51,12 @@ class CallbackSender
             $statusCode = $response->getStatusCode();
 
             if ($statusCode >= 300) {
-                $this->callbackResponseHandler->handleResponse($callback, $response);
+                $this->callbackResponseHandler->handle($callback, $response);
             } else {
                 $this->callbackStateMutator->setComplete($callback);
             }
         } catch (ClientExceptionInterface $httpClientException) {
-            $this->callbackResponseHandler->handleClientException($callback, $httpClientException);
+            $this->callbackResponseHandler->handle($callback, $httpClientException);
         }
     }
 }
