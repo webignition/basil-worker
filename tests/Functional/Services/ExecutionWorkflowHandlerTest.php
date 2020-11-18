@@ -14,10 +14,9 @@ use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
+use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
@@ -25,11 +24,11 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private ExecutionWorkflowHandler $handler;
-    private InMemoryTransport $messengerTransport;
     private TestTestFactory $testFactory;
     private TestStateMutator $testStateMutator;
     private JobStore $jobStore;
     private EventDispatcherInterface $eventDispatcher;
+    private MessengerAsserter $messengerAsserter;
 
     protected function setUp(): void
     {
@@ -42,8 +41,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testDispatchNextExecuteTestMessageNoMessageDispatched()
     {
         $this->handler->dispatchNextExecuteTestMessage();
-
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
     }
 
     /**
@@ -229,23 +227,19 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         callable $execute,
         int $expectedNextTestIndex
     ): void {
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
 
         $tests = $setup();
         $execute();
 
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
+        $this->messengerAsserter->assertQueueCount(1);
 
         $expectedNextTest = $tests[$expectedNextTestIndex] ?? null;
         self::assertInstanceOf(Test::class, $expectedNextTest);
 
-        $envelope = $queue[0] ?? null;
-        self::assertInstanceOf(Envelope::class, $envelope);
-        self::assertEquals(
-            new ExecuteTest((int) $expectedNextTest->getId()),
-            $envelope->getMessage()
+        $this->messengerAsserter->assertMessageAtPositionEquals(
+            0,
+            new ExecuteTest((int) $expectedNextTest->getId())
         );
     }
 
@@ -423,26 +417,22 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         ?int $expectedNextTestIndex
     ): void {
         $tests = $setup($this->jobStore, $this->testFactory);
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
 
         $test = $tests[$eventTestIndex];
         $event = new TestExecuteCompleteEvent($test);
 
         $execute($event);
 
-        $queue = $this->messengerTransport->get();
-        self::assertIsArray($queue);
-        self::assertCount($expectedQueuedMessageCount, $queue);
+        $this->messengerAsserter->assertQueueCount($expectedQueuedMessageCount);
 
         if (is_int($expectedNextTestIndex)) {
             $expectedNextTest = $tests[$expectedNextTestIndex] ?? null;
             self::assertInstanceOf(Test::class, $expectedNextTest);
 
-            $envelope = $queue[0] ?? null;
-            self::assertInstanceOf(Envelope::class, $envelope);
-            self::assertEquals(
-                new ExecuteTest((int) $expectedNextTest->getId()),
-                $envelope->getMessage()
+            $this->messengerAsserter->assertMessageAtPositionEquals(
+                0,
+                new ExecuteTest((int) $expectedNextTest->getId())
             );
         }
     }

@@ -123,3 +123,8 @@ services:
 
     App\Tests\Services\TestCallbackEventFactory:
         public: true
+
+    App\Tests\Services\Asserter\MessengerAsserter:
+        public: true
+        arguments:
+            $transport: '@messenger.transport.async'
