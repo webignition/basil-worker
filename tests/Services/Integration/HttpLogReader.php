@@ -25,7 +25,7 @@ class HttpLogReader
 
         foreach ($lines as $line) {
             $loggedTransaction = LoggableTransaction::fromJson($line);
-            $transactions->add($loggedTransaction->getTransaction());
+            $transactions->add($loggedTransaction);
         }
 
         return $transactions;

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dac6db85317048f1400c144d1f18e7d1",
+    "content-hash": "5c1477428c1b852cd17fafaac5411236",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -9503,16 +9503,16 @@
         },
         {
             "name": "webignition/http-history-container",
-            "version": "1.13",
+            "version": "1.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/http-history-container.git",
-                "reference": "2099621ea0d566777ad03dc3a346738697ca744a"
+                "reference": "4092da7c8cd3f45f7e6eb8274f738d5f8c6656ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/http-history-container/zipball/2099621ea0d566777ad03dc3a346738697ca744a",
-                "reference": "2099621ea0d566777ad03dc3a346738697ca744a",
+                "url": "https://api.github.com/repos/webignition/http-history-container/zipball/4092da7c8cd3f45f7e6eb8274f738d5f8c6656ae",
+                "reference": "4092da7c8cd3f45f7e6eb8274f738d5f8c6656ae",
                 "shasum": ""
             },
             "require": {
@@ -9562,9 +9562,9 @@
             ],
             "support": {
                 "issues": "https://github.com/webignition/http-history-container/issues",
-                "source": "https://github.com/webignition/http-history-container/tree/1.13"
+                "source": "https://github.com/webignition/http-history-container/tree/1.15"
             },
-            "time": "2020-11-13T14:46:24+00:00"
+            "time": "2020-11-18T16:03:00+00:00"
         },
         {
             "name": "webignition/object-reflector",

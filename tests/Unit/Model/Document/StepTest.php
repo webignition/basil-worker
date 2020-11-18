@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Model;
+namespace App\Tests\Unit\Model\Document;
 
 use App\Model\Document\Step;
 use PHPUnit\Framework\TestCase;

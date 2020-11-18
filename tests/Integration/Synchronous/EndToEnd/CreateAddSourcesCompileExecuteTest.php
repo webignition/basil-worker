@@ -20,6 +20,7 @@ use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use webignition\HttpHistoryContainer\Collection\HttpTransactionCollection;
 use webignition\HttpHistoryContainer\Transaction\HttpTransaction;
+use webignition\HttpHistoryContainer\Transaction\HttpTransactionInterface;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
 {
@@ -291,15 +292,15 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     ): void {
         foreach ($expectedHttpTransactions as $transactionIndex => $expectedTransaction) {
             $transaction = $transactions->get($transactionIndex);
-            self::assertInstanceOf(HttpTransaction::class, $transaction);
+            self::assertInstanceOf(HttpTransactionInterface::class, $transaction);
 
             $this->assertTransactionsAreEquivalent($expectedTransaction, $transaction, $transactionIndex);
         }
     }
 
     private function assertTransactionsAreEquivalent(
-        HttpTransaction $expected,
-        HttpTransaction $actual,
+        HttpTransactionInterface $expected,
+        HttpTransactionInterface $actual,
         int $transactionIndex
     ): void {
         $this->assertRequestsAreEquivalent($expected->getRequest(), $actual->getRequest(), $transactionIndex);
@@ -363,7 +364,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     }
 
     /**
-     * @param HttpTransaction[] $transactions
+     * @param HttpTransactionInterface[] $transactions
      *
      * @return HttpTransactionCollection
      */
@@ -371,7 +372,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     {
         $collection = new HttpTransactionCollection();
         foreach ($transactions as $transaction) {
-            if ($transaction instanceof HttpTransaction) {
+            if ($transaction instanceof HttpTransactionInterface) {
                 $collection->add($transaction);
             }
         }
@@ -379,8 +380,10 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         return $collection;
     }
 
-    private function createHttpTransaction(RequestInterface $request, ResponseInterface $response): HttpTransaction
-    {
+    private function createHttpTransaction(
+        RequestInterface $request,
+        ResponseInterface $response
+    ): HttpTransactionInterface {
         return new HttpTransaction($request, $response, null, []);
     }
 
