@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Job;
 use App\Entity\Test;
+use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -122,10 +123,15 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                             $retriedTransactionPeriods[] = $transactionPeriod - $firstStepTransactionPeriod;
                         }
 
-                        self::assertGreaterThan(1000000, $retriedTransactionPeriods[0]);
-                        self::assertLessThan(1100000, $retriedTransactionPeriods[0]);
-                        self::assertGreaterThan(3000000, $retriedTransactionPeriods[1]);
-                        self::assertLessThan(3100000, $retriedTransactionPeriods[1]);
+                        $backoffStrategy = new ExponentialBackoffStrategy();
+                        foreach ($retriedTransactionPeriods as $retryIndex => $retriedTransactionPeriod) {
+                            $retryCount = $retryIndex + 1;
+                            $expectedLowerThreshold = $backoffStrategy->getDelay($retryCount) * 1000;
+                            $expectedUpperThreshold = $backoffStrategy->getDelay($retryCount + 1) * 1000;
+
+                            self::assertGreaterThanOrEqual($expectedLowerThreshold, $retriedTransactionPeriod);
+                            self::assertLessThan($expectedUpperThreshold, $retriedTransactionPeriod);
+                        }
                     },
                     [
                         new ServiceReference(HttpLogReader::class),
