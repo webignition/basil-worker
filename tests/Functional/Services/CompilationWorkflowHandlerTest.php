@@ -12,10 +12,9 @@ use App\Services\CompilationWorkflowHandler;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
+use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -25,9 +24,9 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
     private CompilationWorkflowHandler $handler;
     private JobStore $jobStore;
-    private InMemoryTransport $messengerTransport;
     private TestTestFactory $testFactory;
     private EventDispatcherInterface $eventDispatcher;
+    private MessengerAsserter $messengerAsserter;
 
     protected function setUp(): void
     {
@@ -46,7 +45,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
         $this->handler->dispatchNextCompileSourceMessage();
 
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
     }
 
     public function dispatchNextCompileSourceMessageNoMessageDispatchedDataProvider(): array
@@ -86,13 +85,8 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
         $this->handler->dispatchNextCompileSourceMessage();
 
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
-
-        $envelope = $queue[0] ?? null;
-        self::assertInstanceOf(Envelope::class, $envelope);
-        self::assertEquals($expectedQueuedMessage, $envelope->getMessage());
+        $this->messengerAsserter->assertQueueCount(1);
+        $this->messengerAsserter->assertMessageAtPositionEquals(0, $expectedQueuedMessage);
     }
 
     public function dispatchNextCompileSourceMessageMessageDispatchedDataProvider(): array
@@ -142,11 +136,11 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         ]);
         $this->jobStore->store($job);
 
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
 
         $this->eventDispatcher->dispatch($event);
 
-        self::assertCount(1, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueCount(1);
     }
 
     public function subscribesToEventsDataProvider(): array

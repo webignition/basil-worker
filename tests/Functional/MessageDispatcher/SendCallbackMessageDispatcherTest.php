@@ -20,14 +20,13 @@ use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockTest;
 use App\Tests\Model\Entity\Callback\TestCallbackEntity;
 use App\Tests\Model\TestCallback;
+use App\Tests\Services\Asserter\MessengerAsserter;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\StampInterface;
-use Symfony\Component\Messenger\Transport\InMemoryTransport;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
@@ -38,9 +37,9 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private SendCallbackMessageDispatcher $messageDispatcher;
-    private InMemoryTransport $messengerTransport;
     private EventDispatcherInterface $eventDispatcher;
     private CallbackRepository $callbackRepository;
+    private MessengerAsserter $messengerAsserter;
 
     protected function setUp(): void
     {
@@ -70,9 +69,20 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $callback = $this->callbackRepository->findOneBy([]);
         self::assertInstanceOf(CallbackInterface::class, $callback);
 
-        $this->assertMessageTransportQueue(
-            new SendCallback($callback),
-            $expectedEnvelopeNotContainsStampsOfType,
+        $this->messengerAsserter->assertQueueCount(1);
+        $this->messengerAsserter->assertMessageAtPositionEquals(0, new SendCallback($callback));
+
+        $envelope = $this->messengerAsserter->getEnvelopeAtPosition(0);
+
+        if (is_string($expectedEnvelopeNotContainsStampsOfType)) {
+            $this->messengerAsserter->assertEnvelopeNotContainsStampsOfType(
+                $envelope,
+                $expectedEnvelopeNotContainsStampsOfType
+            );
+        }
+
+        $this->messengerAsserter->assertEnvelopeContainsStampCollections(
+            $envelope,
             $expectedEnvelopeContainsStampCollections
         );
     }
@@ -112,11 +122,16 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     ) {
         $callback = $event->getCallback();
         self::assertSame(CallbackInterface::STATE_AWAITING, $callback->getState());
-        self::assertCount(0, $this->messengerTransport->get());
+        $this->messengerAsserter->assertQueueIsEmpty();
 
         $this->eventDispatcher->dispatch($event);
         self::assertSame(CallbackInterface::STATE_QUEUED, $callback->getState());
-        $this->assertMessageTransportQueue(new SendCallback($expectedQueuedMessageCallback), null, []);
+
+        $this->messengerAsserter->assertQueueCount(1);
+        $this->messengerAsserter->assertMessageAtPositionEquals(
+            0,
+            new SendCallback($expectedQueuedMessageCallback)
+        );
     }
 
     public function subscribesToEventDataProvider(): array
@@ -165,57 +180,5 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
                 'expectedQueuedMessage' => $testExecuteDocumentReceivedEventCallback,
             ],
         ];
-    }
-
-    /**
-     * @param SendCallback $expectedMessage
-     * @param string|null $expectedEnvelopeNotContainsStampsOfType
-     * @param array<string, array<int, StampInterface>> $expectedEnvelopeContainsStampCollections
-     */
-    private function assertMessageTransportQueue(
-        SendCallback $expectedMessage,
-        ?string $expectedEnvelopeNotContainsStampsOfType,
-        array $expectedEnvelopeContainsStampCollections
-    ): void {
-        $queue = $this->messengerTransport->get();
-        self::assertCount(1, $queue);
-        self::assertIsArray($queue);
-
-        $envelope = $queue[0];
-        self::assertInstanceOf(Envelope::class, $envelope);
-
-        self::assertEquals($expectedMessage, $envelope->getMessage());
-
-        if (is_string($expectedEnvelopeNotContainsStampsOfType)) {
-            $this->assertEnvelopeNotContainsStampsOfType($envelope, $expectedEnvelopeNotContainsStampsOfType);
-        }
-
-        foreach ($expectedEnvelopeContainsStampCollections as $expectedStampCollection) {
-            foreach ($expectedStampCollection as $expectedStampIndex => $expectedStamp) {
-                $this->assertEnvelopeContainsStamp($envelope, $expectedStamp, $expectedStampIndex);
-            }
-        }
-    }
-
-    private function assertEnvelopeNotContainsStampsOfType(Envelope $envelope, string $type): void
-    {
-        $stamps = $envelope->all();
-        self::assertArrayNotHasKey($type, $stamps);
-    }
-
-    private function assertEnvelopeContainsStamp(
-        Envelope $envelope,
-        StampInterface $expectedStamp,
-        int $expectedStampIndex
-    ): void {
-        $stamps = $envelope->all();
-        $typeIndex = get_class($expectedStamp);
-
-        self::assertArrayHasKey($typeIndex, $stamps);
-
-        $typeStamps = $stamps[$typeIndex] ?? [];
-        $actualStamp = $typeStamps[$expectedStampIndex] ?? null;
-
-        self::assertEquals($expectedStamp, $actualStamp);
     }
 }
