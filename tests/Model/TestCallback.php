@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use App\Entity\Callback\AbstractCallbackEntityWrapper;
+use App\Entity\Callback\AbstractCallbackWrapper;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 
-class TestCallback extends AbstractCallbackEntityWrapper
+class TestCallback extends AbstractCallbackWrapper
 {
     private const ID = 'id';
 

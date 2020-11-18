@@ -6,7 +6,7 @@ namespace App\Entity\Callback;
 
 use webignition\YamlDocument\Document;
 
-class ExecuteDocumentReceivedCallback extends AbstractCallbackEntityWrapper
+class ExecuteDocumentReceivedCallback extends AbstractCallbackWrapper
 {
     private Document $document;
 

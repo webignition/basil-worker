@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity\Callback;
 
-abstract class AbstractCallbackEntityWrapper implements CallbackInterface
+abstract class AbstractCallbackWrapper implements CallbackInterface
 {
     private CallbackInterface $callback;
 
