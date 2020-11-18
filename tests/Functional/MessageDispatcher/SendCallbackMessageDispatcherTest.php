@@ -8,8 +8,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
-use App\Event\Callback\CallbackHttpExceptionEvent;
-use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpErrorEvent;
 use App\Event\CallbackEventInterface;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
@@ -152,15 +151,15 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $testExecuteDocumentReceivedEventCallback = new ExecuteDocumentReceivedCallback($document);
 
         return [
-            CallbackHttpExceptionEvent::class => [
-                'event' => new CallbackHttpExceptionEvent(
+            'http non-success response' => [
+                'event' => new CallbackHttpErrorEvent(
                     $httpExceptionEventCallback,
                     \Mockery::mock(ConnectException::class)
                 ),
                 'expectedQueuedMessage' => $httpExceptionEventCallback,
             ],
-            CallbackHttpResponseEvent::class => [
-                'event' => new CallbackHttpResponseEvent($httpResponseExceptionCallback, new Response(503)),
+            'http exception' => [
+                'event' => new CallbackHttpErrorEvent($httpResponseExceptionCallback, new Response(503)),
                 'expectedQueuedMessage' => $httpResponseExceptionCallback,
             ],
             SourceCompileFailureEvent::class => [

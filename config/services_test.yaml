@@ -101,10 +101,7 @@ services:
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
-    App\Tests\Services\CallbackHttpExceptionEventSubscriber:
-        public: true
-
-    App\Tests\Services\CallbackHttpResponseEventSubscriber:
+    App\Tests\Services\CallbackHttpErrorEventSubscriber:
         public: true
 
     GuzzleHttp\HandlerStack:

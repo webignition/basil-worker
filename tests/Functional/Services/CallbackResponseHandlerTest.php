@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\DelayedCallback;
-use App\Event\Callback\CallbackHttpExceptionEvent;
-use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpErrorEvent;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
-use App\Tests\Services\CallbackHttpExceptionEventSubscriber;
-use App\Tests\Services\CallbackHttpResponseEventSubscriber;
+use App\Tests\Services\CallbackHttpErrorEventSubscriber;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -23,8 +21,7 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private CallbackResponseHandler $callbackResponseHandler;
-    private CallbackHttpExceptionEventSubscriber $exceptionEventSubscriber;
-    private CallbackHttpResponseEventSubscriber $responseEventSubscriber;
+    private CallbackHttpErrorEventSubscriber $httpErrorEventSubscriber;
 
     protected function setUp(): void
     {
@@ -40,15 +37,13 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
 
-        self::assertNull($this->exceptionEventSubscriber->getEvent());
-
-        $event = $this->responseEventSubscriber->getEvent();
-        self::assertInstanceOf(CallbackHttpResponseEvent::class, $event);
+        $event = $this->httpErrorEventSubscriber->getEvent();
+        self::assertInstanceOf(CallbackHttpErrorEvent::class, $event);
 
         $eventCallback = $event->getCallback();
         self::assertInstanceOf(DelayedCallback::class, $eventCallback);
         self::assertSame($eventCallback->getEntity(), $callback->getEntity());
-        self::assertSame($response, $event->getResponse());
+        self::assertSame($response, $event->getContext());
         self::assertSame(1, $callback->getRetryCount());
     }
 
@@ -60,15 +55,13 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
 
         $this->callbackResponseHandler->handleClientException($callback, $exception);
 
-        self::assertNull($this->responseEventSubscriber->getEvent());
-
-        $event = $this->exceptionEventSubscriber->getEvent();
-        self::assertInstanceOf(CallbackHttpExceptionEvent::class, $event);
+        $event = $this->httpErrorEventSubscriber->getEvent();
+        self::assertInstanceOf(CallbackHttpErrorEvent::class, $event);
 
         $eventCallback = $event->getCallback();
         self::assertInstanceOf(DelayedCallback::class, $eventCallback);
         self::assertSame($eventCallback->getEntity(), $callback->getEntity());
-        self::assertSame($exception, $event->getException());
+        self::assertSame($exception, $event->getContext());
         self::assertSame(1, $callback->getRetryCount());
     }
 }

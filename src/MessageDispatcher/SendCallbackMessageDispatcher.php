@@ -6,8 +6,7 @@ namespace App\MessageDispatcher;
 
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\StampedCallbackInterface;
-use App\Event\Callback\CallbackHttpExceptionEvent;
-use App\Event\Callback\CallbackHttpResponseEvent;
+use App\Event\Callback\CallbackHttpErrorEvent;
 use App\Event\CallbackEventInterface;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
@@ -31,10 +30,7 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CallbackHttpExceptionEvent::class => [
-                ['dispatchForCallbackEvent', 0],
-            ],
-            CallbackHttpResponseEvent::class => [
+            CallbackHttpErrorEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
             SourceCompileFailureEvent::class => [
