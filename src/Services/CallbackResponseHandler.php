@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\DelayedCallback;
-use App\Event\Callback\CallbackHttpErrorEvent;
+use App\Event\CallbackHttpErrorEvent;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;

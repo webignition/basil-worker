@@ -2,14 +2,17 @@
 
 declare(strict_types=1);
 
-namespace App\Event\Callback;
+namespace App\Event;
 
 use App\Entity\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Contracts\EventDispatcher\Event;
 
-class CallbackHttpErrorEvent extends AbstractCallbackEvent
+class CallbackHttpErrorEvent extends Event implements CallbackEventInterface
 {
+    private CallbackInterface $callback;
+
     /**
      * @var ClientExceptionInterface|ResponseInterface
      */
@@ -21,11 +24,16 @@ class CallbackHttpErrorEvent extends AbstractCallbackEvent
      */
     public function __construct(CallbackInterface $callback, object $context)
     {
-        parent::__construct($callback);
+        $this->callback = $callback;
 
         if ($context instanceof ClientExceptionInterface || $context instanceof ResponseInterface) {
             $this->context = $context;
         }
+    }
+
+    public function getCallback(): CallbackInterface
+    {
+        return $this->callback;
     }
 
     public function getContext(): ?object

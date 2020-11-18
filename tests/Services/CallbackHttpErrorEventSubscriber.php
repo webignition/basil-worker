@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
-use App\Event\Callback\CallbackHttpErrorEvent;
+use App\Event\CallbackHttpErrorEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CallbackHttpErrorEventSubscriber implements EventSubscriberInterface

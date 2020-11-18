@@ -6,8 +6,8 @@ namespace App\MessageDispatcher;
 
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\StampedCallbackInterface;
-use App\Event\Callback\CallbackHttpErrorEvent;
 use App\Event\CallbackEventInterface;
+use App\Event\CallbackHttpErrorEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;

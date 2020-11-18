@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\DelayedCallback;
-use App\Event\Callback\CallbackHttpErrorEvent;
+use App\Event\CallbackHttpErrorEvent;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
