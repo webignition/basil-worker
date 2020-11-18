@@ -6,8 +6,8 @@ namespace App\Entity\Callback;
 
 use App\Model\BackoffStrategy\BackoffStrategyInterface;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Model\StampCollection;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
-use Symfony\Component\Messenger\Stamp\StampInterface;
 
 class DelayedCallback extends AbstractCallbackWrapper implements StampedCallbackInterface
 {
@@ -25,19 +25,15 @@ class DelayedCallback extends AbstractCallbackWrapper implements StampedCallback
         return new DelayedCallback($callback, new ExponentialBackoffStrategy());
     }
 
-    /**
-     * @return StampInterface[]
-     */
-    public function getStamps(): array
+    public function getStamps(): StampCollection
     {
         $delay = $this->backoffStrategy->getDelay($this->getRetryCount());
+        $stamps = [];
 
-        if (0 === $delay) {
-            return [];
+        if (0 !== $delay) {
+            $stamps[] = new DelayStamp($delay);
         }
 
-        return [
-            new DelayStamp($delay),
-        ];
+        return new StampCollection($stamps);
     }
 }
