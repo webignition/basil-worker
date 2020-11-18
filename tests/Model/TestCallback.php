@@ -52,6 +52,19 @@ class TestCallback extends AbstractCallbackWrapper
         return $new;
     }
 
+    /**
+     * @param array<mixed> $payload
+     *
+     * @return $this
+     */
+    public function withPayload(array $payload): self
+    {
+        $new = clone $this;
+        $new->payload = $payload;
+
+        return $new;
+    }
+
     public function getPayload(): array
     {
         return $this->payload;

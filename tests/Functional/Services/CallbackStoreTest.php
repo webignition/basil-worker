@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
+use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -48,34 +49,46 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
 
     public function storeDataProvider(): array
     {
+        $errorOutputData = [
+            'errorOutputKey1' => 'errorOutputValue1',
+            'errorOutputKey2' => 'errorOutputValue2',
+        ];
+
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
         $errorOutput
             ->shouldReceive('getData')
-            ->andReturn([
-                'errorOutputKey1' => 'errorOutputValue1',
-                'errorOutputKey2' => 'errorOutputValue2',
-            ]);
+            ->andReturn($errorOutputData);
 
         $document = new Document(Yaml::dump([
             'documentKey1' => 'documentValue1',
             'documentKey2' => 'documentValue2',
         ]));
 
+        $defaultEntityData = [
+            'callbackEntityKey1' => 'callbackEntityValue1',
+            'callbackEntityKey2' => 'callbackEntityValue2',
+        ];
+
         return [
-            CallbackEntity::class => [
-                'callback' => CallbackEntity::create(
-                    CallbackInterface::TYPE_COMPILE_FAILURE,
-                    [
-                        'callbackEntityKey1' => 'callbackEntityValue1',
-                        'callbackEntityKey2' => 'callbackEntityValue2',
-                    ]
-                ),
+            'default entity' => [
+                'callback' => CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, $defaultEntityData),
             ],
-            CompileFailureCallback::class => [
+            'compile failure' => [
                 'callback' => new CompileFailureCallback($errorOutput),
             ],
-            ExecuteDocumentReceivedCallback::class => [
+            'execute document received' => [
                 'callback' => new ExecuteDocumentReceivedCallback($document),
+            ],
+            'delayed default entity' => [
+                'callback' => DelayedCallback::create(
+                    CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, $defaultEntityData)
+                ),
+            ],
+            'delayed compile failure' => [
+                'callback' => DelayedCallback::create(new CompileFailureCallback($errorOutput)),
+            ],
+            'delayed execute document received' => [
+                'callback' => DelayedCallback::create(new ExecuteDocumentReceivedCallback($document)),
             ],
         ];
     }
