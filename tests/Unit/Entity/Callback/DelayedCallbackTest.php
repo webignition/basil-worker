@@ -8,10 +8,10 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Model\StampCollection;
 use App\Tests\Model\TestCallback;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
-use Symfony\Component\Messenger\Stamp\StampInterface;
 use webignition\YamlDocument\Document;
 
 class DelayedCallbackTest extends TestCase
@@ -54,11 +54,8 @@ class DelayedCallbackTest extends TestCase
 
     /**
      * @dataProvider getStampsDataProvider
-     *
-     * @param DelayedCallback $callback
-     * @param StampInterface[] $expectedStamps
      */
-    public function testGetStamps(DelayedCallback $callback, array $expectedStamps)
+    public function testGetStamps(DelayedCallback $callback, StampCollection $expectedStamps)
     {
         self::assertEquals($expectedStamps, $callback->getStamps());
     }
@@ -71,34 +68,34 @@ class DelayedCallbackTest extends TestCase
                     (new TestCallback())
                         ->withRetryCount(0)
                 ),
-                'expectedStamps' => [],
+                'expectedStamps' => new StampCollection(),
             ],
             'retryCount 1' => [
                 'callback' => DelayedCallback::create(
                     (new TestCallback())
                         ->withRetryCount(1)
                 ),
-                'expectedStamps' => [
+                'expectedStamps' => new StampCollection([
                     new DelayStamp(1000),
-                ],
+                ]),
             ],
             'retryCount 2' => [
                 'callback' => DelayedCallback::create(
                     (new TestCallback())
                         ->withRetryCount(2)
                 ),
-                'expectedStamps' => [
+                'expectedStamps' => new StampCollection([
                     new DelayStamp(3000),
-                ],
+                ]),
             ],
             'retryCount 3' => [
                 'callback' => DelayedCallback::create(
                     (new TestCallback())
                         ->withRetryCount(3)
                 ),
-                'expectedStamps' => [
+                'expectedStamps' => new StampCollection([
                     new DelayStamp(7000),
-                ],
+                ]),
             ],
         ];
     }
