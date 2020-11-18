@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\DelayedCallback;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Services\CallbackResponseHandler;
@@ -35,7 +36,6 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
     {
         $response = new Response(404);
         $callback = new TestCallback();
-
         self::assertSame(0, $callback->getRetryCount());
 
         $this->callbackResponseHandler->handleResponse($callback, $response);
@@ -45,7 +45,9 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         $event = $this->responseEventSubscriber->getEvent();
         self::assertInstanceOf(CallbackHttpResponseEvent::class, $event);
 
-        self::assertSame($callback, $event->getCallback());
+        $eventCallback = $event->getCallback();
+        self::assertInstanceOf(DelayedCallback::class, $eventCallback);
+        self::assertSame($eventCallback->getEntity(), $callback->getEntity());
         self::assertSame($response, $event->getResponse());
         self::assertSame(1, $callback->getRetryCount());
     }
@@ -63,7 +65,9 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         $event = $this->exceptionEventSubscriber->getEvent();
         self::assertInstanceOf(CallbackHttpExceptionEvent::class, $event);
 
-        self::assertSame($callback, $event->getCallback());
+        $eventCallback = $event->getCallback();
+        self::assertInstanceOf(DelayedCallback::class, $eventCallback);
+        self::assertSame($eventCallback->getEntity(), $callback->getEntity());
         self::assertSame($exception, $event->getException());
         self::assertSame(1, $callback->getRetryCount());
     }
