@@ -6,16 +6,16 @@ namespace App\Entity\Callback;
 
 abstract class AbstractCallbackEntityWrapper implements CallbackInterface
 {
-    private CallbackEntity $entity;
+    private CallbackInterface $entity;
 
-    public function __construct(CallbackEntity $entity)
+    public function __construct(CallbackInterface $entity)
     {
         $this->entity = $entity;
     }
 
     public function getEntity(): CallbackEntity
     {
-        return $this->entity;
+        return $this->entity->getEntity();
     }
 
     public function getId(): ?int
