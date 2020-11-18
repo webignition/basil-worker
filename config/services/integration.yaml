@@ -23,6 +23,11 @@ services:
         arguments:
             $path: '%kernel.project_dir%/%integration_http_log_path%'
 
+    App\Tests\Services\Integration\HttpLogReader:
+        public: true
+        arguments:
+            $path: '%kernel.project_dir%/%integration_http_log_path%'
+
     webignition\HttpHistoryContainer\LoggableContainer:
         arguments:
             $logger: '@app.tests.services.integration.httplogger'
