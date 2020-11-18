@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\MessageDispatcher;
 
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\StampedCallbackInterface;
 use App\Event\Callback\CallbackHttpExceptionEvent;
 use App\Event\Callback\CallbackHttpResponseEvent;
 use App\Event\CallbackEventInterface;
@@ -12,6 +14,7 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\Services\CallbackStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class SendCallbackMessageDispatcher implements EventSubscriberInterface
@@ -48,6 +51,26 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
         $callback = $event->getCallback();
 
         $this->callbackStateMutator->setQueued($callback);
-        $this->messageBus->dispatch(new SendCallback($callback));
+        $this->messageBus->dispatch($this->createCallbackEnvelope($callback));
+    }
+
+    /**
+     * @param CallbackInterface $callback
+     *
+     * @return Envelope
+     */
+    private function createCallbackEnvelope(CallbackInterface $callback): Envelope
+    {
+        $sendCallbackMessage = new SendCallback($callback);
+        $stamps = [];
+
+        if ($callback instanceof StampedCallbackInterface) {
+            $stampCollection = $callback->getStamps();
+            if ($stampCollection->hasStamps()) {
+                $stamps = $stampCollection->getStamps();
+            }
+        }
+
+        return new Envelope($sendCallbackMessage, $stamps);
     }
 }
