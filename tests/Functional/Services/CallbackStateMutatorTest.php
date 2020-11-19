@@ -9,6 +9,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
+use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Services\CallbackStateMutator;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -245,14 +246,17 @@ class CallbackStateMutatorTest extends AbstractBaseFunctionalTest
             'default entity' => $this->createCallbackEntity(),
             'compile failure' => $this->createCompileFailureCallback(),
             'execute document received' => $this->createExecuteDocumentReceivedCallback(),
-            'delayed default entity' => DelayedCallback::create(
-                $this->createCallbackEntity()
+            'delayed default entity' => new DelayedCallback(
+                $this->createCallbackEntity(),
+                new ExponentialBackoffStrategy()
             ),
-            'delayed compile failure' => DelayedCallback::create(
-                $this->createCompileFailureCallback()
+            'delayed compile failure' => new DelayedCallback(
+                $this->createCompileFailureCallback(),
+                new ExponentialBackoffStrategy()
             ),
-            'delayed execute document received' => DelayedCallback::create(
-                $this->createExecuteDocumentReceivedCallback()
+            'delayed execute document received' => new DelayedCallback(
+                $this->createExecuteDocumentReceivedCallback(),
+                new ExponentialBackoffStrategy()
             ),
         ];
     }

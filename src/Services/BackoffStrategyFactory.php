@@ -24,7 +24,7 @@ class BackoffStrategyFactory
             return $this->createForHttpResponse($context);
         }
 
-        return $this->createExponentialBackoffStrategy();
+        return new ExponentialBackoffStrategy();
     }
 
     private function createForHttpResponse(ResponseInterface $response): BackoffStrategyInterface
@@ -33,7 +33,7 @@ class BackoffStrategyFactory
         $lastRetryAfterValue = array_pop($retryAfterHeaderLines);
 
         if (null === $lastRetryAfterValue) {
-            return $this->createExponentialBackoffStrategy();
+            return new ExponentialBackoffStrategy();
         }
 
         if (ctype_digit($lastRetryAfterValue)) {
@@ -43,11 +43,6 @@ class BackoffStrategyFactory
             }
         }
 
-        return new ExponentialBackoffStrategy();
-    }
-
-    private function createExponentialBackoffStrategy(): ExponentialBackoffStrategy
-    {
         return new ExponentialBackoffStrategy();
     }
 }

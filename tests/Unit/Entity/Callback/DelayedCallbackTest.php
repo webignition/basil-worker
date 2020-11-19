@@ -64,34 +64,38 @@ class DelayedCallbackTest extends TestCase
     {
         return [
             'retryCount 0' => [
-                'callback' => DelayedCallback::create(
+                'callback' => new DelayedCallback(
                     (new TestCallback())
-                        ->withRetryCount(0)
+                        ->withRetryCount(0),
+                    new ExponentialBackoffStrategy()
                 ),
                 'expectedStamps' => new StampCollection(),
             ],
             'retryCount 1' => [
-                'callback' => DelayedCallback::create(
+                'callback' => new DelayedCallback(
                     (new TestCallback())
-                        ->withRetryCount(1)
+                        ->withRetryCount(1),
+                    new ExponentialBackoffStrategy()
                 ),
                 'expectedStamps' => new StampCollection([
                     new DelayStamp(1000),
                 ]),
             ],
             'retryCount 2' => [
-                'callback' => DelayedCallback::create(
+                'callback' => new DelayedCallback(
                     (new TestCallback())
-                        ->withRetryCount(2)
+                        ->withRetryCount(2),
+                    new ExponentialBackoffStrategy()
                 ),
                 'expectedStamps' => new StampCollection([
                     new DelayStamp(3000),
                 ]),
             ],
             'retryCount 3' => [
-                'callback' => DelayedCallback::create(
+                'callback' => new DelayedCallback(
                     (new TestCallback())
-                        ->withRetryCount(3)
+                        ->withRetryCount(3),
+                    new ExponentialBackoffStrategy()
                 ),
                 'expectedStamps' => new StampCollection([
                     new DelayStamp(7000),

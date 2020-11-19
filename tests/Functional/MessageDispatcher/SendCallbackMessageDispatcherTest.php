@@ -14,6 +14,7 @@ use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
+use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Repository\CallbackRepository;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockTest;
@@ -89,9 +90,10 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
     public function dispatchForCallbackEventDataProvider(): array
     {
         $nonDelayedCallback = new TestCallback();
-        $delayedCallbackRetryCount1 = DelayedCallback::create(
+        $delayedCallbackRetryCount1 = new DelayedCallback(
             (new TestCallback())
-                ->withRetryCount(1)
+                ->withRetryCount(1),
+            new ExponentialBackoffStrategy()
         );
 
         return [

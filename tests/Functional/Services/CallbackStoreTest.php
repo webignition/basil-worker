@@ -9,6 +9,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
+use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
@@ -80,15 +81,22 @@ class CallbackStoreTest extends AbstractBaseFunctionalTest
                 'callback' => new ExecuteDocumentReceivedCallback($document),
             ],
             'delayed default entity' => [
-                'callback' => DelayedCallback::create(
-                    CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, $defaultEntityData)
+                'callback' => new DelayedCallback(
+                    CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, $defaultEntityData),
+                    new ExponentialBackoffStrategy()
                 ),
             ],
             'delayed compile failure' => [
-                'callback' => DelayedCallback::create(new CompileFailureCallback($errorOutput)),
+                'callback' => new DelayedCallback(
+                    new CompileFailureCallback($errorOutput),
+                    new ExponentialBackoffStrategy()
+                ),
             ],
             'delayed execute document received' => [
-                'callback' => DelayedCallback::create(new ExecuteDocumentReceivedCallback($document)),
+                'callback' => new DelayedCallback(
+                    new ExecuteDocumentReceivedCallback($document),
+                    new ExponentialBackoffStrategy()
+                ),
             ],
         ];
     }
