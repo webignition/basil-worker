@@ -30,4 +30,13 @@ class CallbackRepository extends ServiceEntityRepository
             ],
         ]));
     }
+
+    public function getCompileFailureTypeCount(): int
+    {
+        return count($this->findBy([
+            'type' => [
+                CallbackInterface::TYPE_COMPILE_FAILURE,
+            ],
+        ]));
+    }
 }
