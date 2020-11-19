@@ -9,23 +9,19 @@ use App\Model\Workflow\WorkflowInterface;
 
 class ApplicationWorkflowFactory
 {
-    private JobStore $jobStore;
     private CallbackWorkflowFactory $callbackWorkflowFactory;
+    private JobStateFactory $jobStateFactory;
 
-    public function __construct(JobStore $jobStore, CallbackWorkflowFactory $callbackWorkflowFactory)
+    public function __construct(CallbackWorkflowFactory $callbackWorkflowFactory, JobStateFactory $jobStateFactory)
     {
-        $this->jobStore = $jobStore;
         $this->callbackWorkflowFactory = $callbackWorkflowFactory;
+        $this->jobStateFactory = $jobStateFactory;
     }
 
     public function create(): ApplicationWorkflow
     {
-        $job = $this->jobStore->hasJob()
-            ? $this->jobStore->getJob()
-            : null;
-
         return new ApplicationWorkflow(
-            $job,
+            $this->jobStateFactory->create(),
             WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState()
         );
     }
