@@ -6,29 +6,33 @@ namespace App\Model\Workflow;
 
 use App\Entity\Job;
 
-class ApplicationWorkflow extends AbstractWorkflow
+class ApplicationWorkflow
 {
+    private ?Job $job;
+    private bool $callbackWorkflowIsComplete;
+
     public function __construct(?Job $job, bool $callbackWorkflowIsComplete)
     {
-        parent::__construct($this->deriveState($job, $callbackWorkflowIsComplete));
+        $this->job = $job;
+        $this->callbackWorkflowIsComplete = $callbackWorkflowIsComplete;
     }
 
     /**
      * @return WorkflowInterface::STATE_*
      */
-    private function deriveState(?Job $job, bool $callbackWorkflowIsComplete): string
+    public function getState(): string
     {
-        if (null === $job) {
+        if (null === $this->job) {
             return WorkflowInterface::STATE_NOT_READY;
         }
 
-        $jobState = $job->getState();
+        $jobState = $this->job->getState();
 
         if (Job::STATE_COMPILATION_AWAITING === $jobState) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        if ($job->isRunning()) {
+        if ($this->job->isRunning()) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
@@ -36,7 +40,7 @@ class ApplicationWorkflow extends AbstractWorkflow
             return WorkflowInterface::STATE_COMPLETE;
         }
 
-        return $callbackWorkflowIsComplete
+        return $this->callbackWorkflowIsComplete
             ? WorkflowInterface::STATE_COMPLETE
             : WorkflowInterface::STATE_IN_PROGRESS;
     }
