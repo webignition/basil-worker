@@ -100,4 +100,67 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
             ],
         ];
     }
+
+    /**
+     * @dataProvider getCompileFailureTypeCountDataProvider
+     *
+     * @param array<CallbackInterface::TYPE_*> $callbackTypes
+     * @param int $expectedCompileFailureTypeCount
+     */
+    public function testGetCompileFailureTypeCount(array $callbackTypes, int $expectedCompileFailureTypeCount)
+    {
+        foreach ($callbackTypes as $callbackType) {
+            $callback = CallbackEntity::create($callbackType, []);
+            $this->store->store($callback);
+        }
+
+        self::assertSame($expectedCompileFailureTypeCount, $this->repository->getCompileFailureTypeCount());
+    }
+
+    public function getCompileFailureTypeCountDataProvider(): array
+    {
+        return [
+            'no callbacks' => [
+                'callbackTypes' => [],
+                'expectedCompileFailureTypeCount' => 0,
+            ],
+            'no compile-failure' => [
+                'callbackTypes' => [
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                ],
+                'expectedCompileFailureTypeCount' => 0,
+            ],
+            'one compile-failure' => [
+                'callbackTypes' => [
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                ],
+                'expectedCompileFailureTypeCount' => 1,
+            ],
+            'two compile-failure' => [
+                'callbackTypes' => [
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                ],
+                'expectedCompileFailureTypeCount' => 2,
+            ],
+            'five compile-failure' => [
+                'callbackTypes' => [
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                    CallbackInterface::TYPE_COMPILE_FAILURE,
+                ],
+                'expectedCompileFailureTypeCount' => 5,
+            ],
+        ];
+    }
 }
