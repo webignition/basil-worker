@@ -17,6 +17,7 @@ use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
+use SebastianBergmann\Timer\Timer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -24,6 +25,9 @@ use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjector
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 {
     use TestClassServicePropertyInjectorTrait;
+
+    private const MAX_DURATION_IN_SECONDS = 30;
+    private const MICROSECONDS_PER_SECOND = 1000000;
 
     protected ClientRequestSender $clientRequestSender;
     protected JobStore $jobStore;
@@ -64,12 +68,17 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $job = $this->jobStore->getJob();
         self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
+        $timer = new Timer();
+        $timer->start();
+
         $this->addJobSources($jobConfiguration->getManifestPath());
 
         $job = $this->jobStore->getJob();
         self::assertSame($expectedSourcePaths, $job->getSources());
 
         $this->waitUntilApplicationWorkflowIsComplete();
+
+        $duration = $timer->stop();
 
         self::assertSame($expectedJobEndState, $job->getState());
 
@@ -81,6 +90,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         }
 
         $postAssertions();
+        self::assertLessThanOrEqual(self::MAX_DURATION_IN_SECONDS, $duration->asSeconds());
     }
 
     protected function createJob(string $label, string $callbackUrl): Response
@@ -119,11 +129,11 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         }
     }
 
-    private function waitUntilApplicationWorkflowIsComplete(int $maxDurationInSeconds = 30): bool
+    private function waitUntilApplicationWorkflowIsComplete(): bool
     {
         $duration = 0;
-        $maxDuration = $maxDurationInSeconds * 1000000;
-        $maxDurationReached = $duration >= $maxDuration;
+        $maxDuration = self::MAX_DURATION_IN_SECONDS * self::MICROSECONDS_PER_SECOND;
+        $maxDurationReached = false;
         $intervalInMicroseconds = 100000;
 
         while (false === $this->applicationWorkflowHandler->isComplete() && false === $maxDurationReached) {
