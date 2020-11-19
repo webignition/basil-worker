@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\DelayedCallback;
 use App\Event\CallbackHttpErrorEvent;
+use App\Model\StampCollection;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestCallback;
@@ -15,6 +16,7 @@ use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
+use Symfony\Component\Messenger\Stamp\DelayStamp;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
@@ -36,7 +38,7 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
      *
      * @param ClientExceptionInterface|ResponseInterface $context
      */
-    public function testHandle(object $context)
+    public function testHandle(object $context, StampCollection $expectedCallbackStamps)
     {
         $callback = new TestCallback();
         self::assertSame(0, $callback->getRetryCount());
@@ -51,6 +53,10 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         self::assertSame($eventCallback->getEntity(), $callback->getEntity());
         self::assertSame($context, $event->getContext());
         self::assertSame(1, $callback->getRetryCount());
+
+        if ($eventCallback instanceof DelayedCallback) {
+            self::assertEquals($expectedCallbackStamps, $eventCallback->getStamps());
+        }
     }
 
     public function handleDataProvider(): array
@@ -58,9 +64,26 @@ class CallbackResponseHandlerTest extends AbstractBaseFunctionalTest
         return [
             'non-success response' => [
                 'context' => new Response(404),
+                'expectedCallbackStamps' => new StampCollection([
+                    new DelayStamp(1000),
+                ]),
+            ],
+            'non-success response, 30 second delay in retry-after header' => [
+                'context' => new Response(
+                    503,
+                    [
+                        'retry-after' => 30,
+                    ]
+                ),
+                'expectedCallbackStamps' => new StampCollection([
+                    new DelayStamp(30000),
+                ]),
             ],
             'exception' => [
                 'context' => \Mockery::mock(ConnectException::class),
+                'expectedCallbackStamps' => new StampCollection([
+                    new DelayStamp(1000),
+                ]),
             ],
         ];
     }
