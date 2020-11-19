@@ -89,13 +89,7 @@ services:
     App\Services\CallbackWorkflowFactory:
         public: true
 
-    App\Services\CallbackWorkflowHandler:
-        public: true
-
     App\Services\ApplicationWorkflowFactory:
-        public: true
-
-    App\Services\ApplicationWorkflowHandler:
         public: true
 
     App\Tests\Services\SourcesAddedEventSubscriber:

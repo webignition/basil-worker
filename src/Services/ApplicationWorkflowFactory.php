@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Model\Workflow\ApplicationWorkflow;
+use App\Model\Workflow\WorkflowInterface;
 
 class ApplicationWorkflowFactory
 {
     private JobStore $jobStore;
-    private CallbackWorkflowHandler $callbackWorkflowHandler;
+    private CallbackWorkflowFactory $callbackWorkflowFactory;
 
-    public function __construct(JobStore $jobStore, CallbackWorkflowHandler $callbackWorkflowHandler)
+    public function __construct(JobStore $jobStore, CallbackWorkflowFactory $callbackWorkflowFactory)
     {
         $this->jobStore = $jobStore;
-        $this->callbackWorkflowHandler = $callbackWorkflowHandler;
+        $this->callbackWorkflowFactory = $callbackWorkflowFactory;
     }
 
     public function create(): ApplicationWorkflow
@@ -23,6 +24,9 @@ class ApplicationWorkflowFactory
             ? $this->jobStore->getJob()
             : null;
 
-        return new ApplicationWorkflow($job, $this->callbackWorkflowHandler->isComplete());
+        return new ApplicationWorkflow(
+            $job,
+            WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState()
+        );
     }
 }
