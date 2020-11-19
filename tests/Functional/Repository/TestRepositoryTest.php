@@ -451,20 +451,6 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
                 3,
                 Test::STATE_FAILED
             ),
-            'failed' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/failed'),
-                '',
-                '',
-                4,
-                Test::STATE_FAILED
-            ),
-            'complete' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/complete'),
-                '',
-                '',
-                5,
-                Test::STATE_COMPLETE
-            ),
         ];
 
         return [
@@ -508,13 +494,11 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
                 },
                 'expectedAwaitingCount' => 2,
             ],
-            'running, failed, complete' => [
+            'running' => [
                 'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
                     return $this->createTests(
                         [
                             $tests['running'],
-                            $tests['failed'],
-                            $tests['complete'],
                         ],
                         $testConfigurationStore
                     );
@@ -562,20 +546,6 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
                 3,
                 Test::STATE_FAILED
             ),
-            'failed' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/failed'),
-                '',
-                '',
-                4,
-                Test::STATE_FAILED
-            ),
-            'complete' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/complete'),
-                '',
-                '',
-                5,
-                Test::STATE_COMPLETE
-            ),
         ];
 
         return [
@@ -626,13 +596,11 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
                     $tests['awaiting2'],
                 ],
             ],
-            'running, failed, complete' => [
+            'running' => [
                 'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
                     return $this->createTests(
                         [
                             $tests['running'],
-                            $tests['failed'],
-                            $tests['complete'],
                         ],
                         $testConfigurationStore
                     );
@@ -656,40 +624,26 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
     public function getFailedCountDataProvider(): array
     {
         $tests = [
-            'awaiting' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/awaiting1'),
-                '',
-                '',
-                1,
-                Test::STATE_AWAITING
-            ),
             'running' => $this->createTest(
                 TestConfiguration::create('chrome', 'http://example.com/running'),
                 '',
                 '',
-                2,
+                1,
                 Test::STATE_RUNNING
             ),
             'failed1' => $this->createTest(
                 TestConfiguration::create('chrome', 'http://example.com/failed'),
                 '',
                 '',
-                3,
+                2,
                 Test::STATE_FAILED
             ),
             'failed2' => $this->createTest(
                 TestConfiguration::create('chrome', 'http://example.com/failed'),
                 '',
                 '',
-                4,
+                3,
                 Test::STATE_FAILED
-            ),
-            'complete' => $this->createTest(
-                TestConfiguration::create('chrome', 'http://example.com/complete'),
-                '',
-                '',
-                5,
-                Test::STATE_COMPLETE
             ),
         ];
 
@@ -734,18 +688,108 @@ class TestRepositoryTest extends AbstractBaseFunctionalTest
                 },
                 'expectedFailedCount' => 2,
             ],
-            'running, awaiting, complete' => [
+            'running' => [
                 'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
                     return $this->createTests(
                         [
                             $tests['running'],
-                            $tests['awaiting'],
-                            $tests['complete'],
                         ],
                         $testConfigurationStore
                     );
                 },
                 'expectedFailedCount' => 0,
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider getCancelledCountDataProvider
+     */
+    public function testGetCancelledCount(callable $testsCreator, int $expectedCancelledCount)
+    {
+        $tests = $testsCreator($this->testConfigurationStore);
+        $this->persistTests($tests);
+
+        self::assertSame($expectedCancelledCount, $this->repository->getCancelledCount());
+    }
+
+    public function getCancelledCountDataProvider(): array
+    {
+        $tests = [
+            'cancelled1' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/failed'),
+                '',
+                '',
+                1,
+                Test::STATE_CANCELLED
+            ),
+            'cancelled2' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/failed'),
+                '',
+                '',
+                2,
+                Test::STATE_CANCELLED
+            ),
+            'complete' => $this->createTest(
+                TestConfiguration::create('chrome', 'http://example.com/complete'),
+                '',
+                '',
+                3,
+                Test::STATE_COMPLETE
+            ),
+        ];
+
+        return [
+            'empty' => [
+                'setup' => function () {
+                    return [];
+                },
+                'expectedCancelledCount' => 0,
+            ],
+            'cancelled1' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['cancelled1'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedCancelledCount' => 1,
+            ],
+            'cancelled2' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['cancelled2'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedCancelledCount' => 1,
+            ],
+            'cancelled1, cancelled2' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['cancelled1'],
+                            $tests['cancelled2'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedCancelledCount' => 2,
+            ],
+            'complete' => [
+                'setup' => function (TestConfigurationStore $testConfigurationStore) use ($tests) {
+                    return $this->createTests(
+                        [
+                            $tests['complete'],
+                        ],
+                        $testConfigurationStore
+                    );
+                },
+                'expectedCancelledCount' => 0,
             ],
         ];
     }
