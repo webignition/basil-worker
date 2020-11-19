@@ -9,7 +9,7 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Services\ApplicationWorkflowHandler:
+    App\Services\ApplicationWorkflowFactory:
         public: true
 
     App\Tests\Services\EntityRefresher:
