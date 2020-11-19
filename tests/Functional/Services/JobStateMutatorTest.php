@@ -13,14 +13,15 @@ use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestFailedEvent;
 use App\Model\Workflow\WorkflowInterface;
 use App\Services\CompilationWorkflowFactory;
-use App\Services\ExecutionWorkflowHandler;
+use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Model\MockCompilationWorkflow;
+use App\Tests\Mock\Model\MockExecutionWorkflow;
 use App\Tests\Mock\Services\MockCompilationWorkflowFactory;
-use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
+use App\Tests\Mock\Services\MockExecutionWorkflowFactory;
 use App\Tests\Services\TestCallbackEventFactory;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -105,7 +106,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetExecutionComplete(
         callable $setup,
-        ExecutionWorkflowHandler $executionWorkflowHandler,
+        ExecutionWorkflowFactory $executionWorkflowFactory,
         bool $expectedStateIsMutated
     ) {
         self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
@@ -115,8 +116,8 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'executionWorkflowHandler',
-            $executionWorkflowHandler
+            'executionWorkflowFactory',
+            $executionWorkflowFactory
         );
 
         $this->jobStateMutator->setExecutionComplete();
@@ -130,27 +131,39 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
             'compilation workflow not complete' => [
                 'setup' => function () {
                 },
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
-                    ->withIsCompleteCall(false)
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockExecutionWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_IN_PROGRESS)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
-            'compilation workflow complete' => [
+            'execution workflow complete' => [
                 'setup' => function () {
                 },
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
-                    ->withIsCompleteCall(true)
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockExecutionWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'expectedStateIsMutated' => true,
             ],
-            'compilation workflow complete, job is already cancelled' => [
+            'execution workflow complete, job is already cancelled' => [
                 'setup' => function (JobStore $jobStore) {
                     $job = $jobStore->getJob();
                     $job->setState(Job::STATE_EXECUTION_CANCELLED);
                     $jobStore->store($job);
                 },
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
-                    ->withIsCompleteCall(true)
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockExecutionWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
@@ -272,7 +285,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetExecutionAwaiting(
         CompilationWorkflowFactory $compilationWorkflowFactory,
-        ExecutionWorkflowHandler $executionWorkflowHandler,
+        ExecutionWorkflowFactory $executionWorkflowFactory,
         bool $expectedStateIsMutated
     ) {
         self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
@@ -287,8 +300,8 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'executionWorkflowHandler',
-            $executionWorkflowHandler
+            'executionWorkflowFactory',
+            $executionWorkflowFactory
         );
 
         $this->jobStateMutator->setExecutionAwaiting();
@@ -307,7 +320,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                             ->getMock()
                     )
                     ->getMock(),
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
@@ -319,8 +332,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                             ->getMock()
                     )
                     ->getMock(),
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
-                    ->withIsReadyToExecuteCall(false)
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockExecutionWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_NOT_READY)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
@@ -332,8 +349,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                             ->getMock()
                     )
                     ->getMock(),
-                'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
-                    ->withIsReadyToExecuteCall(true)
+                'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockExecutionWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_NOT_STARTED)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'expectedStateIsMutated' => true,
             ],
@@ -408,9 +429,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'executionWorkflowHandler',
-            (new MockExecutionWorkflowHandler())
-                ->withIsReadyToExecuteCall(true)
+            'executionWorkflowFactory',
+            (new MockExecutionWorkflowFactory())
+                ->withCreateCall(
+                    (new MockExecutionWorkflow())
+                        ->withGetStateCall(WorkflowInterface::STATE_NOT_STARTED)
+                        ->getMock()
+                )
                 ->getMock()
         );
 
@@ -433,9 +458,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'executionWorkflowHandler',
-            (new MockExecutionWorkflowHandler())
-                ->withIsCompleteCall(true)
+            'executionWorkflowFactory',
+            (new MockExecutionWorkflowFactory())
+                ->withCreateCall(
+                    (new MockExecutionWorkflow())
+                        ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                        ->getMock()
+                )
                 ->getMock()
         );
 

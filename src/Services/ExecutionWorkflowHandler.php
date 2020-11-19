@@ -59,7 +59,15 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
             return;
         }
 
-        if (false === $this->isReadyToExecute()) {
+        $isReadyToExecute = in_array(
+            $this->executionWorkflowFactory->create()->getState(),
+            [
+                WorkflowInterface::STATE_NOT_STARTED,
+                WorkflowInterface::STATE_IN_PROGRESS,
+            ]
+        );
+
+        if (false === $isReadyToExecute) {
             return;
         }
 
@@ -73,25 +81,5 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
                 $this->messageBus->dispatch($message);
             }
         }
-    }
-
-    public function isComplete(): bool
-    {
-        $workflow = $this->executionWorkflowFactory->create();
-
-        return WorkflowInterface::STATE_COMPLETE === $workflow->getState();
-    }
-
-    public function isReadyToExecute(): bool
-    {
-        $workflow = $this->executionWorkflowFactory->create();
-
-        return in_array(
-            $workflow->getState(),
-            [
-                WorkflowInterface::STATE_NOT_STARTED,
-                WorkflowInterface::STATE_IN_PROGRESS,
-            ]
-        );
     }
 }
