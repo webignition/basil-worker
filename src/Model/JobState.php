@@ -14,6 +14,7 @@ class JobState
     public const STATE_EXECUTION_FAILED = 'execution-failed';
     public const STATE_EXECUTION_COMPLETE = 'execution-complete';
     public const STATE_EXECUTION_CANCELLED = 'execution-cancelled';
+    public const STATE_UNKNOWN = 'unknown';
 
     private const RUNNING_STATES = [
         self::STATE_COMPILATION_RUNNING,
