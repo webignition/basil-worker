@@ -78,4 +78,11 @@ class TestRepository extends ServiceEntityRepository
             'state' => Test::STATE_AWAITING,
         ]);
     }
+
+    public function getFailedCount(): int
+    {
+        return count($this->findBy([
+            'state' => Test::STATE_FAILED,
+        ]));
+    }
 }
