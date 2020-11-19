@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Message\CompileSource;
-use App\Model\Workflow\WorkflowInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -43,10 +42,5 @@ class CompilationWorkflowHandler implements EventSubscriberInterface
             $message = new CompileSource($nextNonCompiledSource);
             $this->messageBus->dispatch($message);
         }
-    }
-
-    public function isComplete(): bool
-    {
-        return WorkflowInterface::STATE_COMPLETE === $this->compilationWorkflowFactory->create()->getState();
     }
 }

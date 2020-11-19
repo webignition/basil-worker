@@ -11,22 +11,23 @@ use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestFailedEvent;
+use App\Model\Workflow\WorkflowInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class JobStateMutator implements EventSubscriberInterface
 {
     private JobStore $jobStore;
-    private CompilationWorkflowHandler $compilationWorkflowHandler;
     private ExecutionWorkflowHandler $executionWorkflowHandler;
+    private CompilationWorkflowFactory $compilationWorkflowFactory;
 
     public function __construct(
         JobStore $jobStore,
-        CompilationWorkflowHandler $compilationWorkflowHandler,
-        ExecutionWorkflowHandler $executionWorkflowHandler
+        ExecutionWorkflowHandler $executionWorkflowHandler,
+        CompilationWorkflowFactory $compilationWorkflowFactory
     ) {
         $this->jobStore = $jobStore;
-        $this->compilationWorkflowHandler = $compilationWorkflowHandler;
         $this->executionWorkflowHandler = $executionWorkflowHandler;
+        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
     }
 
     public static function getSubscribedEvents()
@@ -73,7 +74,7 @@ class JobStateMutator implements EventSubscriberInterface
     {
         $this->conditionallySetState(
             function (): bool {
-                return $this->compilationWorkflowHandler->isComplete()
+                return WorkflowInterface::STATE_COMPLETE === $this->compilationWorkflowFactory->create()->getState()
                     && $this->executionWorkflowHandler->isReadyToExecute();
             },
             Job::STATE_EXECUTION_AWAITING

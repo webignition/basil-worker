@@ -11,13 +11,15 @@ use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestFailedEvent;
-use App\Services\CompilationWorkflowHandler;
+use App\Model\Workflow\WorkflowInterface;
+use App\Services\CompilationWorkflowFactory;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\JobStateMutator;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
-use App\Tests\Mock\Services\MockCompilationWorkflowHandler;
+use App\Tests\Mock\Model\MockCompilationWorkflow;
+use App\Tests\Mock\Services\MockCompilationWorkflowFactory;
 use App\Tests\Mock\Services\MockExecutionWorkflowHandler;
 use App\Tests\Services\TestCallbackEventFactory;
 use App\Tests\Services\TestTestFactory;
@@ -269,7 +271,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      * @dataProvider setExecutionAwaitingDataProvider
      */
     public function testSetExecutionAwaiting(
-        CompilationWorkflowHandler $compilationWorkflowHandler,
+        CompilationWorkflowFactory $compilationWorkflowFactory,
         ExecutionWorkflowHandler $executionWorkflowHandler,
         bool $expectedStateIsMutated
     ) {
@@ -278,8 +280,8 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'compilationWorkflowHandler',
-            $compilationWorkflowHandler
+            'compilationWorkflowFactory',
+            $compilationWorkflowFactory
         );
 
         ObjectReflector::setProperty(
@@ -298,16 +300,24 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     {
         return [
             'compilation workflow not complete' => [
-                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
-                    ->withIsCompleteCall(false)
+                'compilationWorkflowFactory' => (new MockCompilationWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockCompilationWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_NOT_READY)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
                     ->getMock(),
                 'expectedStateIsMutated' => false,
             ],
             'execution workflow not ready to execute' => [
-                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
-                    ->withIsCompleteCall(true)
+                'compilationWorkflowFactory' => (new MockCompilationWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockCompilationWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
                     ->withIsReadyToExecuteCall(false)
@@ -315,8 +325,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => false,
             ],
             'compilation workflow complete, execution workflow ready to execute' => [
-                'compilationWorkflowHandler' => (new MockCompilationWorkflowHandler())
-                    ->withIsCompleteCall(true)
+                'compilationWorkflowFactory' => (new MockCompilationWorkflowFactory())
+                    ->withCreateCall(
+                        (new MockCompilationWorkflow())
+                            ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                            ->getMock()
+                    )
                     ->getMock(),
                 'executionWorkflowHandler' => (new MockExecutionWorkflowHandler())
                     ->withIsReadyToExecuteCall(true)
@@ -381,9 +395,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty(
             $this->jobStateMutator,
             JobStateMutator::class,
-            'compilationWorkflowHandler',
-            (new MockCompilationWorkflowHandler())
-                ->withIsCompleteCall(true)
+            'compilationWorkflowFactory',
+            (new MockCompilationWorkflowFactory())
+                ->withCreateCall(
+                    (new MockCompilationWorkflow())
+                        ->withGetStateCall(WorkflowInterface::STATE_COMPLETE)
+                        ->getMock()
+                )
                 ->getMock()
         );
 
