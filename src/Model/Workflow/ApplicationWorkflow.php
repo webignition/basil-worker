@@ -6,7 +6,7 @@ namespace App\Model\Workflow;
 
 use App\Entity\Job;
 
-class ApplicationWorkflow
+class ApplicationWorkflow implements WorkflowInterface
 {
     private ?Job $job;
     private bool $callbackWorkflowIsComplete;
@@ -17,9 +17,6 @@ class ApplicationWorkflow
         $this->callbackWorkflowIsComplete = $callbackWorkflowIsComplete;
     }
 
-    /**
-     * @return WorkflowInterface::STATE_*
-     */
     public function getState(): string
     {
         if (null === $this->job) {

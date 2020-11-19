@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-class CompilationWorkflow extends AbstractWorkflow
+class CompilationWorkflow implements WorkflowInterface
 {
+    /**
+     * @var string[]
+     */
+    private array $compiledSources;
     private ?string $nextSource;
 
     /**
@@ -14,21 +18,14 @@ class CompilationWorkflow extends AbstractWorkflow
      */
     public function __construct(array $compiledSources, ?string $nextSource)
     {
-        parent::__construct($this->deriveState($compiledSources, $nextSource));
-
+        $this->compiledSources = $compiledSources;
         $this->nextSource = $nextSource;
     }
 
-    /**
-     * @param string[] $compiledSources
-     * @param string|null $nextSource
-     *
-     * @return WorkflowInterface::STATE_*
-     */
-    private function deriveState(array $compiledSources, ?string $nextSource): string
+    public function getState(): string
     {
-        $hasCompiledSources = [] !== $compiledSources;
-        $hasNextSource = is_string($nextSource);
+        $hasCompiledSources = [] !== $this->compiledSources;
+        $hasNextSource = is_string($this->nextSource);
 
         if (false === $hasCompiledSources && false === $hasNextSource) {
             return WorkflowInterface::STATE_NOT_READY;

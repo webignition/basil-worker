@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-class ExecutionWorkflow extends AbstractWorkflow
+class ExecutionWorkflow implements WorkflowInterface
 {
+    private string $compilationWorkflowState;
+    private int $totalTestCount;
+    private int $awaitingTestCount;
     private ?int $nextTestId;
 
     public function __construct(
@@ -14,25 +17,23 @@ class ExecutionWorkflow extends AbstractWorkflow
         int $awaitingTestCount,
         ?int $nextTestId
     ) {
-        parent::__construct($this->deriveState($compilationWorkflowState, $totalTestCount, $awaitingTestCount));
-
+        $this->compilationWorkflowState = $compilationWorkflowState;
+        $this->totalTestCount = $totalTestCount;
+        $this->awaitingTestCount = $awaitingTestCount;
         $this->nextTestId = $nextTestId;
     }
 
-    /**
-     * @return WorkflowInterface::STATE_*
-     */
-    private function deriveState(string $compilationWorkflowState, int $totalTestCount, int $awaitingTestCount): string
+    public function getState(): string
     {
-        if (WorkflowInterface::STATE_COMPLETE !== $compilationWorkflowState) {
+        if (WorkflowInterface::STATE_COMPLETE !== $this->compilationWorkflowState) {
             return WorkflowInterface::STATE_NOT_READY;
         }
 
-        if ($totalTestCount === $awaitingTestCount) {
+        if ($this->totalTestCount === $this->awaitingTestCount) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        if ($awaitingTestCount > 0) {
+        if ($this->awaitingTestCount > 0) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }
 

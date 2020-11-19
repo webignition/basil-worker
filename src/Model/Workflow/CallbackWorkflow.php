@@ -4,23 +4,24 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-class CallbackWorkflow extends AbstractWorkflow
+class CallbackWorkflow implements WorkflowInterface
 {
+    private int $totalCallbackCount;
+    private int $finishedCallbackCount;
+
     public function __construct(int $totalCallbackCount, int $finishedCallbackCount)
     {
-        parent::__construct($this->deriveState($totalCallbackCount, $finishedCallbackCount));
+        $this->totalCallbackCount = $totalCallbackCount;
+        $this->finishedCallbackCount = $finishedCallbackCount;
     }
 
-    /**
-     * @return WorkflowInterface::STATE_*
-     */
-    private function deriveState(int $totalCallbackCount, int $finishedCallbackCount): string
+    public function getState(): string
     {
-        if (0 === $totalCallbackCount) {
+        if (0 === $this->totalCallbackCount) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        return $finishedCallbackCount === $totalCallbackCount
+        return $this->finishedCallbackCount === $this->totalCallbackCount
             ? WorkflowInterface::STATE_COMPLETE
             : WorkflowInterface::STATE_IN_PROGRESS;
     }
