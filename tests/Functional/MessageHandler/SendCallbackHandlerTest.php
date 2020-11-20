@@ -11,7 +11,6 @@ use App\Repository\CallbackRepository;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockCallbackSender;
 use App\Tests\Mock\Services\MockCallbackStateMutator;
-use App\Tests\Services\InvokableFactory\CallbackSetup;
 use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -58,9 +57,7 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeCallbackExists()
     {
-        $callback = $this->invokableHandler->invoke(CallbackSetupInvokableFactory::setup(
-            new CallbackSetup()
-        ));
+        $callback = $this->invokableHandler->invoke(CallbackSetupInvokableFactory::setup());
 
         $mockSender = new MockCallbackSender();
 

@@ -15,8 +15,10 @@ use App\Tests\Model\EndToEndJob\ServiceReference;
 
 class CallbackSetupInvokableFactory
 {
-    public static function setup(CallbackSetup $callbackSetup): InvokableInterface
+    public static function setup(?CallbackSetup $callbackSetup = null): InvokableInterface
     {
+        $callbackSetup = $callbackSetup instanceof CallbackSetup ? $callbackSetup : new CallbackSetup();
+
         $collection = [];
 
         $collection[] = self::setState(
