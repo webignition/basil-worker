@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Event\TestExecuteCompleteEvent;
@@ -15,15 +14,22 @@ use App\Model\Workflow\WorkflowInterface;
 use App\Services\CompilationWorkflowFactory;
 use App\Services\ExecutionWorkflowFactory;
 use App\Services\JobStateMutator;
-use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Model\MockCompilationWorkflow;
 use App\Tests\Mock\Model\MockExecutionWorkflow;
 use App\Tests\Mock\Services\MockCompilationWorkflowFactory;
 use App\Tests\Mock\Services\MockExecutionWorkflowFactory;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Services\InvokableFactory\JobGetterFactory;
+use App\Tests\Services\InvokableFactory\JobMutatorFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\TestCallbackEventFactory;
-use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -33,17 +39,18 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private JobStateMutator $jobStateMutator;
-    private JobStore $jobStore;
-    private Job $job;
     private EventDispatcherInterface $eventDispatcher;
     private TestCallbackEventFactory $testCallbackEventFactory;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $this->job = $this->jobStore->create(md5('label content'), 'http://example.com/callback');
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            new JobSetup()
+        ));
     }
 
     /**
@@ -54,13 +61,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetExecutionCancelled(string $startState, string $expectedEndState)
     {
-        $this->job->setState($startState);
-        $this->jobStore->store($this->job);
-        self::assertSame($startState, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobMutatorFactory::createSetState($startState));
+
+        self::assertSame($startState, $job->getState());
 
         $this->jobStateMutator->setExecutionCancelled();
 
-        self::assertSame($expectedEndState, $this->job->getState());
+        self::assertSame($expectedEndState, $job->getState());
     }
 
     public function setExecutionCancelledDataProvider(): array
@@ -105,13 +112,15 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      * @dataProvider setExecutionCompleteDataProvider
      */
     public function testSetExecutionComplete(
-        callable $setup,
+        InvokableInterface $setup,
         ExecutionWorkflowFactory $executionWorkflowFactory,
         bool $expectedStateIsMutated
     ) {
-        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobGetterFactory::get());
 
-        $setup($this->jobStore);
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
+
+        $this->invokableHandler->invoke($setup);
 
         ObjectReflector::setProperty(
             $this->jobStateMutator,
@@ -122,15 +131,14 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
         $this->jobStateMutator->setExecutionComplete();
 
-        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_COMPLETE === $this->job->getState());
+        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_COMPLETE === $job->getState());
     }
 
     public function setExecutionCompleteDataProvider(): array
     {
         return [
             'compilation workflow not complete' => [
-                'setup' => function () {
-                },
+                'setup' => Invokable::createEmpty(),
                 'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
                     ->withCreateCall(
                         (new MockExecutionWorkflow())
@@ -141,8 +149,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => false,
             ],
             'execution workflow complete' => [
-                'setup' => function () {
-                },
+                'setup' => Invokable::createEmpty(),
                 'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
                     ->withCreateCall(
                         (new MockExecutionWorkflow())
@@ -153,11 +160,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 'expectedStateIsMutated' => true,
             ],
             'execution workflow complete, job is already cancelled' => [
-                'setup' => function (JobStore $jobStore) {
-                    $job = $jobStore->getJob();
-                    $job->setState(Job::STATE_EXECUTION_CANCELLED);
-                    $jobStore->store($job);
-                },
+                'setup' => JobMutatorFactory::createSetState(Job::STATE_EXECUTION_CANCELLED),
                 'executionWorkflowFactory' => (new MockExecutionWorkflowFactory())
                     ->withCreateCall(
                         (new MockExecutionWorkflow())
@@ -178,13 +181,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetCompilationFailed(string $startState, string $expectedEndState)
     {
-        $this->job->setState($startState);
-        $this->jobStore->store($this->job);
-        self::assertSame($startState, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobMutatorFactory::createSetState($startState));
+
+        self::assertSame($startState, $job->getState());
 
         $this->jobStateMutator->setCompilationFailed();
 
-        self::assertSame($expectedEndState, $this->job->getState());
+        self::assertSame($expectedEndState, $job->getState());
     }
 
     public function setCompilationFailedDataProvider(): array
@@ -233,13 +236,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetCompilationRunning(string $startState, string $expectedEndState)
     {
-        $this->job->setState($startState);
-        $this->jobStore->store($this->job);
-        self::assertSame($startState, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobMutatorFactory::createSetState($startState));
+
+        self::assertSame($startState, $job->getState());
 
         $this->jobStateMutator->setCompilationRunning();
 
-        self::assertSame($expectedEndState, $this->job->getState());
+        self::assertSame($expectedEndState, $job->getState());
     }
 
     public function setCompilationRunningDataProvider(): array
@@ -288,7 +291,9 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         ExecutionWorkflowFactory $executionWorkflowFactory,
         bool $expectedStateIsMutated
     ) {
-        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobGetterFactory::get());
+
+        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
 
         ObjectReflector::setProperty(
             $this->jobStateMutator,
@@ -306,7 +311,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
         $this->jobStateMutator->setExecutionAwaiting();
 
-        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_AWAITING === $this->job->getState());
+        self::assertSame($expectedStateIsMutated, Job::STATE_EXECUTION_AWAITING === $job->getState());
     }
 
     public function setExecutionAwaitingDataProvider(): array
@@ -363,55 +368,46 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
     public function testSubscribesToSourceCompileFailureEvent()
     {
-        $this->job->setState(Job::STATE_COMPILATION_RUNNING);
-        $this->jobStore->store($this->job);
+        $job = $this->invokableHandler->invoke(JobMutatorFactory::createSetState(Job::STATE_COMPILATION_RUNNING));
 
         $event = $this->testCallbackEventFactory->createEmptyPayloadSourceCompileFailureEvent();
 
         $this->eventDispatcher->dispatch($event);
 
-        self::assertSame(Job::STATE_COMPILATION_FAILED, $this->job->getState());
+        self::assertSame(Job::STATE_COMPILATION_FAILED, $job->getState());
     }
 
     public function testSubscribesToSourcesAddedEvent()
     {
-        $this->job->setState(Job::STATE_COMPILATION_AWAITING);
-        $this->job->setSources([
+        $job = $this->invokableHandler->invoke(JobMutatorFactory::createSetState(Job::STATE_COMPILATION_AWAITING));
+        $this->invokableHandler->invoke(JobMutatorFactory::createSetSources([
             'Test/test1.yml',
-        ]);
-        $this->jobStore->store($this->job);
+        ]));
 
         $this->eventDispatcher->dispatch(new SourcesAddedEvent());
 
-        self::assertSame(Job::STATE_COMPILATION_RUNNING, $this->job->getState());
+        self::assertSame(Job::STATE_COMPILATION_RUNNING, $job->getState());
     }
 
     public function testSubscribesToTestFailedEvent()
     {
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobGetterFactory::get());
+        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
 
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $test = $testFactory->create(
-                TestConfiguration::create('chrome', 'http://example.com'),
-                '/app/source/Test/test.yml',
-                '/app/tests/GeneratedTest.php',
-                1,
-                Test::STATE_FAILED
-            );
+        $test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup(
+            (new TestSetup())
+                ->withState(Test::STATE_FAILED)
+        ));
 
-            $event = new TestFailedEvent($test);
+        $this->eventDispatcher->dispatch(new TestFailedEvent($test));
 
-            $this->eventDispatcher->dispatch($event);
-        }
-
-        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $this->job->getState());
+        self::assertSame(Job::STATE_EXECUTION_CANCELLED, $job->getState());
     }
 
     public function testSubscribesToSourceCompileSuccessEvent()
     {
-        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobGetterFactory::get());
+        self::assertNotSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
 
         ObjectReflector::setProperty(
             $this->jobStateMutator,
@@ -448,12 +444,13 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
 
         $this->eventDispatcher->dispatch($event);
 
-        self::assertSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
+        self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
     }
 
     public function testSubscribesToTestExecuteCompleteEvent()
     {
-        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+        $job = $this->invokableHandler->invoke(JobGetterFactory::get());
+        self::assertNotSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
 
         ObjectReflector::setProperty(
             $this->jobStateMutator,
@@ -468,20 +465,12 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 ->getMock()
         );
 
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $test = $testFactory->create(
-                TestConfiguration::create('chrome', 'http://example.com'),
-                '/tests/test1.yml',
-                '/generated/GeneratedTest.php',
-                1
-            );
+        $test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup(
+            (new TestSetup())
+        ));
 
-            $event = new TestExecuteCompleteEvent($test);
-            $this->eventDispatcher->dispatch($event);
-        }
+        $this->eventDispatcher->dispatch(new TestExecuteCompleteEvent($test));
 
-        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $this->job->getState());
+        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
     }
 }

@@ -62,7 +62,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources(['Test/test1.yml'])
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml'),
                     ])
@@ -108,7 +108,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                                 'Test/test2.yml',
                             ])
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/Test/test1.yml')
                     ]),
                 ]),

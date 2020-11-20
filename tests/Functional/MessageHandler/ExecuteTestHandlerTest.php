@@ -40,7 +40,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
                 ->withState(Job::STATE_EXECUTION_AWAITING)
         ));
 
-        $tests = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup([
+        $tests = $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
             new TestSetup(),
         ]));
 

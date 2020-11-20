@@ -68,7 +68,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     JobSetupInvokableFactory::setup(
                         (new JobSetup())->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/' . $sources[0]),
                     ]),
                 ]),
@@ -84,7 +84,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     JobSetupInvokableFactory::setup(
                         (new JobSetup())->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())->withSource('/app/source/' . $sources[1]),
                     ]),
@@ -102,7 +102,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     JobSetupInvokableFactory::setup(
                         (new JobSetup())->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())->withSource('/app/source/' . $sources[1]),
                         (new TestSetup())->withSource('/app/source/' . $sources[2]),

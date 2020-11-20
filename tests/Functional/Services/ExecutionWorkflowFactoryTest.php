@@ -43,7 +43,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
         ));
 
         foreach (self::JOB_SOURCES as $source) {
-            $this->invokableHandler->invoke(TestSetupInvokableFactory::setup([
+            $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
                 (new TestSetup())
                     ->withSource('/app/source/' . $source)
             ]));

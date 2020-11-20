@@ -71,7 +71,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                     ]),
@@ -84,7 +84,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                         (new TestSetup())
@@ -99,7 +99,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                         (new TestSetup())
@@ -158,7 +158,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                     ]),
@@ -173,7 +173,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                         (new TestSetup())
@@ -191,7 +191,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setup([
+                    TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' .  $sources[0]),
                         (new TestSetup())

@@ -17,12 +17,12 @@ class TestSetupInvokableFactory
      *
      * @return InvokableInterface
      */
-    public static function setup(array $testSetupCollection): InvokableInterface
+    public static function setupCollection(array $testSetupCollection): InvokableInterface
     {
         $collection = [];
 
         foreach ($testSetupCollection as $testSetup) {
-            $collection[] = self::create($testSetup);
+            $collection[] = self::setup($testSetup);
         }
 
         $collection[] = TestGetterFactory::getAll();
@@ -30,7 +30,7 @@ class TestSetupInvokableFactory
         return new InvokableCollection($collection);
     }
 
-    private static function create(TestSetup $testSetup): InvokableInterface
+    public static function setup(TestSetup $testSetup): InvokableInterface
     {
         return new Invokable(
             function (TestTestFactory $testFactory, TestSetup $testSetup) {
