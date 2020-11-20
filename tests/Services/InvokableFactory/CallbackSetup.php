@@ -53,4 +53,17 @@ class CallbackSetup
     {
         return $this->state;
     }
+
+    /**
+     * @param CallbackInterface::STATE_* $state
+     *
+     * @return $this
+     */
+    public function withState(string $state): self
+    {
+        $new = clone $this;
+        $new->state = $state;
+
+        return $new;
+    }
 }
