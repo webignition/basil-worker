@@ -4,11 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\TestConfiguration;
 use App\Services\JobSourceFinder;
-use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableCollection;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobSourceFinderTest extends AbstractBaseFunctionalTest
@@ -16,8 +21,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private JobSourceFinder $jobSourceFinder;
-    private JobStore $jobStore;
-    private TestTestFactory $testFactory;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -28,80 +32,82 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider findNextNonCompiledSourceDataProvider
      */
-    public function testFindNextNonCompiledSource(callable $setup, ?string $expectedNextNonCompiledSource)
+    public function testFindNextNonCompiledSource(InvokableInterface $setup, ?string $expectedNextNonCompiledSource)
     {
-        $setup($this->jobStore, $this->testFactory);
+        $this->invokableHandler->invoke($setup);
+
         self::assertSame($expectedNextNonCompiledSource, $this->jobSourceFinder->findNextNonCompiledSource());
     }
 
     public function findNextNonCompiledSourceDataProvider(): array
     {
+        $sources = [
+            'Test/testZebra.yml',
+            'Test/testApple.yml',
+            'Test/testBat.yml',
+        ];
+
         return [
             'no job' => [
-                'setup' => function () {
-                },
+                'setup' => Invokable::createEmpty(),
                 'expectedNextNonCompiledSource' => null,
             ],
             'has job, no sources' => [
-                'setup' => function (JobStore $jobStore) {
-                    $jobStore->create('label', 'http://example.com/callback');
-                },
+                'setup' => JobSetupInvokableFactory::setup(
+                    new JobSetup()
+                ),
                 'expectedNextNonCompiledSource' => null,
             ],
             'has job, has sources, no tests' => [
-                'setup' => function (JobStore $jobStore) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-                },
-                'expectedNextNonCompiledSource' => 'Test/testZebra.yml',
+                'setup' => JobSetupInvokableFactory::setup(
+                    (new JobSetup())
+                        ->withSources($sources)
+                ),
+                'expectedNextNonCompiledSource' => $sources[0],
             ],
             'test exists for first source' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                },
-                'expectedNextNonCompiledSource' => 'Test/testApple.yml',
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                    ]),
+                ]),
+                'expectedNextNonCompiledSource' =>  $sources[1],
             ],
             'test exists for first and second sources' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                },
-                'expectedNextNonCompiledSource' => 'Test/testBat.yml',
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[1]),
+                    ]),
+                ]),
+                'expectedNextNonCompiledSource' => $sources[2],
             ],
             'tests exist for all sources' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
-                },
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[1]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[2]),
+                    ]),
+                ]),
                 'expectedNextNonCompiledSource' => null,
             ],
         ];
@@ -110,89 +116,90 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider findCompiledSourcesDataProvider
      *
-     * @param callable $setup
+     * @param InvokableInterface $setup
      * @param string[] $expectedCompiledSources
      */
-    public function testFindCompiledSources(callable $setup, array $expectedCompiledSources)
+    public function testFindCompiledSources(InvokableInterface $setup, array $expectedCompiledSources)
     {
-        $setup($this->jobStore, $this->testFactory);
+        $this->invokableHandler->invoke($setup);
 
         self::assertSame($expectedCompiledSources, $this->jobSourceFinder->findCompiledSources());
     }
 
     public function findCompiledSourcesDataProvider(): array
     {
+        $sources = [
+            'Test/testZebra.yml',
+            'Test/testApple.yml',
+            'Test/testBat.yml',
+        ];
+
         return [
             'no job' => [
-                'setup' => function () {
-                },
+                'setup' => Invokable::createEmpty(),
                 'expectedCompiledSources' => [],
             ],
             'has job, no sources' => [
-                'setup' => function (JobStore $jobStore) {
-                    $jobStore->create('label', 'http://example.com/callback');
-                },
+                'setup' => JobSetupInvokableFactory::setup(
+                    new JobSetup()
+                ),
                 'expectedCompiledSources' => [],
             ],
             'has job, has sources, no tests' => [
-                'setup' => function (JobStore $jobStore) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-                },
+                'setup' => JobSetupInvokableFactory::setup(
+                    (new JobSetup())
+                        ->withSources($sources)
+                ),
                 'expectedCompiledSources' => [],
             ],
             'test exists for first source' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                },
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                    ]),
+                ]),
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',
                 ],
             ],
             'test exists for first and second sources' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                },
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[1]),
+                    ]),
+                ]),
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',
                     'Test/testApple.yml',
                 ],
             ],
             'tests exist for all sources' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label', 'http://example.com/callback');
-                    $job->setSources([
-                        'Test/testZebra.yml',
-                        'Test/testApple.yml',
-                        'Test/testBat.yml',
-                    ]);
-
-                    $testConfiguration = TestConfiguration::create('chrome', 'http://example.com');
-                    $testFactory->create($testConfiguration, '/app/source/Test/testZebra.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testApple.yml', '', 0);
-                    $testFactory->create($testConfiguration, '/app/source/Test/testBat.yml', '', 0);
-                },
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[0]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[1]),
+                        (new TestSetup())
+                            ->withSource('/app/source/' .  $sources[2]),
+                    ]),
+                ]),
                 'expectedCompiledSources' => [
                     'Test/testZebra.yml',
                     'Test/testApple.yml',
