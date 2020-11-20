@@ -73,10 +73,10 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                     ]),
                 ]),
-                'expectedNextNonCompiledSource' =>  $sources[1],
+                'expectedNextNonCompiledSource' => $sources[1],
             ],
             'test exists for first and second sources' => [
                 'setup' => new InvokableCollection([
@@ -86,9 +86,9 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[1]),
+                            ->withSource('/app/source/' . $sources[1]),
                     ]),
                 ]),
                 'expectedNextNonCompiledSource' => $sources[2],
@@ -101,11 +101,11 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[1]),
+                            ->withSource('/app/source/' . $sources[1]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[2]),
+                            ->withSource('/app/source/' . $sources[2]),
                     ]),
                 ]),
                 'expectedNextNonCompiledSource' => null,
@@ -160,7 +160,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                     ]),
                 ]),
                 'expectedCompiledSources' => [
@@ -175,9 +175,9 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[1]),
+                            ->withSource('/app/source/' . $sources[1]),
                     ]),
                 ]),
                 'expectedCompiledSources' => [
@@ -193,11 +193,11 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                     ),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[0]),
+                            ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[1]),
+                            ->withSource('/app/source/' . $sources[1]),
                         (new TestSetup())
-                            ->withSource('/app/source/' .  $sources[2]),
+                            ->withSource('/app/source/' . $sources[2]),
                     ]),
                 ]),
                 'expectedCompiledSources' => [

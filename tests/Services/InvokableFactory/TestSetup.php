@@ -13,6 +13,10 @@ class TestSetup
     private string $source;
     private string $target;
     private int $stepCount;
+
+    /**
+     * @var Test::STATE_*
+     */
     private string $state;
 
     public function __construct()
