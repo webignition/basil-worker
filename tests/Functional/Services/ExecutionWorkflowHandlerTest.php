@@ -15,7 +15,6 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\InvokableFactory\JobMutatorFactory;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
