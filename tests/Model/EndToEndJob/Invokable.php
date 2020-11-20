@@ -65,6 +65,11 @@ class Invokable implements InvokableInterface, InvokableItemInterface
         return $this->arguments;
     }
 
+    public function setArgument(int $index, $argument): void
+    {
+        $this->arguments[$index] = $argument;
+    }
+
     public function replaceServiceReference(ServiceReference $serviceReference, object $service): void
     {
         foreach ($this->arguments as $argumentIndex => $argument) {

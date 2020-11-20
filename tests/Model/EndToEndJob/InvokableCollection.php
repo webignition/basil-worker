@@ -34,6 +34,19 @@ class InvokableCollection implements InvokableInterface
         return $return;
     }
 
+    /**
+     * @return InvokableItemInterface[]
+     */
+    public function getItems(): array
+    {
+        return $this->items;
+    }
+
+    public function setItem(int $index, InvokableInterface $item): void
+    {
+        $this->items[$index] = $item;
+    }
+
     public function getServiceReferences(): array
     {
         $serviceReferences = [];
