@@ -94,6 +94,6 @@ class JobSetup
         $new = clone $this;
         $new->state = $state;
 
-        return $this;
+        return $new;
     }
 }

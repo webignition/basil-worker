@@ -7,14 +7,14 @@ namespace App\Tests\Functional\MessageHandler;
 use App\Entity\Job;
 use App\Message\CompileSource;
 use App\MessageHandler\CompileSourceHandler;
-use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
-use App\Tests\Mock\Services\MockJobStore;
 use App\Tests\Mock\Services\MockSourceCompileEventDispatcher;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilCompilerModels\TestManifest;
@@ -27,31 +27,32 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private CompileSourceHandler $handler;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
-
-        $jobStore = self::$container->get(JobStore::class);
-        if ($jobStore instanceof JobStore) {
-            $job = $jobStore->create('label content', 'http://example.com/callback');
-            $job->setState(Job::STATE_COMPILATION_RUNNING);
-            $jobStore->store($job);
-        }
     }
 
-    /**
-     * @dataProvider invokeNoCompilationDataProvider
-     */
-    public function testInvokeNoCompilation(JobStore $jobStore)
+    public function testInvokeNoJob()
     {
-        ObjectReflector::setProperty(
-            $this->handler,
-            CompileSourceHandler::class,
-            'jobStore',
-            $jobStore
-        );
+        $eventDispatcher = (new MockSourceCompileEventDispatcher())
+            ->withoutDispatchCall()
+            ->getMock();
+
+        ObjectReflector::setProperty($this->handler, CompileSourceHandler::class, 'eventDispatcher', $eventDispatcher);
+
+        $handler = $this->handler;
+        $handler(\Mockery::mock(CompileSource::class));
+    }
+
+    public function testInvokeJobInWrongState()
+    {
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())
+                ->withState(Job::STATE_COMPILATION_AWAITING)
+        ));
 
         $eventDispatcher = (new MockSourceCompileEventDispatcher())
             ->withoutDispatchCall()
@@ -63,29 +64,13 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         $handler(\Mockery::mock(CompileSource::class));
     }
 
-    public function invokeNoCompilationDataProvider(): array
-    {
-        $jobInWrongState = (new MockJob())
-            ->withGetStateCall(Job::STATE_COMPILATION_AWAITING)
-            ->getMock();
-
-        return [
-            'no job' => [
-                'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(false)
-                    ->getMock(),
-            ],
-            'job in wrong state' => [
-                'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall($jobInWrongState)
-                    ->getMock(),
-            ],
-        ];
-    }
-
     public function testInvokeCompileSuccess()
     {
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())
+                ->withState(Job::STATE_COMPILATION_RUNNING)
+        ));
+
         $source = 'Test/test1.yml';
         $compileSourceMessage = new CompileSource($source);
 
@@ -124,6 +109,11 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeCompileFailure()
     {
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())
+                ->withState(Job::STATE_COMPILATION_RUNNING)
+        ));
+
         $source = 'Test/test1.yml';
         $compileSourceMessage = new CompileSource($source);
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);

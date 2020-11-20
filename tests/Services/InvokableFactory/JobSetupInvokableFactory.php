@@ -18,6 +18,7 @@ class JobSetupInvokableFactory
         $collection = [];
 
         $collection[] = self::create($jobSetup->getLabel(), $jobSetup->getCallbackUrl());
+        $collection[] = self::setState($jobSetup->getState());
 
         $sources = $jobSetup->getSources();
         if (is_array($sources)) {
@@ -37,6 +38,33 @@ class JobSetupInvokableFactory
                 new ServiceReference(JobStore::class),
                 $label,
                 $callbackUrl,
+            ]
+        );
+    }
+
+    /**
+     * @param Job::STATE_* $state
+     *
+     * @return InvokableInterface
+     */
+    private static function setState(string $state): InvokableInterface
+    {
+        return new Invokable(
+            function (JobStore $jobStore, string $state): ?Job {
+                if ($jobStore->hasJob()) {
+                    $job = $jobStore->getJob();
+                    $job->setState($state);
+
+                    $jobStore->store($job);
+
+                    return $job;
+                }
+
+                return null;
+            },
+            [
+                new ServiceReference(JobStore::class),
+                $state
             ]
         );
     }
