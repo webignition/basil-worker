@@ -6,13 +6,15 @@ namespace App\Tests\Functional\MessageHandler;
 
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
-use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockTestExecutor;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -23,48 +25,42 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private ExecuteTestHandler $handler;
-    private Job $job;
-    private Test $test;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
-
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        $this->job = $jobStore->create('label content', 'http://example.com/callback');
-        $this->job->setState(Job::STATE_EXECUTION_AWAITING);
-        $jobStore->store($this->job);
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-
-        $this->test = $testFactory->create(
-            TestConfiguration::create('chrome', 'http://example.com'),
-            '/tests/test1.yml',
-            '/generated/GeneratedTest.php',
-            1
-        );
     }
 
     public function testInvokeExecuteSuccess()
     {
-        self::assertSame(Job::STATE_EXECUTION_AWAITING, $this->job->getState());
-        self::assertSame(Test::STATE_AWAITING, $this->test->getState());
+        $job = $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())
+                ->withState(Job::STATE_EXECUTION_AWAITING)
+        ));
+
+        $tests = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup([
+            new TestSetup(),
+        ]));
+
+        $test = $tests[0];
+
+        self::assertSame(Job::STATE_EXECUTION_AWAITING, $job->getState());
+        self::assertSame(Test::STATE_AWAITING, $test->getState());
 
         $testExecutor = (new MockTestExecutor())
-            ->withExecuteCall($this->test)
+            ->withExecuteCall($test)
             ->getMock();
 
-        $executeTestMessage = new ExecuteTest((int) $this->test->getId());
+        $executeTestMessage = new ExecuteTest((int) $test->getId());
 
         ObjectReflector::setProperty($this->handler, ExecuteTestHandler::class, 'testExecutor', $testExecutor);
 
         $handler = $this->handler;
         $handler($executeTestMessage);
 
-        self::assertSame(Job::STATE_EXECUTION_RUNNING, $this->job->getState());
-        self::assertSame(Test::STATE_COMPLETE, $this->test->getState());
+        self::assertSame(Job::STATE_EXECUTION_RUNNING, $job->getState());
+        self::assertSame(Test::STATE_COMPLETE, $test->getState());
     }
 }
