@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\CallbackEventFactory;
 use App\Services\TestStateMutator;
-use App\Services\TestStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Services\InvokableFactory\TestMutatorFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
@@ -24,24 +25,17 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
     private TestStateMutator $mutator;
     private EventDispatcherInterface $eventDispatcher;
     private Test $test;
-    private TestStore $testStore;
     private CallbackEventFactory $callbackEventFactory;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-        if ($testFactory instanceof TestTestFactory) {
-            $this->test = $testFactory->create(
-                TestConfiguration::create('chrome', 'http://example.com/callback'),
-                '/app/source/Test/test.yml',
-                '/app/tests/GeneratedTest.php',
-                1
-            );
-        }
+        $this->test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup(
+            (new TestSetup())
+        ));
     }
 
     /**
@@ -52,9 +46,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
      */
     public function testSetComplete(string $initialState, string $expectedState)
     {
-        $this->test->setState($initialState);
-        $this->testStore->store($this->test);
-
+        $this->invokableHandler->invoke(TestMutatorFactory::createSetState($this->test, $initialState));
         self::assertSame($initialState, $this->test->getState());
 
         $this->mutator->setComplete($this->test);
@@ -104,8 +96,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
 
     private function doTestExecuteCompleteEventDrivenTest(callable $callable): void
     {
-        $this->test->setState(Test::STATE_RUNNING);
-        $this->testStore->store($this->test);
+        $this->invokableHandler->invoke(TestMutatorFactory::createSetState($this->test, Test::STATE_RUNNING));
 
         $event = new TestExecuteCompleteEvent($this->test);
 
