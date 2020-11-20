@@ -40,4 +40,12 @@ class TestSetup
     {
         return $this->stepCount;
     }
+
+    public function withSource(string $source): self
+    {
+        $new = clone $this;
+        $new->source = $source;
+
+        return $new;
+    }
 }
