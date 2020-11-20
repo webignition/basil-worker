@@ -5,14 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\Job;
-use App\Services\JobStore;
+use App\Tests\Services\InvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobTest extends AbstractEntityTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private JobStore $jobStore;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -27,13 +28,12 @@ class JobTest extends AbstractEntityTest
      */
     public function testHydratedJobReturnsSourcesAsStringArray(array $sources)
     {
-        $job = $this->jobStore->create(md5('label source'), 'http://example.com/callback');
-        $job->setSources($sources);
+        $this->invokableHandler->invoke(InvokableFactory::createJobWithSources(
+            md5('label source'),
+            'http://example.com/callback',
+            $sources
+        ));
 
-        $this->jobStore->store($job);
-
-        $this->entityManager->clear(Job::class);
-        $this->entityManager->close();
         $retrievedJob = $this->entityManager->find(Job::class, Job::ID);
 
         self::assertInstanceOf(Job::class, $retrievedJob);
