@@ -53,9 +53,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 'expectedNextNonCompiledSource' => null,
             ],
             'has job, no sources' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    new JobSetup()
-                ),
+                'setup' => JobSetupInvokableFactory::setup(),
                 'expectedNextNonCompiledSource' => null,
             ],
             'has job, has sources, no tests' => [
@@ -140,9 +138,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 'expectedCompiledSources' => [],
             ],
             'has job, no sources' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    new JobSetup()
-                ),
+                'setup' => JobSetupInvokableFactory::setup(),
                 'expectedCompiledSources' => [],
             ],
             'has job, has sources, no tests' => [

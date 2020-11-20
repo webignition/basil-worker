@@ -48,9 +48,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
-            new JobSetup()
-        ));
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup());
     }
 
     /**

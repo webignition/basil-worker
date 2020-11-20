@@ -13,8 +13,10 @@ use App\Tests\Model\EndToEndJob\ServiceReference;
 
 class JobSetupInvokableFactory
 {
-    public static function setup(JobSetup $jobSetup): InvokableInterface
+    public static function setup(?JobSetup $jobSetup = null): InvokableInterface
     {
+        $jobSetup = $jobSetup instanceof JobSetup ? $jobSetup : new JobSetup();
+
         $collection = [];
 
         $collection[] = self::create($jobSetup->getLabel(), $jobSetup->getCallbackUrl());

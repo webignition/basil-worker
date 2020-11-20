@@ -54,7 +54,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'expectedWorkflow' => new CompilationWorkflow([], null),
             ],
             'has job, no sources' => [
-                'setup' => JobSetupInvokableFactory::setup(new JobSetup()),
+                'setup' => JobSetupInvokableFactory::setup(),
                 'expectedWorkflow' => new CompilationWorkflow([], null),
             ],
             'has job, has sources, no tests' => [
