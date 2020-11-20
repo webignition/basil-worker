@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Services\TestFactory;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
-use webignition\BasilCompilerModels\TestManifest;
-use webignition\BasilModels\Test\Configuration;
+use App\Tests\Services\TestTestFactory;
 
 class TestSetupInvokableFactory
 {
@@ -24,41 +22,29 @@ class TestSetupInvokableFactory
         $collection = [];
 
         foreach ($testSetupCollection as $testSetup) {
-            $collection[] = self::create(
-                $testSetup->getConfiguration(),
-                $testSetup->getSource(),
-                $testSetup->getTarget(),
-                $testSetup->getStepCount()
-            );
+            $collection[] = self::create($testSetup);
         }
+
+        $collection[] = TestGetterFactory::getAll();
 
         return new InvokableCollection($collection);
     }
 
-    private static function create(
-        Configuration $configuration,
-        string $source,
-        string $target,
-        int $stepCount
-    ): InvokableInterface {
+    private static function create(TestSetup $testSetup): InvokableInterface
+    {
         return new Invokable(
-            function (
-                TestFactory $testFactory,
-                Configuration $configuration,
-                string $source,
-                string $target,
-                int $stepCount
-            ): array {
-                return $testFactory->createFromManifestCollection([
-                    new TestManifest($configuration, $source, $target, $stepCount),
-                ]);
+            function (TestTestFactory $testFactory, TestSetup $testSetup) {
+                return $testFactory->create(
+                    $testSetup->getConfiguration(),
+                    $testSetup->getSource(),
+                    $testSetup->getTarget(),
+                    $testSetup->getStepCount(),
+                    $testSetup->getState()
+                );
             },
             [
-                new ServiceReference(TestFactory::class),
-                $configuration,
-                $source,
-                $target,
-                $stepCount
+                new ServiceReference(TestTestFactory::class),
+                $testSetup,
             ]
         );
     }

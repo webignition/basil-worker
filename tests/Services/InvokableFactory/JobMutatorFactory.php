@@ -1,0 +1,31 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Services\InvokableFactory;
+
+use App\Entity\Job;
+use App\Services\JobStore;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Model\EndToEndJob\ServiceReference;
+
+class JobMutatorFactory
+{
+    public static function create(callable $mutator): InvokableInterface
+    {
+        return new Invokable(
+            function (JobStore $jobStore, callable $mutator): Job {
+                $job = $mutator($jobStore->getJob());
+
+                $jobStore->store($job);
+
+                return $job;
+            },
+            [
+                new ServiceReference(JobStore::class),
+                $mutator,
+            ]
+        );
+    }
+}

@@ -4,18 +4,23 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Job;
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
 use App\Services\ExecutionWorkflowHandler;
-use App\Services\JobStore;
-use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
+use App\Tests\Model\EndToEndJob\InvokableCollection;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\Asserter\MessengerAsserter;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Services\InvokableFactory\JobMutatorFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -24,18 +29,18 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private ExecutionWorkflowHandler $handler;
-    private TestTestFactory $testFactory;
-    private TestStateMutator $testStateMutator;
-    private JobStore $jobStore;
     private EventDispatcherInterface $eventDispatcher;
     private MessengerAsserter $messengerAsserter;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $this->jobStore->create('label content', 'http://example.com/callback');
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            new JobSetup()
+        ));
     }
 
     public function testDispatchNextExecuteTestMessageNoMessageDispatched()
@@ -48,13 +53,11 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
      * @dataProvider dispatchNextExecuteTestMessageMessageDispatchedDataProvider
      */
     public function testDispatchNextExecuteTestMessageMessageDispatched(
-        callable $setup,
+        InvokableInterface $setup,
         int $expectedNextTestIndex
     ) {
         $this->doSourceCompileSuccessEventDrivenTest(
-            function () use ($setup) {
-                return $setup($this->jobStore, $this->testFactory, $this->testStateMutator);
-            },
+            $setup,
             function () {
                 $this->handler->dispatchNextExecuteTestMessage();
             },
@@ -66,115 +69,69 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         return [
             'two tests, none run' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                            'Test/test2.yml',
+                        ]);
 
-                    return [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test2.yml',
-                            '/generated/GeneratedTest2.php',
-                            1
-                        ),
-                    ];
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml'),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml'),
+                    ]),
+                ]),
                 'expectedNextTestIndex' => 0,
             ],
             'three tests, first complete' => [
-                'setup' => function (
-                    JobStore $jobStore,
-                    TestTestFactory $testFactory,
-                    TestStateMutator $testStateMutator
-                ) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                            'Test/test2.yml',
+                            'Test/test3.yml',
+                        ]);
 
-                    $tests = [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test2.yml',
-                            '/generated/GeneratedTest2.php',
-                            1
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test3.yml',
-                            '/generated/GeneratedTest3.php',
-                            1
-                        ),
-                    ];
-
-                    $testStateMutator->setRunning($tests[0]);
-                    $testStateMutator->setComplete($tests[0]);
-
-                    return $tests;
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_COMPLETE),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml'),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test3.yml'),
+                    ]),
+                ]),
                 'expectedNextTestIndex' => 1,
             ],
             'three tests, first, second complete' => [
-                'setup' => function (
-                    JobStore $jobStore,
-                    TestTestFactory $testFactory,
-                    TestStateMutator $testStateMutator
-                ) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                            'Test/test2.yml',
+                            'Test/test3.yml',
+                        ]);
 
-                    $tests = [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test2.yml',
-                            '/generated/GeneratedTest2.php',
-                            1
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test3.yml',
-                            '/generated/GeneratedTest3.php',
-                            1
-                        )
-                    ];
-
-                    $testStateMutator->setRunning($tests[0]);
-                    $testStateMutator->setComplete($tests[0]);
-                    $testStateMutator->setRunning($tests[1]);
-                    $testStateMutator->setComplete($tests[1]);
-
-                    return $tests;
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_COMPLETE),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml')
+                            ->withState(Test::STATE_COMPLETE),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test3.yml'),
+                    ]),
+                ]),
                 'expectedNextTestIndex' => 2,
             ],
         ];
@@ -183,31 +140,23 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToSourceCompileSuccessEvent()
     {
         $this->doSourceCompileSuccessEventDrivenTest(
-            function () {
-                $job = $this->jobStore->getJob();
-                $job->setSources([
-                    'Test/test1.yml',
-                    'Test/test2.yml',
-                ]);
-                $this->jobStore->store($job);
+            new InvokableCollection([
+                JobMutatorFactory::create(function (Job $job): Job {
+                    $job->setSources([
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                    ]);
 
-                return [
-                    $this->testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test1.yml',
-                        '/generated/GeneratedTest1.php',
-                        1,
-                        Test::STATE_COMPLETE
-                    ),
-                    $this->testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test2.yml',
-                        '/generated/GeneratedTest2.php',
-                        1,
-                        Test::STATE_AWAITING
-                    ),
-                ];
-            },
+                    return $job;
+                }),
+                TestSetupInvokableFactory::setup([
+                    (new TestSetup())
+                        ->withSource('/app/source/Test/test1.yml')
+                        ->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())
+                        ->withSource('/app/source/Test/test2.yml'),
+                ]),
+            ]),
             function () {
                 $this->eventDispatcher->dispatch(
                     new SourceCompileSuccessEvent(
@@ -223,13 +172,13 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     }
 
     private function doSourceCompileSuccessEventDrivenTest(
-        callable $setup,
+        InvokableInterface $setup,
         callable $execute,
         int $expectedNextTestIndex
     ): void {
         $this->messengerAsserter->assertQueueIsEmpty();
 
-        $tests = $setup();
+        $tests = $this->invokableHandler->invoke($setup);
         $execute();
 
         $this->messengerAsserter->assertQueueCount(1);
@@ -247,15 +196,13 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
      * @dataProvider dispatchNextExecuteTestMessageFromTestExecuteCompleteEventDataProvider
      */
     public function testDispatchNextExecuteTestMessageFromTestExecuteCompleteEvent(
-        callable $setup,
+        InvokableInterface $setup,
         int $eventTestIndex,
         int $expectedQueuedMessageCount,
         ?int $expectedNextTestIndex
     ) {
         $this->doTestExecuteCompleteEventDrivenTest(
-            function () use ($setup) {
-                return $setup($this->jobStore, $this->testFactory);
-            },
+            $setup,
             $eventTestIndex,
             function (TestExecuteCompleteEvent $event) {
                 $this->handler->dispatchNextExecuteTestMessageFromTestExecuteCompleteEvent($event);
@@ -269,103 +216,85 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         return [
             'single test, not complete' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                        ]);
 
-                    return [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1,
-                            Test::STATE_FAILED
-                        ),
-                    ];
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_FAILED),
+                    ])
+                ]),
                 'eventTestIndex' => 0,
                 'expectedQueuedMessageCount' => 0,
                 'expectedNextTestIndex' => null,
             ],
             'single test, is complete' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                        ]);
 
-                    return [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1,
-                            Test::STATE_COMPLETE
-                        ),
-                    ];
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_COMPLETE),
+                    ])
+                ]),
                 'eventTestIndex' => 0,
                 'expectedQueuedMessageCount' => 0,
                 'expectedNextTestIndex' => null,
             ],
             'multiple tests, not complete' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                            'Test/test2.yml',
+                        ]);
 
-                    return [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1,
-                            Test::STATE_FAILED
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test2.yml',
-                            '/generated/GeneratedTest2.php',
-                            1
-                        ),
-                    ];
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_FAILED),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml')
+                            ->withState(Test::STATE_AWAITING),
+                    ])
+                ]),
                 'eventTestIndex' => 0,
                 'expectedQueuedMessageCount' => 0,
                 'expectedNextTestIndex' => null,
             ],
             'multiple tests, complete' => [
-                'setup' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->getJob();
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]);
-                    $jobStore->store($job);
+                'setup' => new InvokableCollection([
+                    JobMutatorFactory::create(function (Job $job): Job {
+                        $job->setSources([
+                            'Test/test1.yml',
+                            'Test/test2.yml',
+                        ]);
 
-                    return [
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test1.yml',
-                            '/generated/GeneratedTest1.php',
-                            1,
-                            Test::STATE_COMPLETE
-                        ),
-                        $testFactory->create(
-                            TestConfiguration::create('chrome', 'http://example.com'),
-                            '/app/source/Test/test2.yml',
-                            '/generated/GeneratedTest2.php',
-                            1
-                        ),
-                    ];
-                },
+                        return $job;
+                    }),
+                    TestSetupInvokableFactory::setup([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withState(Test::STATE_COMPLETE),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml')
+                            ->withState(Test::STATE_AWAITING),
+                    ])
+                ]),
                 'eventTestIndex' => 0,
                 'expectedQueuedMessageCount' => 1,
                 'expectedNextTestIndex' => 1,
@@ -376,30 +305,24 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToTestExecuteCompleteEvent()
     {
         $this->doTestExecuteCompleteEventDrivenTest(
-            function () {
-                $job = $this->jobStore->getJob();
-                $job->setSources([
-                    'Test/test1.yml',
-                    'Test/test2.yml',
-                ]);
-                $this->jobStore->store($job);
+            new InvokableCollection([
+                JobMutatorFactory::create(function (Job $job): Job {
+                    $job->setSources([
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                    ]);
 
-                return [
-                    $this->testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test1.yml',
-                        '/generated/GeneratedTest1.php',
-                        1,
-                        Test::STATE_COMPLETE
-                    ),
-                    $this->testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        '/app/source/Test/test2.yml',
-                        '/generated/GeneratedTest2.php',
-                        1
-                    )
-                ];
-            },
+                    return $job;
+                }),
+                TestSetupInvokableFactory::setup([
+                    (new TestSetup())
+                        ->withSource('/app/source/Test/test1.yml')
+                        ->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())
+                        ->withSource('/app/source/Test/test2.yml')
+                        ->withState(Test::STATE_AWAITING),
+                ])
+            ]),
             0,
             function (TestExecuteCompleteEvent $event) {
                 $this->eventDispatcher->dispatch($event);
@@ -410,13 +333,13 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     }
 
     private function doTestExecuteCompleteEventDrivenTest(
-        callable $setup,
+        InvokableInterface $setup,
         int $eventTestIndex,
         callable $execute,
         int $expectedQueuedMessageCount,
         ?int $expectedNextTestIndex
     ): void {
-        $tests = $setup($this->jobStore, $this->testFactory);
+        $tests = $this->invokableHandler->invoke($setup);
         $this->messengerAsserter->assertQueueIsEmpty();
 
         $test = $tests[$eventTestIndex];
