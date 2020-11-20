@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Repository\CallbackRepository;
-use App\Services\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\InvokableFactory\CallbackSetup;
+use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CallbackRepositoryTest extends AbstractBaseFunctionalTest
@@ -16,7 +17,7 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private CallbackRepository $repository;
-    private CallbackStore $store;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -28,8 +29,7 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     {
         self::assertNull($this->repository->find(0));
 
-        $callback = CallbackEntity::create(CallbackInterface::TYPE_COMPILE_FAILURE, []);
-        $this->store->store($callback);
+        $callback = $this->invokableHandler->invoke(CallbackSetupInvokableFactory::setup());
 
         $retrievedCallback = $this->repository->find($callback->getId());
         self::assertEquals($callback, $retrievedCallback);
@@ -44,9 +44,10 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     public function testGetFinishedCount(array $callbackStates, int $expectedFinishedCount)
     {
         foreach ($callbackStates as $callbackState) {
-            $callback = CallbackEntity::create(CallbackEntity::TYPE_COMPILE_FAILURE, []);
-            $callback->setState($callbackState);
-            $this->store->store($callback);
+            $this->invokableHandler->invoke(CallbackSetupInvokableFactory::setup(
+                (new CallbackSetup())
+                    ->withState($callbackState)
+            ));
         }
 
         self::assertSame($expectedFinishedCount, $this->repository->getFinishedCount());
@@ -110,8 +111,10 @@ class CallbackRepositoryTest extends AbstractBaseFunctionalTest
     public function testGetCompileFailureTypeCount(array $callbackTypes, int $expectedCompileFailureTypeCount)
     {
         foreach ($callbackTypes as $callbackType) {
-            $callback = CallbackEntity::create($callbackType, []);
-            $this->store->store($callback);
+            $this->invokableHandler->invoke(CallbackSetupInvokableFactory::setup(
+                (new CallbackSetup())
+                    ->withType($callbackType)
+            ));
         }
 
         self::assertSame($expectedCompileFailureTypeCount, $this->repository->getCompileFailureTypeCount());

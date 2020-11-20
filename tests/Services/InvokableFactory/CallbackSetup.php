@@ -66,4 +66,16 @@ class CallbackSetup
 
         return $new;
     }
+
+    /**
+     * @param CallbackInterface::TYPE_* $type
+     * @return $this
+     */
+    public function withType(string $type): self
+    {
+        $new = clone $this;
+        $new->type = $type;
+
+        return $new;
+    }
 }
