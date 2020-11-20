@@ -7,10 +7,11 @@ namespace App\Tests\Functional\Services;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
-use App\Repository\TestRepository;
 use App\Services\TestFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
+use App\Tests\Services\InvokableFactory\TestGetterFactory;
+use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\BasilCompilerModels\TestManifest;
@@ -23,7 +24,7 @@ class TestFactoryTest extends AbstractBaseFunctionalTest
 
     private TestFactory $factory;
     private EventDispatcherInterface $eventDispatcher;
-    private TestRepository $testRepository;
+    private InvokableHandler $invokableHandler;
 
     /**
      * @var array<string, TestManifest>
@@ -135,7 +136,7 @@ class TestFactoryTest extends AbstractBaseFunctionalTest
             $event = new SourceCompileSuccessEvent('/app/source/Test/test.yml', $suiteManifest);
             $this->eventDispatcher->dispatch($event);
 
-            return $this->testRepository->findAll();
+            return $this->invokableHandler->invoke(TestGetterFactory::getAll());
         });
     }
 
