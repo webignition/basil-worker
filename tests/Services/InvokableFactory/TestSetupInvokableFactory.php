@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use webignition\BasilModels\Test\Configuration;
 use App\Services\TestFactory;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use webignition\BasilCompilerModels\TestManifest;
+use webignition\BasilModels\Test\Configuration;
 
 class TestSetupInvokableFactory
 {

@@ -42,7 +42,7 @@ class InvokableCollection implements InvokableInterface
         return $this->items;
     }
 
-    public function setItem(int $index, InvokableInterface $item): void
+    public function setItem(int $index, InvokableItemInterface $item): void
     {
         $this->items[$index] = $item;
     }

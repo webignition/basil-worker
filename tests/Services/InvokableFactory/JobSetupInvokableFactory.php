@@ -51,6 +51,20 @@ class JobSetupInvokableFactory
     {
         return new Invokable(
             function (JobStore $jobStore, string $state): ?Job {
+                if (
+                    Job::STATE_COMPILATION_AWAITING !== $state &&
+                    Job::STATE_COMPILATION_RUNNING !== $state &&
+                    Job::STATE_COMPILATION_FAILED !== $state &&
+                    Job::STATE_EXECUTION_AWAITING !== $state &&
+                    Job::STATE_EXECUTION_RUNNING !== $state &&
+                    Job::STATE_EXECUTION_FAILED !== $state &&
+                    Job::STATE_EXECUTION_COMPLETE !== $state &&
+                    Job::STATE_EXECUTION_CANCELLED !== $state
+                ) {
+                    $state = Job::STATE_COMPILATION_AWAITING;
+                }
+
+
                 if ($jobStore->hasJob()) {
                     $job = $jobStore->getJob();
                     $job->setState($state);

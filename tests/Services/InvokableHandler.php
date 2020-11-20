@@ -48,7 +48,10 @@ class InvokableHandler
         if ($invokable instanceof InvokableCollection) {
             foreach ($invokable->getItems() as $itemIndex => $item) {
                 $resolvedItem = $this->resolveInvokableArguments($item);
-                $invokable->setItem($itemIndex, $resolvedItem);
+
+                if ($resolvedItem instanceof InvokableItemInterface) {
+                    $invokable->setItem($itemIndex, $resolvedItem);
+                }
             }
         }
 

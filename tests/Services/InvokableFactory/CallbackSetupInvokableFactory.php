@@ -31,12 +31,19 @@ class CallbackSetupInvokableFactory
      * @param CallbackInterface::TYPE_* $type
      * @param array<mixed> $payload
      *
-     * @return InvokableInterface
+     * @return InvokableItemInterface
      */
     private static function create(string $type, array $payload): InvokableItemInterface
     {
         return new Invokable(
             function (CallbackStore $callbackStore, string $type, array $payload): CallbackInterface {
+                if (
+                    CallbackInterface::TYPE_COMPILE_FAILURE !== $type &&
+                    CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED !== $type
+                ) {
+                    $type = CallbackInterface::TYPE_COMPILE_FAILURE;
+                }
+
                 $callback = CallbackEntity::create($type, $payload);
 
                 return $callbackStore->store($callback);
@@ -58,6 +65,16 @@ class CallbackSetupInvokableFactory
     {
         return new Invokable(
             function (CallbackStore $callbackStore, CallbackInterface $callback, string $state): CallbackInterface {
+                if (
+                    CallbackInterface::STATE_AWAITING !== $state &&
+                    CallbackInterface::STATE_QUEUED !== $state &&
+                    CallbackInterface::STATE_SENDING !== $state &&
+                    CallbackInterface::STATE_FAILED !== $state &&
+                    CallbackInterface::STATE_COMPLETE !== $state
+                ) {
+                    $state = CallbackInterface::STATE_AWAITING;
+                }
+
                 $callback->setState($state);
 
                 return $callbackStore->store($callback);
