@@ -24,7 +24,6 @@ use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\JobGetterFactory;
 use App\Tests\Services\InvokableFactory\JobMutatorFactory;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
@@ -463,9 +462,7 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
                 ->getMock()
         );
 
-        $test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup(
-            (new TestSetup())
-        ));
+        $test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup());
 
         $this->eventDispatcher->dispatch(new TestExecuteCompleteEvent($test));
 

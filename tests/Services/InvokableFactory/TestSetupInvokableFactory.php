@@ -30,8 +30,10 @@ class TestSetupInvokableFactory
         return new InvokableCollection($collection);
     }
 
-    public static function setup(TestSetup $testSetup): InvokableInterface
+    public static function setup(?TestSetup $testSetup = null): InvokableInterface
     {
+        $testSetup = $testSetup instanceof TestSetup ? $testSetup : new TestSetup();
+
         return new Invokable(
             function (TestTestFactory $testFactory, TestSetup $testSetup) {
                 return $testFactory->create(

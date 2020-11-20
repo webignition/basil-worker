@@ -11,7 +11,6 @@ use App\Services\CallbackEventFactory;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\InvokableFactory\TestMutatorFactory;
-use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -33,9 +32,7 @@ class TestStateMutatorTest extends AbstractBaseFunctionalTest
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $this->test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup(
-            (new TestSetup())
-        ));
+        $this->test = $this->invokableHandler->invoke(TestSetupInvokableFactory::setup());
     }
 
     /**
