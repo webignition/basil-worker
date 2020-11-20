@@ -5,15 +5,20 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Model\Workflow\ExecutionWorkflow;
 use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowFactory;
-use App\Services\JobStore;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Model\EndToEndJob\ServiceReference;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
@@ -26,33 +31,33 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     ];
 
     private ExecutionWorkflowFactory $executionWorkflowFactory;
-    private TestTestFactory $testFactory;
-    private TestRepository $testRepository;
-    private TestStateMutator $testStateMutator;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-        if ($jobStore instanceof JobStore) {
-            $job = $jobStore->create('label', 'http://example.com/callback');
-            $job->setSources(self::JOB_SOURCES);
-        }
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())->withSources(self::JOB_SOURCES)
+        ));
 
-        $this->createTests();
+        foreach (self::JOB_SOURCES as $source) {
+            $this->invokableHandler->invoke(TestSetupInvokableFactory::setup([
+                (new TestSetup())
+                    ->withSource('/app/source/' . $source)
+            ]));
+        }
     }
 
     /**
      * @dataProvider createDataProvider
      */
-    public function testCreate(callable $setup, callable $expectedWorkflowCreator)
+    public function testCreate(InvokableInterface $setup, InvokableInterface $expectedWorkflowCreator)
     {
-        $setup($this->testRepository, $this->testStateMutator);
+        $this->invokableHandler->invoke($setup);
 
-        $workflow = $expectedWorkflowCreator($this->testRepository);
+        $workflow = $this->invokableHandler->invoke($expectedWorkflowCreator);
 
         self::assertEquals($workflow, $this->executionWorkflowFactory->create());
     }
@@ -61,80 +66,86 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     {
         return [
             'no tests executed' => [
-                'setup' => function () {
-                },
-                'expectedWorkflowCreator' => function (TestRepository $testRepository) {
-                    $nextTest = $testRepository->findNextAwaiting();
-                    $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+                'setup' => Invokable::createEmpty(),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                    return new ExecutionWorkflow(
-                        WorkflowInterface::STATE_COMPLETE,
-                        2,
-                        2,
-                        $nextTestId
-                    );
-                },
+                        return new ExecutionWorkflow(
+                            WorkflowInterface::STATE_COMPLETE,
+                            2,
+                            2,
+                            $nextTestId
+                        );
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
             ],
             'first test executed' => [
-                'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
-                    $nextTest = $testRepository->findNextAwaiting();
-                    if ($nextTest instanceof Test) {
-                        $testStateMutator->setRunning($nextTest);
-                        $testStateMutator->setComplete($nextTest);
-                    }
-                },
-                'expectedWorkflowCreator' => function (TestRepository $testRepository) {
-                    $nextTest = $testRepository->findNextAwaiting();
-                    $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+                'setup' => new Invokable(
+                    function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        if ($nextTest instanceof Test) {
+                            $testStateMutator->setRunning($nextTest);
+                            $testStateMutator->setComplete($nextTest);
+                        }
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                        new ServiceReference(TestStateMutator::class),
+                    ]
+                ),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                    return new ExecutionWorkflow(
-                        WorkflowInterface::STATE_COMPLETE,
-                        2,
-                        1,
-                        $nextTestId
-                    );
-                },
+                        return new ExecutionWorkflow(
+                            WorkflowInterface::STATE_COMPLETE,
+                            2,
+                            1,
+                            $nextTestId
+                        );
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
             ],
             'both tests executed' => [
-                'setup' => function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
-                    $nextTest = $testRepository->findNextAwaiting();
-                    if ($nextTest instanceof Test) {
-                        $testStateMutator->setRunning($nextTest);
-                        $testStateMutator->setComplete($nextTest);
-                    }
+                'setup' => new Invokable(
+                    function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        if ($nextTest instanceof Test) {
+                            $testStateMutator->setRunning($nextTest);
+                            $testStateMutator->setComplete($nextTest);
+                        }
 
-                    $nextTest = $testRepository->findNextAwaiting();
-                    if ($nextTest instanceof Test) {
-                        $testStateMutator->setRunning($nextTest);
-                        $testStateMutator->setComplete($nextTest);
+                        $nextTest = $testRepository->findNextAwaiting();
+                        if ($nextTest instanceof Test) {
+                            $testStateMutator->setRunning($nextTest);
+                            $testStateMutator->setComplete($nextTest);
+                        }
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                        new ServiceReference(TestStateMutator::class),
+                    ]
+                ),
+                'expectedWorkflowCreator' => new Invokable(
+                    function () {
+                        return new ExecutionWorkflow(
+                            WorkflowInterface::STATE_COMPLETE,
+                            2,
+                            0,
+                            null
+                        );
                     }
-                },
-                'expectedWorkflowCreator' => function () {
-                    return new ExecutionWorkflow(
-                        WorkflowInterface::STATE_COMPLETE,
-                        2,
-                        0,
-                        null
-                    );
-                },
+                ),
             ],
         ];
-    }
-
-    private function createTests(): void
-    {
-        foreach (self::JOB_SOURCES as $sourceIndex => $source) {
-            $this->createTest($source, $sourceIndex);
-        }
-    }
-
-    private function createTest(string $source, int $index): void
-    {
-        $this->testFactory->create(
-            TestConfiguration::create('chrome', 'http://example.com/' . $index),
-            '/app/source/' . $source,
-            '/generated/GeneratedTest' . $index . '.php',
-            1
-        );
     }
 }
