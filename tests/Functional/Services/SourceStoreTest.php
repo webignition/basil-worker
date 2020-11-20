@@ -6,7 +6,10 @@ namespace App\Tests\Functional\Services;
 
 use App\Services\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\BasilFixtureHandler;
+use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use Symfony\Component\HttpFoundation\File\File;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -16,7 +19,7 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private SourceStore $store;
-    private BasilFixtureHandler $basilFixtureHandler;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -43,7 +46,15 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
         $expectedFilePath = $expectedFile->getPathname();
         self::assertFileDoesNotExist($expectedFilePath);
 
-        $uploadedFile = $this->basilFixtureHandler->createUploadedFile($uploadedFileFixturePath);
+        $uploadedFile = $this->invokableHandler->invoke(new Invokable(
+            function (BasilFixtureHandler $basilFixtureHandler, string $uploadedFileFixturePath) {
+                return $basilFixtureHandler->createUploadedFile($uploadedFileFixturePath);
+            },
+            [
+                new ServiceReference(BasilFixtureHandler::class),
+                $uploadedFileFixturePath
+            ]
+        ));
 
         $file = $this->store->store($uploadedFile, $relativePath);
 
