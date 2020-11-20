@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Entity;
 
 use App\Entity\Job;
+use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -28,10 +29,9 @@ class JobTest extends AbstractEntityTest
      */
     public function testHydratedJobReturnsSourcesAsStringArray(array $sources)
     {
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::createJobWithSources(
-            md5('label source'),
-            'http://example.com/callback',
-            $sources
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
+            (new JobSetup())
+                ->withSources($sources)
         ));
 
         $retrievedJob = $this->entityManager->find(Job::class, Job::ID);

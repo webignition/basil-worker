@@ -13,22 +13,21 @@ use App\Tests\Model\EndToEndJob\ServiceReference;
 
 class JobSetupInvokableFactory
 {
-    /**
-     * @param string $label
-     * @param string $callbackUrl
-     * @param string[] $sources
-     *
-     * @return InvokableInterface
-     */
-    public static function createJobWithSources(string $label, string $callbackUrl, array $sources): InvokableInterface
+    public static function setup(JobSetup $jobSetup): InvokableInterface
     {
-        return new InvokableCollection([
-            self::createJob($label, $callbackUrl),
-            self::setJobSources($sources),
-        ]);
+        $collection = [];
+
+        $collection[] = self::create($jobSetup->getLabel(), $jobSetup->getCallbackUrl());
+
+        $sources = $jobSetup->getSources();
+        if (is_array($sources)) {
+            $collection[] = self::setSources($sources);
+        }
+
+        return new InvokableCollection($collection);
     }
 
-    public static function createJob(string $label, string $callbackUrl): InvokableInterface
+    private static function create(string $label, string $callbackUrl): InvokableInterface
     {
         return new Invokable(
             function (JobStore $jobStore, string $label, string $callbackUrl): Job {
@@ -46,7 +45,7 @@ class JobSetupInvokableFactory
      * @param string[]  $sources
      * @return InvokableInterface
      */
-    public static function setJobSources(array $sources): InvokableInterface
+    private static function setSources(array $sources): InvokableInterface
     {
         return new Invokable(
             function (JobStore $jobStore, array $sources): ?Job {
