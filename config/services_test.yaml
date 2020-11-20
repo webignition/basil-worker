@@ -119,3 +119,8 @@ services:
         public: true
         arguments:
             $transport: '@messenger.transport.async'
+
+    App\Tests\Services\InvokableHandler:
+        public: true
+        arguments:
+            $container: '@test.service_container'
