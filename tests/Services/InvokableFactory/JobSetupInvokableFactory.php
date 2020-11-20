@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Services;
+namespace App\Tests\Services\InvokableFactory;
 
 use App\Entity\Job;
 use App\Services\JobStore;
@@ -11,8 +11,15 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 
-class InvokableFactory
+class JobSetupInvokableFactory
 {
+    /**
+     * @param string $label
+     * @param string $callbackUrl
+     * @param string[] $sources
+     *
+     * @return InvokableInterface
+     */
     public static function createJobWithSources(string $label, string $callbackUrl, array $sources): InvokableInterface
     {
         return new InvokableCollection([
