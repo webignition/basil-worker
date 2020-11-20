@@ -22,4 +22,21 @@ class TestGetterFactory
             ]
         );
     }
+
+    public static function getStates(): InvokableInterface
+    {
+        return new Invokable(
+            function (array $tests): array {
+                $states = [];
+                foreach ($tests as $test) {
+                    $states[] = $test->getState();
+                }
+
+                return $states;
+            },
+            [
+                TestGetterFactory::getAll(),
+            ]
+        );
+    }
 }

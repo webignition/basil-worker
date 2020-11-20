@@ -5,12 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Event\TestFailedEvent;
 use App\Services\TestCanceller;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\TestTestFactory;
-use App\Tests\Services\TestTestRepository;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Services\InvokableFactory\TestGetterFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -19,9 +22,8 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private TestCanceller $testCanceller;
-    private TestTestFactory $testFactory;
     private EventDispatcherInterface $eventDispatcher;
-    private TestTestRepository $testTestRepository;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -32,39 +34,36 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider cancelAwaitingDataProvider
      *
-     * @param callable $setup
+     * @param InvokableInterface $setup
      * @param array<Test::STATE_*> $expectedInitialStates
      * @param array<Test::STATE_*> $expectedStates
      */
-    public function testCancelAwaiting(callable $setup, array $expectedInitialStates, array $expectedStates)
+    public function testCancelAwaiting(InvokableInterface $setup, array $expectedInitialStates, array $expectedStates)
     {
-        $setup($this->testFactory);
-        self::assertSame($this->testTestRepository->getStates(), $expectedInitialStates);
+        $this->invokableHandler->invoke($setup);
+
+        self::assertSame($this->invokableHandler->invoke(TestGetterFactory::getStates()), $expectedInitialStates);
 
         $this->testCanceller->cancelAwaiting();
 
-        self::assertSame($this->testTestRepository->getStates(), $expectedStates);
+        self::assertSame($this->invokableHandler->invoke(TestGetterFactory::getStates()), $expectedStates);
     }
 
     public function cancelAwaitingDataProvider(): array
     {
         return [
             'no tests' => [
-                'setup' => function () {
-                    return [];
-                },
+                'setup' => Invokable::createEmpty(),
                 'expectedInitialStates' => [],
                 'expectedStates' => [],
             ],
             'no awaiting tests' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_COMPLETE,
-                        Test::STATE_CANCELLED,
-                        Test::STATE_FAILED,
-                        Test::STATE_RUNNING,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())->withState(Test::STATE_CANCELLED),
+                    (new TestSetup())->withState(Test::STATE_FAILED),
+                    (new TestSetup())->withState(Test::STATE_RUNNING),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_COMPLETE,
                     Test::STATE_CANCELLED,
@@ -79,12 +78,10 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'all awaiting tests' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_AWAITING,
-                        Test::STATE_AWAITING,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_AWAITING,
                     Test::STATE_AWAITING,
@@ -95,15 +92,13 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'mixed' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_COMPLETE,
-                        Test::STATE_CANCELLED,
-                        Test::STATE_FAILED,
-                        Test::STATE_RUNNING,
-                        Test::STATE_AWAITING,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())->withState(Test::STATE_CANCELLED),
+                    (new TestSetup())->withState(Test::STATE_FAILED),
+                    (new TestSetup())->withState(Test::STATE_RUNNING),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_COMPLETE,
                     Test::STATE_CANCELLED,
@@ -125,19 +120,17 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider cancelAwaitingFromTestFailedEventDataProvider
      *
-     * @param callable $setup
+     * @param InvokableInterface $setup
      * @param array<Test::STATE_*> $expectedInitialStates
      * @param array<Test::STATE_*> $expectedStates
      */
     public function testCancelAwaitingFromTestFailedEvent(
-        callable $setup,
+        InvokableInterface $setup,
         array $expectedInitialStates,
         array $expectedStates
     ) {
         $this->doTestFailedEventDrivenTest(
-            function () use ($setup) {
-                return $setup($this->testFactory);
-            },
+            $setup,
             $expectedInitialStates,
             function (TestFailedEvent $event) {
                 $this->testCanceller->cancelAwaitingFromTestFailedEvent($event);
@@ -149,19 +142,17 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider cancelAwaitingFromTestFailedEventDataProvider
      *
-     * @param callable $setup
+     * @param InvokableInterface $setup
      * @param array<Test::STATE_*> $expectedInitialStates
      * @param array<Test::STATE_*> $expectedStates
      */
     public function testSubscribesToTestExecuteDocumentReceivedEvent(
-        callable $setup,
+        InvokableInterface $setup,
         array $expectedInitialStates,
         array $expectedStates
     ) {
         $this->doTestFailedEventDrivenTest(
-            function () use ($setup) {
-                return $setup($this->testFactory);
-            },
+            $setup,
             $expectedInitialStates,
             function (TestFailedEvent $event) {
                 $this->eventDispatcher->dispatch($event);
@@ -174,12 +165,10 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     {
         return [
             'no awaiting tests, test not failed' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_RUNNING,
-                        Test::STATE_COMPLETE,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_RUNNING),
+                    (new TestSetup())->withState(Test::STATE_COMPLETE),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_RUNNING,
                     Test::STATE_COMPLETE,
@@ -190,13 +179,11 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'has awaiting tests, test not failed' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_RUNNING,
-                        Test::STATE_AWAITING,
-                        Test::STATE_AWAITING,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_RUNNING),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_RUNNING,
                     Test::STATE_AWAITING,
@@ -209,12 +196,10 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'no awaiting tests, test failed' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_FAILED,
-                        Test::STATE_COMPLETE,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_FAILED),
+                    (new TestSetup())->withState(Test::STATE_COMPLETE),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_FAILED,
                     Test::STATE_COMPLETE,
@@ -225,13 +210,11 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'has awaiting tests, test failed' => [
-                'setup' => function (TestTestFactory $testFactory) {
-                    return $this->createTestsWithStates($testFactory, [
-                        Test::STATE_FAILED,
-                        Test::STATE_AWAITING,
-                        Test::STATE_AWAITING,
-                    ]);
-                },
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())->withState(Test::STATE_FAILED),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                    (new TestSetup())->withState(Test::STATE_AWAITING),
+                ]),
                 'expectedInitialStates' => [
                     Test::STATE_FAILED,
                     Test::STATE_AWAITING,
@@ -247,20 +230,19 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @param callable $setup
+     * @param InvokableInterface $setup
      * @param array<Test::STATE_*> $expectedInitialStates
      * @param callable $execute
      * @param array<Test::STATE_*> $expectedStates
      */
     private function doTestFailedEventDrivenTest(
-        callable $setup,
+        InvokableInterface $setup,
         array $expectedInitialStates,
         callable $execute,
         array $expectedStates
     ): void {
-        /** @var Test[] $tests */
-        $tests = $setup($this->testFactory);
-        self::assertSame($this->testTestRepository->getStates(), $expectedInitialStates);
+        $tests = $this->invokableHandler->invoke($setup);
+        self::assertSame($this->invokableHandler->invoke(TestGetterFactory::getStates()), $expectedInitialStates);
 
         $test = $tests[0];
         self::assertInstanceOf(Test::class, $test);
@@ -268,29 +250,6 @@ class TestCancellerTest extends AbstractBaseFunctionalTest
         $event = new TestFailedEvent($test);
         $execute($event);
 
-        self::assertSame($this->testTestRepository->getStates(), $expectedStates);
-    }
-
-    /**
-     * @param TestTestFactory $testFactory
-     * @param array<Test::STATE_*> $states
-     *
-     * @return Test[]
-     */
-    private function createTestsWithStates(TestTestFactory $testFactory, array $states): array
-    {
-        $tests = [];
-
-        foreach ($states as $state) {
-            $tests[] = $testFactory->create(
-                TestConfiguration::create('chrome', 'http://example.com'),
-                '/app/source/Test/test.yml',
-                '/app/tests/GeneratedTest.php',
-                1,
-                $state
-            );
-        }
-
-        return $tests;
+        self::assertSame($this->invokableHandler->invoke(TestGetterFactory::getStates()), $expectedStates);
     }
 }
