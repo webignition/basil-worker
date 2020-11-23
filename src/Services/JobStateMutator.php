@@ -62,12 +62,12 @@ class JobStateMutator implements EventSubscriberInterface
 
     public function setCompilationRunning(): void
     {
-        $this->setIfCurrentState(Job::STATE_COMPILATION_AWAITING, Job::STATE_COMPILATION_RUNNING);
+        $this->setIfCurrentState(Job::STATE_COMPILATION_RUNNING);
     }
 
     public function setCompilationFailed(): void
     {
-        $this->setIfCurrentState(Job::STATE_COMPILATION_RUNNING, Job::STATE_COMPILATION_FAILED);
+        $this->setIfCurrentState(Job::STATE_COMPILATION_FAILED);
     }
 
     public function setExecutionAwaiting(): void
@@ -126,14 +126,13 @@ class JobStateMutator implements EventSubscriberInterface
     }
 
     /**
-     * @param Job::STATE_* $currentState
      * @param Job::STATE_* $state
      */
-    private function setIfCurrentState(string $currentState, string $state): void
+    private function setIfCurrentState(string $state): void
     {
         $this->conditionallySetState(
-            function (Job $job) use ($currentState): bool {
-                return $currentState === $job->getState();
+            function (): bool {
+                return true;
             },
             $state
         );

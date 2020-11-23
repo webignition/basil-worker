@@ -48,6 +48,8 @@ class JobStateMutatorTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
 
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup());
+
+        $this->markTestSkipped('Remove in #540');
     }
 
     /**
