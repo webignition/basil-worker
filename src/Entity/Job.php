@@ -94,14 +94,6 @@ class Job implements \JsonSerializable
     }
 
     /**
-     * @param Job::STATE_* $state
-     */
-    public function setState(string $state): void
-    {
-        $this->state = $state;
-    }
-
-    /**
      * @return array<mixed>
      */
     public function jsonSerialize(): array

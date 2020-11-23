@@ -42,18 +42,4 @@ class JobMutatorFactory
             return $job;
         });
     }
-
-    /**
-     * @param Job::STATE_* $state
-     *
-     * @return InvokableInterface
-     */
-    public static function createSetState(string $state): InvokableInterface
-    {
-        return self::create(function (Job $job) use ($state): Job {
-            $job->setState($state);
-
-            return $job;
-        });
-    }
 }
