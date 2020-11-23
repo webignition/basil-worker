@@ -21,21 +21,37 @@ class ExecutionWorkflowTest extends TestCase
     public function getStateDataProvider(): array
     {
         return [
-            WorkflowInterface::STATE_NOT_READY => [
-                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_IN_PROGRESS, 0, 0, null),
+            'no tests' => [
+                'workflow' => new ExecutionWorkflow(0, 0, 0, null),
                 'expectedState' => WorkflowInterface::STATE_NOT_READY,
             ],
-            WorkflowInterface::STATE_NOT_STARTED => [
-                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 3, null),
+            'no finished tests, no running tests, has awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(0, 0, 1, null),
                 'expectedState' => WorkflowInterface::STATE_NOT_STARTED,
             ],
-            WorkflowInterface::STATE_IN_PROGRESS => [
-                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 2, null),
+            'no finished tests, has running tests, no awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(0, 1, 0, null),
                 'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
-            WorkflowInterface::STATE_COMPLETE => [
-                'workflow' => new ExecutionWorkflow(WorkflowInterface::STATE_COMPLETE, 3, 0, null),
+            'no finished tests, has running tests, has awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(0, 1, 1, null),
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
+            ],
+            'has finished tests, no running tests, no awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(1, 0, 0, null),
                 'expectedState' => WorkflowInterface::STATE_COMPLETE,
+            ],
+            'has finished tests, no running tests, has awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(1, 0, 1, null),
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
+            ],
+            'has finished tests, has running tests, no awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(1, 1, 0, null),
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
+            ],
+            'has finished tests, has running tests, has awaiting tests' => [
+                'workflow' => new ExecutionWorkflow(1, 1, 1, null),
+                'expectedState' => WorkflowInterface::STATE_IN_PROGRESS,
             ],
         ];
     }
