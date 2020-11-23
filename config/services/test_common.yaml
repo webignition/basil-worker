@@ -37,3 +37,8 @@ services:
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
         factory: [ '@App\Tests\Services\Guzzle\ClientFactory', 'get' ]
+
+    App\Tests\Services\InvokableHandler:
+        public: true
+        arguments:
+            $container: '@test.service_container'

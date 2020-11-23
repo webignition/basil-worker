@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
-use App\Entity\Job;
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Model\JobState;
 use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -33,7 +33,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param Job::STATE_* $expectedJobEndState
+     * @param JobState::STATE_* $expectedJobEndState
      * @param array<Test::STATE_*> $expectedTestEndStates
      */
     public function testCreateAddSourcesCompileExecute(
@@ -83,7 +83,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
-                'expectedJobEndState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedJobEndState' => JobState::STATE_EXECUTION_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,
                     Test::STATE_COMPLETE,
@@ -101,7 +101,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                 ],
-                'expectedJobEndState' => Job::STATE_EXECUTION_COMPLETE,
+                'expectedJobEndState' => JobState::STATE_EXECUTION_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,
                 ],
