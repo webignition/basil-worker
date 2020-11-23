@@ -62,11 +62,6 @@ class TestRepository extends ServiceEntityRepository
         return $test instanceof Test ? $test : null;
     }
 
-    public function getAwaitingCount(): int
-    {
-        return $this->getCountByState(Test::STATE_AWAITING);
-    }
-
     /**
      * @return Test[]
      */
