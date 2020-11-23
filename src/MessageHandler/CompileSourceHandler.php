@@ -38,7 +38,7 @@ class CompileSourceHandler implements MessageHandlerInterface
         }
 
         $jobState = $this->jobStateFactory->create();
-        if (JobState::STATE_COMPILATION_RUNNING === (string) $jobState) {
+        if (JobState::STATE_COMPILATION_RUNNING !== (string) $jobState) {
             return;
         }
 

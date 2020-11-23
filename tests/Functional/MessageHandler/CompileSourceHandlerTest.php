@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageHandler;
 
-use App\Entity\Job;
 use App\Message\CompileSource;
 use App\MessageHandler\CompileSourceHandler;
 use App\Services\SourceCompileEventDispatcher;
@@ -49,12 +48,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeJobInWrongState()
     {
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
-            (new JobSetup())
-                ->withSources([
-                    'Test/test.yml',
-                ])
-        ));
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup());
 
         $eventDispatcher = (new MockSourceCompileEventDispatcher())
             ->withoutDispatchCall()
@@ -70,7 +64,9 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
             (new JobSetup())
-                ->withState(Job::STATE_COMPILATION_RUNNING)
+                ->withSources([
+                    'Test/test1.yml',
+                ])
         ));
 
         $source = 'Test/test1.yml';
@@ -113,7 +109,9 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
             (new JobSetup())
-                ->withState(Job::STATE_COMPILATION_RUNNING)
+                ->withSources([
+                    'Test/test1.yml',
+                ])
         ));
 
         $source = 'Test/test1.yml';
