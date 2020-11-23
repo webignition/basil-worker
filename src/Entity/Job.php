@@ -11,15 +11,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Job implements \JsonSerializable
 {
-    public const STATE_COMPILATION_AWAITING = 'compilation-awaiting';
-    public const STATE_COMPILATION_RUNNING = 'compilation-running';
-    public const STATE_COMPILATION_FAILED = 'compilation-failed';
-    public const STATE_EXECUTION_AWAITING = 'execution-awaiting';
-    public const STATE_EXECUTION_RUNNING = 'execution-running';
-    public const STATE_EXECUTION_FAILED = 'execution-failed';
-    public const STATE_EXECUTION_COMPLETE = 'execution-complete';
-    public const STATE_EXECUTION_CANCELLED = 'execution-cancelled';
-
     public const ID = 1;
 
     /**
@@ -27,13 +18,6 @@ class Job implements \JsonSerializable
      * @ORM\Column(type="integer")
      */
     private int $id = self::ID;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=false)
-     *
-     * @var Job::STATE_*
-     */
-    private string $state = self::STATE_COMPILATION_AWAITING;
 
     /**
      * @ORM\Column(type="string", length=32, nullable=false, unique=true)
@@ -99,7 +83,6 @@ class Job implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'state' => $this->state,
             'label' => $this->label,
             'callback_url' => $this->callbackUrl,
             'sources' => $this->sources,

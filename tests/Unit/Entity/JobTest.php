@@ -39,7 +39,6 @@ class JobTest extends TestCase
             'state compilation-awaiting, no sources' => [
                 'job' => Job::create('label content', 'http://example.com/callback'),
                 'expectedSerializedJob' => [
-                    'state' => 'compilation-awaiting',
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
                     'sources' => [],
@@ -55,7 +54,6 @@ class JobTest extends TestCase
                     ]
                 ),
                 'expectedSerializedJob' => [
-                    'state' => 'compilation-awaiting',
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
                     'sources' => [

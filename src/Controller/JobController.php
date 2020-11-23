@@ -11,6 +11,7 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
+use App\Services\JobStateFactory;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -117,10 +118,11 @@ class JobController extends AbstractController
      * @Route("/status", name="status", methods={"GET"})
      *
      * @param TestRepository $testRepository
+     * @param JobStateFactory $jobStateFactory
      *
      * @return JsonResponse
      */
-    public function status(TestRepository $testRepository): JsonResponse
+    public function status(TestRepository $testRepository, JobStateFactory $jobStateFactory): JsonResponse
     {
         if (false === $this->jobStore->hasJob()) {
             return new JsonResponse([], 400);
@@ -129,14 +131,18 @@ class JobController extends AbstractController
         $job = $this->jobStore->getJob();
 
         $tests = $testRepository->findAll();
-
         $testData = [];
         foreach ($tests as $test) {
             $testData[] = $test->jsonSerialize();
         }
 
-        $data = $job->jsonSerialize();
-        $data['tests'] = $testData;
+        $data = array_merge(
+            $job->jsonSerialize(),
+            [
+                'state' => (string) $jobStateFactory->create(),
+                'tests' => $testData,
+            ]
+        );
 
         return new JsonResponse($data);
     }

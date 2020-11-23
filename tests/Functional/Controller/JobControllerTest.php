@@ -88,10 +88,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 },
                 'expectedResponse' => new JsonResponse(
                     [
-                        'state' => 'compilation-awaiting',
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
                         'sources' => [],
+                        'state' => 'compilation-awaiting',
                         'tests' => [],
                     ]
                 ),
@@ -109,7 +109,6 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 },
                 'expectedResponse' => new JsonResponse(
                     [
-                        'state' => 'compilation-awaiting',
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
                         'sources' => [
@@ -117,6 +116,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                             'Test/test3.yml',
                         ],
+                        'state' => 'compilation-running',
                         'tests' => [],
                     ]
                 ),
@@ -148,7 +148,6 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 },
                 'expectedResponse' => new JsonResponse(
                     [
-                        'state' => 'compilation-awaiting',
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
                         'sources' => [
@@ -156,6 +155,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                             'Test/test3.yml',
                         ],
+                        'state' => 'compilation-running',
                         'tests' => [
                             [
                                 'configuration' => [

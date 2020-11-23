@@ -56,15 +56,6 @@ class MockJob
         return $this;
     }
 
-    public function withGetStateCall(string $state): self
-    {
-        $this->job
-            ->shouldReceive('getState')
-            ->andReturn($state);
-
-        return $this;
-    }
-
     public function withIsRunningCall(bool $isRunning): self
     {
         $this->job

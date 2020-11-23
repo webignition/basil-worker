@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
-use App\Entity\Job;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
+use App\Model\JobState;
 use App\Repository\TestRepository;
 use App\Services\JobStateFactory;
 use App\Services\JobStore;
@@ -48,7 +48,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
         }
 
         $jobState = $this->jobStateFactory->create();
-        if (!in_array((string) $jobState, [Job::STATE_EXECUTION_AWAITING, Job::STATE_EXECUTION_RUNNING])) {
+        if (!in_array((string) $jobState, [JobState::STATE_EXECUTION_AWAITING, JobState::STATE_EXECUTION_RUNNING])) {
             return;
         }
 

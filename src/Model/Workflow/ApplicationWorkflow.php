@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
-use App\Entity\Job;
 use App\Model\JobState;
 
 class ApplicationWorkflow implements WorkflowInterface
@@ -24,7 +23,7 @@ class ApplicationWorkflow implements WorkflowInterface
             return WorkflowInterface::STATE_NOT_READY;
         }
 
-        if (Job::STATE_COMPILATION_AWAITING === (string) $this->jobState) {
+        if (JobState::STATE_COMPILATION_AWAITING === (string) $this->jobState) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
@@ -32,7 +31,7 @@ class ApplicationWorkflow implements WorkflowInterface
             return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
-        if (Job::STATE_EXECUTION_CANCELLED === (string) $this->jobState) {
+        if (JobState::STATE_EXECUTION_CANCELLED === (string) $this->jobState) {
             return WorkflowInterface::STATE_COMPLETE;
         }
 
