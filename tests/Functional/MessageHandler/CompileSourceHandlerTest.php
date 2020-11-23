@@ -51,7 +51,9 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
             (new JobSetup())
-                ->withState(Job::STATE_COMPILATION_AWAITING)
+                ->withSources([
+                    'Test/test.yml',
+                ])
         ));
 
         $eventDispatcher = (new MockSourceCompileEventDispatcher())
