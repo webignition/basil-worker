@@ -6,38 +6,35 @@ namespace App\Model\Workflow;
 
 class ExecutionWorkflow implements WorkflowInterface
 {
-    private string $compilationWorkflowState;
-    private int $totalTestCount;
-    private int $awaitingTestCount;
+    private bool $hasFinishedTests;
+    private bool $hasRunningTests;
+    private bool $hasAwaitingTests;
+
     private ?int $nextTestId;
 
-    public function __construct(
-        string $compilationWorkflowState,
-        int $totalTestCount,
-        int $awaitingTestCount,
-        ?int $nextTestId
-    ) {
-        $this->compilationWorkflowState = $compilationWorkflowState;
-        $this->totalTestCount = $totalTestCount;
-        $this->awaitingTestCount = $awaitingTestCount;
+    public function __construct(int $finishedTestCount, int $runningTestCount, int $awaitingTestCount, ?int $nextTestId)
+    {
+        $this->hasFinishedTests = $finishedTestCount > 0;
+        $this->hasRunningTests = $runningTestCount > 0;
+        $this->hasAwaitingTests = $awaitingTestCount > 0;
         $this->nextTestId = $nextTestId;
     }
 
     public function getState(): string
     {
-        if (WorkflowInterface::STATE_COMPLETE !== $this->compilationWorkflowState) {
+        if (!$this->hasFinishedTests && !$this->hasRunningTests && !$this->hasAwaitingTests) {
             return WorkflowInterface::STATE_NOT_READY;
         }
 
-        if ($this->totalTestCount === $this->awaitingTestCount) {
+        if (!$this->hasFinishedTests && !$this->hasRunningTests && $this->hasAwaitingTests) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        if ($this->awaitingTestCount > 0) {
-            return WorkflowInterface::STATE_IN_PROGRESS;
+        if ($this->hasFinishedTests && !$this->hasRunningTests && !$this->hasAwaitingTests) {
+            return WorkflowInterface::STATE_COMPLETE;
         }
 
-        return WorkflowInterface::STATE_COMPLETE;
+        return WorkflowInterface::STATE_IN_PROGRESS;
     }
 
     public function getNextTestId(): ?int

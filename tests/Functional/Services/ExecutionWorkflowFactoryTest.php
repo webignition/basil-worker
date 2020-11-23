@@ -6,10 +6,8 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
 use App\Model\Workflow\ExecutionWorkflow;
-use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use App\Services\ExecutionWorkflowFactory;
-use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
@@ -28,6 +26,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     private const JOB_SOURCES = [
         '/tests/test1.yml',
         '/tests/test2.yml',
+        '/tests/test3.yml',
     ];
 
     private ExecutionWorkflowFactory $executionWorkflowFactory;
@@ -42,12 +41,12 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
             (new JobSetup())->withSources(self::JOB_SOURCES)
         ));
 
-        foreach (self::JOB_SOURCES as $source) {
-            $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
-                (new TestSetup())
-                    ->withSource('/app/source/' . $source)
-            ]));
-        }
+//        foreach (self::JOB_SOURCES as $source) {
+//            $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
+//                (new TestSetup())
+//                    ->withSource('/app/source/' . $source)
+//            ]));
+//        }
     }
 
     /**
@@ -57,93 +56,324 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke($setup);
 
-        $workflow = $this->invokableHandler->invoke($expectedWorkflowCreator);
+        $expectedWorkflow = $this->invokableHandler->invoke($expectedWorkflowCreator);
 
-        self::assertEquals($workflow, $this->executionWorkflowFactory->create());
+//        $tests = $this->invokableHandler->invoke(TestGetterFactory::getAll());
+//        var_dump($tests);
+//        exit();
+
+        self::assertEquals($expectedWorkflow, $this->executionWorkflowFactory->create());
     }
 
     public function createDataProvider(): array
     {
         return [
-            'no tests executed' => [
+            'no tests' => [
                 'setup' => Invokable::createEmpty(),
                 'expectedWorkflowCreator' => new Invokable(
-                    function (TestRepository $testRepository) {
-                        $nextTest = $testRepository->findNextAwaiting();
-                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
-
-                        return new ExecutionWorkflow(
-                            WorkflowInterface::STATE_COMPLETE,
-                            2,
-                            2,
-                            $nextTestId
-                        );
-                    },
-                    [
-                        new ServiceReference(TestRepository::class),
-                    ]
+                    function () {
+                        return new ExecutionWorkflow(0, 0, 0, null);
+                    }
                 ),
             ],
-            'first test executed' => [
-                'setup' => new Invokable(
-                    function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
-                        $nextTest = $testRepository->findNextAwaiting();
-                        if ($nextTest instanceof Test) {
-                            $testStateMutator->setRunning($nextTest);
-                            $testStateMutator->setComplete($nextTest);
-                        }
-                    },
-                    [
-                        new ServiceReference(TestRepository::class),
-                        new ServiceReference(TestStateMutator::class),
-                    ]
-                ),
+            'no finished tests, no running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
                 'expectedWorkflowCreator' => new Invokable(
                     function (TestRepository $testRepository) {
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(
-                            WorkflowInterface::STATE_COMPLETE,
-                            2,
-                            1,
-                            $nextTestId
-                        );
+                        return new ExecutionWorkflow(0, 0, 1, $nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
                     ]
                 ),
             ],
-            'both tests executed' => [
-                'setup' => new Invokable(
-                    function (TestRepository $testRepository, TestStateMutator $testStateMutator) {
+            'no finished tests, has running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_RUNNING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
                         $nextTest = $testRepository->findNextAwaiting();
-                        if ($nextTest instanceof Test) {
-                            $testStateMutator->setRunning($nextTest);
-                            $testStateMutator->setComplete($nextTest);
-                        }
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        $nextTest = $testRepository->findNextAwaiting();
-                        if ($nextTest instanceof Test) {
-                            $testStateMutator->setRunning($nextTest);
-                            $testStateMutator->setComplete($nextTest);
-                        }
+                        return new ExecutionWorkflow(0, 1, 0, $nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
-                        new ServiceReference(TestStateMutator::class),
                     ]
                 ),
+            ],
+            'no finished tests, has running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_RUNNING),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(0, 1, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (complete), no running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_COMPLETE),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (cancelled), no running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_CANCELLED),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (failed), no running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_FAILED),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (complete), no running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (cancelled), no running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_CANCELLED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (failed), no running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_FAILED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (complete), has running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                ]),
                 'expectedWorkflowCreator' => new Invokable(
                     function () {
-                        return new ExecutionWorkflow(
-                            WorkflowInterface::STATE_COMPLETE,
-                            2,
-                            0,
-                            null
-                        );
-                    }
+                        return new ExecutionWorkflow(1, 1, 0, null);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (cancelled), has running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_CANCELLED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function () {
+                        return new ExecutionWorkflow(1, 1, 0, null);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (failed), has running tests, no awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_FAILED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function () {
+                        return new ExecutionWorkflow(1, 1, 0, null);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (complete), has running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_COMPLETE),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[2])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (cancelled), has running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_CANCELLED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[2])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
+            ],
+            'has finished tests (failed), has running tests, has awaiting tests' => [
+                'setup' => TestSetupInvokableFactory::setupCollection([
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[0])
+                        ->withState(Test::STATE_FAILED),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[1])
+                        ->withState(Test::STATE_RUNNING),
+                    (new TestSetup())
+                        ->withSource('/app/source/' . self::JOB_SOURCES[2])
+                        ->withState(Test::STATE_AWAITING),
+                ]),
+                'expectedWorkflowCreator' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $nextTest = $testRepository->findNextAwaiting();
+                        $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
+
+                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
                 ),
             ],
         ];
