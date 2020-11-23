@@ -19,7 +19,6 @@ final class Version20200925113340 extends AbstractMigration
         $this->addSql('
             CREATE TABLE job (
                 id INT NOT NULL, 
-                state VARCHAR(255) NOT NULL, 
                 label VARCHAR(32) NOT NULL, 
                 callback_url VARCHAR(255) NOT NULL, 
                 sources TEXT DEFAULT NULL, 
