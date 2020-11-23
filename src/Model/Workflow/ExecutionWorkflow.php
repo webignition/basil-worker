@@ -20,55 +20,6 @@ class ExecutionWorkflow implements WorkflowInterface
         $this->nextTestId = $nextTestId;
     }
 
-// hasFinished  hasRunning  hasAwaiting not-ready
-// 0            0           0           1               !hasFinished && !hasRunning && !hasAwaiting
-// 0            0           1           0
-// 0            1           0           0
-// 1            0           0           0
-// 0            1           1           0
-// 1            0           1           0
-// 1            1           0           0
-// 1            1           1           0
-
-// hasFinished  hasRunning  hasAwaiting not-started
-// 0            0           0           0
-// 0            0           1           1               !hasFinished && !hasRunning && hasAwaiting
-// 0            1           0           0
-// 1            0           0           0
-// 0            1           1           0
-// 1            0           1           0
-// 1            1           0           0
-// 1            1           1           0
-
-// hasFinished  hasRunning  hasAwaiting in-progress
-// 0            1           0           1
-// 0            1           1           1
-// 1            0           1           1
-// 1            1           0           1
-// 1            1           1           1
-
-// hasFinished  hasRunning  hasAwaiting complete
-// 0            0           0           0
-// 0            0           1           0
-// 0            1           0           0
-// 1            0           0           1               hasFinished && !hasRunning && !hasAwaiting
-// 0            1           1           0
-// 1            0           1           0
-// 1            1           0           0
-// 1            1           1           0
-
-// ===
-
-// hasFinished  hasRunning  hasAwaiting state
-// 0            0           0           not-ready
-// 0            0           1           not-started
-// 0            1           0           in-progress
-// 1            0           0           complete
-// 0            1           1           in-progress
-// 1            0           1           in-progress
-// 1            1           0           in-progress
-// 1            1           1           in-progress
-
     public function getState(): string
     {
         if (!$this->hasFinishedTests && !$this->hasRunningTests && !$this->hasAwaitingTests) {
