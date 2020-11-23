@@ -41,9 +41,6 @@ class JobStoreTest extends AbstractBaseFunctionalTest
         $callbackUrl = 'http://example.com/callback';
 
         $job = $this->store->create($label, $callbackUrl);
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
-
-        $job->setState(Job::STATE_COMPILATION_RUNNING);
         $this->store->store($job);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
