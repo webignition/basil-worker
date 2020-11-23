@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Job;
-
 class JobSetup
 {
     private string $label;
@@ -16,17 +14,11 @@ class JobSetup
      */
     private ?array $sources;
 
-    /**
-     * @var Job::STATE_*
-     */
-    private string $state;
-
     public function __construct()
     {
         $this->label = md5('label content');
         $this->callbackUrl = 'http://example.com/callback';
         $this->sources = null;
-        $this->state = Job::STATE_COMPILATION_AWAITING;
     }
 
     public function getLabel(): string
@@ -45,14 +37,6 @@ class JobSetup
     public function getSources(): ?array
     {
         return $this->sources;
-    }
-
-    /**
-     * @return Job::STATE_*
-     */
-    public function getState(): string
-    {
-        return $this->state;
     }
 
     public function withLabel(string $label): self
@@ -80,19 +64,6 @@ class JobSetup
     {
         $new = clone $this;
         $new->sources = $sources;
-
-        return $new;
-    }
-
-    /**
-     * @param Job::STATE_* $state
-     *
-     * @return $this
-     */
-    public function withState(string $state): self
-    {
-        $new = clone $this;
-        $new->state = $state;
 
         return $new;
     }
