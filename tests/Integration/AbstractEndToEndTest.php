@@ -7,6 +7,7 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
+use App\Model\JobState;
 use App\Model\Workflow\WorkflowInterface;
 use App\Services\ApplicationWorkflowFactory;
 use App\Services\JobStore;
@@ -16,6 +17,8 @@ use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\InvokableFactory\JobStateGetterFactory;
+use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use SebastianBergmann\Timer\Timer;
@@ -37,6 +40,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected EntityRefresher $entityRefresher;
     protected HttpLogReader $httpLogReader;
     protected ApplicationWorkflowFactory $applicationWorkflowFactory;
+    protected InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -55,7 +59,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     /**
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param Job::STATE_* $expectedJobEndState
+     * @param JobState::STATE_* $expectedJobEndState
      * @param InvokableInterface $postAssertions
      */
     protected function doCreateJobAddSourcesTest(
@@ -66,8 +70,10 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     ): void {
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
-        $job = $this->jobStore->getJob();
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
+        self::assertSame(
+            JobState::STATE_COMPILATION_AWAITING,
+            (string) $this->invokableHandler->invoke(JobStateGetterFactory::get())
+        );
 
         $timer = new Timer();
         $timer->start();
@@ -81,7 +87,10 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         $duration = $timer->stop();
 
-        self::assertSame($expectedJobEndState, $job->getState());
+        self::assertSame(
+            $expectedJobEndState,
+            (string) $this->invokableHandler->invoke(JobStateGetterFactory::get())
+        );
 
         foreach ($postAssertions->getServiceReferences() as $serviceReference) {
             $service = self::$container->get($serviceReference->getId());

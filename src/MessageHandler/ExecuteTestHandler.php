@@ -9,7 +9,7 @@ use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
 use App\Repository\TestRepository;
-use App\Services\JobStateMutator;
+use App\Services\JobStateFactory;
 use App\Services\JobStore;
 use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
@@ -19,26 +19,26 @@ use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 class ExecuteTestHandler implements MessageHandlerInterface
 {
     private JobStore $jobStore;
-    private JobStateMutator $jobStateMutator;
     private TestExecutor $testExecutor;
     private EventDispatcherInterface $eventDispatcher;
     private TestStateMutator $testStateMutator;
     private TestRepository $testRepository;
+    private JobStateFactory $jobStateFactory;
 
     public function __construct(
         JobStore $jobStore,
-        JobStateMutator $jobStateMutator,
         TestExecutor $testExecutor,
         EventDispatcherInterface $eventDispatcher,
         TestStateMutator $testStateMutator,
-        TestRepository $testRepository
+        TestRepository $testRepository,
+        JobStateFactory $jobStateFactory
     ) {
         $this->jobStore = $jobStore;
-        $this->jobStateMutator = $jobStateMutator;
         $this->testExecutor = $testExecutor;
         $this->eventDispatcher = $eventDispatcher;
         $this->testStateMutator = $testStateMutator;
         $this->testRepository = $testRepository;
+        $this->jobStateFactory = $jobStateFactory;
     }
 
     public function __invoke(ExecuteTest $message): void
@@ -47,13 +47,8 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $job = $this->jobStore->getJob();
-
-        if (Job::STATE_EXECUTION_AWAITING === $job->getState()) {
-            $this->jobStateMutator->setExecutionRunning();
-        }
-
-        if (Job::STATE_EXECUTION_RUNNING !== $job->getState()) {
+        $jobState = $this->jobStateFactory->create();
+        if (!in_array((string) $jobState, [Job::STATE_EXECUTION_AWAITING, Job::STATE_EXECUTION_RUNNING])) {
             return;
         }
 

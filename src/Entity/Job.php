@@ -74,14 +74,6 @@ class Job implements \JsonSerializable
         return $this->id;
     }
 
-    /**
-     * @return Job::STATE_*
-     */
-    public function getState(): string
-    {
-        return $this->state;
-    }
-
     public function getLabel(): ?string
     {
         return $this->label;
