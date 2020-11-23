@@ -17,20 +17,9 @@ class JobTest extends TestCase
         $job = Job::create($label, $callbackUrl);
 
         self::assertSame(1, $job->getId());
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
         self::assertSame($label, $job->getLabel());
         self::assertSame($callbackUrl, $job->getCallbackUrl());
         self::assertSame([], $job->getSources());
-    }
-
-    public function testSetState()
-    {
-        $job = Job::create('label', 'http://example.com/callback');
-        self::assertSame(Job::STATE_COMPILATION_AWAITING, $job->getState());
-
-        $state = Job::STATE_COMPILATION_RUNNING;
-        $job->setState($state);
-        self::assertSame($state, $job->getState());
     }
 
     /**
