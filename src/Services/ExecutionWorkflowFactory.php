@@ -10,25 +10,32 @@ use App\Repository\TestRepository;
 
 class ExecutionWorkflowFactory
 {
-    private CompilationWorkflowFactory $compilationWorkflowFactory;
     private TestRepository $testRepository;
 
-    public function __construct(CompilationWorkflowFactory $compilationWorkflowFactory, TestRepository $testRepository)
+    public function __construct(TestRepository $testRepository)
     {
-        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
         $this->testRepository = $testRepository;
     }
 
     public function create(): ExecutionWorkflow
     {
-        $compilationWorkflow = $this->compilationWorkflowFactory->create();
         $nextAwaitingTest = $this->testRepository->findNextAwaiting();
         $nextTestId = $nextAwaitingTest instanceof Test ? $nextAwaitingTest->getId() : null;
 
         return new ExecutionWorkflow(
-            $compilationWorkflow->getState(),
-            $this->testRepository->count([]),
-            $this->testRepository->getAwaitingCount(),
+            $this->testRepository->count([
+                'state' => [
+                    Test::STATE_COMPLETE,
+                    Test::STATE_FAILED,
+                    Test::STATE_CANCELLED,
+                ],
+            ]),
+            $this->testRepository->count([
+                'state' => Test::STATE_RUNNING,
+            ]),
+            $this->testRepository->count([
+                'state' => Test::STATE_AWAITING,
+            ]),
             $nextTestId
         );
     }
