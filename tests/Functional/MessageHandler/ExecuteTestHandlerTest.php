@@ -60,7 +60,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         $handler = $this->handler;
         $handler($executeTestMessage);
 
-        self::assertSame(Job::STATE_EXECUTION_RUNNING, $job->getState());
+        self::assertSame(Job::STATE_EXECUTION_COMPLETE, $job->getState());
         self::assertSame(Test::STATE_COMPLETE, $test->getState());
     }
 }
