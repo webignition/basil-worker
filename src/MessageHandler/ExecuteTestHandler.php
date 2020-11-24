@@ -47,8 +47,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $executionState = $this->executionStateFactory->create();
-        if (!in_array((string) $executionState, [ExecutionState::STATE_AWAITING, ExecutionState::STATE_RUNNING])) {
+        if ($this->executionStateFactory->is(...ExecutionState::FINISHED_STATES)) {
             return;
         }
 

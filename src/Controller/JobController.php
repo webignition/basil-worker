@@ -145,7 +145,7 @@ class JobController extends AbstractController
             $job->jsonSerialize(),
             [
                 'compilation_state' => $compilationState->getCurrentState(),
-                'execution_state' => (string) $executionStateFactory->create(),
+                'execution_state' => $executionStateFactory->getCurrentState(),
                 'tests' => $testData,
             ]
         );

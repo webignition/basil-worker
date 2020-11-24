@@ -11,7 +11,7 @@ class ExecutionState
     public const STATE_COMPLETE = 'complete';
     public const STATE_CANCELLED = 'cancelled';
 
-    private const FINISHED_STATES = [
+    public const FINISHED_STATES = [
         self::STATE_COMPLETE,
         self::STATE_CANCELLED,
     ];

@@ -75,7 +75,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withCreateCall(new ExecutionState(ExecutionState::STATE_COMPLETE))
+                    ->withIsCall(ExecutionState::FINISHED_STATES, true)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())
@@ -88,7 +88,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withCreateCall(new ExecutionState(ExecutionState::STATE_AWAITING))
+                    ->withIsCall(ExecutionState::FINISHED_STATES, false)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())
@@ -101,7 +101,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withCreateCall(new ExecutionState(ExecutionState::STATE_AWAITING))
+                    ->withIsCall(ExecutionState::FINISHED_STATES, false)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())

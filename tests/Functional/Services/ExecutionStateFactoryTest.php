@@ -29,65 +29,126 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider isDataProvider
+     *
+     * @param InvokableInterface $setup
+     * @param array<ExecutionState::STATE_*> $expectedIsStates
+     * @param array<ExecutionState::STATE_*> $expectedIsNotStates
      */
-    public function testCreate(InvokableInterface $setup, ExecutionState $expectedState)
+    public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertEquals($expectedState, $this->executionStateFactory->create());
+        self::assertTrue($this->executionStateFactory->is(...$expectedIsStates));
+        self::assertFalse($this->executionStateFactory->is(...$expectedIsNotStates));
     }
 
-    public function createDataProvider(): array
+    public function isDataProvider(): array
     {
         return [
             'awaiting: not has finished tests and not has running tests and not has awaiting tests' => [
                 'setup' => Invokable::createEmpty(),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_AWAITING),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_AWAITING,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_RUNNING,
+                    ExecutionState::STATE_COMPLETE,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'running: not has finished tests and has running tests and not has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_RUNNING),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_COMPLETE,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'awaiting: not has finished tests and not has running tests and has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_AWAITING),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_AWAITING),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_AWAITING,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_RUNNING,
+                    ExecutionState::STATE_COMPLETE,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'running: has complete tests and has running tests and not has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_COMPLETE),
                     (new TestSetup())->withState(Test::STATE_RUNNING),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_COMPLETE,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'running: has complete tests and not has running tests and has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_COMPLETE),
                     (new TestSetup())->withState(Test::STATE_AWAITING),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_COMPLETE,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'complete: has finished tests and not has running tests and not has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_COMPLETE),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_COMPLETE),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_COMPLETE,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_RUNNING,
+                    ExecutionState::STATE_CANCELLED,
+                ],
             ],
             'cancelled: has failed tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_FAILED),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_CANCELLED),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_CANCELLED,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_RUNNING,
+                    ExecutionState::STATE_COMPLETE,
+                ],
             ],
             'cancelled: has cancelled tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_CANCELLED),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_CANCELLED),
+                'expectedIsStates' => [
+                    ExecutionState::STATE_CANCELLED,
+                ],
+                'expectedIsNotStates' => [
+                    ExecutionState::STATE_AWAITING,
+                    ExecutionState::STATE_RUNNING,
+                    ExecutionState::STATE_COMPLETE,
+                ],
             ],
         ];
     }

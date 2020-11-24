@@ -97,7 +97,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         self::assertSame(
             $expectedExecutionEndState,
-            (string) $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
+            $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
         );
 
         foreach ($postAssertions->getServiceReferences() as $serviceReference) {

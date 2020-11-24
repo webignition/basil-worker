@@ -50,7 +50,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         $test = $tests[0];
 
         $executionState = $this->invokableHandler->invoke(ExecutionStateGetterFactory::get());
-        self::assertSame(ExecutionState::STATE_AWAITING, (string) $executionState);
+        self::assertSame(ExecutionState::STATE_AWAITING, $executionState);
         self::assertSame(Test::STATE_AWAITING, $test->getState());
 
         $testExecutor = (new MockTestExecutor())
@@ -65,7 +65,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         $handler($executeTestMessage);
 
         $executionState = $this->invokableHandler->invoke(ExecutionStateGetterFactory::get());
-        self::assertSame(ExecutionState::STATE_COMPLETE, (string) $executionState);
+        self::assertSame(ExecutionState::STATE_COMPLETE, $executionState);
         self::assertSame(Test::STATE_COMPLETE, $test->getState());
     }
 }

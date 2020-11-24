@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Model\ExecutionState;
 use App\Services\ExecutionStateFactory;
 use Mockery\MockInterface;
 
@@ -25,11 +24,12 @@ class MockExecutionStateFactory
         return $this->executionStateFactory;
     }
 
-    public function withCreateCall(ExecutionState $executionState): self
+    public function withIsCall(array $states, bool $is): self
     {
         $this->executionStateFactory
-            ->shouldReceive('create')
-            ->andReturn($executionState);
+            ->shouldReceive('is')
+            ->with(...$states)
+            ->andReturn($is);
 
         return $this;
     }

@@ -17,13 +17,30 @@ class ExecutionStateFactory
         $this->testRepository = $testRepository;
     }
 
-    public function create(): ExecutionState
+    /**
+     * @param ExecutionState::STATE_* ...$states
+     *
+     * @return bool
+     */
+    public function is(...$states): bool
+    {
+        $states = array_filter($states, function ($item) {
+            return is_string($item);
+        });
+
+        return in_array($this->getCurrentState(), $states);
+    }
+
+    /**
+     * @return ExecutionState::STATE_*
+     */
+    public function getCurrentState(): string
     {
         $hasFailedTests = 0 !== $this->testRepository->count(['state' => Test::STATE_FAILED]);
         $hasCancelledTests = 0 !== $this->testRepository->count(['state' => Test::STATE_CANCELLED]);
 
         if ($hasFailedTests || $hasCancelledTests) {
-            return new ExecutionState(ExecutionState::STATE_CANCELLED);
+            return ExecutionState::STATE_CANCELLED;
         }
 
         $hasFinishedTests = 0 !== $this->testRepository->count(['state' => Test::FINISHED_STATES]);
@@ -31,15 +48,11 @@ class ExecutionStateFactory
         $hasAwaitingTests = 0 !== $this->testRepository->count(['state' => Test::STATE_AWAITING]);
 
         if ($hasFinishedTests) {
-            $state = $hasAwaitingTests || $hasRunningTests
+            return $hasAwaitingTests || $hasRunningTests
                 ? ExecutionState::STATE_RUNNING
                 : ExecutionState::STATE_COMPLETE;
-
-            return new ExecutionState($state);
         }
 
-        $state = $hasRunningTests ? ExecutionState::STATE_RUNNING : ExecutionState::STATE_AWAITING;
-
-        return new ExecutionState($state);
+        return $hasRunningTests ? ExecutionState::STATE_RUNNING : ExecutionState::STATE_AWAITING;
     }
 }
