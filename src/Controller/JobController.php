@@ -11,7 +11,7 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Services\ExecutionStateFactory;
 use App\Services\JobStore;
 use App\Services\SourceStore;
@@ -119,14 +119,14 @@ class JobController extends AbstractController
      * @Route("/status", name="status", methods={"GET"})
      *
      * @param TestRepository $testRepository
-     * @param CompilationStateFactory $compilationStateFactory
+     * @param CompilationState $compilationState
      * @param ExecutionStateFactory $executionStateFactory
      *
      * @return JsonResponse
      */
     public function status(
         TestRepository $testRepository,
-        CompilationStateFactory $compilationStateFactory,
+        CompilationState $compilationState,
         ExecutionStateFactory $executionStateFactory
     ): JsonResponse {
         if (false === $this->jobStore->hasJob()) {
@@ -144,7 +144,7 @@ class JobController extends AbstractController
         $data = array_merge(
             $job->jsonSerialize(),
             [
-                'compilation_state' => $compilationStateFactory->getCurrentState(),
+                'compilation_state' => $compilationState->getCurrentState(),
                 'execution_state' => (string) $executionStateFactory->create(),
                 'tests' => $testData,
             ]

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackInterface;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -19,11 +19,11 @@ use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
+class CompilationStateTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private CompilationStateFactory $compilationStateFactory;
+    private CompilationState $compilationState;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -36,15 +36,15 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
      * @dataProvider isDataProvider
      *
      * @param InvokableInterface $setup
-     * @param array<CompilationStateFactory::STATE_*> $expectedIsStates
-     * @param array<CompilationStateFactory::STATE_*> $expectedIsNotStates
+     * @param array<CompilationState::STATE_*> $expectedIsStates
+     * @param array<CompilationState::STATE_*> $expectedIsNotStates
      */
     public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertTrue($this->compilationStateFactory->is(...$expectedIsStates));
-        self::assertFalse($this->compilationStateFactory->is(...$expectedIsNotStates));
+        self::assertTrue($this->compilationState->is(...$expectedIsStates));
+        self::assertFalse($this->compilationState->is(...$expectedIsNotStates));
     }
 
     public function isDataProvider(): array
@@ -53,25 +53,25 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
             'awaiting: no job' => [
                 'setup' => Invokable::createEmpty(),
                 'expectedIsStates' => [
-                    CompilationStateFactory::STATE_AWAITING,
+                    CompilationState::STATE_AWAITING,
                 ],
                 'expectedIsNotStates' => [
-                    CompilationStateFactory::STATE_RUNNING,
-                    CompilationStateFactory::STATE_FAILED,
-                    CompilationStateFactory::STATE_COMPLETE,
-                    CompilationStateFactory::STATE_UNKNOWN,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
                 ],
             ],
             'awaiting: has job, no sources' => [
                 'setup' => JobSetupInvokableFactory::setup(),
                 'expectedIsStates' => [
-                    CompilationStateFactory::STATE_AWAITING,
+                    CompilationState::STATE_AWAITING,
                 ],
                 'expectedIsNotStates' => [
-                    CompilationStateFactory::STATE_RUNNING,
-                    CompilationStateFactory::STATE_FAILED,
-                    CompilationStateFactory::STATE_COMPLETE,
-                    CompilationStateFactory::STATE_UNKNOWN,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
                 ],
             ],
             'running: has job, has sources, no sources compiled' => [
@@ -83,13 +83,13 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                         ])
                 ),
                 'expectedIsStates' => [
-                    CompilationStateFactory::STATE_RUNNING,
+                    CompilationState::STATE_RUNNING,
                 ],
                 'expectedIsNotStates' => [
-                    CompilationStateFactory::STATE_AWAITING,
-                    CompilationStateFactory::STATE_FAILED,
-                    CompilationStateFactory::STATE_COMPLETE,
-                    CompilationStateFactory::STATE_UNKNOWN,
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
                 ],
             ],
             'failed: has job, has sources, has more than zero compile-failure callbacks' => [
@@ -107,13 +107,13 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                     )
                 ]),
                 'expectedIsStates' => [
-                    CompilationStateFactory::STATE_FAILED,
+                    CompilationState::STATE_FAILED,
                 ],
                 'expectedIsNotStates' => [
-                    CompilationStateFactory::STATE_AWAITING,
-                    CompilationStateFactory::STATE_RUNNING,
-                    CompilationStateFactory::STATE_COMPLETE,
-                    CompilationStateFactory::STATE_UNKNOWN,
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
                 ],
             ],
             'complete: has job, has sources, no next source' => [
@@ -133,13 +133,13 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                     ])
                 ]),
                 'expectedIsStates' => [
-                    CompilationStateFactory::STATE_COMPLETE,
+                    CompilationState::STATE_COMPLETE,
                 ],
                 'expectedIsNotStates' => [
-                    CompilationStateFactory::STATE_AWAITING,
-                    CompilationStateFactory::STATE_RUNNING,
-                    CompilationStateFactory::STATE_FAILED,
-                    CompilationStateFactory::STATE_UNKNOWN,
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_UNKNOWN,
                 ],
             ],
         ];

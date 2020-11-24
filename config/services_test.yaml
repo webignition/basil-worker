@@ -80,7 +80,7 @@ services:
     App\Services\SourceCompileEventFactory:
         public: true
 
-    App\Services\CompilationStateFactory:
+    App\Services\CompilationState:
         public: true
 
     App\Services\ExecutionStateFactory:

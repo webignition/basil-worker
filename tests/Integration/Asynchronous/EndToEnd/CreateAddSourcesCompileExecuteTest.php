@@ -8,7 +8,7 @@ use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Model\ExecutionState;
 use App\Repository\TestRepository;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -34,7 +34,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param CompilationStateFactory::STATE_* $expectedCompilationEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param array<Test::STATE_*> $expectedTestEndStates
      */
@@ -87,7 +87,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
-                'expectedCompilationEndState' => CompilationStateFactory::STATE_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,
@@ -106,7 +106,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                 ],
-                'expectedCompilationEndState' => CompilationStateFactory::STATE_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,

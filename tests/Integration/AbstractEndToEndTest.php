@@ -9,7 +9,7 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Model\ExecutionState;
 use App\Services\ApplicationState;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -60,7 +60,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     /**
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param CompilationStateFactory::STATE_* $expectedCompilationEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
@@ -74,7 +74,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
         self::assertSame(
-            CompilationStateFactory::STATE_AWAITING,
+            CompilationState::STATE_AWAITING,
             $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 

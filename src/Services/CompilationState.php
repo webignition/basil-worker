@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Repository\CallbackRepository;
 
-class CompilationStateFactory
+class CompilationState
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_RUNNING = 'running';
@@ -29,7 +29,7 @@ class CompilationStateFactory
     }
 
     /**
-     * @param CompilationStateFactory::STATE_* ...$states
+     * @param CompilationState::STATE_* ...$states
      *
      * @return bool
      */
@@ -43,12 +43,12 @@ class CompilationStateFactory
     }
 
     /**
-     * @return CompilationStateFactory::STATE_*
+     * @return CompilationState::STATE_*
      */
     public function getCurrentState(): string
     {
         if (0 !== $this->callbackRepository->getCompileFailureTypeCount()) {
-            return CompilationStateFactory::STATE_FAILED;
+            return CompilationState::STATE_FAILED;
         }
 
         $compiledSources = $this->jobSourceFinder->findCompiledSources();
@@ -56,12 +56,12 @@ class CompilationStateFactory
 
         if ([] === $compiledSources) {
             return is_string($nextSource)
-                ? CompilationStateFactory::STATE_RUNNING
-                : CompilationStateFactory::STATE_AWAITING;
+                ? CompilationState::STATE_RUNNING
+                : CompilationState::STATE_AWAITING;
         }
 
         return is_string($nextSource)
-            ? CompilationStateFactory::STATE_RUNNING
-            : CompilationStateFactory::STATE_COMPLETE;
+            ? CompilationState::STATE_RUNNING
+            : CompilationState::STATE_COMPLETE;
     }
 }

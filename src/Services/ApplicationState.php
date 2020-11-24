@@ -14,18 +14,18 @@ class ApplicationState
     public const STATE_COMPLETE = 'complete';
 
     private JobStore $jobStore;
-    private CompilationStateFactory $compilationStateFactory;
+    private CompilationState $compilationState;
     private ExecutionStateFactory $executionStateFactory;
     private CallbackState $callbackState;
 
     public function __construct(
         JobStore $jobStore,
-        CompilationStateFactory $compilationStateFactory,
+        CompilationState $compilationState,
         ExecutionStateFactory $executionStateFactory,
         CallbackState $callbackState
     ) {
         $this->jobStore = $jobStore;
-        $this->compilationStateFactory = $compilationStateFactory;
+        $this->compilationState = $compilationState;
         $this->executionStateFactory = $executionStateFactory;
         $this->callbackState = $callbackState;
     }
@@ -55,7 +55,7 @@ class ApplicationState
             return self::STATE_AWAITING_SOURCES;
         }
 
-        if (false === $this->compilationStateFactory->is(...CompilationStateFactory::FINISHED_STATES)) {
+        if (false === $this->compilationState->is(...CompilationState::FINISHED_STATES)) {
             return self::STATE_COMPILING;
         }
 

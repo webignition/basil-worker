@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\CompileSource;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Services\Compiler;
 use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
@@ -16,18 +16,18 @@ class CompileSourceHandler implements MessageHandlerInterface
     private Compiler $compiler;
     private JobStore $jobStore;
     private SourceCompileEventDispatcher $eventDispatcher;
-    private CompilationStateFactory $compilationStateFactory;
+    private CompilationState $compilationState;
 
     public function __construct(
         Compiler $compiler,
         JobStore $jobStore,
         SourceCompileEventDispatcher $eventDispatcher,
-        CompilationStateFactory $compilationStateFactory
+        CompilationState $compilationState
     ) {
         $this->compiler = $compiler;
         $this->jobStore = $jobStore;
         $this->eventDispatcher = $eventDispatcher;
-        $this->compilationStateFactory = $compilationStateFactory;
+        $this->compilationState = $compilationState;
     }
 
     public function __invoke(CompileSource $message): void
@@ -36,7 +36,7 @@ class CompileSourceHandler implements MessageHandlerInterface
             return;
         }
 
-        if (false === $this->compilationStateFactory->is(CompilationStateFactory::STATE_RUNNING)) {
+        if (false === $this->compilationState->is(CompilationState::STATE_RUNNING)) {
             return;
         }
 

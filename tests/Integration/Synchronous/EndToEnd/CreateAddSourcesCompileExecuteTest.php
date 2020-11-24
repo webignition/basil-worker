@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\ExecutionState;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -30,7 +30,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param CompilationStateFactory::STATE_* $expectedCompilationEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
@@ -67,7 +67,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
-                'expectedCompilationEndState' => CompilationStateFactory::STATE_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'postAssertions' => new Invokable(
                     function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
@@ -198,7 +198,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-open-index-with-step-failure.yml',
                     'Test/chrome-open-index.yml',
                 ],
-                'expectedCompilationEndState' => CompilationStateFactory::STATE_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'postAssertions' => new InvokableCollection([
                     'verify http transactions' => new Invokable(
