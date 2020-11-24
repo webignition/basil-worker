@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Test;
-use App\Model\JobState;
+use App\Model\CompilationState;
+use App\Model\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -29,19 +30,22 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param JobState::STATE_* $expectedJobEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
+     * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
     public function testCreateAddSourcesCompileExecute(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        string $expectedJobEndState,
+        string $expectedCompilationEndState,
+        string $expectedExecutionEndState,
         InvokableInterface $postAssertions
     ) {
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            $expectedJobEndState,
+            $expectedCompilationEndState,
+            $expectedExecutionEndState,
             $postAssertions
         );
     }
@@ -63,7 +67,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
-                'expectedJobEndState' => JobState::STATE_EXECUTION_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'postAssertions' => new Invokable(
                     function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
                         $transactions = $httpLogReader->getTransactions();
@@ -193,7 +198,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-open-index-with-step-failure.yml',
                     'Test/chrome-open-index.yml',
                 ],
-                'expectedJobEndState' => JobState::STATE_EXECUTION_CANCELLED,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'postAssertions' => new InvokableCollection([
                     'verify http transactions' => new Invokable(
                         function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {

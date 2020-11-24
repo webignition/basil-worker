@@ -7,9 +7,9 @@ namespace App\MessageHandler;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\JobState;
+use App\Model\ExecutionState;
 use App\Repository\TestRepository;
-use App\Services\JobStateFactory;
+use App\Services\ExecutionStateFactory;
 use App\Services\JobStore;
 use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
@@ -23,7 +23,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
     private EventDispatcherInterface $eventDispatcher;
     private TestStateMutator $testStateMutator;
     private TestRepository $testRepository;
-    private JobStateFactory $jobStateFactory;
+    private ExecutionStateFactory $executionStateFactory;
 
     public function __construct(
         JobStore $jobStore,
@@ -31,14 +31,14 @@ class ExecuteTestHandler implements MessageHandlerInterface
         EventDispatcherInterface $eventDispatcher,
         TestStateMutator $testStateMutator,
         TestRepository $testRepository,
-        JobStateFactory $jobStateFactory
+        ExecutionStateFactory $executionStateFactory
     ) {
         $this->jobStore = $jobStore;
         $this->testExecutor = $testExecutor;
         $this->eventDispatcher = $eventDispatcher;
         $this->testStateMutator = $testStateMutator;
         $this->testRepository = $testRepository;
-        $this->jobStateFactory = $jobStateFactory;
+        $this->executionStateFactory = $executionStateFactory;
     }
 
     public function __invoke(ExecuteTest $message): void
@@ -47,8 +47,8 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $jobState = $this->jobStateFactory->create();
-        if (!in_array((string) $jobState, [JobState::STATE_EXECUTION_AWAITING, JobState::STATE_EXECUTION_RUNNING])) {
+        $executionState = $this->executionStateFactory->create();
+        if (!in_array((string) $executionState, [ExecutionState::STATE_AWAITING, ExecutionState::STATE_RUNNING])) {
             return;
         }
 

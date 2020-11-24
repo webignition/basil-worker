@@ -7,12 +7,12 @@ namespace App\Tests\Functional\MessageHandler;
 use App\Entity\Test;
 use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
-use App\Model\JobState;
+use App\Model\ExecutionState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockTestExecutor;
+use App\Tests\Services\InvokableFactory\ExecutionStateGetterFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
-use App\Tests\Services\InvokableFactory\JobStateGetterFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
@@ -49,8 +49,8 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
 
         $test = $tests[0];
 
-        $jobState = $this->invokableHandler->invoke(JobStateGetterFactory::get());
-        self::assertSame(JobState::STATE_EXECUTION_AWAITING, (string) $jobState);
+        $executionState = $this->invokableHandler->invoke(ExecutionStateGetterFactory::get());
+        self::assertSame(ExecutionState::STATE_AWAITING, (string) $executionState);
         self::assertSame(Test::STATE_AWAITING, $test->getState());
 
         $testExecutor = (new MockTestExecutor())
@@ -64,8 +64,8 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
         $handler = $this->handler;
         $handler($executeTestMessage);
 
-        $jobState = $this->invokableHandler->invoke(JobStateGetterFactory::get());
-        self::assertSame(JobState::STATE_EXECUTION_COMPLETE, (string) $jobState);
+        $executionState = $this->invokableHandler->invoke(ExecutionStateGetterFactory::get());
+        self::assertSame(ExecutionState::STATE_COMPLETE, (string) $executionState);
         self::assertSame(Test::STATE_COMPLETE, $test->getState());
     }
 }

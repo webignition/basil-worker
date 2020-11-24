@@ -10,25 +10,25 @@ use App\Model\Workflow\WorkflowInterface;
 class ApplicationWorkflowFactory
 {
     private CallbackWorkflowFactory $callbackWorkflowFactory;
-    private JobStateFactory $jobStateFactory;
     private CompilationStateFactory $compilationStateFactory;
+    private ExecutionStateFactory $executionStateFactory;
 
     public function __construct(
         CallbackWorkflowFactory $callbackWorkflowFactory,
-        JobStateFactory $jobStateFactory,
-        CompilationStateFactory $compilationStateFactory
+        CompilationStateFactory $compilationStateFactory,
+        ExecutionStateFactory $executionStateFactory
     ) {
         $this->callbackWorkflowFactory = $callbackWorkflowFactory;
-        $this->jobStateFactory = $jobStateFactory;
         $this->compilationStateFactory = $compilationStateFactory;
+        $this->executionStateFactory = $executionStateFactory;
     }
 
     public function create(): ApplicationWorkflow
     {
         return new ApplicationWorkflow(
-            $this->jobStateFactory->create(),
             WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState(),
-            $this->compilationStateFactory->create()
+            $this->compilationStateFactory->create(),
+            $this->executionStateFactory->create()
         );
     }
 }

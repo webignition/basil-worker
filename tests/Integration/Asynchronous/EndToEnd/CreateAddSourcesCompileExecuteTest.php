@@ -6,7 +6,8 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
-use App\Model\JobState;
+use App\Model\CompilationState;
+use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -33,13 +34,15 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      *
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param JobState::STATE_* $expectedJobEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
+     * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param array<Test::STATE_*> $expectedTestEndStates
      */
     public function testCreateAddSourcesCompileExecute(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        string $expectedJobEndState,
+        string $expectedCompilationEndState,
+        string $expectedExecutionEndState,
         array $expectedTestEndStates,
         Invokable $assertions
     ) {
@@ -61,7 +64,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         $this->doCreateJobAddSourcesTest(
             $jobConfiguration,
             $expectedSourcePaths,
-            $expectedJobEndState,
+            $expectedCompilationEndState,
+            $expectedExecutionEndState,
             new InvokableCollection([
                 $expectedTestEndStatesAssertions,
                 $assertions
@@ -83,7 +87,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
-                'expectedJobEndState' => JobState::STATE_EXECUTION_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,
                     Test::STATE_COMPLETE,
@@ -101,7 +106,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                 ],
-                'expectedJobEndState' => JobState::STATE_EXECUTION_COMPLETE,
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedTestEndStates' => [
                     Test::STATE_COMPLETE,
                 ],
