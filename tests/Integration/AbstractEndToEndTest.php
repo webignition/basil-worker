@@ -7,10 +7,10 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
+use App\Model\ApplicationState;
 use App\Model\CompilationState;
 use App\Model\ExecutionState;
-use App\Model\Workflow\WorkflowInterface;
-use App\Services\ApplicationWorkflowFactory;
+use App\Services\ApplicationStateFactory;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -41,8 +41,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected BasilFixtureHandler $basilFixtureHandler;
     protected EntityRefresher $entityRefresher;
     protected HttpLogReader $httpLogReader;
-    protected ApplicationWorkflowFactory $applicationWorkflowFactory;
     protected InvokableHandler $invokableHandler;
+    protected ApplicationStateFactory $applicationStateFactory;
 
     protected function setUp(): void
     {
@@ -156,7 +156,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $intervalInMicroseconds = 100000;
 
         while (
-            WorkflowInterface::STATE_COMPLETE !== $this->applicationWorkflowFactory->create()->getState() &&
+            ApplicationState::STATE_COMPLETE !== (string) $this->applicationStateFactory->create() &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);

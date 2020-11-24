@@ -89,9 +89,6 @@ services:
     App\Services\CallbackWorkflowFactory:
         public: true
 
-    App\Services\ApplicationWorkflowFactory:
-        public: true
-
     App\Services\CompilationStateFactory:
         public: true
 
