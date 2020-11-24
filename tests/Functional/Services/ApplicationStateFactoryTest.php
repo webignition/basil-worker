@@ -6,7 +6,6 @@ namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
-use App\Model\ApplicationState;
 use App\Services\ApplicationStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -38,8 +37,8 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
      * @dataProvider isDataProvider
      *
      * @param InvokableInterface $setup
-     * @param array<ApplicationState::STATE_*> $expectedIsStates
-     * @param array<ApplicationState::STATE_*> $expectedIsNotStates
+     * @param array<ApplicationStateFactory::STATE_*> $expectedIsStates
+     * @param array<ApplicationStateFactory::STATE_*> $expectedIsNotStates
      */
     public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
@@ -55,27 +54,27 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
             'no job, is awaiting' => [
                 'setup' => Invokable::createEmpty(),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'has job, no sources' => [
                 'setup' => JobSetupInvokableFactory::setup(),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'no sources compiled' => [
@@ -87,14 +86,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         ])
                 ),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_COMPILING,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'first source compiled' => [
@@ -111,14 +110,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ])
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_COMPILING,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'all sources compiled, no tests running' => [
@@ -136,14 +135,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ])
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_EXECUTING,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'first test complete, no callbacks' => [
@@ -163,14 +162,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ])
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_EXECUTING,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'first test complete, callback for first test complete' => [
@@ -193,14 +192,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ),
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_EXECUTING,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'all tests complete, first callback complete, second callback running' => [
@@ -228,14 +227,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ),
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
             ],
             'all tests complete, all callbacks complete' => [
@@ -263,14 +262,14 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                     ),
                 ]),
                 'expectedIsStates' => [
-                    ApplicationState::STATE_COMPLETE,
+                    ApplicationStateFactory::STATE_COMPLETE,
                 ],
                 'expectedIsNotStates' => [
-                    ApplicationState::STATE_AWAITING_JOB,
-                    ApplicationState::STATE_AWAITING_SOURCES,
-                    ApplicationState::STATE_COMPILING,
-                    ApplicationState::STATE_EXECUTING,
-                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationStateFactory::STATE_AWAITING_JOB,
+                    ApplicationStateFactory::STATE_AWAITING_SOURCES,
+                    ApplicationStateFactory::STATE_COMPILING,
+                    ApplicationStateFactory::STATE_EXECUTING,
+                    ApplicationStateFactory::STATE_COMPLETING_CALLBACKS,
                 ],
             ],
         ];

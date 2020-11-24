@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\ApplicationState;
-
 class ApplicationStateFactory
 {
+    public const STATE_AWAITING_JOB = 'awaiting-job';
+    public const STATE_AWAITING_SOURCES = 'awaiting-sources';
+    public const STATE_COMPILING = 'compiling';
+    public const STATE_EXECUTING = 'executing';
+    public const STATE_COMPLETING_CALLBACKS = 'completing-callbacks';
+    public const STATE_COMPLETE = 'complete';
+
     private JobStore $jobStore;
     private CompilationStateFactory $compilationStateFactory;
     private ExecutionStateFactory $executionStateFactory;
@@ -26,7 +31,7 @@ class ApplicationStateFactory
     }
 
     /**
-     * @param ApplicationState::STATE_* ...$states
+     * @param ApplicationStateFactory::STATE_* ...$states
      *
      * @return bool
      */
@@ -42,29 +47,29 @@ class ApplicationStateFactory
     private function getCurrentState(): string
     {
         if (false === $this->jobStore->hasJob()) {
-            return ApplicationState::STATE_AWAITING_JOB;
+            return self::STATE_AWAITING_JOB;
         }
 
         $job = $this->jobStore->getJob();
         if ([] === $job->getSources()) {
-            return ApplicationState::STATE_AWAITING_SOURCES;
+            return self::STATE_AWAITING_SOURCES;
         }
 
         $compilationState = $this->compilationStateFactory->create();
         if (false === $compilationState->isFinished()) {
-            return ApplicationState::STATE_COMPILING;
+            return self::STATE_COMPILING;
         }
 
         $executionState = $this->executionStateFactory->create();
         if (false === $executionState->isFinished()) {
-            return ApplicationState::STATE_EXECUTING;
+            return self::STATE_EXECUTING;
         }
 
         $callbackState = $this->callbackStateFactory->create();
         if (false === $callbackState->isFinished()) {
-            return ApplicationState::STATE_COMPLETING_CALLBACKS;
+            return self::STATE_COMPLETING_CALLBACKS;
         }
 
-        return ApplicationState::STATE_COMPLETE;
+        return self::STATE_COMPLETE;
     }
 }

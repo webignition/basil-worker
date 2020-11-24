@@ -7,7 +7,6 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Model\ApplicationState;
 use App\Model\CompilationState;
 use App\Model\ExecutionState;
 use App\Services\ApplicationStateFactory;
@@ -156,7 +155,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $intervalInMicroseconds = 100000;
 
         while (
-            false === $this->applicationStateFactory->is(ApplicationState::STATE_COMPLETE) &&
+            false === $this->applicationStateFactory->is(ApplicationStateFactory::STATE_COMPLETE) &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);
