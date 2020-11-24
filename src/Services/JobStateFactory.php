@@ -48,13 +48,6 @@ class JobStateFactory
     private function getJobStateDeciders(): array
     {
         return [
-            JobState::STATE_COMPILATION_AWAITING => function (): bool {
-                if (false === $this->jobStore->hasJob()) {
-                    return true;
-                }
-
-                return [] === $this->jobStore->getJob()->getSources();
-            },
             JobState::STATE_COMPILATION_RUNNING => function (): bool {
                 if (false === $this->jobStore->hasJob()) {
                     return false;

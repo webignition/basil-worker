@@ -9,7 +9,6 @@ use App\Entity\Test;
 use App\Model\JobState;
 use App\Services\JobStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\CallbackSetup;
@@ -47,14 +46,6 @@ class JobStateFactoryTest extends AbstractBaseFunctionalTest
     public function createDataProvider(): array
     {
         return [
-            'compilation-awaiting: no job' => [
-                'setup' => Invokable::createEmpty(),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_AWAITING),
-            ],
-            'compilation-awaiting: has job, no sources' => [
-                'setup' => JobSetupInvokableFactory::setup(),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_AWAITING),
-            ],
             'compilation-running: has job, has sources, no sources compiled' => [
                 'setup' => JobSetupInvokableFactory::setup(
                     (new JobSetup())
