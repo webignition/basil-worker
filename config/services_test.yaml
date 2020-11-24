@@ -95,6 +95,9 @@ services:
     App\Services\JobStateFactory:
         public: true
 
+    App\Services\CompilationStateFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
