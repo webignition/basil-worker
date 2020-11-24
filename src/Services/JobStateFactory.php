@@ -36,9 +36,6 @@ class JobStateFactory
     private function getJobStateDeciders(): array
     {
         return [
-            JobState::STATE_EXECUTION_RUNNING => function (): bool {
-                return WorkflowInterface::STATE_IN_PROGRESS === $this->executionWorkflowFactory->create()->getState();
-            },
             JobState::STATE_EXECUTION_COMPLETE => function (): bool {
                 return
                     WorkflowInterface::STATE_COMPLETE === $this->executionWorkflowFactory->create()->getState() &&

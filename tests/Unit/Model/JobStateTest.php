@@ -20,10 +20,6 @@ class JobStateTest extends TestCase
     public function toStringDataProvider(): array
     {
         return [
-            JobState::STATE_EXECUTION_RUNNING => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_RUNNING),
-                'expectedString' => JobState::STATE_EXECUTION_RUNNING,
-            ],
             JobState::STATE_EXECUTION_FAILED => [
                 'jobState' => new JobState(JobState::STATE_EXECUTION_FAILED),
                 'expectedString' => JobState::STATE_EXECUTION_FAILED,
