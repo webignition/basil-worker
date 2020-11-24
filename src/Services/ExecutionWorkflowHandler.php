@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\CompilationState;
 use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -57,7 +56,7 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
     public function dispatchNextExecuteTestMessage(): void
     {
         $compilationState = $this->compilationStateFactory->create();
-        if (!in_array((string) $compilationState, [CompilationState::STATE_FAILED, CompilationState::STATE_COMPLETE])) {
+        if (false === $compilationState->isFinished()) {
             return;
         }
 
