@@ -11,18 +11,24 @@ class ApplicationWorkflowFactory
 {
     private CallbackWorkflowFactory $callbackWorkflowFactory;
     private JobStateFactory $jobStateFactory;
+    private CompilationStateFactory $compilationStateFactory;
 
-    public function __construct(CallbackWorkflowFactory $callbackWorkflowFactory, JobStateFactory $jobStateFactory)
-    {
+    public function __construct(
+        CallbackWorkflowFactory $callbackWorkflowFactory,
+        JobStateFactory $jobStateFactory,
+        CompilationStateFactory $compilationStateFactory
+    ) {
         $this->callbackWorkflowFactory = $callbackWorkflowFactory;
         $this->jobStateFactory = $jobStateFactory;
+        $this->compilationStateFactory = $compilationStateFactory;
     }
 
     public function create(): ApplicationWorkflow
     {
         return new ApplicationWorkflow(
             $this->jobStateFactory->create(),
-            WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState()
+            WorkflowInterface::STATE_COMPLETE === $this->callbackWorkflowFactory->create()->getState(),
+            $this->compilationStateFactory->create()
         );
     }
 }

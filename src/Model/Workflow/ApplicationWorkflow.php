@@ -4,31 +4,34 @@ declare(strict_types=1);
 
 namespace App\Model\Workflow;
 
+use App\Model\CompilationState;
 use App\Model\JobState;
 
 class ApplicationWorkflow implements WorkflowInterface
 {
     private JobState $jobState;
     private bool $callbackWorkflowIsComplete;
+    private CompilationState $compilationState;
 
-    public function __construct(JobState $jobState, bool $callbackWorkflowIsComplete)
-    {
+    public function __construct(
+        JobState $jobState,
+        bool $callbackWorkflowIsComplete,
+        CompilationState $compilationState
+    ) {
         $this->jobState = $jobState;
         $this->callbackWorkflowIsComplete = $callbackWorkflowIsComplete;
+        $this->compilationState = $compilationState;
     }
 
     public function getState(): string
     {
-        if (JobState::STATE_UNKNOWN === (string) $this->jobState) {
-            return WorkflowInterface::STATE_NOT_READY;
-        }
-
-        if (JobState::STATE_COMPILATION_AWAITING === (string) $this->jobState) {
+        if (CompilationState::STATE_AWAITING === (string) $this->compilationState) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
         if (
-            in_array((string) $this->jobState, [JobState::STATE_COMPILATION_RUNNING, JobState::STATE_EXECUTION_RUNNING])
+            CompilationState::STATE_RUNNING === (string) $this->compilationState ||
+            JobState::STATE_EXECUTION_RUNNING === (string) $this->jobState
         ) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }

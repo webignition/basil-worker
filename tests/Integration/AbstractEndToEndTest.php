@@ -7,6 +7,7 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
+use App\Model\CompilationState;
 use App\Model\JobState;
 use App\Model\Workflow\WorkflowInterface;
 use App\Services\ApplicationWorkflowFactory;
@@ -17,6 +18,7 @@ use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\InvokableFactory\CompilationStateGetterFactory;
 use App\Tests\Services\InvokableFactory\JobStateGetterFactory;
 use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceStoreInitializer;
@@ -71,8 +73,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
         self::assertSame(
-            JobState::STATE_COMPILATION_AWAITING,
-            (string) $this->invokableHandler->invoke(JobStateGetterFactory::get())
+            CompilationState::STATE_AWAITING,
+            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 
         $timer = new Timer();

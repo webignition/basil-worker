@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\CompileSource;
-use App\Model\JobState;
+use App\Model\CompilationState;
+use App\Services\CompilationStateFactory;
 use App\Services\Compiler;
-use App\Services\JobStateFactory;
 use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
@@ -17,18 +17,18 @@ class CompileSourceHandler implements MessageHandlerInterface
     private Compiler $compiler;
     private JobStore $jobStore;
     private SourceCompileEventDispatcher $eventDispatcher;
-    private JobStateFactory $jobStateFactory;
+    private CompilationStateFactory $compilationStateFactory;
 
     public function __construct(
         Compiler $compiler,
         JobStore $jobStore,
         SourceCompileEventDispatcher $eventDispatcher,
-        JobStateFactory $jobStateFactory
+        CompilationStateFactory $compilationStateFactory
     ) {
         $this->compiler = $compiler;
         $this->jobStore = $jobStore;
         $this->eventDispatcher = $eventDispatcher;
-        $this->jobStateFactory = $jobStateFactory;
+        $this->compilationStateFactory = $compilationStateFactory;
     }
 
     public function __invoke(CompileSource $message): void
@@ -37,8 +37,8 @@ class CompileSourceHandler implements MessageHandlerInterface
             return;
         }
 
-        $jobState = $this->jobStateFactory->create();
-        if (JobState::STATE_COMPILATION_RUNNING !== (string) $jobState) {
+        $compilationState = $this->compilationStateFactory->create();
+        if (CompilationState::STATE_RUNNING !== (string) $compilationState) {
             return;
         }
 

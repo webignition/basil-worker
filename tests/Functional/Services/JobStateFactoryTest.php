@@ -4,16 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
 use App\Model\JobState;
 use App\Services\JobStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
-use App\Tests\Services\InvokableFactory\CallbackSetup;
-use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
@@ -47,40 +43,6 @@ class JobStateFactoryTest extends AbstractBaseFunctionalTest
     public function createDataProvider(): array
     {
         return [
-            'compilation-awaiting: no job' => [
-                'setup' => Invokable::createEmpty(),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_AWAITING),
-            ],
-            'compilation-awaiting: has job, no sources' => [
-                'setup' => JobSetupInvokableFactory::setup(),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_AWAITING),
-            ],
-            'compilation-running: has job, has sources, no sources compiled' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    (new JobSetup())
-                        ->withSources([
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                        ])
-                ),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_RUNNING),
-            ],
-            'compilation-failed: has job, has sources, has more than zero compile-failure callbacks' => [
-                'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    CallbackSetupInvokableFactory::setup(
-                        (new CallbackSetup())
-                            ->withType(CallbackInterface::TYPE_COMPILE_FAILURE),
-                    )
-                ]),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_FAILED),
-            ],
             'execution-awaiting: compilation workflow complete and execution workflow not started' => [
                 'setup' => new InvokableCollection([
                     JobSetupInvokableFactory::setup(
