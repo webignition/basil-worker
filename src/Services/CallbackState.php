@@ -33,6 +33,9 @@ class CallbackState
         return in_array($this->getCurrentState(), $states);
     }
 
+    /**
+     * @return CallbackState::STATE_*
+     */
     private function getCurrentState(): string
     {
         $callbackCount = $this->callbackRepository->count([]);
