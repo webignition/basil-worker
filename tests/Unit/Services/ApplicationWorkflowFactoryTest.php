@@ -45,13 +45,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ->withCreateCall(new CallbackWorkflow(0, 0))
                     ->getMock(),
                 'jobStateFactory' => (new MockJobStateFactory())
-                    ->withCreateCall(new JobState(JobState::STATE_COMPILATION_AWAITING))
+                    ->withCreateCall(new JobState(JobState::STATE_UNKNOWN))
                     ->getMock(),
                 'compilationStateFactory' => (new MockCompilationStateFactory())
                     ->withCreateCall(new CompilationState(CompilationState::STATE_AWAITING))
                     ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
-                    new JobState(JobState::STATE_COMPILATION_AWAITING),
+                    new JobState(JobState::STATE_UNKNOWN),
                     false,
                     new CompilationState(CompilationState::STATE_AWAITING)
                 ),
@@ -61,13 +61,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ->withCreateCall(new CallbackWorkflow(0, 0))
                     ->getMock(),
                 'jobStateFactory' => (new MockJobStateFactory())
-                    ->withCreateCall(new JobState(JobState::STATE_COMPILATION_AWAITING))
+                    ->withCreateCall(new JobState(JobState::STATE_UNKNOWN))
                     ->getMock(),
                 'compilationStateFactory' => (new MockCompilationStateFactory())
                     ->withCreateCall(new CompilationState(CompilationState::STATE_AWAITING))
                     ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
-                    new JobState(JobState::STATE_COMPILATION_AWAITING),
+                    new JobState(JobState::STATE_UNKNOWN),
                     false,
                     new CompilationState(CompilationState::STATE_AWAITING)
                 ),
