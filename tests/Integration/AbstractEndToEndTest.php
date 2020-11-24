@@ -11,7 +11,6 @@ use App\Model\ApplicationState;
 use App\Model\CompilationState;
 use App\Model\ExecutionState;
 use App\Services\ApplicationStateFactory;
-use App\Services\ApplicationWorkflowFactory;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -42,7 +41,6 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected BasilFixtureHandler $basilFixtureHandler;
     protected EntityRefresher $entityRefresher;
     protected HttpLogReader $httpLogReader;
-    protected ApplicationWorkflowFactory $applicationWorkflowFactory;
     protected InvokableHandler $invokableHandler;
     protected ApplicationStateFactory $applicationStateFactory;
 

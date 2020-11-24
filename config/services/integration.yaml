@@ -9,9 +9,6 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Services\ApplicationWorkflowFactory:
-        public: true
-
     App\Services\ApplicationStateFactory:
         public: true
 
