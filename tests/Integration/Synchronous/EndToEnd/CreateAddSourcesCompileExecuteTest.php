@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Services\CompilationState;
-use App\Services\ExecutionStateFactory;
+use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -31,7 +31,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
-     * @param ExecutionStateFactory::STATE_* $expectedExecutionEndState
+     * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
     public function testCreateAddSourcesCompileExecute(
@@ -68,7 +68,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-open-form.yml',
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
-                'expectedExecutionEndState' => ExecutionStateFactory::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'postAssertions' => new Invokable(
                     function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
                         $transactions = $httpLogReader->getTransactions();
@@ -199,7 +199,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     'Test/chrome-open-index.yml',
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
-                'expectedExecutionEndState' => ExecutionStateFactory::STATE_CANCELLED,
+                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'postAssertions' => new InvokableCollection([
                     'verify http transactions' => new Invokable(
                         function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {

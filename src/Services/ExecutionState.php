@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Entity\Test;
 use App\Repository\TestRepository;
 
-class ExecutionStateFactory
+class ExecutionState
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_RUNNING = 'running';
@@ -27,7 +27,7 @@ class ExecutionStateFactory
     }
 
     /**
-     * @param ExecutionStateFactory::STATE_* ...$states
+     * @param ExecutionState::STATE_* ...$states
      *
      * @return bool
      */
@@ -41,7 +41,7 @@ class ExecutionStateFactory
     }
 
     /**
-     * @return ExecutionStateFactory::STATE_*
+     * @return ExecutionState::STATE_*
      */
     public function getCurrentState(): string
     {

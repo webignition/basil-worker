@@ -9,7 +9,7 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
-use App\Services\ExecutionStateFactory;
+use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -61,7 +61,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
-     * @param ExecutionStateFactory::STATE_* $expectedExecutionEndState
+     * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
     protected function doCreateJobAddSourcesTest(

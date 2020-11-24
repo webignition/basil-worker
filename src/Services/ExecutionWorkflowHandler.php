@@ -17,18 +17,18 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
     private MessageBusInterface $messageBus;
     private TestRepository $testRepository;
     private CompilationState $compilationState;
-    private ExecutionStateFactory $executionStateFactory;
+    private ExecutionState $executionState;
 
     public function __construct(
         MessageBusInterface $messageBus,
         TestRepository $testRepository,
         CompilationState $compilationState,
-        ExecutionStateFactory $executionStateFactory
+        ExecutionState $executionState
     ) {
         $this->messageBus = $messageBus;
         $this->testRepository = $testRepository;
         $this->compilationState = $compilationState;
-        $this->executionStateFactory = $executionStateFactory;
+        $this->executionState = $executionState;
     }
 
     public static function getSubscribedEvents()
@@ -58,7 +58,7 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
             return;
         }
 
-        if ($this->executionStateFactory->is(...ExecutionStateFactory::FINISHED_STATES)) {
+        if ($this->executionState->is(...ExecutionState::FINISHED_STATES)) {
             return;
         }
 

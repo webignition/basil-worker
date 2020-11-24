@@ -83,7 +83,7 @@ services:
     App\Services\CompilationState:
         public: true
 
-    App\Services\ExecutionStateFactory:
+    App\Services\ExecutionState:
         public: true
 
     App\Services\CallbackState:

@@ -12,7 +12,7 @@ use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\CompilationState;
-use App\Services\ExecutionStateFactory;
+use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -120,14 +120,14 @@ class JobController extends AbstractController
      *
      * @param TestRepository $testRepository
      * @param CompilationState $compilationState
-     * @param ExecutionStateFactory $executionStateFactory
+     * @param ExecutionState $executionState
      *
      * @return JsonResponse
      */
     public function status(
         TestRepository $testRepository,
         CompilationState $compilationState,
-        ExecutionStateFactory $executionStateFactory
+        ExecutionState $executionState
     ): JsonResponse {
         if (false === $this->jobStore->hasJob()) {
             return new JsonResponse([], 400);
@@ -145,7 +145,7 @@ class JobController extends AbstractController
             $job->jsonSerialize(),
             [
                 'compilation_state' => $compilationState->getCurrentState(),
-                'execution_state' => $executionStateFactory->getCurrentState(),
+                'execution_state' => $executionState->getCurrentState(),
                 'tests' => $testData,
             ]
         );
