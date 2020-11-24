@@ -25,10 +25,6 @@ class ApplicationWorkflow implements WorkflowInterface
 
     public function getState(): string
     {
-        if (JobState::STATE_UNKNOWN === (string) $this->jobState) {
-            return WorkflowInterface::STATE_NOT_READY;
-        }
-
         if (CompilationState::STATE_AWAITING === (string) $this->compilationState) {
             return WorkflowInterface::STATE_NOT_STARTED;
         }

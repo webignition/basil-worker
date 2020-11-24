@@ -29,7 +29,7 @@ class ApplicationWorkflowTest extends TestCase
                     false,
                     new CompilationState(CompilationState::STATE_AWAITING)
                 ),
-                'expectedState' => WorkflowInterface::STATE_NOT_READY,
+                'expectedState' => WorkflowInterface::STATE_NOT_STARTED,
             ],
             'job state: compilation-awaiting' => [
                 'workflow' => new ApplicationWorkflow(
