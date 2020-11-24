@@ -47,9 +47,6 @@ services:
     App\Services\ExecutionWorkflowHandler:
         public: true
 
-    App\Services\CompilationWorkflowFactory:
-        public: true
-
     App\Services\ExecutionWorkflowFactory:
         public: true
 
