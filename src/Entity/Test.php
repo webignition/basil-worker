@@ -17,6 +17,12 @@ class Test implements \JsonSerializable
     public const STATE_COMPLETE = 'complete';
     public const STATE_CANCELLED = 'cancelled';
 
+    public const FINISHED_STATES = [
+        self::STATE_FAILED,
+        self::STATE_COMPLETE,
+        self::STATE_CANCELLED,
+    ];
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
