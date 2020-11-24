@@ -55,8 +55,7 @@ class ApplicationState
             return self::STATE_AWAITING_SOURCES;
         }
 
-        $compilationState = $this->compilationStateFactory->create();
-        if (false === $compilationState->isFinished()) {
+        if (false === $this->compilationStateFactory->is(...CompilationStateFactory::FINISHED_STATES)) {
             return self::STATE_COMPILING;
         }
 

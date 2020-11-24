@@ -7,9 +7,9 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Model\CompilationState;
 use App\Model\ExecutionState;
 use App\Services\ApplicationState;
+use App\Services\CompilationStateFactory;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -60,7 +60,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     /**
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param CompilationState::STATE_* $expectedCompilationEndState
+     * @param CompilationStateFactory::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
@@ -74,8 +74,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
 
         self::assertSame(
-            CompilationState::STATE_AWAITING,
-            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
+            CompilationStateFactory::STATE_AWAITING,
+            $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 
         $timer = new Timer();
@@ -92,7 +92,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         self::assertSame(
             $expectedCompilationEndState,
-            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
+            $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 
         self::assertSame(

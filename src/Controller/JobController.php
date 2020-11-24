@@ -144,7 +144,7 @@ class JobController extends AbstractController
         $data = array_merge(
             $job->jsonSerialize(),
             [
-                'compilation_state' => (string) $compilationStateFactory->create(),
+                'compilation_state' => $compilationStateFactory->getCurrentState(),
                 'execution_state' => (string) $executionStateFactory->create(),
                 'tests' => $testData,
             ]

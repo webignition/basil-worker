@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Model\CompilationState;
 use App\Services\CompilationStateFactory;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
@@ -15,8 +14,8 @@ class CompilationStateGetterFactory
     public static function get(): InvokableInterface
     {
         return new Invokable(
-            function (CompilationStateFactory $compilationStateFactory): CompilationState {
-                return $compilationStateFactory->create();
+            function (CompilationStateFactory $compilationStateFactory): string {
+                return $compilationStateFactory->getCurrentState();
             },
             [
                 new ServiceReference(CompilationStateFactory::class),

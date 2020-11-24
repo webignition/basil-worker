@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\MessageHandler;
 
 use App\Message\CompileSource;
-use App\Model\CompilationState;
 use App\Services\CompilationStateFactory;
 use App\Services\Compiler;
 use App\Services\JobStore;
@@ -37,8 +36,7 @@ class CompileSourceHandler implements MessageHandlerInterface
             return;
         }
 
-        $compilationState = $this->compilationStateFactory->create();
-        if (CompilationState::STATE_RUNNING !== (string) $compilationState) {
+        if (false === $this->compilationStateFactory->is(CompilationStateFactory::STATE_RUNNING)) {
             return;
         }
 

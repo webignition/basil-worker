@@ -4,11 +4,21 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\CompilationState;
 use App\Repository\CallbackRepository;
 
 class CompilationStateFactory
 {
+    public const STATE_AWAITING = 'awaiting';
+    public const STATE_RUNNING = 'running';
+    public const STATE_FAILED = 'failed';
+    public const STATE_COMPLETE = 'complete';
+    public const STATE_UNKNOWN = 'unknown';
+
+    public const FINISHED_STATES = [
+        self::STATE_COMPLETE,
+        self::STATE_FAILED,
+    ];
+
     private CallbackRepository $callbackRepository;
     private JobSourceFinder $jobSourceFinder;
 
@@ -18,10 +28,27 @@ class CompilationStateFactory
         $this->jobSourceFinder = $jobSourceFinder;
     }
 
-    public function create(): CompilationState
+    /**
+     * @param CompilationStateFactory::STATE_* ...$states
+     *
+     * @return bool
+     */
+    public function is(...$states): bool
+    {
+        $states = array_filter($states, function ($item) {
+            return is_string($item);
+        });
+
+        return in_array($this->getCurrentState(), $states);
+    }
+
+    /**
+     * @return CompilationStateFactory::STATE_*
+     */
+    public function getCurrentState(): string
     {
         if (0 !== $this->callbackRepository->getCompileFailureTypeCount()) {
-            return new CompilationState(CompilationState::STATE_FAILED);
+            return CompilationStateFactory::STATE_FAILED;
         }
 
         $compiledSources = $this->jobSourceFinder->findCompiledSources();
@@ -29,12 +56,12 @@ class CompilationStateFactory
 
         if ([] === $compiledSources) {
             return is_string($nextSource)
-                ? new CompilationState(CompilationState::STATE_RUNNING)
-                : new CompilationState(CompilationState::STATE_AWAITING);
+                ? CompilationStateFactory::STATE_RUNNING
+                : CompilationStateFactory::STATE_AWAITING;
         }
 
         return is_string($nextSource)
-            ? new CompilationState(CompilationState::STATE_RUNNING)
-            : new CompilationState(CompilationState::STATE_COMPLETE);
+            ? CompilationStateFactory::STATE_RUNNING
+            : CompilationStateFactory::STATE_COMPLETE;
     }
 }

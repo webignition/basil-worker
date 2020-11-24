@@ -54,8 +54,7 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
 
     public function dispatchNextExecuteTestMessage(): void
     {
-        $compilationState = $this->compilationStateFactory->create();
-        if (false === $compilationState->isFinished()) {
+        if (false === $this->compilationStateFactory->is(...CompilationStateFactory::FINISHED_STATES)) {
             return;
         }
 
