@@ -51,11 +51,11 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                 ]),
                 'expectedState' => new ExecutionState(ExecutionState::STATE_RUNNING),
             ],
-            'running: not has finished tests and not has running tests and has awaiting tests' => [
+            'awaiting: not has finished tests and not has running tests and has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())->withState(Test::STATE_AWAITING),
                 ]),
-                'expectedState' => new ExecutionState(ExecutionState::STATE_RUNNING),
+                'expectedState' => new ExecutionState(ExecutionState::STATE_AWAITING),
             ],
             'running: has complete tests and has running tests and not has awaiting tests' => [
                 'setup' => TestSetupInvokableFactory::setupCollection([

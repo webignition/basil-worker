@@ -30,14 +30,16 @@ class ExecutionStateFactory
         $hasRunningTests = 0 !== $this->testRepository->count(['state' => Test::STATE_RUNNING]);
         $hasAwaitingTests = 0 !== $this->testRepository->count(['state' => Test::STATE_AWAITING]);
 
-        if (false === $hasFinishedTests) {
-            return false === $hasRunningTests && false === $hasAwaitingTests
-                ? new ExecutionState(ExecutionState::STATE_AWAITING)
-                : new ExecutionState(ExecutionState::STATE_RUNNING);
+        if ($hasFinishedTests) {
+            $state = $hasAwaitingTests || $hasRunningTests
+                ? ExecutionState::STATE_RUNNING
+                : ExecutionState::STATE_COMPLETE;
+
+            return new ExecutionState($state);
         }
 
-        return false === $hasRunningTests && false === $hasAwaitingTests
-            ? new ExecutionState(ExecutionState::STATE_COMPLETE)
-            : new ExecutionState(ExecutionState::STATE_RUNNING);
+        $state = $hasRunningTests ? ExecutionState::STATE_RUNNING : ExecutionState::STATE_AWAITING;
+
+        return new ExecutionState($state);
     }
 }
