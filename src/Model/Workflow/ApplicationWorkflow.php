@@ -5,22 +5,22 @@ declare(strict_types=1);
 namespace App\Model\Workflow;
 
 use App\Model\CompilationState;
-use App\Model\JobState;
+use App\Model\ExecutionState;
 
 class ApplicationWorkflow implements WorkflowInterface
 {
-    private JobState $jobState;
     private bool $callbackWorkflowIsComplete;
     private CompilationState $compilationState;
+    private ExecutionState $executionState;
 
     public function __construct(
-        JobState $jobState,
         bool $callbackWorkflowIsComplete,
-        CompilationState $compilationState
+        CompilationState $compilationState,
+        ExecutionState $executionState
     ) {
-        $this->jobState = $jobState;
         $this->callbackWorkflowIsComplete = $callbackWorkflowIsComplete;
         $this->compilationState = $compilationState;
+        $this->executionState = $executionState;
     }
 
     public function getState(): string
@@ -31,12 +31,12 @@ class ApplicationWorkflow implements WorkflowInterface
 
         if (
             CompilationState::STATE_RUNNING === (string) $this->compilationState ||
-            JobState::STATE_EXECUTION_RUNNING === (string) $this->jobState
+            ExecutionState::STATE_RUNNING === (string) $this->executionState
         ) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
-        if (JobState::STATE_EXECUTION_CANCELLED === (string) $this->jobState) {
+        if (ExecutionState::STATE_CANCELLED === (string) $this->executionState) {
             return WorkflowInterface::STATE_COMPLETE;
         }
 
