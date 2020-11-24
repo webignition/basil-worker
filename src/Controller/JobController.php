@@ -11,8 +11,8 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
-use App\Services\CompilationStateFactory;
-use App\Services\ExecutionStateFactory;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Services\SourceStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -119,15 +119,15 @@ class JobController extends AbstractController
      * @Route("/status", name="status", methods={"GET"})
      *
      * @param TestRepository $testRepository
-     * @param CompilationStateFactory $compilationStateFactory
-     * @param ExecutionStateFactory $executionStateFactory
+     * @param CompilationState $compilationState
+     * @param ExecutionState $executionState
      *
      * @return JsonResponse
      */
     public function status(
         TestRepository $testRepository,
-        CompilationStateFactory $compilationStateFactory,
-        ExecutionStateFactory $executionStateFactory
+        CompilationState $compilationState,
+        ExecutionState $executionState
     ): JsonResponse {
         if (false === $this->jobStore->hasJob()) {
             return new JsonResponse([], 400);
@@ -144,8 +144,8 @@ class JobController extends AbstractController
         $data = array_merge(
             $job->jsonSerialize(),
             [
-                'compilation_state' => (string) $compilationStateFactory->create(),
-                'execution_state' => (string) $executionStateFactory->create(),
+                'compilation_state' => $compilationState->getCurrentState(),
+                'execution_state' => $executionState->getCurrentState(),
                 'tests' => $testData,
             ]
         );

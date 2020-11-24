@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackInterface;
-use App\Model\CompilationState;
-use App\Services\CompilationStateFactory;
+use App\Services\CompilationState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -20,11 +19,11 @@ use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
+class CompilationStateTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private CompilationStateFactory $compilationStateFactory;
+    private CompilationState $compilationState;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -34,25 +33,46 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider isDataProvider
+     *
+     * @param InvokableInterface $setup
+     * @param array<CompilationState::STATE_*> $expectedIsStates
+     * @param array<CompilationState::STATE_*> $expectedIsNotStates
      */
-    public function testCreate(InvokableInterface $setup, CompilationState $expectedState)
+    public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertEquals($expectedState, $this->compilationStateFactory->create());
+        self::assertTrue($this->compilationState->is(...$expectedIsStates));
+        self::assertFalse($this->compilationState->is(...$expectedIsNotStates));
     }
 
-    public function createDataProvider(): array
+    public function isDataProvider(): array
     {
         return [
             'awaiting: no job' => [
                 'setup' => Invokable::createEmpty(),
-                'expectedState' => new CompilationState(CompilationState::STATE_AWAITING),
+                'expectedIsStates' => [
+                    CompilationState::STATE_AWAITING,
+                ],
+                'expectedIsNotStates' => [
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
+                ],
             ],
             'awaiting: has job, no sources' => [
                 'setup' => JobSetupInvokableFactory::setup(),
-                'expectedState' => new CompilationState(CompilationState::STATE_AWAITING),
+                'expectedIsStates' => [
+                    CompilationState::STATE_AWAITING,
+                ],
+                'expectedIsNotStates' => [
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
+                ],
             ],
             'running: has job, has sources, no sources compiled' => [
                 'setup' => JobSetupInvokableFactory::setup(
@@ -62,7 +82,15 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                         ])
                 ),
-                'expectedState' => new CompilationState(CompilationState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    CompilationState::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
+                ],
             ],
             'failed: has job, has sources, has more than zero compile-failure callbacks' => [
                 'setup' => new InvokableCollection([
@@ -78,7 +106,15 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                             ->withType(CallbackInterface::TYPE_COMPILE_FAILURE),
                     )
                 ]),
-                'expectedState' => new CompilationState(CompilationState::STATE_FAILED),
+                'expectedIsStates' => [
+                    CompilationState::STATE_FAILED,
+                ],
+                'expectedIsNotStates' => [
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_COMPLETE,
+                    CompilationState::STATE_UNKNOWN,
+                ],
             ],
             'complete: has job, has sources, no next source' => [
                 'setup' => new InvokableCollection([
@@ -96,7 +132,15 @@ class CompilationStateFactoryTest extends AbstractBaseFunctionalTest
                             ->withSource('/app/source/Test/test2.yml'),
                     ])
                 ]),
-                'expectedState' => new CompilationState(CompilationState::STATE_COMPLETE),
+                'expectedIsStates' => [
+                    CompilationState::STATE_COMPLETE,
+                ],
+                'expectedIsNotStates' => [
+                    CompilationState::STATE_AWAITING,
+                    CompilationState::STATE_RUNNING,
+                    CompilationState::STATE_FAILED,
+                    CompilationState::STATE_UNKNOWN,
+                ],
             ],
         ];
     }

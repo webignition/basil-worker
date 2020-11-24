@@ -9,7 +9,7 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Services\ApplicationStateFactory:
+    App\Services\ApplicationState:
         public: true
 
     App\Tests\Services\EntityRefresher:

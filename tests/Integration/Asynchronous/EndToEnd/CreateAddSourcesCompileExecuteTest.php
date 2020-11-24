@@ -6,9 +6,9 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
-use App\Model\CompilationState;
-use App\Model\ExecutionState;
 use App\Repository\TestRepository;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;

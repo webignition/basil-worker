@@ -47,9 +47,6 @@ services:
     App\Services\ExecutionWorkflowHandler:
         public: true
 
-    App\Services\ExecutionWorkflowFactory:
-        public: true
-
     App\Services\TestFactory:
         public: true
 
@@ -83,16 +80,16 @@ services:
     App\Services\SourceCompileEventFactory:
         public: true
 
-    App\Services\CompilationStateFactory:
+    App\Services\CompilationState:
         public: true
 
-    App\Services\ExecutionStateFactory:
+    App\Services\ExecutionState:
         public: true
 
-    App\Services\CallbackStateFactory:
+    App\Services\CallbackState:
         public: true
 
-    App\Services\ApplicationStateFactory:
+    App\Services\ApplicationState:
         public: true
 
     App\Tests\Services\SourcesAddedEventSubscriber:

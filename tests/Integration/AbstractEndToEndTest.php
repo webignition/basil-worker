@@ -7,10 +7,9 @@ namespace App\Tests\Integration;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
-use App\Model\ApplicationState;
-use App\Model\CompilationState;
-use App\Model\ExecutionState;
-use App\Services\ApplicationStateFactory;
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -42,7 +41,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected EntityRefresher $entityRefresher;
     protected HttpLogReader $httpLogReader;
     protected InvokableHandler $invokableHandler;
-    protected ApplicationStateFactory $applicationStateFactory;
+    protected ApplicationState $applicationState;
 
     protected function setUp(): void
     {
@@ -76,7 +75,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         self::assertSame(
             CompilationState::STATE_AWAITING,
-            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
+            $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 
         $timer = new Timer();
@@ -93,12 +92,12 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         self::assertSame(
             $expectedCompilationEndState,
-            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
+            $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
         );
 
         self::assertSame(
             $expectedExecutionEndState,
-            (string) $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
+            $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
         );
 
         foreach ($postAssertions->getServiceReferences() as $serviceReference) {
@@ -156,7 +155,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $intervalInMicroseconds = 100000;
 
         while (
-            ApplicationState::STATE_COMPLETE !== (string) $this->applicationStateFactory->create() &&
+            false === $this->applicationState->is(ApplicationState::STATE_COMPLETE) &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);

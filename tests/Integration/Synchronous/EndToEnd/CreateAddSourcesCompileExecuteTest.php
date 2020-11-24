@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Test;
-use App\Model\CompilationState;
-use App\Model\ExecutionState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
