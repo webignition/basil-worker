@@ -6,7 +6,8 @@ namespace App\Model;
 
 class ApplicationState
 {
-    public const STATE_AWAITING = 'awaiting';
+    public const STATE_AWAITING_JOB = 'awaiting-job';
+    public const STATE_AWAITING_SOURCES = 'awaiting-sources';
     public const STATE_COMPILING = 'compiling';
     public const STATE_EXECUTING = 'executing';
     public const STATE_COMPLETING_CALLBACKS = 'completing-callbacks';

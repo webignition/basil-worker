@@ -20,12 +20,12 @@ class ApplicationStateTest extends TestCase
     public function isFinishedDataProvider(): array
     {
         return [
-            ApplicationState::STATE_AWAITING => [
-                'state' => new ApplicationState(ApplicationState::STATE_AWAITING),
+            ApplicationState::STATE_AWAITING_JOB => [
+                'state' => new ApplicationState(ApplicationState::STATE_AWAITING_JOB),
                 'expectedIsFinished' => false,
             ],
-            ApplicationState::STATE_RUNNING => [
-                'state' => new ApplicationState(ApplicationState::STATE_RUNNING),
+            ApplicationState::STATE_COMPILING => [
+                'state' => new ApplicationState(ApplicationState::STATE_COMPILING),
                 'expectedIsFinished' => false,
             ],
             ApplicationState::STATE_COMPLETE => [
