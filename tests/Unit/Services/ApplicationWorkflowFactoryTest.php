@@ -4,14 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Services;
 
+use App\Model\CompilationState;
 use App\Model\JobState;
 use App\Model\Workflow\ApplicationWorkflow;
 use App\Model\Workflow\CallbackWorkflow;
 use App\Services\ApplicationWorkflowFactory;
 use App\Services\CallbackWorkflowFactory;
+use App\Services\CompilationStateFactory;
 use App\Services\JobStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockCallbackWorkflowFactory;
+use App\Tests\Mock\Services\MockCompilationStateFactory;
 use App\Tests\Mock\Services\MockJobStateFactory;
 
 class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
@@ -22,9 +25,14 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
     public function testCreate(
         CallbackWorkflowFactory $callbackWorkflowFactory,
         JobStateFactory $jobStateFactory,
+        CompilationStateFactory $compilationStateFactory,
         ApplicationWorkflow $expectedApplicationWorkflow
     ) {
-        $applicationWorkflowFactory = new ApplicationWorkflowFactory($callbackWorkflowFactory, $jobStateFactory);
+        $applicationWorkflowFactory = new ApplicationWorkflowFactory(
+            $callbackWorkflowFactory,
+            $jobStateFactory,
+            $compilationStateFactory
+        );
 
         self::assertEquals($expectedApplicationWorkflow, $applicationWorkflowFactory->create());
     }
@@ -39,9 +47,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_COMPILATION_AWAITING))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_AWAITING))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_COMPILATION_AWAITING),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_AWAITING)
                 ),
             ],
             'job state: compilation-awaiting' => [
@@ -51,9 +63,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_COMPILATION_AWAITING))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_AWAITING))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_COMPILATION_AWAITING),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_AWAITING)
                 ),
             ],
             'job state: compilation-running' => [
@@ -63,9 +79,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_COMPILATION_RUNNING))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_RUNNING))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_COMPILATION_RUNNING),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_RUNNING)
                 ),
             ],
             'job state: execution-running' => [
@@ -75,9 +95,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_EXECUTION_RUNNING))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_COMPLETE))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_EXECUTION_RUNNING),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_COMPLETE)
                 ),
             ],
             'job state: execution-cancelled' => [
@@ -87,9 +111,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_EXECUTION_CANCELLED))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_COMPLETE))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_EXECUTION_CANCELLED),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_COMPLETE)
                 ),
             ],
             'job finished, callback workflow incomplete' => [
@@ -99,9 +127,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_EXECUTION_COMPLETE))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_COMPLETE))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_EXECUTION_COMPLETE),
-                    false
+                    false,
+                    new CompilationState(CompilationState::STATE_COMPLETE)
                 ),
             ],
             'job finished, callback workflow complete' => [
@@ -111,9 +143,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'jobStateFactory' => (new MockJobStateFactory())
                     ->withCreateCall(new JobState(JobState::STATE_EXECUTION_COMPLETE))
                     ->getMock(),
+                'compilationStateFactory' => (new MockCompilationStateFactory())
+                    ->withCreateCall(new CompilationState(CompilationState::STATE_COMPLETE))
+                    ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
                     new JobState(JobState::STATE_EXECUTION_COMPLETE),
-                    true
+                    true,
+                    new CompilationState(CompilationState::STATE_COMPLETE)
                 ),
             ],
         ];
