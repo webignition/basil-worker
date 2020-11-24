@@ -98,6 +98,9 @@ services:
     App\Services\ExecutionStateFactory:
         public: true
 
+    App\Services\CallbackStateFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
