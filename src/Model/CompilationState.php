@@ -12,6 +12,11 @@ class CompilationState
     public const STATE_COMPLETE = 'complete';
     public const STATE_UNKNOWN = 'unknown';
 
+    private const FINISHED_STATES = [
+        self::STATE_COMPLETE,
+        self::STATE_FAILED,
+    ];
+
     /**
      * @var CompilationState::STATE_*
      */
@@ -23,6 +28,11 @@ class CompilationState
     public function __construct(string $state)
     {
         $this->state = $state;
+    }
+
+    public function isFinished(): bool
+    {
+        return in_array($this->state, self::FINISHED_STATES);
     }
 
     public function __toString(): string
