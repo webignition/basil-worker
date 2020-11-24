@@ -30,7 +30,8 @@ class ApplicationWorkflow implements WorkflowInterface
         }
 
         if (
-            in_array((string) $this->jobState, [JobState::STATE_COMPILATION_RUNNING, JobState::STATE_EXECUTION_RUNNING])
+            CompilationState::STATE_RUNNING === (string) $this->compilationState ||
+            JobState::STATE_EXECUTION_RUNNING === (string) $this->jobState
         ) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }

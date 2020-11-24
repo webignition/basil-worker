@@ -77,13 +77,13 @@ class ApplicationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                     ->withCreateCall(new CallbackWorkflow(0, 0))
                     ->getMock(),
                 'jobStateFactory' => (new MockJobStateFactory())
-                    ->withCreateCall(new JobState(JobState::STATE_COMPILATION_RUNNING))
+                    ->withCreateCall(new JobState(JobState::STATE_UNKNOWN))
                     ->getMock(),
                 'compilationStateFactory' => (new MockCompilationStateFactory())
                     ->withCreateCall(new CompilationState(CompilationState::STATE_RUNNING))
                     ->getMock(),
                 'expectedApplicationWorkflow' => new ApplicationWorkflow(
-                    new JobState(JobState::STATE_COMPILATION_RUNNING),
+                    new JobState(JobState::STATE_UNKNOWN),
                     false,
                     new CompilationState(CompilationState::STATE_RUNNING)
                 ),

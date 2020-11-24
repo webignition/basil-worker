@@ -41,7 +41,7 @@ class ApplicationWorkflowTest extends TestCase
             ],
             'job state: compilation-running' => [
                 'workflow' => new ApplicationWorkflow(
-                    new JobState(JobState::STATE_COMPILATION_RUNNING),
+                    new JobState(JobState::STATE_UNKNOWN),
                     false,
                     new CompilationState(CompilationState::STATE_RUNNING)
                 ),

@@ -46,16 +46,6 @@ class JobStateFactoryTest extends AbstractBaseFunctionalTest
     public function createDataProvider(): array
     {
         return [
-            'compilation-running: has job, has sources, no sources compiled' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    (new JobSetup())
-                        ->withSources([
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                        ])
-                ),
-                'expectedState' => new JobState(JobState::STATE_COMPILATION_RUNNING),
-            ],
             'compilation-failed: has job, has sources, has more than zero compile-failure callbacks' => [
                 'setup' => new InvokableCollection([
                     JobSetupInvokableFactory::setup(

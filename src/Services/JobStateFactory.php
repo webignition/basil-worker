@@ -48,17 +48,6 @@ class JobStateFactory
     private function getJobStateDeciders(): array
     {
         return [
-            JobState::STATE_COMPILATION_RUNNING => function (): bool {
-                if (false === $this->jobStore->hasJob()) {
-                    return false;
-                }
-
-                if (0 !== $this->callbackRepository->getCompileFailureTypeCount()) {
-                    return false;
-                }
-
-                return WorkflowInterface::STATE_COMPLETE !== $this->compilationWorkflowFactory->create()->getState();
-            },
             JobState::STATE_COMPILATION_FAILED => function (): bool {
                 if (false === $this->jobStore->hasJob()) {
                     return false;
