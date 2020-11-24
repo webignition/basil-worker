@@ -40,13 +40,6 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
             (new JobSetup())->withSources(self::JOB_SOURCES)
         ));
-
-//        foreach (self::JOB_SOURCES as $source) {
-//            $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
-//                (new TestSetup())
-//                    ->withSource('/app/source/' . $source)
-//            ]));
-//        }
     }
 
     /**
@@ -58,10 +51,6 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
 
         $expectedWorkflow = $this->invokableHandler->invoke($expectedWorkflowCreator);
 
-//        $tests = $this->invokableHandler->invoke(TestGetterFactory::getAll());
-//        var_dump($tests);
-//        exit();
-
         self::assertEquals($expectedWorkflow, $this->executionWorkflowFactory->create());
     }
 
@@ -72,7 +61,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 'setup' => Invokable::createEmpty(),
                 'expectedWorkflowCreator' => new Invokable(
                     function () {
-                        return new ExecutionWorkflow(0, 0, 0, null);
+                        return new ExecutionWorkflow(null);
                     }
                 ),
             ],
@@ -87,7 +76,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(0, 0, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -105,7 +94,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(0, 1, 0, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -126,7 +115,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(0, 1, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -144,7 +133,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -162,7 +151,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -180,7 +169,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 0, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -201,7 +190,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -222,7 +211,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -243,7 +232,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 0, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -261,7 +250,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 ]),
                 'expectedWorkflowCreator' => new Invokable(
                     function () {
-                        return new ExecutionWorkflow(1, 1, 0, null);
+                        return new ExecutionWorkflow(null);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -279,7 +268,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 ]),
                 'expectedWorkflowCreator' => new Invokable(
                     function () {
-                        return new ExecutionWorkflow(1, 1, 0, null);
+                        return new ExecutionWorkflow(null);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -297,7 +286,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                 ]),
                 'expectedWorkflowCreator' => new Invokable(
                     function () {
-                        return new ExecutionWorkflow(1, 1, 0, null);
+                        return new ExecutionWorkflow(null);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -321,7 +310,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -345,7 +334,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),
@@ -369,7 +358,7 @@ class ExecutionWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         $nextTest = $testRepository->findNextAwaiting();
                         $nextTestId = $nextTest instanceof Test ? $nextTest->getId() : null;
 
-                        return new ExecutionWorkflow(1, 1, 1, $nextTestId);
+                        return new ExecutionWorkflow($nextTestId);
                     },
                     [
                         new ServiceReference(TestRepository::class),

@@ -22,21 +22,6 @@ class ExecutionWorkflowFactory
         $nextAwaitingTest = $this->testRepository->findNextAwaiting();
         $nextTestId = $nextAwaitingTest instanceof Test ? $nextAwaitingTest->getId() : null;
 
-        return new ExecutionWorkflow(
-            $this->testRepository->count([
-                'state' => [
-                    Test::STATE_COMPLETE,
-                    Test::STATE_FAILED,
-                    Test::STATE_CANCELLED,
-                ],
-            ]),
-            $this->testRepository->count([
-                'state' => Test::STATE_RUNNING,
-            ]),
-            $this->testRepository->count([
-                'state' => Test::STATE_AWAITING,
-            ]),
-            $nextTestId
-        );
+        return new ExecutionWorkflow($nextTestId);
     }
 }

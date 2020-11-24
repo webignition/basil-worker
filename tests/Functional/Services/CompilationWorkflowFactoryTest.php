@@ -51,17 +51,17 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
         return [
             'no job' => [
                 'setup' => Invokable::createEmpty(),
-                'expectedWorkflow' => new CompilationWorkflow([], null),
+                'expectedWorkflow' => new CompilationWorkflow(null),
             ],
             'has job, no sources' => [
                 'setup' => JobSetupInvokableFactory::setup(),
-                'expectedWorkflow' => new CompilationWorkflow([], null),
+                'expectedWorkflow' => new CompilationWorkflow(null),
             ],
             'has job, has sources, no tests' => [
                 'setup' => JobSetupInvokableFactory::setup(
                     (new JobSetup())->withSources($sources)
                 ),
-                'expectedWorkflow' => new CompilationWorkflow([], $sources[0]),
+                'expectedWorkflow' => new CompilationWorkflow($sources[0]),
             ],
             'test exists for first source' => [
                 'setup' => new InvokableCollection([
@@ -72,12 +72,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/' . $sources[0]),
                     ]),
                 ]),
-                'expectedWorkflow' => new CompilationWorkflow(
-                    [
-                        $sources[0],
-                    ],
-                    $sources[1]
-                ),
+                'expectedWorkflow' => new CompilationWorkflow($sources[1]),
             ],
             'test exists for first and second sources' => [
                 'setup' => new InvokableCollection([
@@ -89,13 +84,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/' . $sources[1]),
                     ]),
                 ]),
-                'expectedWorkflow' => new CompilationWorkflow(
-                    [
-                        $sources[0],
-                        $sources[1],
-                    ],
-                    $sources[2],
-                ),
+                'expectedWorkflow' => new CompilationWorkflow($sources[2]),
             ],
             'tests exist for all sources' => [
                 'setup' => new InvokableCollection([
@@ -108,14 +97,7 @@ class CompilationWorkflowFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/' . $sources[2]),
                     ]),
                 ]),
-                'expectedWorkflow' => new CompilationWorkflow(
-                    [
-                        $sources[0],
-                        $sources[1],
-                        $sources[2],
-                    ],
-                    null
-                ),
+                'expectedWorkflow' => new CompilationWorkflow(null),
             ],
         ];
     }

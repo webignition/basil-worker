@@ -17,9 +17,6 @@ class CompilationWorkflowFactory
 
     public function create(): CompilationWorkflow
     {
-        return new CompilationWorkflow(
-            $this->jobSourceFinder->findCompiledSources(),
-            $this->jobSourceFinder->findNextNonCompiledSource()
-        );
+        return new CompilationWorkflow($this->jobSourceFinder->findNextNonCompiledSource());
     }
 }
