@@ -10,16 +10,11 @@ use App\Repository\TestRepository;
 
 class JobStateFactory
 {
-    private CompilationWorkflowFactory $compilationWorkflowFactory;
     private ExecutionWorkflowFactory $executionWorkflowFactory;
     private TestRepository $testRepository;
 
-    public function __construct(
-        CompilationWorkflowFactory $compilationWorkflowFactory,
-        ExecutionWorkflowFactory $executionWorkflowFactory,
-        TestRepository $testRepository
-    ) {
-        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
+    public function __construct(ExecutionWorkflowFactory $executionWorkflowFactory, TestRepository $testRepository)
+    {
         $this->executionWorkflowFactory = $executionWorkflowFactory;
         $this->testRepository = $testRepository;
     }
@@ -41,11 +36,6 @@ class JobStateFactory
     private function getJobStateDeciders(): array
     {
         return [
-            JobState::STATE_EXECUTION_AWAITING => function (): bool {
-                return
-                    WorkflowInterface::STATE_COMPLETE == $this->compilationWorkflowFactory->create()->getState() &&
-                    WorkflowInterface::STATE_NOT_STARTED === $this->executionWorkflowFactory->create()->getState();
-            },
             JobState::STATE_EXECUTION_RUNNING => function (): bool {
                 return WorkflowInterface::STATE_IN_PROGRESS === $this->executionWorkflowFactory->create()->getState();
             },

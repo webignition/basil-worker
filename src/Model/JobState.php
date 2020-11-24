@@ -6,7 +6,6 @@ namespace App\Model;
 
 class JobState
 {
-    public const STATE_EXECUTION_AWAITING = 'execution-awaiting';
     public const STATE_EXECUTION_RUNNING = 'execution-running';
     public const STATE_EXECUTION_FAILED = 'execution-failed';
     public const STATE_EXECUTION_COMPLETE = 'execution-complete';

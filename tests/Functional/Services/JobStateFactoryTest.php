@@ -43,21 +43,6 @@ class JobStateFactoryTest extends AbstractBaseFunctionalTest
     public function createDataProvider(): array
     {
         return [
-            'execution-awaiting: compilation workflow complete and execution workflow not started' => [
-                'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setup(
-                        (new TestSetup())
-                            ->withSource('/app/source/Test/test1.yml'),
-                    )
-                ]),
-                'expectedState' => new JobState(JobState::STATE_EXECUTION_AWAITING),
-            ],
             'execution-running' => [
                 'setup' => new InvokableCollection([
                     JobSetupInvokableFactory::setup(
