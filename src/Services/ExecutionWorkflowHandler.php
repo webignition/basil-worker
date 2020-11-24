@@ -8,6 +8,7 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
+use App\Model\CompilationState;
 use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -18,18 +19,18 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
     private MessageBusInterface $messageBus;
     private ExecutionWorkflowFactory $executionWorkflowFactory;
     private TestRepository $testRepository;
-    private CompilationWorkflowFactory $compilationWorkflowFactory;
+    private CompilationStateFactory $compilationStateFactory;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ExecutionWorkflowFactory $executionWorkflowFactory,
         TestRepository $testRepository,
-        CompilationWorkflowFactory $compilationWorkflowFactory
+        CompilationStateFactory $compilationStateFactory
     ) {
         $this->messageBus = $messageBus;
         $this->executionWorkflowFactory = $executionWorkflowFactory;
         $this->testRepository = $testRepository;
-        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
+        $this->compilationStateFactory = $compilationStateFactory;
     }
 
     public static function getSubscribedEvents()
@@ -55,7 +56,8 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
 
     public function dispatchNextExecuteTestMessage(): void
     {
-        if (WorkflowInterface::STATE_COMPLETE !== $this->compilationWorkflowFactory->create()->getState()) {
+        $compilationState = $this->compilationStateFactory->create();
+        if (!in_array((string) $compilationState, [CompilationState::STATE_FAILED, CompilationState::STATE_COMPLETE])) {
             return;
         }
 
