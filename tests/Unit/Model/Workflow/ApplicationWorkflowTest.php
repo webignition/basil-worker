@@ -33,7 +33,7 @@ class ApplicationWorkflowTest extends TestCase
             ],
             'job state: compilation-awaiting' => [
                 'workflow' => new ApplicationWorkflow(
-                    new JobState(JobState::STATE_COMPILATION_AWAITING),
+                    new JobState(JobState::STATE_UNKNOWN),
                     false,
                     new CompilationState(CompilationState::STATE_AWAITING)
                 ),
