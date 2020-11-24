@@ -18,18 +18,18 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
     private MessageBusInterface $messageBus;
     private ExecutionWorkflowFactory $executionWorkflowFactory;
     private TestRepository $testRepository;
-    private CompilationWorkflowFactory $compilationWorkflowFactory;
+    private CompilationStateFactory $compilationStateFactory;
 
     public function __construct(
         MessageBusInterface $messageBus,
         ExecutionWorkflowFactory $executionWorkflowFactory,
         TestRepository $testRepository,
-        CompilationWorkflowFactory $compilationWorkflowFactory
+        CompilationStateFactory $compilationStateFactory
     ) {
         $this->messageBus = $messageBus;
         $this->executionWorkflowFactory = $executionWorkflowFactory;
         $this->testRepository = $testRepository;
-        $this->compilationWorkflowFactory = $compilationWorkflowFactory;
+        $this->compilationStateFactory = $compilationStateFactory;
     }
 
     public static function getSubscribedEvents()
@@ -55,7 +55,8 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
 
     public function dispatchNextExecuteTestMessage(): void
     {
-        if (WorkflowInterface::STATE_COMPLETE !== $this->compilationWorkflowFactory->create()->getState()) {
+        $compilationState = $this->compilationStateFactory->create();
+        if (false === $compilationState->isFinished()) {
             return;
         }
 
