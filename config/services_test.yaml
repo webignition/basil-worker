@@ -98,6 +98,9 @@ services:
     App\Services\CompilationStateFactory:
         public: true
 
+    App\Services\ExecutionStateFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 

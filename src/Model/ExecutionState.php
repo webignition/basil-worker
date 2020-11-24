@@ -8,11 +8,8 @@ class ExecutionState
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_RUNNING = 'running';
-    public const STATE_FAILED = 'failed';
     public const STATE_COMPLETE = 'complete';
     public const STATE_CANCELLED = 'cancelled';
-    public const STATE_UNKNOWN = 'unknown';
-
     /**
      * @var ExecutionState::STATE_*
      */
