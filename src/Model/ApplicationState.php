@@ -7,7 +7,9 @@ namespace App\Model;
 class ApplicationState
 {
     public const STATE_AWAITING = 'awaiting';
-    public const STATE_RUNNING = 'running';
+    public const STATE_COMPILING = 'compiling';
+    public const STATE_EXECUTING = 'executing';
+    public const STATE_COMPLETING_CALLBACKS = 'completing-callbacks';
     public const STATE_COMPLETE = 'complete';
 
     private const FINISHED_STATES = [
