@@ -8,7 +8,7 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\Workflow\WorkflowInterface;
+use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -16,20 +16,20 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class ExecutionWorkflowHandler implements EventSubscriberInterface
 {
     private MessageBusInterface $messageBus;
-    private ExecutionWorkflowFactory $executionWorkflowFactory;
     private TestRepository $testRepository;
     private CompilationStateFactory $compilationStateFactory;
+    private ExecutionStateFactory $executionStateFactory;
 
     public function __construct(
         MessageBusInterface $messageBus,
-        ExecutionWorkflowFactory $executionWorkflowFactory,
         TestRepository $testRepository,
-        CompilationStateFactory $compilationStateFactory
+        CompilationStateFactory $compilationStateFactory,
+        ExecutionStateFactory $executionStateFactory
     ) {
         $this->messageBus = $messageBus;
-        $this->executionWorkflowFactory = $executionWorkflowFactory;
         $this->testRepository = $testRepository;
         $this->compilationStateFactory = $compilationStateFactory;
+        $this->executionStateFactory = $executionStateFactory;
     }
 
     public static function getSubscribedEvents()
@@ -60,15 +60,8 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
             return;
         }
 
-        $isReadyToExecute = in_array(
-            $this->executionWorkflowFactory->create()->getState(),
-            [
-                WorkflowInterface::STATE_NOT_STARTED,
-                WorkflowInterface::STATE_IN_PROGRESS,
-            ]
-        );
-
-        if (false === $isReadyToExecute) {
+        $executionState = $this->executionStateFactory->create();
+        if (!in_array((string) $executionState, [ExecutionState::STATE_AWAITING, ExecutionState::STATE_RUNNING])) {
             return;
         }
 
