@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-class ApplicationStateFactory
+class ApplicationState
 {
     public const STATE_AWAITING_JOB = 'awaiting-job';
     public const STATE_AWAITING_SOURCES = 'awaiting-sources';
@@ -31,7 +31,7 @@ class ApplicationStateFactory
     }
 
     /**
-     * @param ApplicationStateFactory::STATE_* ...$states
+     * @param ApplicationState::STATE_* ...$states
      *
      * @return bool
      */

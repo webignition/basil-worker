@@ -9,7 +9,7 @@ use App\Entity\Job;
 use App\Entity\Test;
 use App\Model\CompilationState;
 use App\Model\ExecutionState;
-use App\Services\ApplicationStateFactory;
+use App\Services\ApplicationState;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\JobConfiguration;
@@ -41,7 +41,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     protected EntityRefresher $entityRefresher;
     protected HttpLogReader $httpLogReader;
     protected InvokableHandler $invokableHandler;
-    protected ApplicationStateFactory $applicationStateFactory;
+    protected ApplicationState $applicationState;
 
     protected function setUp(): void
     {
@@ -155,7 +155,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $intervalInMicroseconds = 100000;
 
         while (
-            false === $this->applicationStateFactory->is(ApplicationStateFactory::STATE_COMPLETE) &&
+            false === $this->applicationState->is(ApplicationState::STATE_COMPLETE) &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);

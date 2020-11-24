@@ -89,7 +89,7 @@ services:
     App\Services\CallbackStateFactory:
         public: true
 
-    App\Services\ApplicationStateFactory:
+    App\Services\ApplicationState:
         public: true
 
     App\Tests\Services\SourcesAddedEventSubscriber:
