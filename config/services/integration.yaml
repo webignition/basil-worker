@@ -12,6 +12,9 @@ services:
     App\Services\ApplicationWorkflowFactory:
         public: true
 
+    App\Services\ApplicationStateFactory:
+        public: true
+
     App\Tests\Services\EntityRefresher:
         public: true
 
