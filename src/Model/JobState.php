@@ -21,13 +21,6 @@ class JobState
         self::STATE_EXECUTION_RUNNING,
     ];
 
-    private const FINISHED_STATES = [
-        self::STATE_COMPILATION_FAILED,
-        self::STATE_EXECUTION_FAILED,
-        self::STATE_EXECUTION_COMPLETE,
-        self::STATE_EXECUTION_CANCELLED,
-    ];
-
     /**
      * @var JobState::STATE_*
      */
@@ -44,11 +37,6 @@ class JobState
     public function isRunning(): bool
     {
         return in_array($this->state, self::RUNNING_STATES);
-    }
-
-    public function isFinished(): bool
-    {
-        return in_array($this->state, self::FINISHED_STATES);
     }
 
     public function __toString(): string

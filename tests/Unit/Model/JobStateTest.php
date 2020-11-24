@@ -56,52 +56,6 @@ class JobStateTest extends TestCase
     }
 
     /**
-     * @dataProvider isFinishedDataProvider
-     */
-    public function testIsFinished(JobState $jobState, bool $expectedIsFinished)
-    {
-        self::assertSame($expectedIsFinished, $jobState->isFinished());
-    }
-
-    public function isFinishedDataProvider(): array
-    {
-        return [
-            JobState::STATE_COMPILATION_AWAITING => [
-                'jobState' => new JobState(JobState::STATE_COMPILATION_AWAITING),
-                'expectedIsFinished' => false,
-            ],
-            JobState::STATE_COMPILATION_RUNNING => [
-                'jobState' => new JobState(JobState::STATE_COMPILATION_RUNNING),
-                'expectedIsFinished' => false,
-            ],
-            JobState::STATE_COMPILATION_FAILED => [
-                'jobState' => new JobState(JobState::STATE_COMPILATION_FAILED),
-                'expectedIsFinished' => true,
-            ],
-            JobState::STATE_EXECUTION_AWAITING => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_AWAITING),
-                'expectedIsFinished' => false,
-            ],
-            JobState::STATE_EXECUTION_RUNNING => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_RUNNING),
-                'expectedIsFinished' => false,
-            ],
-            JobState::STATE_EXECUTION_FAILED => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_FAILED),
-                'expectedIsFinished' => true,
-            ],
-            JobState::STATE_EXECUTION_COMPLETE => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_COMPLETE),
-                'expectedIsFinished' => true,
-            ],
-            JobState::STATE_EXECUTION_CANCELLED => [
-                'jobState' => new JobState(JobState::STATE_EXECUTION_CANCELLED),
-                'expectedIsFinished' => true,
-            ],
-        ];
-    }
-
-    /**
      * @dataProvider toStringDataProvider
      */
     public function testToString(JobState $jobState, string $expectedString)
