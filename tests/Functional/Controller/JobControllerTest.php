@@ -91,7 +91,8 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
                         'sources' => [],
-                        'state' => 'compilation-awaiting',
+                        'compilation_state' => 'awaiting',
+                        'execution_state' => 'awaiting',
                         'tests' => [],
                     ]
                 ),
@@ -116,12 +117,13 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                             'Test/test3.yml',
                         ],
-                        'state' => 'compilation-running',
+                        'compilation_state' => 'running',
+                        'execution_state' => 'awaiting',
                         'tests' => [],
                     ]
                 ),
             ],
-            'new job, has sources, has tests' => [
+            'new job, has sources, has tests, compilation not complete' => [
                 'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
                     $job = $jobStore->create('label content', 'http://example.com/callback');
 
@@ -155,7 +157,8 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                             'Test/test3.yml',
                         ],
-                        'state' => 'compilation-running',
+                        'compilation_state' => 'running',
+                        'execution_state' => 'awaiting',
                         'tests' => [
                             [
                                 'configuration' => [
