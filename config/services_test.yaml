@@ -101,6 +101,9 @@ services:
     App\Services\CallbackStateFactory:
         public: true
 
+    App\Services\ApplicationStateFactory:
+        public: true
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
