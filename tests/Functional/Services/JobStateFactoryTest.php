@@ -43,22 +43,6 @@ class JobStateFactoryTest extends AbstractBaseFunctionalTest
     public function createDataProvider(): array
     {
         return [
-            'execution-complete' => [
-                'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
-                        (new TestSetup())
-                            ->withSource('/app/source/Test/test1.yml')
-                            ->withState(Test::STATE_COMPLETE),
-                    ])
-                ]),
-                'expectedState' => new JobState(JobState::STATE_EXECUTION_COMPLETE),
-            ],
             'execution-cancelled: test.state == failed > 0' => [
                 'setup' => new InvokableCollection([
                     JobSetupInvokableFactory::setup(

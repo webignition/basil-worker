@@ -5,17 +5,14 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Model\JobState;
-use App\Model\Workflow\WorkflowInterface;
 use App\Repository\TestRepository;
 
 class JobStateFactory
 {
-    private ExecutionWorkflowFactory $executionWorkflowFactory;
     private TestRepository $testRepository;
 
-    public function __construct(ExecutionWorkflowFactory $executionWorkflowFactory, TestRepository $testRepository)
+    public function __construct(TestRepository $testRepository)
     {
-        $this->executionWorkflowFactory = $executionWorkflowFactory;
         $this->testRepository = $testRepository;
     }
 
@@ -36,12 +33,6 @@ class JobStateFactory
     private function getJobStateDeciders(): array
     {
         return [
-            JobState::STATE_EXECUTION_COMPLETE => function (): bool {
-                return
-                    WorkflowInterface::STATE_COMPLETE === $this->executionWorkflowFactory->create()->getState() &&
-                    0 === $this->testRepository->getFailedCount() &&
-                    0 === $this->testRepository->getCancelledCount();
-            },
             JobState::STATE_EXECUTION_CANCELLED => function (): bool {
                 return
                     0 !== $this->testRepository->getFailedCount() ||

@@ -8,7 +8,7 @@ use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
 use App\Entity\Test;
 use App\Model\CompilationState;
-use App\Model\JobState;
+use App\Model\ExecutionState;
 use App\Model\Workflow\WorkflowInterface;
 use App\Services\ApplicationWorkflowFactory;
 use App\Services\JobStore;
@@ -19,7 +19,7 @@ use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\InvokableFactory\CompilationStateGetterFactory;
-use App\Tests\Services\InvokableFactory\JobStateGetterFactory;
+use App\Tests\Services\InvokableFactory\ExecutionStateGetterFactory;
 use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
@@ -61,13 +61,15 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     /**
      * @param JobConfiguration $jobConfiguration
      * @param string[] $expectedSourcePaths
-     * @param JobState::STATE_* $expectedJobEndState
+     * @param CompilationState::STATE_* $expectedCompilationEndState
+     * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
     protected function doCreateJobAddSourcesTest(
         JobConfiguration $jobConfiguration,
         array $expectedSourcePaths,
-        string $expectedJobEndState,
+        string $expectedCompilationEndState,
+        string $expectedExecutionEndState,
         InvokableInterface $postAssertions
     ): void {
         $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
@@ -90,8 +92,13 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $duration = $timer->stop();
 
         self::assertSame(
-            $expectedJobEndState,
-            (string) $this->invokableHandler->invoke(JobStateGetterFactory::get())
+            $expectedCompilationEndState,
+            (string) $this->invokableHandler->invoke(CompilationStateGetterFactory::get())
+        );
+
+        self::assertSame(
+            $expectedExecutionEndState,
+            (string) $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
         );
 
         foreach ($postAssertions->getServiceReferences() as $serviceReference) {
