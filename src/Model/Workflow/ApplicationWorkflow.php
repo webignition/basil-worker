@@ -27,7 +27,9 @@ class ApplicationWorkflow implements WorkflowInterface
             return WorkflowInterface::STATE_NOT_STARTED;
         }
 
-        if ($this->jobState->isRunning()) {
+        if (
+            in_array((string) $this->jobState, [JobState::STATE_COMPILATION_RUNNING, JobState::STATE_EXECUTION_RUNNING])
+        ) {
             return WorkflowInterface::STATE_IN_PROGRESS;
         }
 
