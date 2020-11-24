@@ -35,28 +35,48 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider isDataProvider
      *
      * @param InvokableInterface $setup
-     * @param ApplicationState $expectedState
+     * @param array<ApplicationState::STATE_*> $expectedIsStates
+     * @param array<ApplicationState::STATE_*> $expectedIsNotStates
      */
-    public function testCreate(InvokableInterface $setup, ApplicationState $expectedState)
+    public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertEquals($expectedState, $this->applicationStateFactory->create());
+        self::assertTrue($this->applicationStateFactory->is(...$expectedIsStates));
+        self::assertFalse($this->applicationStateFactory->is(...$expectedIsNotStates));
     }
 
-    public function createDataProvider(): array
+    public function isDataProvider(): array
     {
         return [
-            'no job' => [
+            'no job, is awaiting' => [
                 'setup' => Invokable::createEmpty(),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_AWAITING_JOB),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'has job, no sources' => [
                 'setup' => JobSetupInvokableFactory::setup(),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_AWAITING_SOURCES),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'no sources compiled' => [
                 'setup' => JobSetupInvokableFactory::setup(
@@ -66,7 +86,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                             'Test/test2.yml',
                         ])
                 ),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_COMPILING),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_COMPILING,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'first source compiled' => [
                 'setup' => new InvokableCollection([
@@ -81,7 +110,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/Test/test1.yml'),
                     ])
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_COMPILING),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_COMPILING,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'all sources compiled, no tests running' => [
                 'setup' => new InvokableCollection([
@@ -97,7 +135,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/Test/test2.yml'),
                     ])
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_EXECUTING),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_EXECUTING,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'first test complete, no callbacks' => [
                 'setup' => new InvokableCollection([
@@ -115,7 +162,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new TestSetup())->withSource('/app/source/Test/test2.yml'),
                     ])
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_EXECUTING),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_EXECUTING,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'first test complete, callback for first test complete' => [
                 'setup' => new InvokableCollection([
@@ -136,7 +192,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_EXECUTING),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_EXECUTING,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'all tests complete, first callback complete, second callback running' => [
                 'setup' => new InvokableCollection([
@@ -162,7 +227,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new CallbackSetup())->withState(CallbackInterface::STATE_SENDING)
                     ),
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_COMPLETING_CALLBACKS),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETE,
+                ],
             ],
             'all tests complete, all callbacks complete' => [
                 'setup' => new InvokableCollection([
@@ -188,7 +262,16 @@ class ApplicationStateFactoryTest extends AbstractBaseFunctionalTest
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
                 ]),
-                'expectedState' => new ApplicationState(ApplicationState::STATE_COMPLETE),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_COMPLETE,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                ],
             ],
         ];
     }

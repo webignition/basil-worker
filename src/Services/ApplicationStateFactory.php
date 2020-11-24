@@ -25,32 +25,46 @@ class ApplicationStateFactory
         $this->callbackStateFactory = $callbackStateFactory;
     }
 
-    public function create(): ApplicationState
+    /**
+     * @param ApplicationState::STATE_* ...$states
+     *
+     * @return bool
+     */
+    public function is(...$states): bool
+    {
+        $states = array_filter($states, function ($item) {
+            return is_string($item);
+        });
+
+        return in_array($this->getCurrentState(), $states);
+    }
+
+    private function getCurrentState(): string
     {
         if (false === $this->jobStore->hasJob()) {
-            return new ApplicationState(ApplicationState::STATE_AWAITING_JOB);
+            return ApplicationState::STATE_AWAITING_JOB;
         }
 
         $job = $this->jobStore->getJob();
         if ([] === $job->getSources()) {
-            return new ApplicationState(ApplicationState::STATE_AWAITING_SOURCES);
+            return ApplicationState::STATE_AWAITING_SOURCES;
         }
 
         $compilationState = $this->compilationStateFactory->create();
         if (false === $compilationState->isFinished()) {
-            return new ApplicationState(ApplicationState::STATE_COMPILING);
+            return ApplicationState::STATE_COMPILING;
         }
 
         $executionState = $this->executionStateFactory->create();
         if (false === $executionState->isFinished()) {
-            return new ApplicationState(ApplicationState::STATE_EXECUTING);
+            return ApplicationState::STATE_EXECUTING;
         }
 
         $callbackState = $this->callbackStateFactory->create();
         if (false === $callbackState->isFinished()) {
-            return new ApplicationState(ApplicationState::STATE_COMPLETING_CALLBACKS);
+            return ApplicationState::STATE_COMPLETING_CALLBACKS;
         }
 
-        return new ApplicationState(ApplicationState::STATE_COMPLETE);
+        return ApplicationState::STATE_COMPLETE;
     }
 }

@@ -156,7 +156,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $intervalInMicroseconds = 100000;
 
         while (
-            ApplicationState::STATE_COMPLETE !== (string) $this->applicationStateFactory->create() &&
+            false === $this->applicationStateFactory->is(ApplicationState::STATE_COMPLETE) &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);
