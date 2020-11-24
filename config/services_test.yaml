@@ -86,7 +86,7 @@ services:
     App\Services\ExecutionStateFactory:
         public: true
 
-    App\Services\CallbackStateFactory:
+    App\Services\CallbackState:
         public: true
 
     App\Services\ApplicationState:

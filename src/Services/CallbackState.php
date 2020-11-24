@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Repository\CallbackRepository;
 
-class CallbackStateFactory
+class CallbackState
 {
     public const STATE_AWAITING = 'awaiting';
     public const STATE_RUNNING = 'running';
@@ -20,7 +20,7 @@ class CallbackStateFactory
     }
 
     /**
-     * @param CallbackStateFactory::STATE_* ...$states
+     * @param CallbackState::STATE_* ...$states
      *
      * @return bool
      */

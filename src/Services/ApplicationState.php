@@ -16,18 +16,18 @@ class ApplicationState
     private JobStore $jobStore;
     private CompilationStateFactory $compilationStateFactory;
     private ExecutionStateFactory $executionStateFactory;
-    private CallbackStateFactory $callbackStateFactory;
+    private CallbackState $callbackState;
 
     public function __construct(
         JobStore $jobStore,
         CompilationStateFactory $compilationStateFactory,
         ExecutionStateFactory $executionStateFactory,
-        CallbackStateFactory $callbackStateFactory
+        CallbackState $callbackState
     ) {
         $this->jobStore = $jobStore;
         $this->compilationStateFactory = $compilationStateFactory;
         $this->executionStateFactory = $executionStateFactory;
-        $this->callbackStateFactory = $callbackStateFactory;
+        $this->callbackState = $callbackState;
     }
 
     /**
@@ -66,7 +66,7 @@ class ApplicationState
         }
 
         if (
-            $this->callbackStateFactory->is(CallbackStateFactory::STATE_AWAITING, CallbackStateFactory::STATE_RUNNING)
+            $this->callbackState->is(CallbackState::STATE_AWAITING, CallbackState::STATE_RUNNING)
         ) {
             return self::STATE_COMPLETING_CALLBACKS;
         }
