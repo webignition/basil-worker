@@ -6,7 +6,6 @@ namespace App\Model;
 
 class JobState
 {
-    public const STATE_COMPILATION_AWAITING = 'compilation-awaiting';
     public const STATE_COMPILATION_RUNNING = 'compilation-running';
     public const STATE_COMPILATION_FAILED = 'compilation-failed';
     public const STATE_EXECUTION_AWAITING = 'execution-awaiting';
