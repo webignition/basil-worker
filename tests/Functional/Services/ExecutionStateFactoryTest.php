@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Test;
-use App\Model\ExecutionState;
 use App\Services\ExecutionStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -32,8 +31,8 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
      * @dataProvider isDataProvider
      *
      * @param InvokableInterface $setup
-     * @param array<ExecutionState::STATE_*> $expectedIsStates
-     * @param array<ExecutionState::STATE_*> $expectedIsNotStates
+     * @param array<ExecutionStateFactory::STATE_*> $expectedIsStates
+     * @param array<ExecutionStateFactory::STATE_*> $expectedIsNotStates
      */
     public function testIs(InvokableInterface $setup, array $expectedIsStates, array $expectedIsNotStates)
     {
@@ -49,12 +48,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
             'awaiting: not has finished tests and not has running tests and not has awaiting tests' => [
                 'setup' => Invokable::createEmpty(),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_AWAITING,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_RUNNING,
-                    ExecutionState::STATE_COMPLETE,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'running: not has finished tests and has running tests and not has awaiting tests' => [
@@ -62,12 +61,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_RUNNING),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_RUNNING,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_COMPLETE,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'awaiting: not has finished tests and not has running tests and has awaiting tests' => [
@@ -75,12 +74,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_AWAITING),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_AWAITING,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_RUNNING,
-                    ExecutionState::STATE_COMPLETE,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'running: has complete tests and has running tests and not has awaiting tests' => [
@@ -89,12 +88,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_RUNNING),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_RUNNING,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_COMPLETE,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'running: has complete tests and not has running tests and has awaiting tests' => [
@@ -103,12 +102,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_AWAITING),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_RUNNING,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_COMPLETE,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'complete: has finished tests and not has running tests and not has awaiting tests' => [
@@ -116,12 +115,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_COMPLETE),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_COMPLETE,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_RUNNING,
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
             ],
             'cancelled: has failed tests' => [
@@ -129,12 +128,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_FAILED),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_RUNNING,
-                    ExecutionState::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_COMPLETE,
                 ],
             ],
             'cancelled: has cancelled tests' => [
@@ -142,12 +141,12 @@ class ExecutionStateFactoryTest extends AbstractBaseFunctionalTest
                     (new TestSetup())->withState(Test::STATE_CANCELLED),
                 ]),
                 'expectedIsStates' => [
-                    ExecutionState::STATE_CANCELLED,
+                    ExecutionStateFactory::STATE_CANCELLED,
                 ],
                 'expectedIsNotStates' => [
-                    ExecutionState::STATE_AWAITING,
-                    ExecutionState::STATE_RUNNING,
-                    ExecutionState::STATE_COMPLETE,
+                    ExecutionStateFactory::STATE_AWAITING,
+                    ExecutionStateFactory::STATE_RUNNING,
+                    ExecutionStateFactory::STATE_COMPLETE,
                 ],
             ],
         ];

@@ -5,11 +5,20 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
-use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 
 class ExecutionStateFactory
 {
+    public const STATE_AWAITING = 'awaiting';
+    public const STATE_RUNNING = 'running';
+    public const STATE_COMPLETE = 'complete';
+    public const STATE_CANCELLED = 'cancelled';
+
+    public const FINISHED_STATES = [
+        self::STATE_COMPLETE,
+        self::STATE_CANCELLED,
+    ];
+
     private TestRepository $testRepository;
 
     public function __construct(TestRepository $testRepository)
@@ -18,7 +27,7 @@ class ExecutionStateFactory
     }
 
     /**
-     * @param ExecutionState::STATE_* ...$states
+     * @param ExecutionStateFactory::STATE_* ...$states
      *
      * @return bool
      */
@@ -32,7 +41,7 @@ class ExecutionStateFactory
     }
 
     /**
-     * @return ExecutionState::STATE_*
+     * @return ExecutionStateFactory::STATE_*
      */
     public function getCurrentState(): string
     {
@@ -40,7 +49,7 @@ class ExecutionStateFactory
         $hasCancelledTests = 0 !== $this->testRepository->count(['state' => Test::STATE_CANCELLED]);
 
         if ($hasFailedTests || $hasCancelledTests) {
-            return ExecutionState::STATE_CANCELLED;
+            return self::STATE_CANCELLED;
         }
 
         $hasFinishedTests = 0 !== $this->testRepository->count(['state' => Test::FINISHED_STATES]);
@@ -49,10 +58,10 @@ class ExecutionStateFactory
 
         if ($hasFinishedTests) {
             return $hasAwaitingTests || $hasRunningTests
-                ? ExecutionState::STATE_RUNNING
-                : ExecutionState::STATE_COMPLETE;
+                ? self::STATE_RUNNING
+                : self::STATE_COMPLETE;
         }
 
-        return $hasRunningTests ? ExecutionState::STATE_RUNNING : ExecutionState::STATE_AWAITING;
+        return $hasRunningTests ? self::STATE_RUNNING : self::STATE_AWAITING;
     }
 }

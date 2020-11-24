@@ -24,6 +24,12 @@ class MockExecutionStateFactory
         return $this->executionStateFactory;
     }
 
+    /**
+     * @param array<ExecutionStateFactory::STATE_*> $states
+     * @param bool $is
+     *
+     * @return $this
+     */
     public function withIsCall(array $states, bool $is): self
     {
         $this->executionStateFactory

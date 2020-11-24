@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\ExecutionState;
-
 class ApplicationState
 {
     public const STATE_AWAITING_JOB = 'awaiting-job';
@@ -61,7 +59,7 @@ class ApplicationState
             return self::STATE_COMPILING;
         }
 
-        if (false === $this->executionStateFactory->is(...ExecutionState::FINISHED_STATES)) {
+        if (false === $this->executionStateFactory->is(...ExecutionStateFactory::FINISHED_STATES)) {
             return self::STATE_EXECUTING;
         }
 

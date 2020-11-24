@@ -7,7 +7,6 @@ namespace App\MessageHandler;
 use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 use App\Services\ExecutionStateFactory;
 use App\Services\JobStore;
@@ -47,7 +46,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        if ($this->executionStateFactory->is(...ExecutionState::FINISHED_STATES)) {
+        if ($this->executionStateFactory->is(...ExecutionStateFactory::FINISHED_STATES)) {
             return;
         }
 

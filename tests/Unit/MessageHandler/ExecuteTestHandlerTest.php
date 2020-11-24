@@ -7,7 +7,6 @@ namespace App\Tests\Unit\MessageHandler;
 use App\Entity\Test;
 use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
-use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 use App\Services\ExecutionStateFactory;
 use App\Services\JobStore;
@@ -75,7 +74,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withIsCall(ExecutionState::FINISHED_STATES, true)
+                    ->withIsCall(ExecutionStateFactory::FINISHED_STATES, true)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())
@@ -88,7 +87,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withIsCall(ExecutionState::FINISHED_STATES, false)
+                    ->withIsCall(ExecutionStateFactory::FINISHED_STATES, false)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())
@@ -101,7 +100,7 @@ class ExecuteTestHandlerTest extends TestCase
                     ->withGetJobCall((new MockJob())->getMock())
                     ->getMock(),
                 'executionStateFactory' => (new MockExecutionStateFactory())
-                    ->withIsCall(ExecutionState::FINISHED_STATES, false)
+                    ->withIsCall(ExecutionStateFactory::FINISHED_STATES, false)
                     ->getMock(),
                 'message' => new ExecuteTest(1),
                 'testRepository' => (new MockTestRepository())

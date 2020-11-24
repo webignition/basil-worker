@@ -8,7 +8,6 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Model\ExecutionState;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -59,7 +58,7 @@ class ExecutionWorkflowHandler implements EventSubscriberInterface
             return;
         }
 
-        if ($this->executionStateFactory->is(...ExecutionState::FINISHED_STATES)) {
+        if ($this->executionStateFactory->is(...ExecutionStateFactory::FINISHED_STATES)) {
             return;
         }
 
