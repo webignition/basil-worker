@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\CallbackState;
 use App\Repository\CallbackRepository;
 
 class CallbackStateFactory
 {
+    public const STATE_AWAITING = 'awaiting';
+    public const STATE_RUNNING = 'running';
+    public const STATE_COMPLETE = 'complete';
+
     private CallbackRepository $callbackRepository;
 
     public function __construct(CallbackRepository $callbackRepository)
@@ -16,19 +19,31 @@ class CallbackStateFactory
         $this->callbackRepository = $callbackRepository;
     }
 
-    public function create(): CallbackState
+    /**
+     * @param CallbackStateFactory::STATE_* ...$states
+     *
+     * @return bool
+     */
+    public function is(...$states): bool
+    {
+        $states = array_filter($states, function ($item) {
+            return is_string($item);
+        });
+
+        return in_array($this->getCurrentState(), $states);
+    }
+
+    private function getCurrentState(): string
     {
         $callbackCount = $this->callbackRepository->count([]);
         $finishedCallbackCount = $this->callbackRepository->getFinishedCount();
 
         if (0 === $callbackCount) {
-            return new CallbackState(CallbackState::STATE_AWAITING);
+            return self::STATE_AWAITING;
         }
 
-        $state = $finishedCallbackCount === $callbackCount
-            ? CallbackState::STATE_COMPLETE
-            : CallbackState::STATE_RUNNING;
-
-        return new CallbackState($state);
+        return $finishedCallbackCount === $callbackCount
+            ? self::STATE_COMPLETE
+            : self::STATE_RUNNING;
     }
 }

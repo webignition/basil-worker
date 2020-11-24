@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Entity\Callback\CallbackInterface;
-use App\Model\CallbackState;
 use App\Services\CallbackStateFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -28,12 +27,13 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider createDataProvider
+     * @dataProvider isDataProvider
      *
      * @param array<CallbackInterface::STATE_*> $callbackStates
-     * @param CallbackState $expectedState
+     * @param array<CallbackStateFactory::STATE_*> $expectedIsStates
+     * @param array<CallbackStateFactory::STATE_*> $expectedIsNotStates
      */
-    public function testCreate(array $callbackStates, CallbackState $expectedState)
+    public function testIs(array $callbackStates, array $expectedIsStates, array $expectedIsNotStates)
     {
         $callbackCreationInvocations = [];
         foreach ($callbackStates as $callbackState) {
@@ -44,15 +44,22 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
 
         $this->invokableHandler->invoke(new InvokableCollection($callbackCreationInvocations));
 
-        self::assertEquals($expectedState, $this->callbackStateFactory->create());
+        self::assertTrue($this->callbackStateFactory->is(...$expectedIsStates));
+        self::assertFalse($this->callbackStateFactory->is(...$expectedIsNotStates));
     }
 
-    public function createDataProvider(): array
+    public function isDataProvider(): array
     {
         return [
             'no callbacks' => [
                 'callbackStates' => [],
-                'expectedState' => new CallbackState(CallbackState::STATE_AWAITING),
+                'expectedIsStates' => [
+                    CallbackStateFactory::STATE_AWAITING,
+                ],
+                'expectedIsNotStates' => [
+                    CallbackStateFactory::STATE_RUNNING,
+                    CallbackStateFactory::STATE_COMPLETE,
+                ],
             ],
             'awaiting, sending, queued' => [
                 'callbackStates' => [
@@ -60,7 +67,13 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
                     CallbackInterface::STATE_QUEUED,
                     CallbackInterface::STATE_SENDING,
                 ],
-                'expectedState' => new CallbackState(CallbackState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    CallbackStateFactory::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    CallbackStateFactory::STATE_AWAITING,
+                    CallbackStateFactory::STATE_COMPLETE,
+                ],
             ],
             'awaiting, sending, queued, complete' => [
                 'callbackStates' => [
@@ -69,7 +82,13 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
                     CallbackInterface::STATE_SENDING,
                     CallbackInterface::STATE_COMPLETE,
                 ],
-                'expectedState' => new CallbackState(CallbackState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    CallbackStateFactory::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    CallbackStateFactory::STATE_AWAITING,
+                    CallbackStateFactory::STATE_COMPLETE,
+                ],
             ],
             'awaiting, sending, queued, failed' => [
                 'callbackStates' => [
@@ -78,7 +97,13 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
                     CallbackInterface::STATE_SENDING,
                     CallbackInterface::STATE_FAILED,
                 ],
-                'expectedState' => new CallbackState(CallbackState::STATE_RUNNING),
+                'expectedIsStates' => [
+                    CallbackStateFactory::STATE_RUNNING,
+                ],
+                'expectedIsNotStates' => [
+                    CallbackStateFactory::STATE_AWAITING,
+                    CallbackStateFactory::STATE_COMPLETE,
+                ],
             ],
             'two complete, three failed' => [
                 'callbackStates' => [
@@ -88,7 +113,13 @@ class CallbackStateFactoryTest extends AbstractBaseFunctionalTest
                     CallbackInterface::STATE_FAILED,
                     CallbackInterface::STATE_FAILED,
                 ],
-                'expectedState' => new CallbackState(CallbackState::STATE_COMPLETE),
+                'expectedIsStates' => [
+                    CallbackStateFactory::STATE_COMPLETE,
+                ],
+                'expectedIsNotStates' => [
+                    CallbackStateFactory::STATE_AWAITING,
+                    CallbackStateFactory::STATE_RUNNING,
+                ],
             ],
         ];
     }

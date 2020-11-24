@@ -65,8 +65,9 @@ class ApplicationState
             return self::STATE_EXECUTING;
         }
 
-        $callbackState = $this->callbackStateFactory->create();
-        if (false === $callbackState->isFinished()) {
+        if (
+            $this->callbackStateFactory->is(CallbackStateFactory::STATE_AWAITING, CallbackStateFactory::STATE_RUNNING)
+        ) {
             return self::STATE_COMPLETING_CALLBACKS;
         }
 
