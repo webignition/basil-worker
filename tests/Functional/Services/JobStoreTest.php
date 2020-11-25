@@ -28,7 +28,7 @@ class JobStoreTest extends AbstractBaseFunctionalTest
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
 
-        $job = $this->store->create($label, $callbackUrl);
+        $job = $this->store->create($label, $callbackUrl, 10);
 
         self::assertTrue($this->store->hasJob());
         self::assertSame($job, $this->store->getJob());
@@ -39,7 +39,7 @@ class JobStoreTest extends AbstractBaseFunctionalTest
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
 
-        $job = $this->store->create($label, $callbackUrl);
+        $job = $this->store->create($label, $callbackUrl, 11);
         $this->store->store($job);
 
         $entityManager = self::$container->get(EntityManagerInterface::class);

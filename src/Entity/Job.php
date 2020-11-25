@@ -36,12 +36,18 @@ class Job implements \JsonSerializable
      */
     private array $sources = [];
 
-    public static function create(string $label, string $callbackUrl): self
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private int $maximumDuration;
+
+    public static function create(string $label, string $callbackUrl, int $maximumDuration): self
     {
         $job = new Job();
 
         $job->label = $label;
         $job->callbackUrl = $callbackUrl;
+        $job->maximumDuration = $maximumDuration;
 
         return $job;
     }
@@ -59,6 +65,11 @@ class Job implements \JsonSerializable
     public function getCallbackUrl(): ?string
     {
         return $this->callbackUrl;
+    }
+
+    public function getMaximumDuration(): int
+    {
+        return $this->maximumDuration;
     }
 
     /**
@@ -85,6 +96,7 @@ class Job implements \JsonSerializable
         return [
             'label' => $this->label,
             'callback_url' => $this->callbackUrl,
+            'maximum_duration' => $this->maximumDuration,
             'sources' => $this->sources,
         ];
     }

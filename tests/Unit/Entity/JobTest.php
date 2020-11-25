@@ -13,8 +13,9 @@ class JobTest extends TestCase
     {
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
+        $maximumDuration = 10;
 
-        $job = Job::create($label, $callbackUrl);
+        $job = Job::create($label, $callbackUrl, $maximumDuration);
 
         self::assertSame(1, $job->getId());
         self::assertSame($label, $job->getLabel());
@@ -37,16 +38,17 @@ class JobTest extends TestCase
     {
         return [
             'state compilation-awaiting, no sources' => [
-                'job' => Job::create('label content', 'http://example.com/callback'),
+                'job' => Job::create('label content', 'http://example.com/callback', 1),
                 'expectedSerializedJob' => [
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
+                    'maximum_duration' => 1,
                     'sources' => [],
                 ],
             ],
             'state compilation-awaiting, has sources' => [
                 'job' => $this->createJobWithSources(
-                    Job::create('label content', 'http://example.com/callback'),
+                    Job::create('label content', 'http://example.com/callback', 2),
                     [
                         'Test/test1.yml',
                         'Test/test2.yml',
@@ -56,6 +58,7 @@ class JobTest extends TestCase
                 'expectedSerializedJob' => [
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
+                    'maximum_duration' => 2,
                     'sources' => [
                         'Test/test1.yml',
                         'Test/test2.yml',

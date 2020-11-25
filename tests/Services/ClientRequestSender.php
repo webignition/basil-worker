@@ -19,11 +19,12 @@ class ClientRequestSender
         $this->client = $client;
     }
 
-    public function createJob(string $label, string $callbackUrl): Response
+    public function createJob(string $label, string $callbackUrl, int $maximumDuration): Response
     {
         $this->client->request('POST', '/create', [
             JobCreateRequest::KEY_LABEL => $label,
             JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
+            JobCreateRequest::KEY_MAXIMUM_DURATION => $maximumDuration,
         ]);
 
         return $this->client->getResponse();

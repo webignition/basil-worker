@@ -32,8 +32,9 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
+        $maximumDuration = 10;
 
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl);
+        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDuration);
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/json', $response->headers->get('content-type'));
@@ -41,7 +42,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         self::assertTrue($this->jobStore->hasJob());
         self::assertEquals(
-            Job::create($label, $callbackUrl),
+            Job::create($label, $callbackUrl, $maximumDuration),
             $this->jobStore->getJob()
         );
     }
@@ -68,9 +69,9 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             $response->getStatusCode()
         );
 
-        self::assertSame(
-            json_decode((string) $expectedResponse->getContent(), true),
-            json_decode((string) $response->getContent(), true)
+        self::assertJsonStringEqualsJsonString(
+            (string) $expectedResponse->getContent(),
+            (string) $response->getContent()
         );
     }
 
@@ -84,12 +85,13 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, no sources, no tests' => [
                 'initializer' => function (JobStore $jobStore) {
-                    $jobStore->create('label content', 'http://example.com/callback');
+                    $jobStore->create('label content', 'http://example.com/callback', 10);
                 },
                 'expectedResponse' => new JsonResponse(
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
+                        'maximum_duration' => 10,
                         'sources' => [],
                         'compilation_state' => 'awaiting',
                         'execution_state' => 'awaiting',
@@ -99,7 +101,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, has sources, no tests' => [
                 'initializer' => function (JobStore $jobStore) {
-                    $job = $jobStore->create('label content', 'http://example.com/callback');
+                    $job = $jobStore->create('label content', 'http://example.com/callback', 11);
 
                     $job->setSources([
                         'Test/test1.yml',
@@ -112,6 +114,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
+                        'maximum_duration' => 11,
                         'sources' => [
                             'Test/test1.yml',
                             'Test/test2.yml',
@@ -125,7 +128,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
             ],
             'new job, has sources, has tests, compilation not complete' => [
                 'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label content', 'http://example.com/callback');
+                    $job = $jobStore->create('label content', 'http://example.com/callback', 12);
 
                     $job->setSources([
                         'Test/test1.yml',
@@ -152,6 +155,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
+                        'maximum_duration' => 12,
                         'sources' => [
                             'Test/test1.yml',
                             'Test/test2.yml',

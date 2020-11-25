@@ -11,10 +11,12 @@ class BadJobCreateRequestResponse extends ErrorResponse
     private const CODE_LABEL_MISSING = 100;
     private const CODE_CALLBACK_URL_MISSING = 200;
     private const CODE_JOB_ALREADY_EXISTS = 300;
+    private const CODE_MAXIMUM_DURATION_MISSING = 400;
 
     private const MESSAGE_LABEL_MISSING = 'label missing';
     private const MESSAGE_CALLBACK_URL_MISSING = 'callback url missing';
     private const MESSAGE_JOB_ALREADY_EXISTS = 'job already exists';
+    private const MESSAGE_MAXIMUM_DURATION_MISSING = 'maximum duration missing';
 
     public function __construct(string $message, int $code, int $status = self::HTTP_BAD_REQUEST)
     {
@@ -34,6 +36,14 @@ class BadJobCreateRequestResponse extends ErrorResponse
         return new BadJobCreateRequestResponse(
             self::MESSAGE_CALLBACK_URL_MISSING,
             self::CODE_CALLBACK_URL_MISSING
+        );
+    }
+
+    public static function createMaximumDurationMissingResponse(): self
+    {
+        return new BadJobCreateRequestResponse(
+            self::MESSAGE_MAXIMUM_DURATION_MISSING,
+            self::CODE_MAXIMUM_DURATION_MISSING
         );
     }
 

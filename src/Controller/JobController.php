@@ -32,38 +32,32 @@ class JobController extends AbstractController
 
     /**
      * @Route("/create", name="create", methods={"POST"})
-     *
-     * @param JobCreateRequest $jobCreateRequest
-     *
-     * @return JsonResponse
      */
-    public function create(JobCreateRequest $jobCreateRequest): JsonResponse
+    public function create(JobCreateRequest $request): JsonResponse
     {
-        if ('' === $jobCreateRequest->getLabel()) {
+        if ('' === $request->getLabel()) {
             return BadJobCreateRequestResponse::createLabelMissingResponse();
         }
 
-        if ('' === $jobCreateRequest->getCallbackUrl()) {
+        if ('' === $request->getCallbackUrl()) {
             return BadJobCreateRequestResponse::createCallbackUrlMissingResponse();
+        }
+
+        if (null === $request->getMaximumDuration()) {
+            return BadJobCreateRequestResponse::createMaximumDurationMissingResponse();
         }
 
         if (true === $this->jobStore->hasJob()) {
             return BadJobCreateRequestResponse::createJobAlreadyExistsResponse();
         }
 
-        $this->jobStore->create($jobCreateRequest->getLabel(), $jobCreateRequest->getCallbackUrl());
+        $this->jobStore->create($request->getLabel(), $request->getCallbackUrl(), $request->getMaximumDuration());
 
         return new JsonResponse();
     }
 
     /**
      * @Route("/add-sources", name="add-sources", methods={"POST"})
-     *
-     * @param SourceStore $sourceStore
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param AddSourcesRequest $addSourcesRequest
-     *
-     * @return JsonResponse
      */
     public function addSources(
         SourceStore $sourceStore,
@@ -117,12 +111,6 @@ class JobController extends AbstractController
 
     /**
      * @Route("/status", name="status", methods={"GET"})
-     *
-     * @param TestRepository $testRepository
-     * @param CompilationState $compilationState
-     * @param ExecutionState $executionState
-     *
-     * @return JsonResponse
      */
     public function status(
         TestRepository $testRepository,
