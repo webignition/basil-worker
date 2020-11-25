@@ -62,6 +62,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'has job, no sources' => [
@@ -75,6 +76,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'no sources compiled' => [
@@ -94,6 +96,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'first source compiled' => [
@@ -118,6 +121,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'all sources compiled, no tests running' => [
@@ -143,6 +147,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_COMPILING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'first test complete, no callbacks' => [
@@ -170,6 +175,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_COMPILING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'first test complete, callback for first test complete' => [
@@ -200,6 +206,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_COMPILING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'all tests complete, first callback complete, second callback running' => [
@@ -235,6 +242,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_COMPILING,
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
                 ],
             ],
             'all tests complete, all callbacks complete' => [
@@ -270,6 +278,33 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                     ApplicationState::STATE_COMPILING,
                     ApplicationState::STATE_EXECUTING,
                     ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_TIMED_OUT,
+                ],
+            ],
+            'has a job-timeout callback' => [
+                'setup' => new InvokableCollection([
+                    JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources([
+                                'Test/test1.yml',
+                             ])
+                    ),
+                    CallbackSetupInvokableFactory::setup(
+                        (new CallbackSetup())
+                            ->withType(CallbackInterface::TYPE_JOB_TIMEOUT)
+                            ->withState(CallbackInterface::STATE_COMPLETE)
+                    ),
+                ]),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_TIMED_OUT,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
                 ],
             ],
         ];
