@@ -59,6 +59,12 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
+        $job = $this->jobStore->getJob();
+        if (false === $job->hasStarted()) {
+            $job->setStartDateTime();
+            $this->jobStore->store($job);
+        }
+
         $this->testStateMutator->setRunning($test);
         $this->testExecutor->execute($test);
         $this->testStateMutator->setComplete($test);

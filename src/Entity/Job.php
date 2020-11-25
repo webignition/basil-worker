@@ -41,6 +41,11 @@ class Job implements \JsonSerializable
      */
     private int $maximumDuration;
 
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private ?\DateTimeImmutable $startDateTime = null;
+
     public static function create(string $label, string $callbackUrl, int $maximumDuration): self
     {
         $job = new Job();
@@ -72,6 +77,22 @@ class Job implements \JsonSerializable
         return $this->maximumDuration;
     }
 
+    public function hasStarted(): bool
+    {
+        return $this->startDateTime instanceof \DateTimeInterface;
+    }
+
+    public function hasReachedMaximumDuration(): bool
+    {
+        if ($this->startDateTime instanceof \DateTimeInterface) {
+            $dateInterval = $this->startDateTime->diff(new \DateTimeImmutable());
+
+            return $dateInterval->i >= $this->maximumDuration;
+        }
+
+        return false;
+    }
+
     /**
      * @return string[]
      */
@@ -86,6 +107,11 @@ class Job implements \JsonSerializable
     public function setSources(array $sources): void
     {
         $this->sources = $sources;
+    }
+
+    public function setStartDateTime(): void
+    {
+        $this->startDateTime = new \DateTimeImmutable();
     }
 
     /**
