@@ -145,7 +145,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     {
         $jobStore = self::$container->get(JobStore::class);
         if ($jobStore instanceof JobStore) {
-            $jobStore->create('label content', 'http://example.com/callback');
+            $jobStore->create('label content', 'http://example.com/callback', 10);
         }
     }
 

@@ -22,6 +22,7 @@ final class Version20200925113340 extends AbstractMigration
                 label VARCHAR(32) NOT NULL, 
                 callback_url VARCHAR(255) NOT NULL, 
                 sources TEXT DEFAULT NULL, 
+                maximum_duration INT NOT NULL,
                 PRIMARY KEY(id)
             )
         ');

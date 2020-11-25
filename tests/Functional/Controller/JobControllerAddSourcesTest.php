@@ -44,7 +44,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
 
-        $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback');
+        $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback', 10);
         self::assertSame([], $this->job->getSources());
         self::assertNull($this->sourcesAddedEventSubscriber->getEvent());
 

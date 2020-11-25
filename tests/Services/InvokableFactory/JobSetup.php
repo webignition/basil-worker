@@ -8,6 +8,7 @@ class JobSetup
 {
     private string $label;
     private string $callbackUrl;
+    private int $maximumDuration;
 
     /**
      * @var string[]
@@ -18,6 +19,7 @@ class JobSetup
     {
         $this->label = md5('label content');
         $this->callbackUrl = 'http://example.com/callback';
+        $this->maximumDuration = 10;
         $this->sources = null;
     }
 
@@ -29,6 +31,11 @@ class JobSetup
     public function getCallbackUrl(): string
     {
         return $this->callbackUrl;
+    }
+
+    public function getMaximumDuration(): int
+    {
+        return $this->maximumDuration;
     }
 
     /**

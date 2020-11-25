@@ -61,10 +61,20 @@ class JobControllerTest extends TestCase
                 'jobStore' => (new MockJobStore())->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createCallbackUrlMissingResponse(),
             ],
+            'maximum duration missing' => [
+                'jobCreateRequest' => (new MockJobCreateRequest())
+                    ->withGetLabelCall('label')
+                    ->withGetCallbackUrlCall('http://example.com')
+                    ->withGetMaximumDurationCall(null)
+                    ->getMock(),
+                'jobStore' => (new MockJobStore())->getMock(),
+                'expectedResponse' => BadJobCreateRequestResponse::createMaximumDurationMissingResponse(),
+            ],
             'job already exists' => [
                 'jobCreateRequest' => (new MockJobCreateRequest())
                     ->withGetLabelCall('label')
                     ->withGetCallbackUrlCall('http://example.com')
+                    ->withGetMaximumDurationCall(10)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
                     ->withHasJobCall(true)
@@ -75,10 +85,11 @@ class JobControllerTest extends TestCase
                 'jobCreateRequest' => (new MockJobCreateRequest())
                     ->withGetLabelCall('label')
                     ->withGetCallbackUrlCall('http://example.com')
+                    ->withGetMaximumDurationCall(10)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
                     ->withHasJobCall(false)
-                    ->withCreateCall('label', 'http://example.com')
+                    ->withCreateCall('label', 'http://example.com', 10)
                     ->getMock(),
                 'expectedResponse' => new JsonResponse(),
             ],
