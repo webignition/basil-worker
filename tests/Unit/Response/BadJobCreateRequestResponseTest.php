@@ -31,15 +31,6 @@ class BadJobCreateRequestResponseTest extends TestCase
         self::assertResponse('job already exists', 300, $response);
     }
 
-    public function testCreateStateNotPresentResponse()
-    {
-        $state = 'unknown';
-
-        $response = BadJobCreateRequestResponse::createJobStateNotPresentResponse($state);
-
-        self::assertResponse('job state "unknown" not present', 400, $response);
-    }
-
     private static function assertResponse(string $expectedMessage, int $expectedCode, Response $response): void
     {
         self::assertSame('application/json', $response->headers->get('content-type'));
