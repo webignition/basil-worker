@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Entity\Test;
+use App\Event\JobTimeoutEvent;
 use App\Event\TestFailedEvent;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -26,6 +27,9 @@ class TestCanceller implements EventSubscriberInterface
             TestFailedEvent::class => [
                 ['cancelAwaitingFromTestFailedEvent', 0],
             ],
+            JobTimeoutEvent::class => [
+                ['cancelUnfinished', 0],
+            ],
         ];
     }
 
@@ -38,12 +42,23 @@ class TestCanceller implements EventSubscriberInterface
         }
     }
 
+    public function cancelUnfinished(): void
+    {
+        $this->cancelCollection($this->testRepository->findAllUnfinished());
+    }
+
     public function cancelAwaiting(): void
     {
-        $awaitingTests = $this->testRepository->findAllAwaiting();
+        $this->cancelCollection($this->testRepository->findAllAwaiting());
+    }
 
-        foreach ($awaitingTests as $awaitingTest) {
-            $this->testStateMutator->setCancelled($awaitingTest);
+    /**
+     * @param Test[] $tests
+     */
+    private function cancelCollection(array $tests): void
+    {
+        foreach ($tests as $test) {
+            $this->testStateMutator->setCancelled($test);
         }
     }
 }

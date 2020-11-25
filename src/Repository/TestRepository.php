@@ -72,6 +72,16 @@ class TestRepository extends ServiceEntityRepository
         ]);
     }
 
+    /**
+     * @return Test[]
+     */
+    public function findAllUnfinished(): array
+    {
+        return $this->findBy([
+            'state' => Test::UNFINISHED_STATES,
+        ]);
+    }
+
     public function getFailedCount(): int
     {
         return $this->getCountByState(Test::STATE_FAILED);

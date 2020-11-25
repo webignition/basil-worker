@@ -17,6 +17,11 @@ class Test implements \JsonSerializable
     public const STATE_COMPLETE = 'complete';
     public const STATE_CANCELLED = 'cancelled';
 
+    public const UNFINISHED_STATES = [
+        self::STATE_AWAITING,
+        self::STATE_RUNNING,
+    ];
+
     public const FINISHED_STATES = [
         self::STATE_FAILED,
         self::STATE_COMPLETE,
