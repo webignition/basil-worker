@@ -39,4 +39,13 @@ class CallbackRepository extends ServiceEntityRepository
             ],
         ]));
     }
+
+    public function getJobTimeoutTypeCount(): int
+    {
+        return count($this->findBy([
+            'type' => [
+                CallbackInterface::TYPE_JOB_TIMEOUT,
+            ],
+        ]));
+    }
 }

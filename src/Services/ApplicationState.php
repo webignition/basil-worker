@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repository\CallbackRepository;
+
 class ApplicationState
 {
     public const STATE_AWAITING_JOB = 'awaiting-job';
@@ -12,22 +14,26 @@ class ApplicationState
     public const STATE_EXECUTING = 'executing';
     public const STATE_COMPLETING_CALLBACKS = 'completing-callbacks';
     public const STATE_COMPLETE = 'complete';
+    public const STATE_TIMED_OUT = 'timed-out';
 
     private JobStore $jobStore;
     private CompilationState $compilationState;
     private ExecutionState $executionState;
     private CallbackState $callbackState;
+    private CallbackRepository $callbackRepository;
 
     public function __construct(
         JobStore $jobStore,
         CompilationState $compilationState,
         ExecutionState $executionState,
-        CallbackState $callbackState
+        CallbackState $callbackState,
+        CallbackRepository $callbackRepository
     ) {
         $this->jobStore = $jobStore;
         $this->compilationState = $compilationState;
         $this->executionState = $executionState;
         $this->callbackState = $callbackState;
+        $this->callbackRepository = $callbackRepository;
     }
 
     /**
@@ -48,6 +54,10 @@ class ApplicationState
     {
         if (false === $this->jobStore->hasJob()) {
             return self::STATE_AWAITING_JOB;
+        }
+
+        if (0 !== $this->callbackRepository->getJobTimeoutTypeCount()) {
+            return self::STATE_TIMED_OUT;
         }
 
         $job = $this->jobStore->getJob();
