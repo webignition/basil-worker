@@ -7,6 +7,7 @@ namespace App\Tests\Functional\Services;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\SourcesAddedEvent;
 use App\Message\CompileSource;
+use App\Message\TimeoutCheck;
 use App\Services\CompilationWorkflowHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
@@ -119,8 +120,10 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
     /**
      * @dataProvider subscribesToEventsDataProvider
+     *
+     * @param object[] $expectedQueuedMessages
      */
-    public function testSubscribesToEvents(Event $event)
+    public function testSubscribesToEvents(Event $event, array $expectedQueuedMessages)
     {
         $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
             (new JobSetup())
@@ -134,7 +137,10 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
 
         $this->eventDispatcher->dispatch($event);
 
-        $this->messengerAsserter->assertQueueCount(1);
+        $this->messengerAsserter->assertQueueCount(count($expectedQueuedMessages));
+        foreach ($expectedQueuedMessages as $messageIndex => $expectedQueuedMessage) {
+            $this->messengerAsserter->assertMessageAtPositionEquals($messageIndex, $expectedQueuedMessage);
+        }
     }
 
     public function subscribesToEventsDataProvider(): array
@@ -147,9 +153,16 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                         ->withGetTestManifestsCall([])
                         ->getMock()
                 ),
+                'expectedQueuedMessages' => [
+                    new CompileSource('Test/test1.yml'),
+                ],
             ],
             SourcesAddedEvent::class => [
                 'event' => new SourcesAddedEvent(),
+                'expectedQueuedMessages' => [
+                    new CompileSource('Test/test1.yml'),
+                    new TimeoutCheck(),
+                ],
             ],
         ];
     }
