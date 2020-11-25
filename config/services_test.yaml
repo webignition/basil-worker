@@ -92,6 +92,11 @@ services:
     App\Services\ApplicationState:
         public: true
 
+    App\MessageHandler\TimeoutCheckHandler:
+        public: true
+        arguments:
+            $recheckPeriodInSeconds: '%job_timeout_check_period%'
+
     App\Tests\Services\SourcesAddedEventSubscriber:
         public: true
 
