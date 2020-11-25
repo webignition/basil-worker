@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-class JobTimeoutEvent extends AbstractTestEvent
+use Symfony\Contracts\EventDispatcher\Event;
+
+class JobTimeoutEvent extends Event
 {
 }
