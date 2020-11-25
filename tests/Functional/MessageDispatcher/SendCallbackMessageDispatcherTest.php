@@ -8,8 +8,10 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
+use App\Entity\Callback\JobTimeoutCallback;
 use App\Event\CallbackEventInterface;
 use App\Event\CallbackHttpErrorEvent;
+use App\Event\JobTimeoutEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
@@ -126,6 +128,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $this->messengerAsserter->assertQueueIsEmpty();
 
         $this->eventDispatcher->dispatch($event);
+
         self::assertSame(CallbackInterface::STATE_QUEUED, $callback->getState());
 
         $this->messengerAsserter->assertQueueCount(1);
@@ -152,13 +155,18 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
         $document = new Document('data');
         $testExecuteDocumentReceivedEventCallback = new ExecuteDocumentReceivedCallback($document);
 
+        $jobTimeoutEvent = new JobTimeoutEvent(10);
+
+        $jobTimeoutCallback = new JobTimeoutCallback(10);
+        $jobTimeoutCallback->setState(CallbackInterface::STATE_QUEUED);
+
         return [
             'http non-success response' => [
                 'event' => new CallbackHttpErrorEvent(
                     $httpExceptionEventCallback,
                     \Mockery::mock(ConnectException::class)
                 ),
-                'expectedQueuedMessage' => $httpExceptionEventCallback,
+                'expectedQueuedMessageCallback' => $httpExceptionEventCallback,
             ],
             'http exception' => [
                 'event' => new CallbackHttpErrorEvent($httpResponseExceptionCallback, new Response(503)),
@@ -170,7 +178,7 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
                     $sourceCompileFailureEventOutput,
                     $sourceCompileFailureEventCallback
                 ),
-                'expectedQueuedMessage' => $sourceCompileFailureEventCallback,
+                'expectedQueuedMessageCallback' => $sourceCompileFailureEventCallback,
             ],
             TestExecuteDocumentReceivedEvent::class => [
                 'event' => new TestExecuteDocumentReceivedEvent(
@@ -178,7 +186,11 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
                     $document,
                     $testExecuteDocumentReceivedEventCallback
                 ),
-                'expectedQueuedMessage' => $testExecuteDocumentReceivedEventCallback,
+                'expectedQueuedMessageCallback' => $testExecuteDocumentReceivedEventCallback,
+            ],
+            JobTimeoutEvent::class => [
+                'event' => $jobTimeoutEvent,
+                'expectedQueuedMessageCallback' => $jobTimeoutEvent->getCallback(),
             ],
         ];
     }

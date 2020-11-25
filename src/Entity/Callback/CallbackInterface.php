@@ -14,6 +14,7 @@ interface CallbackInterface
 
     public const TYPE_COMPILE_FAILURE = 'compile-failure';
     public const TYPE_EXECUTE_DOCUMENT_RECEIVED = 'execute-document-received';
+    public const TYPE_JOB_TIMEOUT = 'job-timeout';
 
     public function getId(): ?int;
     public function getEntity(): CallbackEntity;

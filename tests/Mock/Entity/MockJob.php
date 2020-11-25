@@ -64,4 +64,13 @@ class MockJob
 
         return $this;
     }
+
+    public function withGetMaximumDurationCall(int $maximumDuration): self
+    {
+        $this->job
+            ->shouldReceive('getMaximumDuration')
+            ->andReturn($maximumDuration);
+
+        return $this;
+    }
 }

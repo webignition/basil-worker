@@ -82,11 +82,19 @@ class TimeoutCheckHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeJobMaximumDurationReached()
     {
+        $jobMaximumDuration = 123;
+
         $eventDispatcher = (new MockEventDispatcher())
             ->withDispatchCalls(new ExpectedDispatchedEventCollection([
                 new ExpectedDispatchedEvent(
-                    function (Event $actualEvent) {
-                        return $actualEvent instanceof JobTimeoutEvent;
+                    function (Event $actualEvent) use ($jobMaximumDuration) {
+                        self::assertInstanceOf(JobTimeoutEvent::class, $actualEvent);
+
+                        if ($actualEvent instanceof JobTimeoutEvent) {
+                            self::assertSame($jobMaximumDuration, $actualEvent->getJobMaximumDuration());
+                        }
+
+                        return true;
                     },
                 ),
             ]))
@@ -94,6 +102,7 @@ class TimeoutCheckHandlerTest extends AbstractBaseFunctionalTest
 
         $job = (new MockJob())
             ->withHasReachedMaximumDurationCall(true)
+            ->withGetMaximumDurationCall($jobMaximumDuration)
             ->getMock();
 
         $jobStore = (new MockJobStore())

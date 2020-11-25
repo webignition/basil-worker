@@ -8,6 +8,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\StampedCallbackInterface;
 use App\Event\CallbackEventInterface;
 use App\Event\CallbackHttpErrorEvent;
+use App\Event\JobTimeoutEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
@@ -37,6 +38,9 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
                 ['dispatchForCallbackEvent', 0],
             ],
             TestExecuteDocumentReceivedEvent::class => [
+                ['dispatchForCallbackEvent', 0],
+            ],
+            JobTimeoutEvent::class => [
                 ['dispatchForCallbackEvent', 0],
             ],
         ];
