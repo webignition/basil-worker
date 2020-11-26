@@ -14,9 +14,9 @@ class JobTest extends TestCase
     {
         $label = md5('label source');
         $callbackUrl = 'http://example.com/callback';
-        $maximumDuration = 10;
+        $maximumDurationInSeconds = 10;
 
-        $job = Job::create($label, $callbackUrl, $maximumDuration);
+        $job = Job::create($label, $callbackUrl, $maximumDurationInSeconds);
 
         self::assertSame(1, $job->getId());
         self::assertSame($label, $job->getLabel());

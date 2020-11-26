@@ -34,11 +34,11 @@ class MockJobStore
         return $this;
     }
 
-    public function withCreateCall(string $label, string $callbackUrl, int $maximumDuration): self
+    public function withCreateCall(string $label, string $callbackUrl, int $maximumDurationInSeconds): self
     {
         $this->jobStore
             ->shouldReceive('create')
-            ->with($label, $callbackUrl, $maximumDuration);
+            ->with($label, $callbackUrl, $maximumDurationInSeconds);
 
         return $this;
     }
