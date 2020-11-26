@@ -22,7 +22,7 @@ class JobSetupInvokableFactory
         $collection[] = self::create(
             $jobSetup->getLabel(),
             $jobSetup->getCallbackUrl(),
-            $jobSetup->getMaximumDuration()
+            $jobSetup->getMaximumDurationInSeconds()
         );
 
         $sources = $jobSetup->getSources();
