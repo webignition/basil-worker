@@ -87,6 +87,6 @@ services:
         arguments:
             $retryLimit: '%callback_retry_limit%'
 
-    App\MessageHandler\TimeoutCheckHandler:
+    App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         arguments:
             $recheckPeriodInSeconds: '%job_timeout_check_period%'

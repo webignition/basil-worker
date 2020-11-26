@@ -8,3 +8,8 @@ services:
 
     App\Tests\Services\TestTestRepository:
         public: true
+
+    App\MessageDispatcher\TimeoutCheckMessageDispatcher:
+        arguments:
+            $recheckPeriodInSeconds: '%job_timeout_check_period%'
+            $enabled: false
