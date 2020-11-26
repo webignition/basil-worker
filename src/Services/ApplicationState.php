@@ -50,7 +50,7 @@ class ApplicationState
         return in_array($this->getCurrentState(), $states);
     }
 
-    private function getCurrentState(): string
+    public function getCurrentState(): string
     {
         if (false === $this->jobStore->hasJob()) {
             return self::STATE_AWAITING_JOB;

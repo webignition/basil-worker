@@ -6,15 +6,17 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Repository\TestRepository;
+use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
-use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\TestGetterFactory;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -31,23 +33,26 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param JobConfiguration $jobConfiguration
+     * @param JobSetup $jobSetup
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
+     * @param ApplicationState::STATE_* $expectedApplicationEndState
      */
     public function testCreateAddSourcesCompileExecute(
-        JobConfiguration $jobConfiguration,
+        JobSetup $jobSetup,
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
+        string $expectedApplicationEndState,
         InvokableInterface $assertions
     ) {
         $this->doCreateJobAddSourcesTest(
-            $jobConfiguration,
+            $jobSetup,
             $expectedSourcePaths,
             $expectedCompilationEndState,
             $expectedExecutionEndState,
+            $expectedApplicationEndState,
             $assertions
         );
     }
@@ -56,11 +61,9 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     {
         return [
             'default' => [
-                'jobConfiguration' => new JobConfiguration(
-                    md5('label content'),
-                    'http://200.example.com/callback/1',
-                    getcwd() . '/tests/Fixtures/Manifest/manifest.txt'
-                ),
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.example.com/callback/1')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',
@@ -68,6 +71,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'assertions' => TestGetterFactory::assertStates([
                     Test::STATE_COMPLETE,
                     Test::STATE_COMPLETE,
@@ -76,16 +80,15 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ]),
             ],
             'verify retried transactions are delayed' => [
-                'jobConfiguration' => new JobConfiguration(
-                    md5('label content'),
-                    'http://200.500.500.200.example.com/callback/2',
-                    getcwd() . '/tests/Fixtures/Manifest/manifest-chrome-open-index.txt'
-                ),
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.500.500.200.example.com/callback/2')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest-chrome-open-index.txt'),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'assertions' => new InvokableCollection([
                     'verify test end states' => TestGetterFactory::assertStates([
                         Test::STATE_COMPLETE,
@@ -123,6 +126,41 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                         ]
                     )
                 ]),
+            ],
+            'verify job is timed out' => [
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.example.com/callback/1')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest.txt')
+                    ->withMaximumDurationInSeconds(1),
+                'expectedSourcePaths' => [
+                    'Test/chrome-open-index.yml',
+                    'Test/chrome-firefox-open-index.yml',
+                    'Test/chrome-open-form.yml',
+                ],
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
+                'expectedApplicationEndState' => ApplicationState::STATE_TIMED_OUT,
+                'assertions' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $tests = $testRepository->findAll();
+                        $hasFoundCancelledTest = false;
+
+                        foreach ($tests as $test) {
+                            if (Test::STATE_CANCELLED === $test->getState() && false === $hasFoundCancelledTest) {
+                                $hasFoundCancelledTest = true;
+                            }
+
+                            if ($hasFoundCancelledTest) {
+                                self::assertSame(Test::STATE_CANCELLED, $test->getState());
+                            } else {
+                                self::assertSame(Test::STATE_COMPLETE, $test->getState());
+                            }
+                        }
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
             ],
         ];
     }
