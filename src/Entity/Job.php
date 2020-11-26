@@ -85,9 +85,9 @@ class Job implements \JsonSerializable
     public function hasReachedMaximumDuration(): bool
     {
         if ($this->startDateTime instanceof \DateTimeInterface) {
-            $dateInterval = $this->startDateTime->diff(new \DateTimeImmutable());
+            $duration = time() - $this->startDateTime->getTimestamp();
 
-            return $dateInterval->i >= $this->maximumDurationInSeconds;
+            return $duration >= $this->maximumDurationInSeconds;
         }
 
         return false;
