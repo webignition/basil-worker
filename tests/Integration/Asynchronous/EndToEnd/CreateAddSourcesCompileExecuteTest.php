@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Repository\TestRepository;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
@@ -139,7 +140,27 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'expectedApplicationEndState' => ApplicationState::STATE_TIMED_OUT,
-                'assertions' => Invokable::createEmpty(),
+                'assertions' => new Invokable(
+                    function (TestRepository $testRepository) {
+                        $tests = $testRepository->findAll();
+                        $hasFoundCancelledTest = false;
+
+                        foreach ($tests as $test) {
+                            if (Test::STATE_CANCELLED === $test->getState() && false === $hasFoundCancelledTest) {
+                                $hasFoundCancelledTest = true;
+                            }
+
+                            if ($hasFoundCancelledTest) {
+                                self::assertSame(Test::STATE_CANCELLED, $test->getState());
+                            } else {
+                                self::assertSame(Test::STATE_COMPLETE, $test->getState());
+                            }
+                        }
+                    },
+                    [
+                        new ServiceReference(TestRepository::class),
+                    ]
+                ),
             ],
         ];
     }
