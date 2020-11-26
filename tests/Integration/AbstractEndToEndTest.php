@@ -16,6 +16,7 @@ use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\InvokableFactory\ApplicationStateGetterFactory;
 use App\Tests\Services\InvokableFactory\CompilationStateGetterFactory;
 use App\Tests\Services\InvokableFactory\ExecutionStateGetterFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
@@ -62,6 +63,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
+     * @param ApplicationState::STATE_* $expectedApplicationEndState
      * @param InvokableInterface $postAssertions
      */
     protected function doCreateJobAddSourcesTest(
@@ -69,6 +71,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
+        string $expectedApplicationEndState,
         InvokableInterface $postAssertions
     ): void {
         $this->createJob($jobSetup);
@@ -98,6 +101,11 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         self::assertSame(
             $expectedExecutionEndState,
             $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
+        );
+
+        self::assertSame(
+            $expectedApplicationEndState,
+            $this->invokableHandler->invoke(ApplicationStateGetterFactory::get())
         );
 
         $this->invokableHandler->invoke($postAssertions);
@@ -152,8 +160,10 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $maxDurationReached = false;
         $intervalInMicroseconds = 100000;
 
+        $applicationFinishedStates = [ApplicationState::STATE_COMPLETE, ApplicationState::STATE_TIMED_OUT];
+
         while (
-            false === $this->applicationState->is(ApplicationState::STATE_COMPLETE) &&
+            false === $this->applicationState->is(...$applicationFinishedStates) &&
             false === $maxDurationReached
         ) {
             usleep($intervalInMicroseconds);

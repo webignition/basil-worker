@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Entity\Test;
+use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
@@ -32,6 +33,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
+     * @param ApplicationState::STATE_* $expectedApplicationEndState
      * @param InvokableInterface $postAssertions
      */
     public function testCreateAddSourcesCompileExecute(
@@ -39,6 +41,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
+        string $expectedApplicationEndState,
         InvokableInterface $postAssertions
     ) {
         $this->doCreateJobAddSourcesTest(
@@ -46,6 +49,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
             $expectedSourcePaths,
             $expectedCompilationEndState,
             $expectedExecutionEndState,
+            $expectedApplicationEndState,
             $postAssertions
         );
     }
@@ -68,6 +72,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'postAssertions' => new Invokable(
                     function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {
                         $transactions = $httpLogReader->getTransactions();
@@ -198,6 +203,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'postAssertions' => new InvokableCollection([
                     'verify http transactions' => new Invokable(
                         function (HttpTransactionCollection $expectedHttpTransactions, HttpLogReader $httpLogReader) {

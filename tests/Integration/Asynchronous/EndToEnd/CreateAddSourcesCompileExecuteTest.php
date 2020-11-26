@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractEndToEndTest;
@@ -35,12 +36,14 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
+     * @param ApplicationState::STATE_* $expectedApplicationEndState
      */
     public function testCreateAddSourcesCompileExecute(
         JobSetup $jobSetup,
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
+        string $expectedApplicationEndState,
         InvokableInterface $assertions
     ) {
         $this->doCreateJobAddSourcesTest(
@@ -48,6 +51,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
             $expectedSourcePaths,
             $expectedCompilationEndState,
             $expectedExecutionEndState,
+            $expectedApplicationEndState,
             $assertions
         );
     }
@@ -66,6 +70,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'assertions' => TestGetterFactory::assertStates([
                     Test::STATE_COMPLETE,
                     Test::STATE_COMPLETE,
@@ -82,6 +87,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
                 'assertions' => new InvokableCollection([
                     'verify test end states' => TestGetterFactory::assertStates([
                         Test::STATE_COMPLETE,
@@ -119,6 +125,21 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                         ]
                     )
                 ]),
+            ],
+            'verify job is timed out' => [
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.example.com/callback/1')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest.txt')
+                    ->withMaximumDurationInSeconds(1),
+                'expectedSourcePaths' => [
+                    'Test/chrome-open-index.yml',
+                    'Test/chrome-firefox-open-index.yml',
+                    'Test/chrome-open-form.yml',
+                ],
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
+                'expectedApplicationEndState' => ApplicationState::STATE_TIMED_OUT,
+                'assertions' => Invokable::createEmpty(),
             ],
         ];
     }
