@@ -122,7 +122,7 @@ class Job implements \JsonSerializable
         return [
             'label' => $this->label,
             'callback_url' => $this->callbackUrl,
-            'maximum_duration' => $this->maximumDurationInSeconds,
+            'maximum_duration_in_seconds' => $this->maximumDurationInSeconds,
             'sources' => $this->sources,
         ];
     }

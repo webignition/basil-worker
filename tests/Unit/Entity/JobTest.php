@@ -43,7 +43,7 @@ class JobTest extends TestCase
                 'expectedSerializedJob' => [
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
-                    'maximum_duration' => 1,
+                    'maximum_duration_in_seconds' => 1,
                     'sources' => [],
                 ],
             ],
@@ -59,7 +59,7 @@ class JobTest extends TestCase
                 'expectedSerializedJob' => [
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
-                    'maximum_duration' => 2,
+                    'maximum_duration_in_seconds' => 2,
                     'sources' => [
                         'Test/test1.yml',
                         'Test/test2.yml',
