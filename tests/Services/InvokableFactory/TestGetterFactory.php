@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
+use App\Entity\Test;
 use App\Repository\TestRepository;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
+use PHPUnit\Framework\TestCase;
 
 class TestGetterFactory
 {
@@ -36,6 +38,29 @@ class TestGetterFactory
             },
             [
                 TestGetterFactory::getAll(),
+            ]
+        );
+    }
+
+    /**
+     * @param array<Test::STATE_*> $expectedStates
+     *
+     * @return InvokableInterface
+     */
+    public static function assertStates(array $expectedStates): InvokableInterface
+    {
+        return new Invokable(
+            function (array $tests, array $expectedStates): void {
+                $states = [];
+                foreach ($tests as $test) {
+                    $states[] = $test->getState();
+                }
+
+                TestCase::assertSame($expectedStates, $states);
+            },
+            [
+                TestGetterFactory::getAll(),
+                $expectedStates,
             ]
         );
     }

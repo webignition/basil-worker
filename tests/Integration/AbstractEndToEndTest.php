@@ -100,14 +100,8 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
             $this->invokableHandler->invoke(ExecutionStateGetterFactory::get())
         );
 
-        foreach ($postAssertions->getServiceReferences() as $serviceReference) {
-            $service = self::$container->get($serviceReference->getId());
-            if (null !== $service) {
-                $postAssertions->replaceServiceReference($serviceReference, $service);
-            }
-        }
+        $this->invokableHandler->invoke($postAssertions);
 
-        $postAssertions();
         self::assertLessThanOrEqual(self::MAX_DURATION_IN_SECONDS, $duration->asSeconds());
     }
 
