@@ -17,9 +17,9 @@ class JobStore
         $this->entityManager = $entityManager;
     }
 
-    public function create(string $label, string $callbackUrl, int $maximumDuration): Job
+    public function create(string $label, string $callbackUrl, int $maximumDurationInSeconds): Job
     {
-        $job = Job::create($label, $callbackUrl, $maximumDuration);
+        $job = Job::create($label, $callbackUrl, $maximumDurationInSeconds);
         $this->store($job);
 
         return $job;
