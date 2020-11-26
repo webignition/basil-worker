@@ -12,13 +12,13 @@ use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
-use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\InvokableFactory\CompilationStateGetterFactory;
 use App\Tests\Services\InvokableFactory\ExecutionStateGetterFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
@@ -58,20 +58,20 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
     }
 
     /**
-     * @param JobConfiguration $jobConfiguration
+     * @param JobSetup $jobSetup
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      * @param InvokableInterface $postAssertions
      */
     protected function doCreateJobAddSourcesTest(
-        JobConfiguration $jobConfiguration,
+        JobSetup $jobSetup,
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
         InvokableInterface $postAssertions
     ): void {
-        $this->createJob($jobConfiguration->getLabel(), $jobConfiguration->getCallbackUrl());
+        $this->createJob($jobSetup);
 
         self::assertSame(
             CompilationState::STATE_AWAITING,
@@ -81,7 +81,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         $timer = new Timer();
         $timer->start();
 
-        $this->addJobSources($jobConfiguration->getManifestPath());
+        $this->addJobSources($jobSetup->getManifestPath());
 
         $job = $this->jobStore->getJob();
         self::assertSame($expectedSourcePaths, $job->getSources());
@@ -105,9 +105,13 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
         self::assertLessThanOrEqual(self::MAX_DURATION_IN_SECONDS, $duration->asSeconds());
     }
 
-    protected function createJob(string $label, string $callbackUrl): Response
+    protected function createJob(JobSetup $jobSetup): Response
     {
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl, 600);
+        $response = $this->clientRequestSender->createJob(
+            $jobSetup->getLabel(),
+            $jobSetup->getCallbackUrl(),
+            $jobSetup->getMaximumDurationInSeconds()
+        );
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());

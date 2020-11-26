@@ -12,10 +12,10 @@ use App\Tests\Integration\AbstractEndToEndTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
-use App\Tests\Model\EndToEndJob\JobConfiguration;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\InvokableFactory\TestGetterFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
@@ -31,20 +31,20 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param JobConfiguration $jobConfiguration
+     * @param JobSetup $jobSetup
      * @param string[] $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_* $expectedExecutionEndState
      */
     public function testCreateAddSourcesCompileExecute(
-        JobConfiguration $jobConfiguration,
+        JobSetup $jobSetup,
         array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
         InvokableInterface $assertions
     ) {
         $this->doCreateJobAddSourcesTest(
-            $jobConfiguration,
+            $jobSetup,
             $expectedSourcePaths,
             $expectedCompilationEndState,
             $expectedExecutionEndState,
@@ -56,11 +56,9 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
     {
         return [
             'default' => [
-                'jobConfiguration' => new JobConfiguration(
-                    md5('label content'),
-                    'http://200.example.com/callback/1',
-                    getcwd() . '/tests/Fixtures/Manifest/manifest.txt'
-                ),
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.example.com/callback/1')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',
@@ -76,11 +74,9 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 ]),
             ],
             'verify retried transactions are delayed' => [
-                'jobConfiguration' => new JobConfiguration(
-                    md5('label content'),
-                    'http://200.500.500.200.example.com/callback/2',
-                    getcwd() . '/tests/Fixtures/Manifest/manifest-chrome-open-index.txt'
-                ),
+                'jobSetup' => (new JobSetup())
+                    ->withCallbackUrl('http://200.500.500.200.example.com/callback/2')
+                    ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest-chrome-open-index.txt'),
                 'expectedSourcePaths' => [
                     'Test/chrome-open-index.yml',
                 ],
