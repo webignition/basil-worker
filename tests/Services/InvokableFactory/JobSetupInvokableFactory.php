@@ -33,17 +33,20 @@ class JobSetupInvokableFactory
         return new InvokableCollection($collection);
     }
 
-    private static function create(string $label, string $callbackUrl, int $maximumDuration): InvokableInterface
-    {
+    private static function create(
+        string $label,
+        string $callbackUrl,
+        int $maximumDurationInSeconds
+    ): InvokableInterface {
         return new Invokable(
-            function (JobStore $jobStore, string $label, string $callbackUrl, int $maximumDuration): Job {
-                return $jobStore->create($label, $callbackUrl, $maximumDuration);
+            function (JobStore $jobStore, string $label, string $callbackUrl, int $maximumDurationInSeconds): Job {
+                return $jobStore->create($label, $callbackUrl, $maximumDurationInSeconds);
             },
             [
                 new ServiceReference(JobStore::class),
                 $label,
                 $callbackUrl,
-                $maximumDuration,
+                $maximumDurationInSeconds,
             ]
         );
     }
