@@ -23,15 +23,15 @@ class JobCreateRequest extends AbstractEncapsulatingRequest
         $this->label = (string) $requestData->get(self::KEY_LABEL);
         $this->callbackUrl = (string) $requestData->get(self::KEY_CALLBACK_URL);
 
-        $maximumDuration = null;
+        $maximumDurationInSeconds = null;
         if ($requestData->has(self::KEY_MAXIMUM_DURATION)) {
             $maximumDurationInRequest = $requestData->get(self::KEY_MAXIMUM_DURATION);
             if (is_int($maximumDurationInRequest) || ctype_digit($maximumDurationInRequest)) {
-                $maximumDuration = (int) $maximumDurationInRequest;
+                $maximumDurationInSeconds = (int) $maximumDurationInRequest;
             }
         }
 
-        $this->maximumDurationInSeconds = $maximumDuration;
+        $this->maximumDurationInSeconds = $maximumDurationInSeconds;
     }
 
     public function getLabel(): string
