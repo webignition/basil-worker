@@ -32,9 +32,9 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
-        $maximumDuration = 10;
+        $maximumDurationInSeconds = 600;
 
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDuration);
+        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/json', $response->headers->get('content-type'));
@@ -42,7 +42,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         self::assertTrue($this->jobStore->hasJob());
         self::assertEquals(
-            Job::create($label, $callbackUrl, $maximumDuration),
+            Job::create($label, $callbackUrl, $maximumDurationInSeconds),
             $this->jobStore->getJob()
         );
     }
