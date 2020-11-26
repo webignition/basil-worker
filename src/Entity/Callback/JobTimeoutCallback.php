@@ -6,22 +6,22 @@ namespace App\Entity\Callback;
 
 class JobTimeoutCallback extends AbstractCallbackWrapper
 {
-    private int $maximumDuration;
+    private int $maximumDurationInSeconds;
 
-    public function __construct(int $maximumDuration)
+    public function __construct(int $maximumDurationInSeconds)
     {
-        $this->maximumDuration = $maximumDuration;
+        $this->maximumDurationInSeconds = $maximumDurationInSeconds;
 
         parent::__construct(CallbackEntity::create(
             CallbackInterface::TYPE_JOB_TIMEOUT,
             [
-                'maximum-duration' => $this->maximumDuration,
+                'maximum-duration' => $this->maximumDurationInSeconds,
             ]
         ));
     }
 
-    public function getMaximumDuration(): int
+    public function getMaximumDurationInSeconds(): int
     {
-        return $this->maximumDuration;
+        return $this->maximumDurationInSeconds;
     }
 }
