@@ -43,7 +43,7 @@ class JobController extends AbstractController
             return BadJobCreateRequestResponse::createCallbackUrlMissingResponse();
         }
 
-        if (null === $request->getMaximumDuration()) {
+        if (null === $request->getMaximumDurationInSeconds()) {
             return BadJobCreateRequestResponse::createMaximumDurationMissingResponse();
         }
 
@@ -51,7 +51,11 @@ class JobController extends AbstractController
             return BadJobCreateRequestResponse::createJobAlreadyExistsResponse();
         }
 
-        $this->jobStore->create($request->getLabel(), $request->getCallbackUrl(), $request->getMaximumDuration());
+        $this->jobStore->create(
+            $request->getLabel(),
+            $request->getCallbackUrl(),
+            $request->getMaximumDurationInSeconds()
+        );
 
         return new JsonResponse();
     }

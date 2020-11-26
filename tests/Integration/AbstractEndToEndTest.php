@@ -113,7 +113,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
     protected function createJob(string $label, string $callbackUrl): Response
     {
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl, 10);
+        $response = $this->clientRequestSender->createJob($label, $callbackUrl, 600);
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());

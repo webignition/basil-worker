@@ -102,7 +102,7 @@ class TimeoutCheckHandlerTest extends AbstractBaseFunctionalTest
 
         $job = (new MockJob())
             ->withHasReachedMaximumDurationCall(true)
-            ->withGetMaximumDurationCall($jobMaximumDuration)
+            ->withGetMaximumDurationInSecondsCall($jobMaximumDuration)
             ->getMock();
 
         $jobStore = (new MockJobStore())

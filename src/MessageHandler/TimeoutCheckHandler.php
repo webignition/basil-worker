@@ -35,7 +35,7 @@ class TimeoutCheckHandler implements MessageHandlerInterface
 
         $job = $this->jobStore->getJob();
         if ($job->hasReachedMaximumDuration()) {
-            $this->eventDispatcher->dispatch(new JobTimeoutEvent($job->getMaximumDuration()));
+            $this->eventDispatcher->dispatch(new JobTimeoutEvent($job->getMaximumDurationInSeconds()));
         } else {
             $this->timeoutCheckMessageDispatcher->dispatch();
         }

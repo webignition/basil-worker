@@ -32,9 +32,9 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
-        $maximumDuration = 10;
+        $maximumDurationInSeconds = 600;
 
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDuration);
+        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/json', $response->headers->get('content-type'));
@@ -42,7 +42,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         self::assertTrue($this->jobStore->hasJob());
         self::assertEquals(
-            Job::create($label, $callbackUrl, $maximumDuration),
+            Job::create($label, $callbackUrl, $maximumDurationInSeconds),
             $this->jobStore->getJob()
         );
     }
@@ -91,7 +91,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
-                        'maximum_duration' => 10,
+                        'maximum_duration_in_seconds' => 10,
                         'sources' => [],
                         'compilation_state' => 'awaiting',
                         'execution_state' => 'awaiting',
@@ -114,7 +114,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
-                        'maximum_duration' => 11,
+                        'maximum_duration_in_seconds' => 11,
                         'sources' => [
                             'Test/test1.yml',
                             'Test/test2.yml',
@@ -155,7 +155,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     [
                         'label' => 'label content',
                         'callback_url' => 'http://example.com/callback',
-                        'maximum_duration' => 12,
+                        'maximum_duration_in_seconds' => 12,
                         'sources' => [
                             'Test/test1.yml',
                             'Test/test2.yml',
