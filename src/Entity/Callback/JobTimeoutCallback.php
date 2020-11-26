@@ -15,7 +15,7 @@ class JobTimeoutCallback extends AbstractCallbackWrapper
         parent::__construct(CallbackEntity::create(
             CallbackInterface::TYPE_JOB_TIMEOUT,
             [
-                'maximum-duration' => $this->maximumDurationInSeconds,
+                'maximum_duration_in_seconds' => $this->maximumDurationInSeconds,
             ]
         ));
     }
