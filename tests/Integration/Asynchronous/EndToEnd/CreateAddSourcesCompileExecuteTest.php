@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Repository\TestRepository;
@@ -18,6 +19,7 @@ use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\TestGetterFactory;
+use Psr\Http\Message\RequestInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
@@ -140,27 +142,46 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'expectedApplicationEndState' => ApplicationState::STATE_TIMED_OUT,
-                'assertions' => new Invokable(
-                    function (TestRepository $testRepository) {
-                        $tests = $testRepository->findAll();
-                        $hasFoundCancelledTest = false;
+                'assertions' => new InvokableCollection([
+                    'verify job and test end states' => new Invokable(
+                        function (TestRepository $testRepository) {
+                            $tests = $testRepository->findAll();
+                            $hasFoundCancelledTest = false;
 
-                        foreach ($tests as $test) {
-                            if (Test::STATE_CANCELLED === $test->getState() && false === $hasFoundCancelledTest) {
-                                $hasFoundCancelledTest = true;
+                            foreach ($tests as $test) {
+                                if (Test::STATE_CANCELLED === $test->getState() && false === $hasFoundCancelledTest) {
+                                    $hasFoundCancelledTest = true;
+                                }
+
+                                if ($hasFoundCancelledTest) {
+                                    self::assertSame(Test::STATE_CANCELLED, $test->getState());
+                                } else {
+                                    self::assertSame(Test::STATE_COMPLETE, $test->getState());
+                                }
+                            }
+                        },
+                        [
+                            new ServiceReference(TestRepository::class),
+                        ]
+                    ),
+                    'verify last http request type' => new Invokable(
+                        function (HttpLogReader $httpLogReader) {
+                            $httpTransactions = $httpLogReader->getTransactions();
+                            $httpLogReader->reset();
+
+                            $lastRequestPayload = [];
+                            $lastRequest = $httpTransactions->getRequests()->getLast();
+                            if ($lastRequest instanceof RequestInterface) {
+                                $lastRequestPayload = json_decode($lastRequest->getBody()->getContents(), true);
                             }
 
-                            if ($hasFoundCancelledTest) {
-                                self::assertSame(Test::STATE_CANCELLED, $test->getState());
-                            } else {
-                                self::assertSame(Test::STATE_COMPLETE, $test->getState());
-                            }
-                        }
-                    },
-                    [
-                        new ServiceReference(TestRepository::class),
-                    ]
-                ),
+                            self::assertSame(CallbackInterface::TYPE_JOB_TIMEOUT, $lastRequestPayload['type']);
+                        },
+                        [
+                            new ServiceReference(HttpLogReader::class),
+                        ]
+                    )
+                ]),
             ],
         ];
     }
