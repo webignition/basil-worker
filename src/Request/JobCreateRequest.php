@@ -10,11 +10,11 @@ class JobCreateRequest extends AbstractEncapsulatingRequest
 {
     public const KEY_LABEL = 'label';
     public const KEY_CALLBACK_URL = 'callback-url';
-    public const KEY_MAXIMUM_DURATION = 'maximum-duration';
+    public const KEY_MAXIMUM_DURATION = 'maximum-duration-in-seconds';
 
     private string $label = '';
     private string $callbackUrl = '';
-    private ?int $maximumDuration;
+    private ?int $maximumDurationInSeconds;
 
     public function processRequest(Request $request): void
     {
@@ -31,7 +31,7 @@ class JobCreateRequest extends AbstractEncapsulatingRequest
             }
         }
 
-        $this->maximumDuration = $maximumDuration;
+        $this->maximumDurationInSeconds = $maximumDuration;
     }
 
     public function getLabel(): string
@@ -44,8 +44,8 @@ class JobCreateRequest extends AbstractEncapsulatingRequest
         return $this->callbackUrl;
     }
 
-    public function getMaximumDuration(): ?int
+    public function getMaximumDurationInSeconds(): ?int
     {
-        return $this->maximumDuration;
+        return $this->maximumDurationInSeconds;
     }
 }
