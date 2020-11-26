@@ -17,11 +17,16 @@ class TimeoutCheckMessageDispatcher implements EventSubscriberInterface
 
     private MessageBusInterface $messageBus;
     private int $recheckPeriodInSeconds;
+    private bool $enabled;
 
-    public function __construct(MessageBusInterface $messageBus, int $recheckPeriodInSeconds)
-    {
+    public function __construct(
+        MessageBusInterface $messageBus,
+        int $recheckPeriodInSeconds,
+        bool $enabled = true
+    ) {
         $this->messageBus = $messageBus;
         $this->recheckPeriodInSeconds = $recheckPeriodInSeconds;
+        $this->enabled = $enabled;
     }
 
     public static function getSubscribedEvents()
@@ -39,6 +44,9 @@ class TimeoutCheckMessageDispatcher implements EventSubscriberInterface
         $envelope = new Envelope($message, [
             new DelayStamp($this->recheckPeriodInSeconds * self::MILLISECONDS_PER_SECOND)
         ]);
-        $this->messageBus->dispatch($envelope);
+
+        if ($this->enabled) {
+            $this->messageBus->dispatch($envelope);
+        }
     }
 }
