@@ -16,8 +16,8 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\Integration\HttpLogReader;
-use App\Tests\Services\InvokableFactory\TestGetterFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\TestGetterFactory;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
