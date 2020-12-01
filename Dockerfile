@@ -4,11 +4,6 @@ WORKDIR /app
 
 RUN apt-get -qq update && apt-get -qq -y install  \
   librabbitmq-dev \
-  libreadline-dev \
-  libzip-dev \
-  zlib1g-dev \
-  pkg-config \
-  ssh-client \
   libpq-dev \
   && docker-php-ext-install \
   pdo_pgsql \
