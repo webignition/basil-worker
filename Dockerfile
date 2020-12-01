@@ -18,13 +18,7 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   ssh-client \
   libpq-dev \
   && docker-php-ext-install \
-  bcmath \
-  gd \
-  intl \
-  opcache \
   pdo_pgsql \
-  sockets \
-  zip \
   && pecl install amqp imagick xdebug igbinary redis \
   && rm -rf ../rabbitmq-c \
   && docker-php-ext-enable amqp \
