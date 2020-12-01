@@ -9,19 +9,9 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   pdo_pgsql \
   && pecl install amqp \
   && docker-php-ext-enable amqp \
-  && rm -rf /var/lib/apt/lists/*
+  && apt-get autoremove -y \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-#RUN apt-get update \
-#    && apt-get install -y libpq-dev librabbitmq-dev \
-#    && docker-php-ext-install pdo_pgsql > /dev/null
-#
-#RUN pecl install amqp-1.9.3 \
-#    && docker-php-ext-enable amqp
-#
-#RUN apt-get autoremove -y \
-#    && apt-get clean \
-#    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
-#
 RUN echo "Install composer"
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 RUN composer --version
