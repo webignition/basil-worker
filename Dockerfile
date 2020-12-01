@@ -19,7 +19,7 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   libpq-dev \
   && docker-php-ext-install \
   pdo_pgsql \
-  && pecl install amqp imagick xdebug igbinary redis \
+  && pecl install amqp \
   && rm -rf ../rabbitmq-c \
   && docker-php-ext-enable amqp \
   && version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
