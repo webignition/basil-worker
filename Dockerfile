@@ -25,11 +25,6 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   pdo_pgsql \
   sockets \
   zip \
-  && git clone git://github.com/alanxz/rabbitmq-c.git \
-  && cd rabbitmq-c \
-  && mkdir build && cd build \
-  && cmake -DENABLE_SSL_SUPPORT=OFF .. \
-  && cmake --build . --target install  \
   && pecl install amqp imagick xdebug igbinary redis \
   && rm -rf ../rabbitmq-c \
   && docker-php-ext-enable amqp imagick xdebug igbinary redis \
