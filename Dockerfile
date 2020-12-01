@@ -27,7 +27,7 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   zip \
   && pecl install amqp imagick xdebug igbinary redis \
   && rm -rf ../rabbitmq-c \
-  && docker-php-ext-enable amqp imagick xdebug igbinary redis \
+  && docker-php-ext-enable amqp \
   && version=$(php -r "echo PHP_MAJOR_VERSION.PHP_MINOR_VERSION;") \
   && rm -rf /var/lib/apt/lists/*
 
