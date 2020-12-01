@@ -3,10 +3,6 @@ FROM php:7.4-cli-buster
 WORKDIR /app
 
 RUN apt-get -qq update && apt-get -qq -y install  \
-  automake \
-  cmake \
-  g++ \
-  git \
   libicu-dev \
   libmagickwand-dev \
   libpng-dev \
