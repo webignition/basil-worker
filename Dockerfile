@@ -16,12 +16,13 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   zlib1g-dev \
   pkg-config \
   ssh-client \
+  libpq-dev \
   && docker-php-ext-install \
   bcmath \
   gd \
   intl \
   opcache \
-  pdo_mysql \
+  pdo_pgsql \
   sockets \
   zip \
   && git clone git://github.com/alanxz/rabbitmq-c.git \
@@ -54,19 +55,19 @@ RUN apt-get -qq update && apt-get -qq -y install  \
 #    && apt-get clean \
 #    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 #
-#RUN echo "Install composer"
-#RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-#RUN composer --version
+RUN echo "Install composer"
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer --version
 #
 #RUN echo "Copying source"
 #COPY bin/console /app/bin/console
 #RUN chmod +x /app/bin/console
 #COPY src /app/src
 #
-#RUN echo "Checking platform requirements"
-#COPY composer.json /app
-#COPY composer.lock /app
-#RUN composer check-platform-reqs --ansi
+RUN echo "Checking platform requirements"
+COPY composer.json /app
+COPY composer.lock /app
+RUN composer check-platform-reqs --ansi
 #
 #RUN echo "Installing dependencies"
 #RUN composer install --no-dev
