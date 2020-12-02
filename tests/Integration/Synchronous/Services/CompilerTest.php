@@ -58,7 +58,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
                         [
                             'config' => [
                                 'browser' => 'chrome',
-                                'url' => 'http://nginx/index.html'
+                                'url' => 'http://nginx-html/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-open-index.yml',
                             'target' =>
@@ -80,7 +80,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
                         [
                             'config' => [
                                 'browser' => 'chrome',
-                                'url' => 'http://nginx/index.html'
+                                'url' => 'http://nginx-html/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>
@@ -90,7 +90,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
                         [
                             'config' => [
                                 'browser' => 'firefox',
-                                'url' => 'http://nginx/index.html'
+                                'url' => 'http://nginx-html/index.html'
                             ],
                             'source' => '{{ COMPILER_SOURCE_DIRECTORY }}/Test/chrome-firefox-open-index.yml',
                             'target' =>

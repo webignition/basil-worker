@@ -96,7 +96,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                                 'path' => 'Test/chrome-open-index.yml',
                                 'config' => [
                                     'browser' => 'chrome',
-                                    'url' => 'http://nginx/index.html',
+                                    'url' => 'http://nginx-html/index.html',
                                 ],
                             ],
                             0
@@ -108,7 +108,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                             'statements:' . "\n" .
                             '  -' . "\n" .
                             '    type: assertion' . "\n" .
-                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    source: \'$page.url is "http://nginx-html/index.html"\'' . "\n" .
                             '    status: passed' . "\n"
                         ),
                     ],
@@ -124,7 +124,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                                 'path' => 'Test/firefox-open-index.yml',
                                 'config' => [
                                     'browser' => 'firefox',
-                                    'url' => 'http://nginx/index.html',
+                                    'url' => 'http://nginx-html/index.html',
                                 ],
                             ],
                             0
@@ -136,7 +136,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                             'statements:' . "\n" .
                             '  -' . "\n" .
                             '    type: assertion' . "\n" .
-                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    source: \'$page.url is "http://nginx-html/index.html"\'' . "\n" .
                             '    status: passed' . "\n"
                         ),
                     ],
@@ -152,7 +152,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                                 'path' => 'Test/chrome-firefox-open-index.yml',
                                 'config' => [
                                     'browser' => 'chrome',
-                                    'url' => 'http://nginx/index.html',
+                                    'url' => 'http://nginx-html/index.html',
                                 ],
                             ],
                             0
@@ -164,7 +164,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                             'statements:' . "\n" .
                             '  -' . "\n" .
                             '    type: assertion' . "\n" .
-                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    source: \'$page.url is "http://nginx-html/index.html"\'' . "\n" .
                             '    status: passed' . "\n"
                         ),
                     ],
@@ -175,7 +175,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                                 'path' => 'Test/chrome-firefox-open-index.yml',
                                 'config' => [
                                     'browser' => 'firefox',
-                                    'url' => 'http://nginx/index.html',
+                                    'url' => 'http://nginx-html/index.html',
                                 ],
                             ],
                             0
@@ -187,7 +187,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                             'statements:' . "\n" .
                             '  -' . "\n" .
                             '    type: assertion' . "\n" .
-                            '    source: \'$page.url is "http://nginx/index.html"\'' . "\n" .
+                            '    source: \'$page.url is "http://nginx-html/index.html"\'' . "\n" .
                             '    status: passed' . "\n"
                         ),
                     ],
