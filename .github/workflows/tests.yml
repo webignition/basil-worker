@@ -93,7 +93,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Create docker services
-        run: composer integration-setup
+        run: composer integration-start
 
       - name: Install extensions
         uses: shivammathur/setup-php@v2

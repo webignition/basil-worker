@@ -105,9 +105,9 @@
             "@test-unit",
             "@test-functional"
         ],
-        "integration-setup": "docker-compose --env-file tests/.env -f tests/docker-compose.yml up -d",
+        "integration-start": "docker-compose --env-file tests/.env -f tests/docker-compose.yml up -d",
         "integration-status": "docker-compose --env-file tests/.env -f tests/docker-compose.yml ps",
-        "integration-teardown": "docker-compose --env-file tests/.env -f tests/docker-compose.yml down",
+        "integration-stop": "docker-compose --env-file tests/.env -f tests/docker-compose.yml stop",
         "ci": [
             "@cs",
             "@static-analysis",
