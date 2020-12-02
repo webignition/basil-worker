@@ -10,9 +10,9 @@ services:
     ports:
       - ${WORKER_COMPILER_EXPOSED_PORT}:8000
 
-  nginx:
+  nginx-html:
     image: nginx
-    container_name: ${WORKER_NGINX_CONTAINER_NAME}
+    container_name: ${WORKER_NGINX_HTML_CONTAINER_NAME}
     volumes:
       - ../tests/Fixtures/html:/usr/share/nginx/html
 
