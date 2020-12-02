@@ -89,7 +89,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'path' => 'Test/chrome-open-index.yml',
                                     'config' => [
                                         'browser' => 'chrome',
-                                        'url' => 'http://nginx/index.html',
+                                        'url' => 'http://nginx-html/index.html',
                                     ],
                                 ]),
                                 new Response()
@@ -102,7 +102,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'statements' => [
                                         [
                                             'type' => 'assertion',
-                                            'source' => '$page.url is "http://nginx/index.html"',
+                                            'source' => '$page.url is "http://nginx-html/index.html"',
                                             'status' => 'passed',
                                         ],
                                     ],
@@ -115,7 +115,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'path' => 'Test/chrome-firefox-open-index.yml',
                                     'config' => [
                                         'browser' => 'chrome',
-                                        'url' => 'http://nginx/index.html',
+                                        'url' => 'http://nginx-html/index.html',
                                     ],
                                 ]),
                                 new Response()
@@ -128,7 +128,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'statements' => [
                                         [
                                             'type' => 'assertion',
-                                            'source' => '$page.url is "http://nginx/index.html"',
+                                            'source' => '$page.url is "http://nginx-html/index.html"',
                                             'status' => 'passed',
                                         ],
                                     ],
@@ -141,7 +141,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'path' => 'Test/chrome-firefox-open-index.yml',
                                     'config' => [
                                         'browser' => 'firefox',
-                                        'url' => 'http://nginx/index.html',
+                                        'url' => 'http://nginx-html/index.html',
                                     ],
                                 ]),
                                 new Response()
@@ -154,7 +154,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'statements' => [
                                         [
                                             'type' => 'assertion',
-                                            'source' => '$page.url is "http://nginx/index.html"',
+                                            'source' => '$page.url is "http://nginx-html/index.html"',
                                             'status' => 'passed',
                                         ],
                                     ],
@@ -167,7 +167,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'path' => 'Test/chrome-open-form.yml',
                                     'config' => [
                                         'browser' => 'chrome',
-                                        'url' => 'http://nginx/form.html',
+                                        'url' => 'http://nginx-html/form.html',
                                     ],
                                 ]),
                                 new Response()
@@ -180,7 +180,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                     'statements' => [
                                         [
                                             'type' => 'assertion',
-                                            'source' => '$page.url is "http://nginx/form.html"',
+                                            'source' => '$page.url is "http://nginx-html/form.html"',
                                             'status' => 'passed',
                                         ],
                                     ],
@@ -221,7 +221,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                         'path' => 'Test/chrome-open-index-with-step-failure.yml',
                                         'config' => [
                                             'browser' => 'chrome',
-                                            'url' => 'http://nginx/index.html',
+                                            'url' => 'http://nginx-html/index.html',
                                         ],
                                     ]),
                                     new Response()
@@ -234,7 +234,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                                         'statements' => [
                                             [
                                                 'type' => 'assertion',
-                                                'source' => '$page.url is "http://nginx/index.html"',
+                                                'source' => '$page.url is "http://nginx-html/index.html"',
                                                 'status' => 'passed',
                                             ],
                                         ],

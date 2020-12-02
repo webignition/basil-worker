@@ -1,8 +1,8 @@
 config:
   browsers:
     - chrome
-  url: http://nginx/form.html
+  url: http://nginx-html/form.html
 
 "verify page is open":
   assertions:
-    - $page.url is "http://nginx/form.html"
+    - $page.url is "http://nginx-html/form.html"
