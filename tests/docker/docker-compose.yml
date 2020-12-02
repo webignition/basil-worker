@@ -14,19 +14,19 @@ services:
     image: nginx
     container_name: ${WORKER_NGINX_HTML_CONTAINER_NAME}
     volumes:
-      - ./fixtures/html:/usr/share/nginx/html
+      - ${WORKER_NGINX_HTML_SOURCE_PATH}:/usr/share/nginx/html
 
   chrome-runner:
     image: smartassert/chrome-runner:0.14
     container_name: ${WORKER_CHROME_RUNNER_CONTAINER_NAME}
     volumes:
-      - ../../tests/build/tests:/app/tests
+      - ${WORKER_COMPILER_LOCAL_TARGET_PATH}:/app/tests
 
   firefox-runner:
     image: smartassert/firefox-runner:0.14
     container_name: ${WORKER_FIREFOX_RUNNER_CONTAINER_NAME}
     volumes:
-      - ../../tests/build/tests:/app/tests
+      - ${WORKER_COMPILER_LOCAL_TARGET_PATH}:/app/tests
 
   delegator:
     image: smartassert/basil-runner-delegator:0.4
