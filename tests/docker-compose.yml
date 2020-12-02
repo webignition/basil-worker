@@ -47,3 +47,11 @@ services:
       RABBITMQ_DEFAULT_PASS: ${WORKER_RABBITMQ_PASS}
     ports:
       - ${WORKER_RABBITMQ_EXPOSED_PORT}:5672
+
+  postgres:
+    image: postgres:12.5
+    container_name: ${WORKER_POSTGRES_CONTAINER_NAME}
+    environment:
+      POSTGRES_PASSWORD: ${WORKER_POSTGRES_PASSWORD}
+    ports:
+      - ${WORKER_POSTGRES_EXPOSED_PORT}:5432
