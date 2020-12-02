@@ -78,16 +78,6 @@ jobs:
     name: Integration tests
     runs-on: ubuntu-latest
 
-    services:
-      postgres:
-        image: postgres:12.4
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        ports:
-          - 5432/tcp
-
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -116,21 +106,27 @@ jobs:
         run: |
           composer install --no-progress --prefer-dist
 
+      - name: Create DB
+        run: |
+          php bin/console doctrine:database:create
+        env:
+          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/basil-worker-db?charset=UTF-8
+
       - name: Run DB migrations
         run: |
           php bin/console doctrine:migrations:migrate --no-interaction
         env:
-          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
+          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/basil-worker-db?charset=UTF-8
 
       - name: Run synchronous tests
         run: |
           composer test-integration-sync
         env:
-          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
+          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/basil-worker-db?charset=UTF-8
 
       - name: Run asynchronous tests
         run: |
           php bin/console --env=integration_async messenger:consume async > /dev/null &
           composer test-integration-async
         env:
-          DATABASE_URL: postgres://postgres:postgres@127.0.0.1:${{ job.services.postgres.ports[5432] }}/postgres?charset=UTF-8
+          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/basil-worker-db?charset=UTF-8
