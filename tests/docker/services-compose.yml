@@ -21,12 +21,16 @@ services:
     container_name: ${WORKER_CHROME_RUNNER_CONTAINER_NAME}
     volumes:
       - ${WORKER_COMPILER_LOCAL_TARGET_PATH}:/app/tests
+    depends_on:
+      - nginx-html
 
   firefox-runner:
     image: smartassert/firefox-runner:0.14
     container_name: ${WORKER_FIREFOX_RUNNER_CONTAINER_NAME}
     volumes:
       - ${WORKER_COMPILER_LOCAL_TARGET_PATH}:/app/tests
+    depends_on:
+      - nginx-html
 
   delegator:
     image: smartassert/basil-runner-delegator:0.4
@@ -38,6 +42,9 @@ services:
       FIREFOX_RUNNER_PORT: 8000
     ports:
       - ${WORKER_DELEGATOR_EXPOSED_PORT}:8000
+    depends_on:
+      - chrome-runner
+      - firefox-runner
 
   rabbitmq:
     image: rabbitmq:3
