@@ -1,6 +1,18 @@
 version: "3"
 
 services:
+  nginx-app:
+    build:
+      context: ./nginx-app
+      dockerfile: Dockerfile
+    container_name: nginx-app
+    ports:
+      - 9090:80
+    links:
+      - app-web:app-web
+    volumes:
+      - ../../var/log/nginx-app:/var/log/nginx:rw
+
   app-web:
     build:
       context: ../..
