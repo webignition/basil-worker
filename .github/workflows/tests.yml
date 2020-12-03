@@ -114,3 +114,7 @@ jobs:
         run: |
           php bin/console --env=integration_async messenger:consume async > /dev/null &
           composer test-integration-async
+
+      - name: Verify worker within container is responding
+        run: |
+          curl -v http://localhost:9090/status
