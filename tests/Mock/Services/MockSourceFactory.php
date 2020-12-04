@@ -29,7 +29,7 @@ class MockSourceFactory
     public function withCreateCollectionFromManifestCallThrowingException(
         Manifest $manifest,
         UploadedSourceCollection $sources,
-        \Throwable $exception
+        \Exception $exception
     ): self {
         $this->sourceFactory
             ->shouldReceive('createCollectionFromManifest')

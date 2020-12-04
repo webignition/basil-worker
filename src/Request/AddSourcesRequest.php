@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Request;
 
 use App\Model\Manifest;
-use App\Model\UploadedFileCollection;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;

@@ -23,4 +23,27 @@ class MockUploadedSourceCollection
     {
         return $this->sources;
     }
+
+    public function withContainsCall(string $path, bool $contains): self
+    {
+        $this->sources
+            ->shouldReceive('contains')
+            ->with($path)
+            ->andReturn($contains);
+
+        return $this;
+    }
+
+    /**
+     * @param mixed $return
+     */
+    public function withOffsetGetCall(string $offset, $return): self
+    {
+        $this->sources
+            ->shouldReceive('offsetGet')
+            ->with($offset)
+            ->andReturn($return);
+
+        return $this;
+    }
 }

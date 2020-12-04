@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Event\SourcesAddedEvent;
-use App\Exception\InvalidTestSourceException;
 use App\Exception\MissingTestSourceException;
-use App\Exception\TestSourceExceptionInterface;
 use App\Model\Manifest;
 use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
@@ -94,7 +92,7 @@ class JobController extends AbstractController
 
         try {
             $jobSources = $sourceFactory->createCollectionFromManifest($manifest, $uploadedSources);
-        } catch (TestSourceExceptionInterface $testSourceException) {
+        } catch (MissingTestSourceException $testSourceException) {
             return BadAddSourcesRequestResponse::createSourceMissingResponse($testSourceException->getPath());
         }
 

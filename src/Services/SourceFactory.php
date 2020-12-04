@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Exception\InvalidTestSourceException;
 use App\Exception\MissingTestSourceException;
-use App\Exception\TestSourceExceptionInterface;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
@@ -26,7 +24,7 @@ class SourceFactory
      *
      * @return string[]
      *
-     * @throws TestSourceExceptionInterface
+     * @throws MissingTestSourceException
      */
     public function createCollectionFromManifest(Manifest $manifest, UploadedSourceCollection $uploadedSources): array
     {
@@ -40,7 +38,7 @@ class SourceFactory
 
             $uploadedSource = $uploadedSources[$manifestTestPath];
             if (!$uploadedSource instanceof UploadedSource) {
-                throw new InvalidTestSourceException($manifestTestPath);
+                throw new MissingTestSourceException($manifestTestPath);
             }
 
             $this->sourceStore->store($uploadedSource, $manifestTestPath);

@@ -3,7 +3,6 @@
 namespace App\Tests\Unit\Controller;
 
 use App\Controller\JobController;
-use App\Exception\InvalidTestSourceException;
 use App\Exception\MissingTestSourceException;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
@@ -205,24 +204,6 @@ class JobControllerTest extends TestCase
                         $nonEmptyManifest,
                         $uploadedSources,
                         new MissingTestSourceException('Test/test1.yml')
-                    )
-                    ->getMock(),
-                'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
-            ],
-            'request source not UploadedSource instance' => [
-                'addSourcesRequest' => (new MockAddSourcesRequest())
-                    ->withGetManifestCall($nonEmptyManifest)
-                    ->withGetUploadedSourcesCall($uploadedSources)
-                    ->getMock(),
-                'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall($jobWithNoSources)
-                    ->getMock(),
-                'sourceFactory' => (new MockSourceFactory())
-                    ->withCreateCollectionFromManifestCallThrowingException(
-                        $nonEmptyManifest,
-                        $uploadedSources,
-                        new InvalidTestSourceException('Test/test1.yml')
                     )
                     ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
