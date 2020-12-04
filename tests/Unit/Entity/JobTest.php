@@ -101,7 +101,7 @@ class JobTest extends TestCase
             'not exceeded: start date time is less than max duration seconds ago' => [
                 'job' => (function () use ($maximumDuration) {
                     $job = Job::create('', '', $maximumDuration);
-                    $startDateTime = new \DateTimeImmutable('-9 minute -59 second');
+                    $startDateTime = new \DateTimeImmutable('-9 minute -58 second');
 
                     ObjectReflector::setProperty($job, Job::class, 'startDateTime', $startDateTime);
 
