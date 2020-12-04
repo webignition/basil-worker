@@ -8,6 +8,7 @@ use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
 use App\Services\SourceFactory;
+use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\ServiceReference;
@@ -22,6 +23,7 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private SourceFactory $factory;
+    private SourceFileStore $sourceFileStore;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -77,6 +79,10 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         $storedTestPaths = $this->factory->createCollectionFromManifest($manifest, $uploadedSources);
 
         self::assertSame($expectedStoredTestPaths, $storedTestPaths);
+
+        foreach ($expectedStoredTestPaths as $expectedStoredTestPath) {
+            self::assertTrue($this->sourceFileStore->has($expectedStoredTestPath));
+        }
     }
 
     public function createCollectionFromManifestDataProvider(): array
