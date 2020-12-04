@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Source;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
+use Doctrine\ORM\EntityManagerInterface;
 
 class SourceFactory
 {
-    private SourceStore $sourceStore;
+    private SourceFileStore $sourceFileStore;
+    private EntityManagerInterface $entityManager;
 
-    public function __construct(SourceStore $sourceStore)
+    public function __construct(SourceFileStore $sourceFileStore, EntityManagerInterface $entityManager)
     {
-        $this->sourceStore = $sourceStore;
+        $this->sourceFileStore = $sourceFileStore;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -41,8 +45,25 @@ class SourceFactory
                 throw new MissingTestSourceException($manifestTestPath);
             }
 
-            $this->sourceStore->store($uploadedSource, $manifestTestPath);
             $storedTestPaths[] = $manifestTestPath;
+        }
+
+        foreach ($uploadedSources as $uploadedSource) {
+            /** @var UploadedSource$uploadedSource */
+
+            $uploadedSourceRelativePath = $uploadedSource->getPath();
+            $sourceType = Source::TYPE_RESOURCE;
+
+            if ($manifest->isTestPath($uploadedSourceRelativePath)) {
+                $sourceType = Source::TYPE_TEST;
+            }
+
+            $this->sourceFileStore->store($uploadedSource, $uploadedSourceRelativePath);
+
+            $source = Source::create($sourceType, $uploadedSourceRelativePath);
+
+            $this->entityManager->persist($source);
+            $this->entityManager->flush();
         }
 
         return $storedTestPaths;

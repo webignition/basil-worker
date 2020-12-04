@@ -5,21 +5,21 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Services;
 
 use App\Model\UploadedSource;
-use App\Services\SourceStore;
+use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\InvokableHandler;
-use App\Tests\Services\SourceStoreInitializer;
+use App\Tests\Services\SourceFileStoreInitializer;
 use Symfony\Component\HttpFoundation\File\File;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class SourceStoreTest extends AbstractBaseFunctionalTest
+class SourceFileStoreTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private SourceStore $store;
+    private SourceFileStore $store;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -27,10 +27,10 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
-        self::assertInstanceOf(SourceStoreInitializer::class, $sourceStoreInitializer);
-        if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
-            $sourceStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
+        self::assertInstanceOf(SourceFileStoreInitializer::class, $sourceFileStoreInitializer);
+        if ($sourceFileStoreInitializer instanceof SourceFileStoreInitializer) {
+            $sourceFileStoreInitializer->initialize();
         }
     }
 
