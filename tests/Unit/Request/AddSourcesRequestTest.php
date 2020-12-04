@@ -25,7 +25,7 @@ class AddSourcesRequestTest extends TestCase
         $addSourcesRequest = new AddSourcesRequest($request);
 
         self::assertEquals($expectedManifest, $addSourcesRequest->getManifest());
-        self::assertSame($expectedSources, $addSourcesRequest->getSources());
+        self::assertSame($expectedSources, $addSourcesRequest->getUploadedSources());
     }
 
     public function createDataProvider(): array

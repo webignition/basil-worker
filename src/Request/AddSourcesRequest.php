@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Request;
 
 use App\Model\Manifest;
+use App\Model\UploadedFileCollection;
+use App\Model\UploadedSource;
+use App\Model\UploadedSourceCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -13,11 +16,7 @@ class AddSourcesRequest extends AbstractEncapsulatingRequest
     public const KEY_MANIFEST = 'manifest';
 
     private ?Manifest $manifest;
-
-    /**
-     * @var UploadedFile[]
-     */
-    private array $sources = [];
+    private UploadedSourceCollection $uploadedSources;
 
     public function processRequest(Request $request): void
     {
@@ -28,11 +27,14 @@ class AddSourcesRequest extends AbstractEncapsulatingRequest
 
         $files->remove(self::KEY_MANIFEST);
 
-        foreach ($files as $name => $file) {
+        $uploadedSources = [];
+        foreach ($files as $path => $file) {
             if ($file instanceof UploadedFile) {
-                $this->sources[$name] = $file;
+                $uploadedSources[$path] = new UploadedSource($path, $file);
             }
         }
+
+        $this->uploadedSources = new UploadedSourceCollection($uploadedSources);
     }
 
     public function getManifest(): ?Manifest
@@ -40,11 +42,8 @@ class AddSourcesRequest extends AbstractEncapsulatingRequest
         return $this->manifest;
     }
 
-    /**
-     * @return UploadedFile[]
-     */
-    public function getSources(): array
+    public function getUploadedSources(): UploadedSourceCollection
     {
-        return $this->sources;
+        return $this->uploadedSources;
     }
 }
