@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repository\CallbackRepository;
+use App\Repository\SourceRepository;
 
 class ApplicationState
 {
@@ -21,19 +22,22 @@ class ApplicationState
     private ExecutionState $executionState;
     private CallbackState $callbackState;
     private CallbackRepository $callbackRepository;
+    private SourceRepository $sourceRepository;
 
     public function __construct(
         JobStore $jobStore,
         CompilationState $compilationState,
         ExecutionState $executionState,
         CallbackState $callbackState,
-        CallbackRepository $callbackRepository
+        CallbackRepository $callbackRepository,
+        SourceRepository $sourceRepository
     ) {
         $this->jobStore = $jobStore;
         $this->compilationState = $compilationState;
         $this->executionState = $executionState;
         $this->callbackState = $callbackState;
         $this->callbackRepository = $callbackRepository;
+        $this->sourceRepository = $sourceRepository;
     }
 
     /**
@@ -60,8 +64,7 @@ class ApplicationState
             return self::STATE_TIMED_OUT;
         }
 
-        $job = $this->jobStore->getJob();
-        if ([] === $job->getSources()) {
+        if ([] === $this->sourceRepository->findAll()) {
             return self::STATE_AWAITING_SOURCES;
         }
 
