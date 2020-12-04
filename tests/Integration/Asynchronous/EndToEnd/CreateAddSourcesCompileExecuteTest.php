@@ -166,6 +166,9 @@ class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest
                     ),
                     'verify last http request type' => new Invokable(
                         function (HttpLogReader $httpLogReader) {
+                            // Fixes #676. Wait (0.05 seconds) for the HTTP transaction log to be written to fully.
+                            usleep(50000);
+
                             $httpTransactions = $httpLogReader->getTransactions();
                             $httpLogReader->reset();
 
