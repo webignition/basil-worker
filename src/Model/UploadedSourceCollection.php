@@ -6,8 +6,9 @@ namespace App\Model;
 
 /**
  * @implements \ArrayAccess<string, UploadedSource>
+ * @implements \IteratorAggregate<string, UploadedSource>
  */
-class UploadedSourceCollection implements \ArrayAccess
+class UploadedSourceCollection implements \ArrayAccess, \IteratorAggregate
 {
     /**
      * @var UploadedSource[]
@@ -24,6 +25,14 @@ class UploadedSourceCollection implements \ArrayAccess
                 $this->uploadedSources[$uploadedSource->getPath()] = $uploadedSource;
             }
         }
+    }
+
+    /**
+     * @return \Iterator<string, UploadedSource>
+     */
+    public function getIterator(): \Iterator
+    {
+        return new \ArrayIterator($this->uploadedSources);
     }
 
     public function contains(string $path): bool

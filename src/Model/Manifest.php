@@ -10,6 +10,11 @@ class Manifest
 {
     private UploadedFile $uploadedFile;
 
+    /**
+     * @var string[]|null
+     */
+    private ?array $lines = null;
+
     public function __construct(UploadedFile $uploadedFile)
     {
         $this->uploadedFile = $uploadedFile;
@@ -24,18 +29,35 @@ class Manifest
             return [];
         }
 
-        $content = (string) file_get_contents($this->uploadedFile->getPathname());
+        return $this->getLines();
+    }
 
-        $rawLines = explode("\n", $content);
-        $lines = [];
+    public function isTestPath(string $path): bool
+    {
+        return in_array($path, $this->getTestPaths());
+    }
 
-        foreach ($rawLines as $line) {
-            $line = trim($line);
-            if ('' !== $line) {
-                $lines[] = $line;
+    /**
+     * @return string[]
+     */
+    private function getLines(): array
+    {
+        if (null === $this->lines) {
+            $content = (string) file_get_contents($this->uploadedFile->getPathname());
+
+            $rawLines = explode("\n", $content);
+            $lines = [];
+
+            foreach ($rawLines as $line) {
+                $line = trim($line);
+                if ('' !== $line) {
+                    $lines[] = $line;
+                }
             }
+
+            $this->lines = $lines;
         }
 
-        return $lines;
+        return $this->lines;
     }
 }
