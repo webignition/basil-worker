@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
-use App\Services\SourceStore;
+use App\Services\SourceFileStore;
 
-class SourceStoreInitializer
+class SourceFileStoreInitializer
 {
-    private SourceStore $sourceStore;
+    private SourceFileStore $sourceFileStore;
 
-    public function __construct(SourceStore $sourceStore)
+    public function __construct(SourceFileStore $sourceFileStore)
     {
-        $this->sourceStore = $sourceStore;
+        $this->sourceFileStore = $sourceFileStore;
     }
 
     public function initialize(): void
@@ -23,7 +23,7 @@ class SourceStoreInitializer
 
     public function create(): void
     {
-        $basilPath = $this->sourceStore->getPath();
+        $basilPath = $this->sourceFileStore->getPath();
 
         if (!file_exists($basilPath)) {
             mkdir($basilPath, 0777, true);
@@ -32,7 +32,7 @@ class SourceStoreInitializer
 
     public function delete(): bool
     {
-        return $this->deleteDirectory($this->sourceStore->getPath());
+        return $this->deleteDirectory($this->sourceFileStore->getPath());
     }
 
     private function deleteDirectory(string $path): bool

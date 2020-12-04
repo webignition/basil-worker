@@ -7,12 +7,12 @@ namespace App\Tests\Functional\Controller;
 use App\Entity\Job;
 use App\Event\SourcesAddedEvent;
 use App\Services\JobStore;
-use App\Services\SourceStore;
+use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
+use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\SourcesAddedEventSubscriber;
-use App\Tests\Services\SourceStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -28,7 +28,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     ];
 
     private BasilFixtureHandler $basilFixtureHandler;
-    private SourceStore $sourceStore;
+    private SourceFileStore $sourceFileStore;
     private SourcesAddedEventSubscriber $sourcesAddedEventSubscriber;
     private Job $job;
     private Response $response;
@@ -39,7 +39,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     {
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
-        $this->initializeSourceStore();
+        $this->initializeSourceFileStore();
 
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
@@ -69,7 +69,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     public function testSourcesAreStored()
     {
         foreach (self::EXPECTED_SOURCES as $expectedSource) {
-            self::assertTrue($this->sourceStore->has($expectedSource));
+            self::assertTrue($this->sourceFileStore->has($expectedSource));
         }
     }
 
@@ -81,12 +81,12 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         );
     }
 
-    private function initializeSourceStore(): void
+    private function initializeSourceFileStore(): void
     {
-        $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
-        self::assertInstanceOf(SourceStoreInitializer::class, $sourceStoreInitializer);
-        if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
-            $sourceStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
+        self::assertInstanceOf(SourceFileStoreInitializer::class, $sourceFileStoreInitializer);
+        if ($sourceFileStoreInitializer instanceof SourceFileStoreInitializer) {
+            $sourceFileStoreInitializer->initialize();
         }
     }
 }

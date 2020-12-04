@@ -13,7 +13,7 @@ use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\InvokableHandler;
-use App\Tests\Services\SourceStoreInitializer;
+use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -29,10 +29,10 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         parent::setUp();
         $this->injectContainerServicesIntoClassProperties();
 
-        $sourceStoreInitializer = self::$container->get(SourceStoreInitializer::class);
-        self::assertInstanceOf(SourceStoreInitializer::class, $sourceStoreInitializer);
-        if ($sourceStoreInitializer instanceof SourceStoreInitializer) {
-            $sourceStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
+        self::assertInstanceOf(SourceFileStoreInitializer::class, $sourceFileStoreInitializer);
+        if ($sourceFileStoreInitializer instanceof SourceFileStoreInitializer) {
+            $sourceFileStoreInitializer->initialize();
         }
     }
 

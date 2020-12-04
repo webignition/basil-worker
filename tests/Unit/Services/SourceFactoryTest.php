@@ -8,7 +8,7 @@ use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSourceCollection;
 use App\Services\SourceFactory;
-use App\Services\SourceStore;
+use App\Services\SourceFileStore;
 use App\Tests\Mock\Model\MockUploadedSourceCollection;
 use PHPUnit\Framework\TestCase;
 
@@ -19,7 +19,7 @@ class SourceFactoryTest extends TestCase
      */
     public function testCreateCollectionFromManifestThrowsException(UploadedSourceCollection $uploadedSources)
     {
-        $factory = new SourceFactory(\Mockery::mock(SourceStore::class));
+        $factory = new SourceFactory(\Mockery::mock(SourceFileStore::class));
 
         $path = 'Test/test.yml';
 

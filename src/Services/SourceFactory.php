@@ -11,11 +11,11 @@ use App\Model\UploadedSourceCollection;
 
 class SourceFactory
 {
-    private SourceStore $sourceStore;
+    private SourceFileStore $sourceFileStore;
 
-    public function __construct(SourceStore $sourceStore)
+    public function __construct(SourceFileStore $sourceFileStore)
     {
-        $this->sourceStore = $sourceStore;
+        $this->sourceFileStore = $sourceFileStore;
     }
 
     /**
@@ -41,7 +41,7 @@ class SourceFactory
                 throw new MissingTestSourceException($manifestTestPath);
             }
 
-            $this->sourceStore->store($uploadedSource, $manifestTestPath);
+            $this->sourceFileStore->store($uploadedSource, $manifestTestPath);
             $storedTestPaths[] = $manifestTestPath;
         }
 

@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Model\UploadedSource;
 use Symfony\Component\HttpFoundation\File\File;
 
-class SourceStore
+class SourceFileStore
 {
     private string $path;
 
