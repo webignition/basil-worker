@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Exception\InvalidTestSourceException;
 use App\Exception\MissingTestSourceException;
+use App\Exception\TestSourceExceptionInterface;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
@@ -25,8 +26,7 @@ class SourceFactory
      *
      * @return string[]
      *
-     * @throws InvalidTestSourceException
-     * @throws MissingTestSourceException
+     * @throws TestSourceExceptionInterface
      */
     public function createCollectionFromManifest(Manifest $manifest, UploadedSourceCollection $uploadedSources): array
     {

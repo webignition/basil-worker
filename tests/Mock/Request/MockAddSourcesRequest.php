@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Mock\Request;
 
 use App\Model\Manifest;
+use App\Model\UploadedSourceCollection;
 use App\Request\AddSourcesRequest;
 use Mockery\MockInterface;
 
@@ -34,15 +35,10 @@ class MockAddSourcesRequest
         return $this;
     }
 
-    /**
-     * @param string[] $sources
-     *
-     * @return $this
-     */
-    public function withGetSourcesCall(array $sources): self
+    public function withGetUploadedSourcesCall(UploadedSourceCollection $sources): self
     {
         $this->addSourcesRequest
-            ->shouldReceive('getSources')
+            ->shouldReceive('getUploadedSources')
             ->andReturn($sources);
 
         return $this;

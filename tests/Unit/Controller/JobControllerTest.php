@@ -3,17 +3,21 @@
 namespace App\Tests\Unit\Controller;
 
 use App\Controller\JobController;
+use App\Exception\InvalidTestSourceException;
+use App\Exception\MissingTestSourceException;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\JobStore;
-use App\Services\SourceStore;
+use App\Services\SourceFactory;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\Model\MockManifest;
+use App\Tests\Mock\Model\MockUploadedSourceCollection;
 use App\Tests\Mock\Request\MockAddSourcesRequest;
 use App\Tests\Mock\Request\MockJobCreateRequest;
 use App\Tests\Mock\Services\MockJobStore;
+use App\Tests\Mock\Services\MockSourceFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -102,12 +106,13 @@ class JobControllerTest extends TestCase
     public function testAddSources(
         AddSourcesRequest $addSourcesRequest,
         JobStore $jobStore,
+        SourceFactory $sourceFactory,
         JsonResponse $expectedResponse
     ) {
         $controller = new JobController($jobStore);
 
         $response = $controller->addSources(
-            \Mockery::mock(SourceStore::class),
+            $sourceFactory,
             \Mockery::mock(EventDispatcherInterface::class),
             $addSourcesRequest
         );
@@ -135,12 +140,16 @@ class JobControllerTest extends TestCase
             ])
             ->getMock();
 
+        $uploadedSources = (new MockUploadedSourceCollection())->getMock();
+        $emptySourceFactory = (new MockSourceFactory())->getMock();
+
         return [
             'job missing' => [
                 'addSourcesRequest' => \Mockery::mock(AddSourcesRequest::class),
                 'jobStore' => (new MockJobStore())
                     ->withHasJobCall(false)
                     ->getMock(),
+                'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createJobMissingResponse(),
             ],
             'job has sources' => [
@@ -153,6 +162,7 @@ class JobControllerTest extends TestCase
                             ->getMock()
                     )
                     ->getMock(),
+                'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourcesNotEmptyResponse(),
             ],
             'request manifest missing' => [
@@ -163,6 +173,7 @@ class JobControllerTest extends TestCase
                     ->withHasJobCall(true)
                     ->withGetJobCall($jobWithNoSources)
                     ->getMock(),
+                'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestMissingResponse(),
             ],
             'request manifest empty' => [
@@ -177,29 +188,42 @@ class JobControllerTest extends TestCase
                     ->withHasJobCall(true)
                     ->withGetJobCall($jobWithNoSources)
                     ->getMock(),
+                'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestEmptyResponse(),
             ],
             'request source missing' => [
                 'addSourcesRequest' => (new MockAddSourcesRequest())
                     ->withGetManifestCall($nonEmptyManifest)
-                    ->withGetSourcesCall([])
+                    ->withGetUploadedSourcesCall($uploadedSources)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
                     ->withHasJobCall(true)
                     ->withGetJobCall($jobWithNoSources)
+                    ->getMock(),
+                'sourceFactory' => (new MockSourceFactory())
+                    ->withCreateCollectionFromManifestCallThrowingException(
+                        $nonEmptyManifest,
+                        $uploadedSources,
+                        new MissingTestSourceException('Test/test1.yml')
+                    )
                     ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
             ],
-            'request source not UploadedFile instance' => [
+            'request source not UploadedSource instance' => [
                 'addSourcesRequest' => (new MockAddSourcesRequest())
                     ->withGetManifestCall($nonEmptyManifest)
-                    ->withGetSourcesCall([
-                        'Test/test1.yml' => 'not UploadedFile instance',
-                    ])
+                    ->withGetUploadedSourcesCall($uploadedSources)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
                     ->withHasJobCall(true)
                     ->withGetJobCall($jobWithNoSources)
+                    ->getMock(),
+                'sourceFactory' => (new MockSourceFactory())
+                    ->withCreateCollectionFromManifestCallThrowingException(
+                        $nonEmptyManifest,
+                        $uploadedSources,
+                        new InvalidTestSourceException('Test/test1.yml')
+                    )
                     ->getMock(),
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourceMissingResponse('Test/test1.yml'),
             ],

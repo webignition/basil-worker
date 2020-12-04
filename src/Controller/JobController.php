@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Controller;
 
 use App\Event\SourcesAddedEvent;
+use App\Exception\InvalidTestSourceException;
+use App\Exception\MissingTestSourceException;
+use App\Exception\TestSourceExceptionInterface;
 use App\Model\Manifest;
 use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
@@ -14,10 +17,9 @@ use App\Response\BadJobCreateRequestResponse;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Services\JobStore;
-use App\Services\SourceStore;
+use App\Services\SourceFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -64,7 +66,7 @@ class JobController extends AbstractController
      * @Route("/add-sources", name="add-sources", methods={"POST"})
      */
     public function addSources(
-        SourceStore $sourceStore,
+        SourceFactory $sourceFactory,
         EventDispatcherInterface $eventDispatcher,
         AddSourcesRequest $addSourcesRequest
     ): JsonResponse {
@@ -88,21 +90,12 @@ class JobController extends AbstractController
             return BadAddSourcesRequestResponse::createManifestEmptyResponse();
         }
 
-        $requestSources = $addSourcesRequest->getSources();
-        $jobSources = [];
+        $uploadedSources = $addSourcesRequest->getUploadedSources();
 
-        foreach ($manifestTestPaths as $manifestTestPath) {
-            if (false === array_key_exists($manifestTestPath, $requestSources)) {
-                return BadAddSourcesRequestResponse::createSourceMissingResponse($manifestTestPath);
-            }
-
-            $uploadedFile = $requestSources[$manifestTestPath];
-            if (!$uploadedFile instanceof UploadedFile) {
-                return BadAddSourcesRequestResponse::createSourceMissingResponse($manifestTestPath);
-            }
-
-            $sourceStore->store($uploadedFile, $manifestTestPath);
-            $jobSources[] = $manifestTestPath;
+        try {
+            $jobSources = $sourceFactory->createCollectionFromManifest($manifest, $uploadedSources);
+        } catch (TestSourceExceptionInterface $testSourceException) {
+            return BadAddSourcesRequestResponse::createSourceMissingResponse($testSourceException->getPath());
         }
 
         $job->setSources($jobSources);
