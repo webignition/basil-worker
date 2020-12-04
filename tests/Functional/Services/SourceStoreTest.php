@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Model\UploadedSource;
 use App\Services\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -47,12 +48,15 @@ class SourceStoreTest extends AbstractBaseFunctionalTest
         self::assertFileDoesNotExist($expectedFilePath);
 
         $uploadedFile = $this->invokableHandler->invoke(new Invokable(
-            function (BasilFixtureHandler $basilFixtureHandler, string $uploadedFileFixturePath) {
-                return $basilFixtureHandler->createUploadedFile($uploadedFileFixturePath);
+            function (BasilFixtureHandler $basilFixtureHandler, string $uploadedFileFixturePath, string $relativePath) {
+                $uploadedFile = $basilFixtureHandler->createUploadedFile($uploadedFileFixturePath);
+
+                return new UploadedSource($relativePath, $uploadedFile);
             },
             [
                 new ServiceReference(BasilFixtureHandler::class),
-                $uploadedFileFixturePath
+                $uploadedFileFixturePath,
+                $relativePath
             ]
         ));
 

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Model\UploadedSource;
 use Symfony\Component\HttpFoundation\File\File;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class SourceStore
 {
@@ -21,7 +21,7 @@ class SourceStore
         return $this->path;
     }
 
-    public function store(UploadedFile $uploadedFile, string $relativePath): File
+    public function store(UploadedSource $uploadedSource, string $relativePath): File
     {
         $directory = $this->path . '/' . dirname($relativePath);
         $filename = basename($relativePath);
@@ -30,6 +30,8 @@ class SourceStore
         if (file_exists($path)) {
             unlink($path);
         }
+
+        $uploadedFile = $uploadedSource->getUploadedFile();
 
         return $uploadedFile->move($directory, $filename);
     }
