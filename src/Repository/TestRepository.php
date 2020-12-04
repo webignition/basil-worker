@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Test;
+use App\Services\SourcePathTranslator;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,9 +16,13 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class TestRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private SourcePathTranslator $sourcePathTranslator;
+
+    public function __construct(ManagerRegistry $registry, SourcePathTranslator $sourcePathTranslator)
     {
         parent::__construct($registry, Test::class);
+
+        $this->sourcePathTranslator = $sourcePathTranslator;
     }
 
     /**
@@ -90,6 +95,29 @@ class TestRepository extends ServiceEntityRepository
     public function getCancelledCount(): int
     {
         return $this->getCountByState(Test::STATE_CANCELLED);
+    }
+
+    /**
+     * @return string[]
+     */
+    public function findAllRelativeSources(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('Test');
+        $queryBuilder
+            ->select('Test.source');
+
+        $query = $queryBuilder->getQuery();
+
+        $result = $query->getArrayResult();
+
+        $sources = [];
+        foreach ($result as $item) {
+            if (is_array($item)) {
+                $sources[] = (string) ($item['source'] ?? null);
+            }
+        }
+
+        return $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPaths($sources);
     }
 
     /**
