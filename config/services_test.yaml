@@ -92,6 +92,9 @@ services:
     App\Services\ApplicationState:
         public: true
 
+    App\Services\SourceFactory:
+        public: true
+
     App\MessageHandler\TimeoutCheckHandler:
         public: true
 
