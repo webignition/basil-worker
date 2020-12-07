@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use App\Entity\Job;
 use App\Event\SourcesAddedEvent;
 use App\Services\JobStore;
 use App\Services\SourceFileStore;
@@ -14,9 +13,9 @@ use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\InvokableFactory\SourceGetterFactory;
+use App\Tests\Services\InvokableFactory\SourcesAddedEventGetter;
 use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceFileStoreInitializer;
-use App\Tests\Services\SourcesAddedEventSubscriber;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
@@ -31,13 +30,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         'Test/chrome-open-form.yml',
     ];
 
-    private BasilFixtureHandler $basilFixtureHandler;
-    private SourceFileStore $sourceFileStore;
-    private SourcesAddedEventSubscriber $sourcesAddedEventSubscriber;
-    private Job $job;
     private Response $response;
-    private ClientRequestSender $clientRequestSender;
-    private UploadedFileFactory $uploadedFileFactory;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -49,20 +42,26 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $jobStore = self::$container->get(JobStore::class);
         self::assertInstanceOf(JobStore::class, $jobStore);
 
-        $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback', 10);
+        $jobStore->create(md5('label content'), 'http://example.com/callback', 10);
 
         self::assertSame([], $this->invokableHandler->invoke(SourceGetterFactory::getAll()));
-        self::assertNull($this->sourcesAddedEventSubscriber->getEvent());
+        self::assertNull($this->invokableHandler->invoke(SourcesAddedEventGetter::get()));
 
         $this->response = $this->invokableHandler->invoke(new Invokable(
-            function (ClientRequestSender $clientRequestSender) {
+            function (
+                ClientRequestSender $clientRequestSender,
+                UploadedFileFactory $uploadedFileFactory,
+                BasilFixtureHandler $basilFixtureHandler
+            ) {
                 return $clientRequestSender->addJobSources(
-                    $this->uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
-                    $this->basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
+                    $uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
+                    $basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
                 );
             },
             [
                 new ServiceReference(ClientRequestSender::class),
+                new ServiceReference(UploadedFileFactory::class),
+                new ServiceReference(BasilFixtureHandler::class)
             ]
         ));
     }
@@ -85,7 +84,17 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     public function testSourcesAreStored()
     {
         foreach (self::EXPECTED_SOURCES as $expectedSource) {
-            self::assertTrue($this->sourceFileStore->has($expectedSource));
+            self::assertTrue(
+                $this->invokableHandler->invoke(new Invokable(
+                    function (SourceFileStore $sourceFileStore, string $expectedSource) {
+                        return $sourceFileStore->has($expectedSource);
+                    },
+                    [
+                        new ServiceReference(SourceFileStore::class),
+                        $expectedSource
+                    ]
+                ))
+            );
         }
     }
 
@@ -93,16 +102,19 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     {
         self::assertEquals(
             new SourcesAddedEvent(),
-            $this->sourcesAddedEventSubscriber->getEvent()
+            $this->invokableHandler->invoke(SourcesAddedEventGetter::get())
         );
     }
 
     private function initializeSourceFileStore(): void
     {
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        self::assertInstanceOf(SourceFileStoreInitializer::class, $sourceFileStoreInitializer);
-        if ($sourceFileStoreInitializer instanceof SourceFileStoreInitializer) {
-            $sourceFileStoreInitializer->initialize();
-        }
+        $this->invokableHandler->invoke(new Invokable(
+            function (SourceFileStoreInitializer $sourceFileStoreInitializer) {
+                $sourceFileStoreInitializer->initialize();
+            },
+            [
+                new ServiceReference(SourceFileStoreInitializer::class),
+            ]
+        ));
     }
 }
