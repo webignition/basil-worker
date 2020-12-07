@@ -6,6 +6,7 @@ namespace App\Tests\Integration;
 
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Job;
+use App\Entity\Source;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -30,16 +31,18 @@ abstract class AbstractBaseIntegrationTest extends AbstractBaseFunctionalTest
         $this->removeAllEntities(Test::class);
         $this->removeAllEntities(TestConfiguration::class);
         $this->removeAllEntities(CallbackEntity::class);
+        $this->removeAllEntities(Source::class);
     }
 
     protected function tearDown(): void
     {
-        parent::tearDown();
-
         $this->removeAllEntities(Job::class);
         $this->removeAllEntities(Test::class);
         $this->removeAllEntities(TestConfiguration::class);
         $this->removeAllEntities(CallbackEntity::class);
+        $this->removeAllEntities(Source::class);
+
+        parent::tearDown();
     }
 
     /**
