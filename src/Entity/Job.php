@@ -30,13 +30,6 @@ class Job implements \JsonSerializable
     private ?string $callbackUrl;
 
     /**
-     * @ORM\Column(type="simple_array", nullable=true)
-     *
-     * @var string[]
-     */
-    private array $sources = [];
-
-    /**
      * @ORM\Column(type="integer")
      */
     private int $maximumDurationInSeconds;
@@ -93,22 +86,6 @@ class Job implements \JsonSerializable
         return false;
     }
 
-    /**
-     * @return string[]
-     */
-    public function getSources(): array
-    {
-        return $this->sources;
-    }
-
-    /**
-     * @param string[] $sources
-     */
-    public function setSources(array $sources): void
-    {
-        $this->sources = $sources;
-    }
-
     public function setStartDateTime(): void
     {
         $this->startDateTime = new \DateTimeImmutable();
@@ -123,7 +100,6 @@ class Job implements \JsonSerializable
             'label' => $this->label,
             'callback_url' => $this->callbackUrl,
             'maximum_duration_in_seconds' => $this->maximumDurationInSeconds,
-            'sources' => $this->sources,
         ];
     }
 }
