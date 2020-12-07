@@ -38,7 +38,7 @@ class CompilationWorkflowHandler implements EventSubscriberInterface
 
     public function dispatchNextCompileSourceMessage(): void
     {
-        $nextNonCompiledSource = $this->sourcePathFinder->findNextNonCompiledSource();
+        $nextNonCompiledSource = $this->sourcePathFinder->findNextNonCompiledPath();
 
         if (is_string($nextNonCompiledSource)) {
             $message = new CompileSource($nextNonCompiledSource);

@@ -51,8 +51,8 @@ class CompilationState
             return CompilationState::STATE_FAILED;
         }
 
-        $compiledSources = $this->sourcePathFinder->findCompiledSources();
-        $nextSource = $this->sourcePathFinder->findNextNonCompiledSource();
+        $compiledSources = $this->sourcePathFinder->findCompiledPaths();
+        $nextSource = $this->sourcePathFinder->findNextNonCompiledPath();
 
         if ([] === $compiledSources) {
             return is_string($nextSource)
