@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Services\JobSourceFinder;
+use App\Services\SourcePathFinder;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -17,11 +17,11 @@ use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class JobSourceFinderTest extends AbstractBaseFunctionalTest
+class SourcePathFinderTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private JobSourceFinder $jobSourceFinder;
+    private SourcePathFinder $sourcePathFinder;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -31,16 +31,16 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider findNextNonCompiledSourceDataProvider
+     * @dataProvider findNextNonCompiledPathDataProvider
      */
-    public function testFindNextNonCompiledSource(InvokableInterface $setup, ?string $expectedNextNonCompiledSource)
+    public function testFindNextNonCompiledPath(InvokableInterface $setup, ?string $expectedNextNonCompiledSource)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertSame($expectedNextNonCompiledSource, $this->jobSourceFinder->findNextNonCompiledSource());
+        self::assertSame($expectedNextNonCompiledSource, $this->sourcePathFinder->findNextNonCompiledPath());
     }
 
-    public function findNextNonCompiledSourceDataProvider(): array
+    public function findNextNonCompiledPathDataProvider(): array
     {
         $sources = [
             'Test/testZebra.yml',
@@ -135,19 +135,19 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     }
 
     /**
-     * @dataProvider findCompiledSourcesDataProvider
+     * @dataProvider findCompiledPathsDataProvider
      *
      * @param InvokableInterface $setup
      * @param string[] $expectedCompiledSources
      */
-    public function testFindCompiledSources(InvokableInterface $setup, array $expectedCompiledSources)
+    public function testFindCompiledPaths(InvokableInterface $setup, array $expectedCompiledSources)
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertSame($expectedCompiledSources, $this->jobSourceFinder->findCompiledSources());
+        self::assertSame($expectedCompiledSources, $this->sourcePathFinder->findCompiledPaths());
     }
 
-    public function findCompiledSourcesDataProvider(): array
+    public function findCompiledPathsDataProvider(): array
     {
         $sources = [
             'Test/testZebra.yml',

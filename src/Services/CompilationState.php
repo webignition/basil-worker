@@ -20,12 +20,12 @@ class CompilationState
     ];
 
     private CallbackRepository $callbackRepository;
-    private JobSourceFinder $jobSourceFinder;
+    private SourcePathFinder $sourcePathFinder;
 
-    public function __construct(CallbackRepository $callbackRepository, JobSourceFinder $jobSourceFinder)
+    public function __construct(CallbackRepository $callbackRepository, SourcePathFinder $sourcePathFinder)
     {
         $this->callbackRepository = $callbackRepository;
-        $this->jobSourceFinder = $jobSourceFinder;
+        $this->sourcePathFinder = $sourcePathFinder;
     }
 
     /**
@@ -51,8 +51,8 @@ class CompilationState
             return CompilationState::STATE_FAILED;
         }
 
-        $compiledSources = $this->jobSourceFinder->findCompiledSources();
-        $nextSource = $this->jobSourceFinder->findNextNonCompiledSource();
+        $compiledSources = $this->sourcePathFinder->findCompiledPaths();
+        $nextSource = $this->sourcePathFinder->findNextNonCompiledPath();
 
         if ([] === $compiledSources) {
             return is_string($nextSource)

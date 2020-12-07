@@ -13,15 +13,18 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class CompilationWorkflowHandler implements EventSubscriberInterface
 {
     private MessageBusInterface $messageBus;
-    private JobSourceFinder $jobSourceFinder;
+    private SourcePathFinder $sourcePathFinder;
 
-    public function __construct(MessageBusInterface $messageBus, JobSourceFinder $jobSourceFinder)
+    public function __construct(MessageBusInterface $messageBus, SourcePathFinder $sourcePathFinder)
     {
         $this->messageBus = $messageBus;
-        $this->jobSourceFinder = $jobSourceFinder;
+        $this->sourcePathFinder = $sourcePathFinder;
     }
 
-    public static function getSubscribedEvents()
+    /**
+     * @return array[][]
+     */
+    public static function getSubscribedEvents(): array
     {
         return [
             SourceCompileSuccessEvent::class => [
@@ -35,7 +38,7 @@ class CompilationWorkflowHandler implements EventSubscriberInterface
 
     public function dispatchNextCompileSourceMessage(): void
     {
-        $nextNonCompiledSource = $this->jobSourceFinder->findNextNonCompiledSource();
+        $nextNonCompiledSource = $this->sourcePathFinder->findNextNonCompiledPath();
 
         if (is_string($nextNonCompiledSource)) {
             $message = new CompileSource($nextNonCompiledSource);

@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
 
-class JobSourceFinder
+class SourcePathFinder
 {
     private TestRepository $testRepository;
     private SourceRepository $sourceRepository;
@@ -21,12 +21,12 @@ class JobSourceFinder
     /**
      * @return string[]
      */
-    public function findCompiledSources(): array
+    public function findCompiledPaths(): array
     {
         return $this->testRepository->findAllRelativeSources();
     }
 
-    public function findNextNonCompiledSource(): ?string
+    public function findNextNonCompiledPath(): ?string
     {
         $sourcePaths = $this->sourceRepository->findAllRelativePaths();
         $testPaths = $this->testRepository->findAllRelativeSources();

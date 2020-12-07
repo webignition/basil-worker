@@ -30,7 +30,7 @@ services:
     App\MessageHandler\CompileSourceHandler:
         public: true
 
-    App\Services\JobSourceFinder:
+    App\Services\SourcePathFinder:
         public: true
 
     App\Services\CompilationWorkflowHandler:
