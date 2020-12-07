@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
 
-class JobSourceFinder
+class SourcePathFinder
 {
     private TestRepository $testRepository;
     private SourceRepository $sourceRepository;

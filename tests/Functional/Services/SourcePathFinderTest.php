@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Services\JobSourceFinder;
+use App\Services\SourcePathFinder;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -17,11 +17,11 @@ use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
-class JobSourceFinderTest extends AbstractBaseFunctionalTest
+class SourcePathFinderTest extends AbstractBaseFunctionalTest
 {
     use TestClassServicePropertyInjectorTrait;
 
-    private JobSourceFinder $jobSourceFinder;
+    private SourcePathFinder $sourcePathFinder;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -37,7 +37,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertSame($expectedNextNonCompiledSource, $this->jobSourceFinder->findNextNonCompiledSource());
+        self::assertSame($expectedNextNonCompiledSource, $this->sourcePathFinder->findNextNonCompiledSource());
     }
 
     public function findNextNonCompiledSourceDataProvider(): array
@@ -144,7 +144,7 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
     {
         $this->invokableHandler->invoke($setup);
 
-        self::assertSame($expectedCompiledSources, $this->jobSourceFinder->findCompiledSources());
+        self::assertSame($expectedCompiledSources, $this->sourcePathFinder->findCompiledSources());
     }
 
     public function findCompiledSourcesDataProvider(): array
