@@ -92,14 +92,10 @@ class JobController extends AbstractController
         $uploadedSources = $addSourcesRequest->getUploadedSources();
 
         try {
-            $jobSources = $sourceFactory->createCollectionFromManifest($manifest, $uploadedSources);
+            $sourceFactory->createCollectionFromManifest($manifest, $uploadedSources);
         } catch (MissingTestSourceException $testSourceException) {
             return BadAddSourcesRequestResponse::createSourceMissingResponse($testSourceException->getPath());
         }
-
-        $job = $this->jobStore->getJob();
-        $job->setSources($jobSources);
-        $this->jobStore->store($job);
 
         $eventDispatcher->dispatch(new SourcesAddedEvent());
 

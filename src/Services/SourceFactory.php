@@ -26,14 +26,11 @@ class SourceFactory
      * @param Manifest $manifest
      * @param UploadedSourceCollection $uploadedSources
      *
-     * @return string[]
-     *
      * @throws MissingTestSourceException
      */
-    public function createCollectionFromManifest(Manifest $manifest, UploadedSourceCollection $uploadedSources): array
+    public function createCollectionFromManifest(Manifest $manifest, UploadedSourceCollection $uploadedSources): void
     {
         $manifestTestPaths = $manifest->getTestPaths();
-        $storedTestPaths = [];
 
         foreach ($manifestTestPaths as $manifestTestPath) {
             if (false === $uploadedSources->contains($manifestTestPath)) {
@@ -44,8 +41,6 @@ class SourceFactory
             if (!$uploadedSource instanceof UploadedSource) {
                 throw new MissingTestSourceException($manifestTestPath);
             }
-
-            $storedTestPaths[] = $manifestTestPath;
         }
 
         foreach ($uploadedSources as $uploadedSource) {
@@ -65,7 +60,5 @@ class SourceFactory
             $this->entityManager->persist($source);
             $this->entityManager->flush();
         }
-
-        return $storedTestPaths;
     }
 }
