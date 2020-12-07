@@ -13,7 +13,6 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\CallbackSetup;
 use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\SourceSetup;
 use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
@@ -287,12 +286,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'has a job-timeout callback' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                             ])
-                    ),
+                    JobSetupInvokableFactory::setup(),
                     'create callback' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())
                             ->withType(CallbackInterface::TYPE_JOB_TIMEOUT)

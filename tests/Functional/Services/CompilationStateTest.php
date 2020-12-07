@@ -12,7 +12,6 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\CallbackSetup;
 use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\SourceSetup;
 use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
@@ -98,13 +97,7 @@ class CompilationStateTest extends AbstractBaseFunctionalTest
             ],
             'failed: has job, has sources, has more than zero compile-failure callbacks' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
+                    JobSetupInvokableFactory::setup(),
                     CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())
                             ->withType(CallbackInterface::TYPE_COMPILE_FAILURE),
@@ -122,13 +115,7 @@ class CompilationStateTest extends AbstractBaseFunctionalTest
             ],
             'complete: has job, has sources, no next source' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
+                    JobSetupInvokableFactory::setup(),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml'),

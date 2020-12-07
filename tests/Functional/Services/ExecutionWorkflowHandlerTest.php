@@ -14,7 +14,6 @@ use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\Asserter\MessengerAsserter;
-use App\Tests\Services\InvokableFactory\JobMutatorFactory;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
@@ -66,10 +65,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'two tests, none run' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml'),
@@ -81,11 +76,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -100,11 +90,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first, second complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -125,10 +110,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         $this->doSourceCompileSuccessEventDrivenTest(
             new InvokableCollection([
-                JobMutatorFactory::createSetSources([
-                    'Test/test1.yml',
-                    'Test/test2.yml',
-                ]),
                 TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())
                         ->withSource('/app/source/Test/test1.yml')
@@ -197,9 +178,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'single test, not complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -212,9 +190,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'single test, is complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -227,10 +202,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'multiple tests, not complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -246,10 +217,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'multiple tests, complete' => [
                 'setup' => new InvokableCollection([
-                    JobMutatorFactory::createSetSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                    ]),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -270,10 +237,6 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         $this->doTestExecuteCompleteEventDrivenTest(
             new InvokableCollection([
-                JobMutatorFactory::createSetSources([
-                    'Test/test1.yml',
-                    'Test/test2.yml',
-                ]),
                 TestSetupInvokableFactory::setupCollection([
                     (new TestSetup())
                         ->withSource('/app/source/Test/test1.yml')

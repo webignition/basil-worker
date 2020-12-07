@@ -12,7 +12,6 @@ use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
 use App\Tests\Mock\Services\MockSourceCompileEventDispatcher;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\SourceSetup;
 use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
@@ -68,12 +67,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         $sourcePath = 'Test/test1.yml';
 
         $this->invokableHandler->invoke(new InvokableCollection([
-            'create job' => JobSetupInvokableFactory::setup(
-                (new JobSetup())
-                    ->withSources([
-                        $sourcePath,
-                    ])
-            ),
+            'create job' => JobSetupInvokableFactory::setup(),
             'add job sources' => SourceSetupInvokableFactory::setupCollection([
                 (new SourceSetup())
                     ->withPath($sourcePath),
@@ -120,12 +114,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         $sourcePath = 'Test/test1.yml';
 
         $this->invokableHandler->invoke(new InvokableCollection([
-            'create job' => JobSetupInvokableFactory::setup(
-                (new JobSetup())
-                    ->withSources([
-                        $sourcePath,
-                    ])
-            ),
+            'create job' => JobSetupInvokableFactory::setup(),
             'add job sources' => SourceSetupInvokableFactory::setupCollection([
                 (new SourceSetup())
                     ->withPath($sourcePath),

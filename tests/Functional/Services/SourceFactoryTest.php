@@ -83,10 +83,7 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
 
         self::assertCount(0, $this->sourceRepository->findAll());
 
-        $storedTestPaths = $this->factory->createCollectionFromManifest($manifest, $uploadedSources);
-
-        self::assertSame($expectedStoredTestPaths, $storedTestPaths);
-
+        $this->factory->createCollectionFromManifest($manifest, $uploadedSources);
         foreach ($expectedStoredTestPaths as $expectedStoredTestPath) {
             self::assertTrue($this->sourceFileStore->has($expectedStoredTestPath));
         }
