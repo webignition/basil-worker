@@ -15,6 +15,24 @@ class TestSerializer
         $this->sourcePathTranslator = $sourcePathTranslator;
     }
 
+    /**
+     * @param Test[] $tests
+     *
+     * @return array<mixed>
+     */
+    public function serializeCollection(array $tests): array
+    {
+        $serializedTests = [];
+
+        foreach ($tests as $test) {
+            if ($test instanceof Test) {
+                $serializedTests[] = $this->serialize($test);
+            }
+        }
+
+        return $serializedTests;
+    }
+
     public function serialize(Test $test): array
     {
         return array_merge(

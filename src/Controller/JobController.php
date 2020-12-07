@@ -16,6 +16,7 @@ use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Services\JobStore;
 use App\Services\SourceFactory;
+use App\Services\TestSerializer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -109,6 +110,7 @@ class JobController extends AbstractController
      */
     public function status(
         TestRepository $testRepository,
+        TestSerializer $testSerializer,
         CompilationState $compilationState,
         ExecutionState $executionState
     ): JsonResponse {
@@ -117,19 +119,14 @@ class JobController extends AbstractController
         }
 
         $job = $this->jobStore->getJob();
-
         $tests = $testRepository->findAll();
-        $testData = [];
-        foreach ($tests as $test) {
-            $testData[] = $test->jsonSerialize();
-        }
 
         $data = array_merge(
             $job->jsonSerialize(),
             [
                 'compilation_state' => $compilationState->getCurrentState(),
                 'execution_state' => $executionState->getCurrentState(),
-                'tests' => $testData,
+                'tests' => $testSerializer->serializeCollection($tests),
             ]
         );
 
