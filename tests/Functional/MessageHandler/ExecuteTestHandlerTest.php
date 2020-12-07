@@ -13,7 +13,6 @@ use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockTestExecutor;
 use App\Tests\Services\InvokableFactory\ExecutionStateGetterFactory;
 use App\Tests\Services\InvokableFactory\JobGetterFactory;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
@@ -38,12 +37,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeExecuteSuccess()
     {
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
-            (new JobSetup())
-                ->withSources([
-                    'Test/test.yml',
-                ])
-        ));
+        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup());
 
         $tests = $this->invokableHandler->invoke(TestSetupInvokableFactory::setupCollection([
             new TestSetup(),

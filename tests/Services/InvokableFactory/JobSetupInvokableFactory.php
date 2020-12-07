@@ -25,11 +25,6 @@ class JobSetupInvokableFactory
             $jobSetup->getMaximumDurationInSeconds()
         );
 
-        $sources = $jobSetup->getSources();
-        if (is_array($sources)) {
-            $collection[] = self::setSources($sources);
-        }
-
         return new InvokableCollection($collection);
     }
 
@@ -47,32 +42,6 @@ class JobSetupInvokableFactory
                 $label,
                 $callbackUrl,
                 $maximumDurationInSeconds,
-            ]
-        );
-    }
-
-    /**
-     * @param string[]  $sources
-     * @return InvokableInterface
-     */
-    private static function setSources(array $sources): InvokableInterface
-    {
-        return new Invokable(
-            function (JobStore $jobStore, array $sources): ?Job {
-                if ($jobStore->hasJob()) {
-                    $job = $jobStore->getJob();
-                    $job->setSources($sources);
-
-                    $jobStore->store($job);
-
-                    return $job;
-                }
-
-                return null;
-            },
-            [
-                new ServiceReference(JobStore::class),
-                $sources
             ]
         );
     }

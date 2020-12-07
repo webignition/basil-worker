@@ -15,7 +15,6 @@ use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\Asserter\MessengerAsserter;
-use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\SourceSetup;
 use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
@@ -61,10 +60,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'no non-compiled sources' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources(['Test/test1.yml'])
-                    ),
+                    JobSetupInvokableFactory::setup(),
                     TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml'),
