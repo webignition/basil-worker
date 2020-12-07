@@ -423,6 +423,9 @@
             "src/Kernel.php"
         ]
     },
+    "symfony/http-client-contracts": {
+        "version": "v2.3.1"
+    },
     "symfony/http-foundation": {
         "version": "v5.1.5"
     },
@@ -529,6 +532,9 @@
     },
     "symplify/smart-file-system": {
         "version": "8.3.13"
+    },
+    "symplify/symplify-kernel": {
+        "version": "8.3.48"
     },
     "theseer/tokenizer": {
         "version": "1.2.0"
