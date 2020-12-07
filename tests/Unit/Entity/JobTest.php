@@ -23,7 +23,6 @@ class JobTest extends TestCase
         self::assertSame(1, $job->getId());
         self::assertSame($label, $job->getLabel());
         self::assertSame($callbackUrl, $job->getCallbackUrl());
-        self::assertSame([], $job->getSources());
     }
 
     /**
@@ -40,33 +39,12 @@ class JobTest extends TestCase
     public function jsonSerializeDataProvider(): array
     {
         return [
-            'state compilation-awaiting, no sources' => [
+            'state compilation-awaiting' => [
                 'job' => Job::create('label content', 'http://example.com/callback', 1),
                 'expectedSerializedJob' => [
                     'label' => 'label content',
                     'callback_url' => 'http://example.com/callback',
                     'maximum_duration_in_seconds' => 1,
-                    'sources' => [],
-                ],
-            ],
-            'state compilation-awaiting, has sources' => [
-                'job' => $this->createJobWithSources(
-                    Job::create('label content', 'http://example.com/callback', 2),
-                    [
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]
-                ),
-                'expectedSerializedJob' => [
-                    'label' => 'label content',
-                    'callback_url' => 'http://example.com/callback',
-                    'maximum_duration_in_seconds' => 2,
-                    'sources' => [
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ],
                 ],
             ],
         ];
@@ -132,18 +110,5 @@ class JobTest extends TestCase
                 'expectedHasReachedMaximumDuration' => true,
             ],
         ];
-    }
-
-    /**
-     * @param Job $job
-     * @param string[] $sources
-     *
-     * @return Job
-     */
-    private function createJobWithSources(Job $job, array $sources): Job
-    {
-        $job->setSources($sources);
-
-        return $job;
     }
 }
