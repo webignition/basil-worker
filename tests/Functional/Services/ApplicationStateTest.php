@@ -15,6 +15,8 @@ use App\Tests\Services\InvokableFactory\CallbackSetup;
 use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\SourceSetup;
+use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
@@ -80,13 +82,15 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'no sources compiled' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    (new JobSetup())
-                        ->withSources([
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                        ])
-                ),
+                'setup' => new InvokableCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                ]),
                 'expectedIsStates' => [
                     ApplicationState::STATE_COMPILING,
                 ],
@@ -101,14 +105,14 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'first source compiled' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/Test/test1.yml'),
                     ])
                 ]),
@@ -126,14 +130,14 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'all sources compiled, no tests running' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())->withSource('/app/source/Test/test1.yml'),
                         (new TestSetup())->withSource('/app/source/Test/test2.yml'),
                     ])
@@ -152,14 +156,14 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'first test complete, no callbacks' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
                             ->withState(Test::STATE_COMPLETE),
@@ -180,20 +184,20 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'first test complete, callback for first test complete' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
                             ->withState(Test::STATE_COMPLETE),
                         (new TestSetup())->withSource('/app/source/Test/test2.yml'),
                     ]),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
                 ]),
@@ -211,14 +215,14 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'all tests complete, first callback complete, second callback running' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
                             ->withState(Test::STATE_COMPLETE),
@@ -226,10 +230,10 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                             ->withSource('/app/source/Test/test2.yml')
                             ->withState(Test::STATE_COMPLETE),
                     ]),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback 1' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback 2' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())->withState(CallbackInterface::STATE_SENDING)
                     ),
                 ]),
@@ -247,14 +251,14 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
             ],
             'all tests complete, all callbacks complete' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
-                        (new JobSetup())
-                            ->withSources([
-                                'Test/test1.yml',
-                                'Test/test2.yml',
-                            ])
-                    ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
                             ->withState(Test::STATE_COMPLETE),
@@ -262,10 +266,10 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                             ->withSource('/app/source/Test/test2.yml')
                             ->withState(Test::STATE_COMPLETE),
                     ]),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback 1' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback 2' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())->withState(CallbackInterface::STATE_COMPLETE)
                     ),
                 ]),
@@ -289,7 +293,7 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
                                 'Test/test1.yml',
                              ])
                     ),
-                    CallbackSetupInvokableFactory::setup(
+                    'create callback' => CallbackSetupInvokableFactory::setup(
                         (new CallbackSetup())
                             ->withType(CallbackInterface::TYPE_JOB_TIMEOUT)
                             ->withState(CallbackInterface::STATE_COMPLETE)

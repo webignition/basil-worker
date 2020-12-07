@@ -7,6 +7,7 @@ namespace App\Controller;
 use App\Event\SourcesAddedEvent;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
+use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
@@ -65,6 +66,7 @@ class JobController extends AbstractController
      * @Route("/add-sources", name="add-sources", methods={"POST"})
      */
     public function addSources(
+        SourceRepository $sourceRepository,
         SourceFactory $sourceFactory,
         EventDispatcherInterface $eventDispatcher,
         AddSourcesRequest $addSourcesRequest
@@ -73,9 +75,7 @@ class JobController extends AbstractController
             return BadAddSourcesRequestResponse::createJobMissingResponse();
         }
 
-        $job = $this->jobStore->getJob();
-
-        if ([] !== $job->getSources()) {
+        if ([] !== $sourceRepository->findAll()) {
             return BadAddSourcesRequestResponse::createSourcesNotEmptyResponse();
         }
 
@@ -97,6 +97,7 @@ class JobController extends AbstractController
             return BadAddSourcesRequestResponse::createSourceMissingResponse($testSourceException->getPath());
         }
 
+        $job = $this->jobStore->getJob();
         $job->setSources($jobSources);
         $this->jobStore->store($job);
 
@@ -109,6 +110,7 @@ class JobController extends AbstractController
      * @Route("/status", name="status", methods={"GET"})
      */
     public function status(
+        SourceRepository $sourceRepository,
         TestRepository $testRepository,
         TestSerializer $testSerializer,
         CompilationState $compilationState,
@@ -124,6 +126,7 @@ class JobController extends AbstractController
         $data = array_merge(
             $job->jsonSerialize(),
             [
+                'sources' => $sourceRepository->findAllRelativePaths(),
                 'compilation_state' => $compilationState->getCurrentState(),
                 'execution_state' => $executionState->getCurrentState(),
                 'tests' => $testSerializer->serializeCollection($tests),

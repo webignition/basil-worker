@@ -11,6 +11,8 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\SourceSetup;
+use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
@@ -57,19 +59,37 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
                 'expectedNextNonCompiledSource' => null,
             ],
             'has job, has sources, no tests' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    (new JobSetup())
-                        ->withSources($sources)
-                ),
+                'setup' => new InvokableCollection([
+                    'create job' => JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withSources($sources)
+                    ),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath($sources[0]),
+                        (new SourceSetup())
+                            ->withPath($sources[1]),
+                        (new SourceSetup())
+                            ->withPath($sources[2]),
+                    ]),
+                ]),
                 'expectedNextNonCompiledSource' => $sources[0],
             ],
             'test exists for first source' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
+                    'create job' => JobSetupInvokableFactory::setup(
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath($sources[0]),
+                        (new SourceSetup())
+                            ->withPath($sources[1]),
+                        (new SourceSetup())
+                            ->withPath($sources[2]),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' . $sources[0]),
                     ]),
@@ -78,11 +98,19 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
             ],
             'test exists for first and second sources' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
+                    'create job' => JobSetupInvokableFactory::setup(
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath($sources[0]),
+                        (new SourceSetup())
+                            ->withPath($sources[1]),
+                        (new SourceSetup())
+                            ->withPath($sources[2]),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())
@@ -93,11 +121,19 @@ class JobSourceFinderTest extends AbstractBaseFunctionalTest
             ],
             'tests exist for all sources' => [
                 'setup' => new InvokableCollection([
-                    JobSetupInvokableFactory::setup(
+                    'create job' => JobSetupInvokableFactory::setup(
                         (new JobSetup())
                             ->withSources($sources)
                     ),
-                    TestSetupInvokableFactory::setupCollection([
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath($sources[0]),
+                        (new SourceSetup())
+                            ->withPath($sources[1]),
+                        (new SourceSetup())
+                            ->withPath($sources[2]),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
                         (new TestSetup())
                             ->withSource('/app/source/' . $sources[0]),
                         (new TestSetup())

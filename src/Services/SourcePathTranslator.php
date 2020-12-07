@@ -24,6 +24,24 @@ class SourcePathTranslator
         return $this->compilerSourceDirectory . '/' . $jobSource;
     }
 
+    /**
+     * @param string[] $paths
+     *
+     * @return string[]
+     */
+    public function stripCompilerSourceDirectoryFromPaths(array $paths): array
+    {
+        $strippedPaths = [];
+
+        foreach ($paths as $path) {
+            if (is_string($path)) {
+                $strippedPaths[] = $this->stripCompilerSourceDirectory($path);
+            }
+        }
+
+        return $strippedPaths;
+    }
+
     public function stripCompilerSourceDirectory(string $path): string
     {
         if (false === $this->isPrefixedWith($path, $this->compilerSourceDirectory)) {

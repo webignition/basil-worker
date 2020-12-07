@@ -4,23 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Test;
+use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
 
 class JobSourceFinder
 {
-    private JobStore $jobStore;
-    private SourcePathTranslator $sourcePathTranslator;
     private TestRepository $testRepository;
+    private SourceRepository $sourceRepository;
 
-    public function __construct(
-        JobStore $jobStore,
-        SourcePathTranslator $sourcePathTranslator,
-        TestRepository $testRepository
-    ) {
-        $this->jobStore = $jobStore;
-        $this->sourcePathTranslator = $sourcePathTranslator;
+    public function __construct(TestRepository $testRepository, SourceRepository $sourceRepository)
+    {
         $this->testRepository = $testRepository;
+        $this->sourceRepository = $sourceRepository;
     }
 
     /**
@@ -28,45 +23,20 @@ class JobSourceFinder
      */
     public function findCompiledSources(): array
     {
-        $compiledSources = [];
-        $this->iterateJobSources(function (string $currentSource, bool $sourceHasTest) use (&$compiledSources): void {
-            if (true === $sourceHasTest) {
-                $compiledSources[] = $currentSource;
-            }
-        });
-
-        return $compiledSources;
+        return $this->testRepository->findAllRelativeSources();
     }
 
     public function findNextNonCompiledSource(): ?string
     {
-        $source = null;
-        $this->iterateJobSources(function (string $currentSource, bool $sourceHasTest) use (&$source): bool {
-            $source = false === $sourceHasTest ? $currentSource : null;
+        $sourcePaths = $this->sourceRepository->findAllRelativePaths();
+        $testPaths = $this->testRepository->findAllRelativeSources();
 
-            return is_string($source);
-        });
-
-        return $source;
-    }
-
-    private function iterateJobSources(callable $something): void
-    {
-        if (false === $this->jobStore->hasJob()) {
-            return;
-        }
-
-        $job = $this->jobStore->getJob();
-
-        foreach ($job->getSources() as $currentSource) {
-            $testSource = $this->sourcePathTranslator->translateJobSourceToTestSource($currentSource);
-            $sourceHasTest = $this->testRepository->findBySource($testSource) instanceof Test;
-
-            $bar = $something($currentSource, $sourceHasTest);
-
-            if (true === $bar) {
-                return;
+        foreach ($sourcePaths as $sourcePath) {
+            if (!in_array($sourcePath, $testPaths)) {
+                return $sourcePath;
             }
         }
+
+        return null;
     }
 }

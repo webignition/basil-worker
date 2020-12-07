@@ -20,4 +20,27 @@ class SourceRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Source::class);
     }
+
+    /**
+     * @return string[]
+     */
+    public function findAllRelativePaths(): array
+    {
+        $queryBuilder = $this->createQueryBuilder('Source');
+        $queryBuilder
+            ->select('Source.path');
+
+        $query = $queryBuilder->getQuery();
+
+        $result = $query->getArrayResult();
+
+        $paths = [];
+        foreach ($result as $item) {
+            if (is_array($item)) {
+                $paths[] = (string) ($item['path'] ?? null);
+            }
+        }
+
+        return $paths;
+    }
 }
