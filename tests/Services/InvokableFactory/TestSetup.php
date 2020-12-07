@@ -84,4 +84,12 @@ class TestSetup
 
         return $new;
     }
+
+    public function withStepCount(int $stepCount): self
+    {
+        $new = clone $this;
+        $new->stepCount = $stepCount;
+
+        return $new;
+    }
 }

@@ -24,20 +24,6 @@ class MockJob
         return $this->job;
     }
 
-    /**
-     * @param string[] $sources
-     *
-     * @return $this
-     */
-    public function withGetSourcesCall(array $sources): self
-    {
-        $this->job
-            ->shouldReceive('getSources')
-            ->andReturn($sources);
-
-        return $this;
-    }
-
     public function withGetCallbackUrlCall(string $callbackUrl): self
     {
         $this->job

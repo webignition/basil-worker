@@ -5,11 +5,20 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Entity\Job;
-use App\Entity\TestConfiguration;
 use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\InvokableCollection;
+use App\Tests\Model\EndToEndJob\InvokableInterface;
+use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\TestTestFactory;
+use App\Tests\Services\InvokableFactory\JobSetup;
+use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\SourceSetup;
+use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\TestSetup;
+use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
+use App\Tests\Services\InvokableHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -18,7 +27,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private JobStore $jobStore;
-    private ClientRequestSender $clientRequestSender;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -34,7 +43,22 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         $callbackUrl = 'http://example.com/callback';
         $maximumDurationInSeconds = 600;
 
-        $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
+        $response = $this->invokableHandler->invoke(new Invokable(
+            function (
+                ClientRequestSender $clientRequestSender,
+                string $label,
+                string $callbackUrl,
+                int $maximumDurationInSeconds
+            ) {
+                return $clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
+            },
+            [
+                new ServiceReference(ClientRequestSender::class),
+                $label,
+                $callbackUrl,
+                $maximumDurationInSeconds
+            ]
+        ));
 
         self::assertSame(200, $response->getStatusCode());
         self::assertSame('application/json', $response->headers->get('content-type'));
@@ -50,15 +74,9 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     /**
      * @dataProvider statusDataProvider
      */
-    public function testStatus(callable $initializer, JsonResponse $expectedResponse)
+    public function testStatus(InvokableInterface $setup, JsonResponse $expectedResponse)
     {
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
-
-        $testFactory = self::$container->get(TestTestFactory::class);
-        self::assertInstanceOf(TestTestFactory::class, $testFactory);
-
-        $initializer($jobStore, $testFactory);
+        $this->invokableHandler->invoke($setup);
 
         $this->client->request('GET', '/status');
 
@@ -79,14 +97,16 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     {
         return [
             'no job' => [
-                'initializer' => function () {
-                },
+                'setup' => Invokable::createEmpty(),
                 'expectedResponse' => new JsonResponse([], 400),
             ],
             'new job, no sources, no tests' => [
-                'initializer' => function (JobStore $jobStore) {
-                    $jobStore->create('label content', 'http://example.com/callback', 10);
-                },
+                'setup' => JobSetupInvokableFactory::setup(
+                    (new JobSetup())
+                        ->withLabel('label content')
+                        ->withCallbackUrl('http://example.com/callback')
+                        ->withMaximumDurationInSeconds(10)
+                ),
                 'expectedResponse' => new JsonResponse(
                     [
                         'label' => 'label content',
@@ -100,16 +120,22 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'new job, has sources, no tests' => [
-                'initializer' => function (JobStore $jobStore) {
-                    $job = $jobStore->create('label content', 'http://example.com/callback', 11);
-
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]);
-                    $jobStore->store($job);
-                },
+                'setup' => new InvokableCollection([
+                    'create job' => JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withLabel('label content')
+                            ->withCallbackUrl('http://example.com/callback')
+                            ->withMaximumDurationInSeconds(11)
+                    ),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test3.yml'),
+                    ]),
+                ]),
                 'expectedResponse' => new JsonResponse(
                     [
                         'label' => 'label content',
@@ -127,30 +153,32 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                 ),
             ],
             'new job, has sources, has tests, compilation not complete' => [
-                'initializer' => function (JobStore $jobStore, TestTestFactory $testFactory) {
-                    $job = $jobStore->create('label content', 'http://example.com/callback', 12);
-
-                    $job->setSources([
-                        'Test/test1.yml',
-                        'Test/test2.yml',
-                        'Test/test3.yml',
-                    ]);
-                    $jobStore->store($job);
-
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        'Test/test1.yml',
-                        'generated/GeneratedTest1.php',
-                        3
-                    );
-
-                    $testFactory->create(
-                        TestConfiguration::create('chrome', 'http://example.com'),
-                        'Test/test2.yml',
-                        'generated/GeneratedTest2.php',
-                        2
-                    );
-                },
+                'setup' => new InvokableCollection([
+                    'create job' => JobSetupInvokableFactory::setup(
+                        (new JobSetup())
+                            ->withLabel('label content')
+                            ->withCallbackUrl('http://example.com/callback')
+                            ->withMaximumDurationInSeconds(12)
+                    ),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test3.yml'),
+                    ]),
+                    'create tests' => TestSetupInvokableFactory::setupCollection([
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test1.yml')
+                            ->withTarget('/app/tests/GeneratedTest1.php')
+                            ->withStepCount(3),
+                        (new TestSetup())
+                            ->withSource('/app/source/Test/test2.yml')
+                            ->withTarget('/app/tests/GeneratedTest2.php')
+                            ->withStepCount(2),
+                    ]),
+                ]),
                 'expectedResponse' => new JsonResponse(
                     [
                         'label' => 'label content',
@@ -170,7 +198,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                                     'url' => 'http://example.com',
                                 ],
                                 'source' => 'Test/test1.yml',
-                                'target' => 'generated/GeneratedTest1.php',
+                                'target' => 'GeneratedTest1.php',
                                 'step_count' => 3,
                                 'state' => 'awaiting',
                                 'position' => 1,
@@ -181,7 +209,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                                     'url' => 'http://example.com',
                                 ],
                                 'source' => 'Test/test2.yml',
-                                'target' => 'generated/GeneratedTest2.php',
+                                'target' => 'GeneratedTest2.php',
                                 'step_count' => 2,
                                 'state' => 'awaiting',
                                 'position' => 2,
