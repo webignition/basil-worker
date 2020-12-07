@@ -22,4 +22,16 @@ class SourceGetterFactory
             ]
         );
     }
+
+    public static function getAllRelativePaths(): InvokableInterface
+    {
+        return new Invokable(
+            function (SourceRepository $sourceRepository): array {
+                return $sourceRepository->findAllRelativePaths();
+            },
+            [
+                new ServiceReference(SourceRepository::class),
+            ]
+        );
+    }
 }

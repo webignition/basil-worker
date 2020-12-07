@@ -9,8 +9,12 @@ use App\Event\SourcesAddedEvent;
 use App\Services\JobStore;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Model\EndToEndJob\Invokable;
+use App\Tests\Model\EndToEndJob\ServiceReference;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
+use App\Tests\Services\InvokableFactory\SourceGetterFactory;
+use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\SourcesAddedEventSubscriber;
 use App\Tests\Services\UploadedFileFactory;
@@ -34,6 +38,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private Response $response;
     private ClientRequestSender $clientRequestSender;
     private UploadedFileFactory $uploadedFileFactory;
+    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
@@ -45,13 +50,21 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(JobStore::class, $jobStore);
 
         $this->job = $jobStore->create(md5('label content'), 'http://example.com/callback', 10);
-        self::assertSame([], $this->job->getSources());
+
+        self::assertSame([], $this->invokableHandler->invoke(SourceGetterFactory::getAll()));
         self::assertNull($this->sourcesAddedEventSubscriber->getEvent());
 
-        $this->response = $this->clientRequestSender->addJobSources(
-            $this->uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
-            $this->basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
-        );
+        $this->response = $this->invokableHandler->invoke(new Invokable(
+            function (ClientRequestSender $clientRequestSender) {
+                return $clientRequestSender->addJobSources(
+                    $this->uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
+                    $this->basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
+                );
+            },
+            [
+                new ServiceReference(ClientRequestSender::class),
+            ]
+        ));
     }
 
     public function testResponse()
@@ -61,9 +74,12 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         self::assertSame('{}', $this->response->getContent());
     }
 
-    public function testJobHasSources()
+    public function testSourcesAreCreated()
     {
-        self::assertSame(self::EXPECTED_SOURCES, $this->job->getSources());
+        self::assertSame(
+            self::EXPECTED_SOURCES,
+            $this->invokableHandler->invoke(SourceGetterFactory::getAllRelativePaths())
+        );
     }
 
     public function testSourcesAreStored()
