@@ -6,15 +6,15 @@ namespace App\Message;
 
 class CompileSource
 {
-    private string $source;
+    private string $path;
 
     public function __construct(string $source)
     {
-        $this->source = $source;
+        $this->path = $source;
     }
 
-    public function getSource(): string
+    public function getPath(): string
     {
-        return $this->source;
+        return $this->path;
     }
 }
