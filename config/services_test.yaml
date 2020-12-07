@@ -92,6 +92,9 @@ services:
     App\Services\ApplicationState:
         public: true
 
+    App\Services\TestSerializer:
+        public: true
+
     App\MessageHandler\TimeoutCheckHandler:
         public: true
 

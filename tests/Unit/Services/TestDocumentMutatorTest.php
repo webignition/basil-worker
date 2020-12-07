@@ -13,6 +13,7 @@ use webignition\YamlDocument\Document;
 class TestDocumentMutatorTest extends TestCase
 {
     private const COMPILER_SOURCE_DIRECTORY = '/app/source';
+    private const COMPILER_TARGET_DIRECTORY = '/app/tests';
 
     private TestDocumentMutator $mutator;
 
@@ -21,7 +22,10 @@ class TestDocumentMutatorTest extends TestCase
         parent::setUp();
 
         $this->mutator = new TestDocumentMutator(
-            new SourcePathTranslator(self::COMPILER_SOURCE_DIRECTORY),
+            new SourcePathTranslator(
+                self::COMPILER_SOURCE_DIRECTORY,
+                self::COMPILER_TARGET_DIRECTORY
+            ),
             new Dumper()
         );
     }

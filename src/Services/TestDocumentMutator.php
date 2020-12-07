@@ -25,14 +25,12 @@ class TestDocumentMutator
         if ($test->isTest()) {
             $path = $test->getPath();
 
-            if ($this->sourcePathTranslator->isPrefixedWithCompilerSourceDirectory($path)) {
-                $mutatedPath = $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPath($path);
-                $mutatedTestSource = $this->yamlDumper->dump($test->getMutatedData([
-                    Test::KEY_PATH => $mutatedPath,
-                ]));
+            $mutatedPath = $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPath($path);
+            $mutatedTestSource = $this->yamlDumper->dump($test->getMutatedData([
+                Test::KEY_PATH => $mutatedPath,
+            ]));
 
-                $document = new Document($mutatedTestSource);
-            }
+            $document = new Document($mutatedTestSource);
         }
 
         return $document;

@@ -64,6 +64,14 @@ class TestSetup
         return $new;
     }
 
+    public function withTarget(string $target): self
+    {
+        $new = clone $this;
+        $new->target = $target;
+
+        return $new;
+    }
+
     /**
      * @param Test::STATE_* $state
      *
