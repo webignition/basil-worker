@@ -14,6 +14,8 @@ use App\Tests\Services\InvokableFactory\CallbackSetup;
 use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\SourceSetup;
+use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
@@ -75,13 +77,15 @@ class CompilationStateTest extends AbstractBaseFunctionalTest
                 ],
             ],
             'running: has job, has sources, no sources compiled' => [
-                'setup' => JobSetupInvokableFactory::setup(
-                    (new JobSetup())
-                        ->withSources([
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                        ])
-                ),
+                'setup' => new InvokableCollection([
+                    'create job' => JobSetupInvokableFactory::setup(),
+                    'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                        (new SourceSetup())
+                            ->withPath('Test/test1.yml'),
+                        (new SourceSetup())
+                            ->withPath('Test/test2.yml'),
+                    ]),
+                ]),
                 'expectedIsStates' => [
                     CompilationState::STATE_RUNNING,
                 ],
