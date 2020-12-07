@@ -8,6 +8,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\InvokableFactory\CallbackSetup;
@@ -52,34 +53,34 @@ class ApplicationStateTest extends AbstractBaseFunctionalTest
     public function isDataProvider(): array
     {
         return [
-//            'no job, is awaiting' => [
-//                'setup' => Invokable::createEmpty(),
-//                'expectedIsStates' => [
-//                    ApplicationState::STATE_AWAITING_JOB,
-//                ],
-//                'expectedIsNotStates' => [
-//                    ApplicationState::STATE_AWAITING_SOURCES,
-//                    ApplicationState::STATE_COMPILING,
-//                    ApplicationState::STATE_EXECUTING,
-//                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-//                    ApplicationState::STATE_COMPLETE,
-//                    ApplicationState::STATE_TIMED_OUT,
-//                ],
-//            ],
-//            'has job, no sources' => [
-//                'setup' => JobSetupInvokableFactory::setup(),
-//                'expectedIsStates' => [
-//                    ApplicationState::STATE_AWAITING_SOURCES,
-//                ],
-//                'expectedIsNotStates' => [
-//                    ApplicationState::STATE_AWAITING_JOB,
-//                    ApplicationState::STATE_COMPILING,
-//                    ApplicationState::STATE_EXECUTING,
-//                    ApplicationState::STATE_COMPLETING_CALLBACKS,
-//                    ApplicationState::STATE_COMPLETE,
-//                    ApplicationState::STATE_TIMED_OUT,
-//                ],
-//            ],
+            'no job, is awaiting' => [
+                'setup' => Invokable::createEmpty(),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
+                ],
+            ],
+            'has job, no sources' => [
+                'setup' => JobSetupInvokableFactory::setup(),
+                'expectedIsStates' => [
+                    ApplicationState::STATE_AWAITING_SOURCES,
+                ],
+                'expectedIsNotStates' => [
+                    ApplicationState::STATE_AWAITING_JOB,
+                    ApplicationState::STATE_COMPILING,
+                    ApplicationState::STATE_EXECUTING,
+                    ApplicationState::STATE_COMPLETING_CALLBACKS,
+                    ApplicationState::STATE_COMPLETE,
+                    ApplicationState::STATE_TIMED_OUT,
+                ],
+            ],
             'no sources compiled' => [
                 'setup' => new InvokableCollection([
                     'create job' => JobSetupInvokableFactory::setup(),

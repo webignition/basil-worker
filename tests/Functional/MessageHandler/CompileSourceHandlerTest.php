@@ -11,8 +11,11 @@ use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Mock\Services\MockCompiler;
 use App\Tests\Mock\Services\MockSourceCompileEventDispatcher;
+use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\JobSetupInvokableFactory;
+use App\Tests\Services\InvokableFactory\SourceSetup;
+use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
@@ -62,15 +65,22 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeCompileSuccess()
     {
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
-            (new JobSetup())
-                ->withSources([
-                    'Test/test1.yml',
-                ])
-        ));
+        $sourcePath = 'Test/test1.yml';
 
-        $source = 'Test/test1.yml';
-        $compileSourceMessage = new CompileSource($source);
+        $this->invokableHandler->invoke(new InvokableCollection([
+            'create job' => JobSetupInvokableFactory::setup(
+                (new JobSetup())
+                    ->withSources([
+                        $sourcePath,
+                    ])
+            ),
+            'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                (new SourceSetup())
+                    ->withPath($sourcePath),
+            ]),
+        ]));
+
+        $compileSourceMessage = new CompileSource($sourcePath);
 
         $testManifests = [
             \Mockery::mock(TestManifest::class),
@@ -96,7 +106,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         );
 
         $eventDispatcher = (new MockSourceCompileEventDispatcher())
-            ->withDispatchCall($source, $suiteManifest)
+            ->withDispatchCall($sourcePath, $suiteManifest)
             ->getMock();
 
         $this->setCompileSourceHandlerEventDispatcher($eventDispatcher);
@@ -107,15 +117,22 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeCompileFailure()
     {
-        $this->invokableHandler->invoke(JobSetupInvokableFactory::setup(
-            (new JobSetup())
-                ->withSources([
-                    'Test/test1.yml',
-                ])
-        ));
+        $sourcePath = 'Test/test1.yml';
 
-        $source = 'Test/test1.yml';
-        $compileSourceMessage = new CompileSource($source);
+        $this->invokableHandler->invoke(new InvokableCollection([
+            'create job' => JobSetupInvokableFactory::setup(
+                (new JobSetup())
+                    ->withSources([
+                        $sourcePath,
+                    ])
+            ),
+            'add job sources' => SourceSetupInvokableFactory::setupCollection([
+                (new SourceSetup())
+                    ->withPath($sourcePath),
+            ]),
+        ]));
+
+        $compileSourceMessage = new CompileSource($sourcePath);
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
 
         $compiler = (new MockCompiler())
@@ -133,7 +150,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
         );
 
         $eventDispatcher = (new MockSourceCompileEventDispatcher())
-            ->withDispatchCall($source, $errorOutput)
+            ->withDispatchCall($sourcePath, $errorOutput)
             ->getMock();
 
         $this->setCompileSourceHandlerEventDispatcher($eventDispatcher);
