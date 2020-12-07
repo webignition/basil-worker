@@ -18,7 +18,7 @@ class TestSerializer
     /**
      * @param Test[] $tests
      *
-     * @return array<mixed>
+     * @return array<int, array<mixed>>
      */
     public function serializeCollection(array $tests): array
     {
@@ -33,13 +33,18 @@ class TestSerializer
         return $serializedTests;
     }
 
+    /**
+     * @param Test $test
+     *
+     * @return array<mixed>
+     */
     public function serialize(Test $test): array
     {
         return array_merge(
             $test->jsonSerialize(),
             [
-                'source' => $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPath($test->getSource()),
-                'target' => $this->sourcePathTranslator->stripCompilerTargetDirectoryFromPath($test->getTarget()),
+                'source' => $this->sourcePathTranslator->stripCompilerSourceDirectory((string) $test->getSource()),
+                'target' => $this->sourcePathTranslator->stripCompilerTargetDirectory((string) $test->getTarget()),
             ]
         );
     }

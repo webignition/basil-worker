@@ -26,14 +26,14 @@ class SourcePathTranslatorTest extends TestCase
 
 
     /**
-     * @dataProvider stripCompilerSourceDirectoryFromPathDataProvider
+     * @dataProvider stripCompilerSourceDirectoryDataProvider
      */
-    public function testStripCompilerSourceDirectoryFromPath(string $path, string $expectedPath)
+    public function testStripCompilerSourceDirectory(string $path, string $expectedPath)
     {
-        self::assertSame($expectedPath, $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPath($path));
+        self::assertSame($expectedPath, $this->sourcePathTranslator->stripCompilerSourceDirectory($path));
     }
 
-    public function stripCompilerSourceDirectoryFromPathDataProvider(): array
+    public function stripCompilerSourceDirectoryDataProvider(): array
     {
         return [
             'path shorter than prefix' => [
@@ -52,14 +52,14 @@ class SourcePathTranslatorTest extends TestCase
     }
 
     /**
-     * @dataProvider stripCompilerTargetDirectoryFromPathDataProvider
+     * @dataProvider stripCompilerTargetDirectoryDataProvider
      */
-    public function testStripCompilerTargetDirectoryFromPath(string $path, string $expectedPath)
+    public function testStripCompilerTargetDirectory(string $path, string $expectedPath)
     {
-        self::assertSame($expectedPath, $this->sourcePathTranslator->stripCompilerTargetDirectoryFromPath($path));
+        self::assertSame($expectedPath, $this->sourcePathTranslator->stripCompilerTargetDirectory($path));
     }
 
-    public function stripCompilerTargetDirectoryFromPathDataProvider(): array
+    public function stripCompilerTargetDirectoryDataProvider(): array
     {
         return [
             'path shorter than prefix' => [

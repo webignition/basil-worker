@@ -25,7 +25,7 @@ class TestDocumentMutator
         if ($test->isTest()) {
             $path = $test->getPath();
 
-            $mutatedPath = $this->sourcePathTranslator->stripCompilerSourceDirectoryFromPath($path);
+            $mutatedPath = $this->sourcePathTranslator->stripCompilerSourceDirectory($path);
             $mutatedTestSource = $this->yamlDumper->dump($test->getMutatedData([
                 Test::KEY_PATH => $mutatedPath,
             ]));

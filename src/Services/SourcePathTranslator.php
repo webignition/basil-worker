@@ -24,7 +24,7 @@ class SourcePathTranslator
         return $this->compilerSourceDirectory . '/' . $jobSource;
     }
 
-    public function stripCompilerSourceDirectoryFromPath(string $path): string
+    public function stripCompilerSourceDirectory(string $path): string
     {
         if (false === $this->isPrefixedWith($path, $this->compilerSourceDirectory)) {
             return $path;
@@ -34,7 +34,7 @@ class SourcePathTranslator
         return ltrim($path, '/');
     }
 
-    public function stripCompilerTargetDirectoryFromPath(string $path): string
+    public function stripCompilerTargetDirectory(string $path): string
     {
         if (false === $this->isPrefixedWith($path, $this->compilerTargetDirectory)) {
             return $path;
