@@ -5,12 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Integration;
 
 use App\Entity\Callback\CallbackEntity;
-use App\Entity\Job;
 use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
-use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
@@ -27,6 +25,8 @@ use App\Tests\Services\UploadedFileFactory;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
@@ -126,7 +126,7 @@ abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest
 
         self::assertInstanceOf(JsonResponse::class, $response);
         self::assertSame(200, $response->getStatusCode());
-        self::assertTrue($this->jobStore->hasJob());
+        self::assertTrue($this->jobStore->has());
 
         return $response;
     }

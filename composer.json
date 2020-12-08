@@ -7,6 +7,7 @@
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-iconv": "*",
+        "ext-json": "*",
         "ext-pdo_pgsql": "*",
         "composer/package-versions-deprecated": "^1.11",
         "doctrine/doctrine-bundle": "^2.1",
@@ -22,6 +23,7 @@
         "symfony/yaml": "5.2.*",
         "webignition/basil-compiler-models": "^0.14.0",
         "webignition/basil-runner-documents": "^0.2.0",
+        "webignition/basil-worker-persistence-bundle": "^0.2.0",
         "webignition/tcp-cli-proxy-client": "^0.11.0",
         "webignition/yaml-document": "^0.1.0",
         "webignition/yaml-document-generator": "^0.2.0"

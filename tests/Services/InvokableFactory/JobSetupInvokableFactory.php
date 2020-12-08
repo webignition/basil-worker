@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Job;
-use App\Services\JobStore;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
+use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
 
 class JobSetupInvokableFactory
 {
@@ -34,11 +34,11 @@ class JobSetupInvokableFactory
         int $maximumDurationInSeconds
     ): InvokableInterface {
         return new Invokable(
-            function (JobStore $jobStore, string $label, string $callbackUrl, int $maximumDurationInSeconds): Job {
-                return $jobStore->create($label, $callbackUrl, $maximumDurationInSeconds);
+            function (JobFactory $jobFactory, string $label, string $callbackUrl, int $maximumDurationInSeconds): Job {
+                return $jobFactory->create($label, $callbackUrl, $maximumDurationInSeconds);
             },
             [
-                new ServiceReference(JobStore::class),
+                new ServiceReference(JobFactory::class),
                 $label,
                 $callbackUrl,
                 $maximumDurationInSeconds,

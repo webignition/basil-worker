@@ -60,8 +60,8 @@ class TimeoutCheckHandlerTest extends AbstractBaseFunctionalTest
             ->getMock();
 
         $jobStore = (new MockJobStore())
-            ->withHasJobCall(true)
-            ->withGetJobCall($job)
+            ->withHasCall(true)
+            ->withGetCall($job)
             ->getMock();
 
         ObjectReflector::setProperty($this->handler, TimeoutCheckHandler::class, 'eventDispatcher', $eventDispatcher);
@@ -106,8 +106,8 @@ class TimeoutCheckHandlerTest extends AbstractBaseFunctionalTest
             ->getMock();
 
         $jobStore = (new MockJobStore())
-            ->withHasJobCall(true)
-            ->withGetJobCall($job)
+            ->withHasCall(true)
+            ->withGetCall($job)
             ->getMock();
 
         ObjectReflector::setProperty($this->handler, TimeoutCheckHandler::class, 'eventDispatcher', $eventDispatcher);

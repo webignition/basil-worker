@@ -7,9 +7,9 @@ namespace App\MessageHandler;
 use App\Event\JobTimeoutEvent;
 use App\Message\TimeoutCheck;
 use App\MessageDispatcher\TimeoutCheckMessageDispatcher;
-use App\Services\JobStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class TimeoutCheckHandler implements MessageHandlerInterface
 {
@@ -29,11 +29,11 @@ class TimeoutCheckHandler implements MessageHandlerInterface
 
     public function __invoke(TimeoutCheck $timeoutCheck): void
     {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return;
         }
 
-        $job = $this->jobStore->getJob();
+        $job = $this->jobStore->get();
         if ($job->hasReachedMaximumDuration()) {
             $this->eventDispatcher->dispatch(new JobTimeoutEvent($job->getMaximumDurationInSeconds()));
         } else {

@@ -9,11 +9,11 @@ use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
 use App\Repository\TestRepository;
 use App\Services\ExecutionState;
-use App\Services\JobStore;
 use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class ExecuteTestHandler implements MessageHandlerInterface
 {
@@ -42,7 +42,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
 
     public function __invoke(ExecuteTest $message): void
     {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return;
         }
 
@@ -59,7 +59,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
             return;
         }
 
-        $job = $this->jobStore->getJob();
+        $job = $this->jobStore->get();
         if (false === $job->hasStarted()) {
             $job->setStartDateTime();
             $this->jobStore->store($job);

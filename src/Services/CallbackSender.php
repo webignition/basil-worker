@@ -8,6 +8,7 @@ use App\Entity\Callback\CallbackInterface;
 use App\HttpMessage\CallbackRequest;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface as HttpClientInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class CallbackSender
 {
@@ -33,7 +34,7 @@ class CallbackSender
 
     public function send(CallbackInterface $callback): void
     {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return;
         }
 
@@ -43,7 +44,7 @@ class CallbackSender
             return;
         }
 
-        $job = $this->jobStore->getJob();
+        $job = $this->jobStore->get();
         $request = new CallbackRequest($callback, $job);
 
         try {

@@ -9,7 +9,6 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
-use App\Services\JobStore;
 use App\Services\SourceFactory;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\Entity\MockSource;
@@ -18,11 +17,14 @@ use App\Tests\Mock\Model\MockUploadedSourceCollection;
 use App\Tests\Mock\Repository\MockSourceRepository;
 use App\Tests\Mock\Request\MockAddSourcesRequest;
 use App\Tests\Mock\Request\MockJobCreateRequest;
+use App\Tests\Mock\Services\MockJobFactory;
 use App\Tests\Mock\Services\MockJobStore;
 use App\Tests\Mock\Services\MockSourceFactory;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class JobControllerTest extends TestCase
 {
@@ -32,11 +34,12 @@ class JobControllerTest extends TestCase
     public function testCreate(
         JobCreateRequest $jobCreateRequest,
         JobStore $jobStore,
+        JobFactory $jobFactory,
         JsonResponse $expectedResponse
     ) {
         $controller = new JobController($jobStore);
 
-        $response = $controller->create($jobCreateRequest);
+        $response = $controller->create($jobFactory, $jobCreateRequest);
 
         self::assertSame(
             $expectedResponse->getStatusCode(),
@@ -57,6 +60,7 @@ class JobControllerTest extends TestCase
                     ->withGetLabelCall('')
                     ->getMock(),
                 'jobStore' => (new MockJobStore())->getMock(),
+                'jobFactory' => (new MockJobFactory())->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createLabelMissingResponse(),
             ],
             'callback url missing' => [
@@ -65,6 +69,7 @@ class JobControllerTest extends TestCase
                     ->withGetCallbackUrlCall('')
                     ->getMock(),
                 'jobStore' => (new MockJobStore())->getMock(),
+                'jobFactory' => (new MockJobFactory())->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createCallbackUrlMissingResponse(),
             ],
             'maximum duration missing' => [
@@ -74,6 +79,7 @@ class JobControllerTest extends TestCase
                     ->withGetMaximumDurationInSecondsCall(null)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())->getMock(),
+                'jobFactory' => (new MockJobFactory())->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createMaximumDurationMissingResponse(),
             ],
             'job already exists' => [
@@ -83,8 +89,9 @@ class JobControllerTest extends TestCase
                     ->withGetMaximumDurationInSecondsCall(10)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
+                    ->withHasCall(true)
                     ->getMock(),
+                'jobFactory' => (new MockJobFactory())->getMock(),
                 'expectedResponse' => BadJobCreateRequestResponse::createJobAlreadyExistsResponse(),
             ],
             'created' => [
@@ -94,7 +101,9 @@ class JobControllerTest extends TestCase
                     ->withGetMaximumDurationInSecondsCall(10)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(false)
+                    ->withHasCall(false)
+                    ->getMock(),
+                'jobFactory' => (new MockJobFactory())
                     ->withCreateCall('label', 'http://example.com', 10)
                     ->getMock(),
                 'expectedResponse' => new JsonResponse(),
@@ -154,7 +163,7 @@ class JobControllerTest extends TestCase
             'job missing' => [
                 'addSourcesRequest' => \Mockery::mock(AddSourcesRequest::class),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(false)
+                    ->withHasCall(false)
                     ->getMock(),
                 'sourceRepository' => (new MockSourceRepository())->getMock(),
                 'sourceFactory' => $emptySourceFactory,
@@ -163,8 +172,8 @@ class JobControllerTest extends TestCase
             'job has sources' => [
                 'addSourcesRequest' => \Mockery::mock(AddSourcesRequest::class),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall(
+                    ->withHasCall(true)
+                    ->withGetCall(
                         (new MockJob())
                             ->getMock()
                     )
@@ -183,8 +192,8 @@ class JobControllerTest extends TestCase
                     ->withGetManifestCall(null)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall($job)
+                    ->withHasCall(true)
+                    ->withGetCall($job)
                     ->getMock(),
                 'sourceRepository' => $emptySourceRepository,
                 'sourceFactory' => $emptySourceFactory,
@@ -199,8 +208,8 @@ class JobControllerTest extends TestCase
                     )
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall($job)
+                    ->withHasCall(true)
+                    ->withGetCall($job)
                     ->getMock(),
                 'sourceRepository' => $emptySourceRepository,
                 'sourceFactory' => $emptySourceFactory,
@@ -212,8 +221,8 @@ class JobControllerTest extends TestCase
                     ->withGetUploadedSourcesCall($uploadedSources)
                     ->getMock(),
                 'jobStore' => (new MockJobStore())
-                    ->withHasJobCall(true)
-                    ->withGetJobCall($job)
+                    ->withHasCall(true)
+                    ->withGetCall($job)
                     ->getMock(),
                 'sourceRepository' => $emptySourceRepository,
                 'sourceFactory' => (new MockSourceFactory())
