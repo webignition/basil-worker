@@ -4,11 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Source;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
-use App\Repository\SourceRepository;
 use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -18,6 +16,9 @@ use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ObjectRepository;
+use webignition\BasilWorker\PersistenceBundle\Entity\Source;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class SourceFactoryTest extends AbstractBaseFunctionalTest
@@ -26,7 +27,11 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
 
     private SourceFactory $factory;
     private SourceFileStore $sourceFileStore;
-    private SourceRepository $sourceRepository;
+
+    /**
+     * @var ObjectRepository<Source>
+     */
+    private ObjectRepository $sourceRepository;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -38,6 +43,14 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         self::assertInstanceOf(SourceFileStoreInitializer::class, $sourceFileStoreInitializer);
         if ($sourceFileStoreInitializer instanceof SourceFileStoreInitializer) {
             $sourceFileStoreInitializer->initialize();
+        }
+
+        $entityManager = self::$container->get(EntityManagerInterface::class);
+        if ($entityManager instanceof EntityManagerInterface) {
+            $sourceRepository = $entityManager->getRepository(Source::class);
+            if ($sourceRepository instanceof ObjectRepository) {
+                $this->sourceRepository = $sourceRepository;
+            }
         }
     }
 

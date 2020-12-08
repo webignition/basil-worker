@@ -4,27 +4,26 @@ namespace App\Tests\Unit\Controller;
 
 use App\Controller\JobController;
 use App\Exception\MissingTestSourceException;
-use App\Repository\SourceRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\SourceFactory;
 use App\Tests\Mock\Entity\MockJob;
-use App\Tests\Mock\Entity\MockSource;
 use App\Tests\Mock\Model\MockManifest;
 use App\Tests\Mock\Model\MockUploadedSourceCollection;
-use App\Tests\Mock\Repository\MockSourceRepository;
 use App\Tests\Mock\Request\MockAddSourcesRequest;
 use App\Tests\Mock\Request\MockJobCreateRequest;
 use App\Tests\Mock\Services\MockJobFactory;
 use App\Tests\Mock\Services\MockJobStore;
 use App\Tests\Mock\Services\MockSourceFactory;
+use App\Tests\Mock\Services\MockSourceStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
 use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
 
 class JobControllerTest extends TestCase
 {
@@ -117,14 +116,14 @@ class JobControllerTest extends TestCase
     public function testAddSources(
         AddSourcesRequest $addSourcesRequest,
         JobStore $jobStore,
-        SourceRepository $sourceRepository,
+        SourceStore $sourceStore,
         SourceFactory $sourceFactory,
         JsonResponse $expectedResponse
     ) {
         $controller = new JobController($jobStore);
 
         $response = $controller->addSources(
-            $sourceRepository,
+            $sourceStore,
             $sourceFactory,
             \Mockery::mock(EventDispatcherInterface::class),
             $addSourcesRequest
@@ -155,8 +154,8 @@ class JobControllerTest extends TestCase
         $uploadedSources = (new MockUploadedSourceCollection())->getMock();
         $emptySourceFactory = (new MockSourceFactory())->getMock();
 
-        $emptySourceRepository = (new MockSourceRepository())
-            ->withFindAllCall([])
+        $emptySourceStore = (new MockSourceStore())
+            ->withHasAnyCall(false)
             ->getMock();
 
         return [
@@ -165,7 +164,7 @@ class JobControllerTest extends TestCase
                 'jobStore' => (new MockJobStore())
                     ->withHasCall(false)
                     ->getMock(),
-                'sourceRepository' => (new MockSourceRepository())->getMock(),
+                'sourceRepository' => $emptySourceStore,
                 'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createJobMissingResponse(),
             ],
@@ -178,11 +177,8 @@ class JobControllerTest extends TestCase
                             ->getMock()
                     )
                     ->getMock(),
-                'sourceRepository' => (new MockSourceRepository())
-                    ->withFindAllCall([
-                        (new MockSource())
-                            ->getMock(),
-                    ])
+                'sourceRepository' => (new MockSourceStore())
+                    ->withHasAnyCall(true)
                     ->getMock(),
                 'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createSourcesNotEmptyResponse(),
@@ -195,7 +191,7 @@ class JobControllerTest extends TestCase
                     ->withHasCall(true)
                     ->withGetCall($job)
                     ->getMock(),
-                'sourceRepository' => $emptySourceRepository,
+                'sourceRepository' => $emptySourceStore,
                 'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestMissingResponse(),
             ],
@@ -211,7 +207,7 @@ class JobControllerTest extends TestCase
                     ->withHasCall(true)
                     ->withGetCall($job)
                     ->getMock(),
-                'sourceRepository' => $emptySourceRepository,
+                'sourceRepository' => $emptySourceStore,
                 'sourceFactory' => $emptySourceFactory,
                 'expectedResponse' => BadAddSourcesRequestResponse::createManifestEmptyResponse(),
             ],
@@ -224,7 +220,7 @@ class JobControllerTest extends TestCase
                     ->withHasCall(true)
                     ->withGetCall($job)
                     ->getMock(),
-                'sourceRepository' => $emptySourceRepository,
+                'sourceRepository' => $emptySourceStore,
                 'sourceFactory' => (new MockSourceFactory())
                     ->withCreateCollectionFromManifestCallThrowingException(
                         $nonEmptyManifest,

@@ -10,8 +10,8 @@ use App\Model\UploadedSourceCollection;
 use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\Mock\Model\MockUploadedSourceCollection;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceFactory as BundleSourceFactory;
 
 class SourceFactoryTest extends TestCase
 {
@@ -22,7 +22,7 @@ class SourceFactoryTest extends TestCase
     {
         $factory = new SourceFactory(
             \Mockery::mock(SourceFileStore::class),
-            \Mockery::mock(EntityManagerInterface::class)
+            \Mockery::mock(BundleSourceFactory::class)
         );
 
         $path = 'Test/test.yml';

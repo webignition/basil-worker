@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Event\SourcesAddedEvent;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
-use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
@@ -23,6 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
 use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
 
 class JobController extends AbstractController
 {
@@ -67,7 +67,7 @@ class JobController extends AbstractController
      * @Route("/add-sources", name="add-sources", methods={"POST"})
      */
     public function addSources(
-        SourceRepository $sourceRepository,
+        SourceStore $sourceStore,
         SourceFactory $sourceFactory,
         EventDispatcherInterface $eventDispatcher,
         AddSourcesRequest $addSourcesRequest
@@ -76,7 +76,7 @@ class JobController extends AbstractController
             return BadAddSourcesRequestResponse::createJobMissingResponse();
         }
 
-        if ([] !== $sourceRepository->findAll()) {
+        if (true === $sourceStore->hasAny()) {
             return BadAddSourcesRequestResponse::createSourcesNotEmptyResponse();
         }
 
@@ -107,7 +107,7 @@ class JobController extends AbstractController
      * @Route("/status", name="status", methods={"GET"})
      */
     public function status(
-        SourceRepository $sourceRepository,
+        SourceStore $sourceStore,
         TestRepository $testRepository,
         TestSerializer $testSerializer,
         CompilationState $compilationState,
@@ -123,7 +123,7 @@ class JobController extends AbstractController
         $data = array_merge(
             $job->jsonSerialize(),
             [
-                'sources' => $sourceRepository->findAllRelativePaths(),
+                'sources' => $sourceStore->findAllPaths(),
                 'compilation_state' => $compilationState->getCurrentState(),
                 'execution_state' => $executionState->getCurrentState(),
                 'tests' => $testSerializer->serializeCollection($tests),

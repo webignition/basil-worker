@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repository\CallbackRepository;
-use App\Repository\SourceRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
 
 class ApplicationState
 {
@@ -23,7 +23,7 @@ class ApplicationState
     private ExecutionState $executionState;
     private CallbackState $callbackState;
     private CallbackRepository $callbackRepository;
-    private SourceRepository $sourceRepository;
+    private SourceStore $sourceStore;
 
     public function __construct(
         JobStore $jobStore,
@@ -31,14 +31,14 @@ class ApplicationState
         ExecutionState $executionState,
         CallbackState $callbackState,
         CallbackRepository $callbackRepository,
-        SourceRepository $sourceRepository
+        SourceStore $sourceStore
     ) {
         $this->jobStore = $jobStore;
         $this->compilationState = $compilationState;
         $this->executionState = $executionState;
         $this->callbackState = $callbackState;
         $this->callbackRepository = $callbackRepository;
-        $this->sourceRepository = $sourceRepository;
+        $this->sourceStore = $sourceStore;
     }
 
     /**
@@ -65,7 +65,7 @@ class ApplicationState
             return self::STATE_TIMED_OUT;
         }
 
-        if ([] === $this->sourceRepository->findAll()) {
+        if (false === $this->sourceStore->hasAny()) {
             return self::STATE_AWAITING_SOURCES;
         }
 
