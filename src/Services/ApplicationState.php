@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Repository\CallbackRepository;
 use App\Repository\SourceRepository;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class ApplicationState
 {
@@ -56,7 +57,7 @@ class ApplicationState
 
     public function getCurrentState(): string
     {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return self::STATE_AWAITING_JOB;
         }
 

@@ -7,9 +7,9 @@ namespace App\MessageHandler;
 use App\Message\CompileSource;
 use App\Services\CompilationState;
 use App\Services\Compiler;
-use App\Services\JobStore;
 use App\Services\SourceCompileEventDispatcher;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {
@@ -32,7 +32,7 @@ class CompileSourceHandler implements MessageHandlerInterface
 
     public function __invoke(CompileSource $message): void
     {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return;
         }
 

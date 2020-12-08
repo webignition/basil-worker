@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
-use App\Entity\Job;
-use App\Services\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
@@ -20,6 +18,8 @@ use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
@@ -37,7 +37,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
     public function testCreate()
     {
-        self::assertFalse($this->jobStore->hasJob());
+        self::assertFalse($this->jobStore->has());
 
         $label = md5('label content');
         $callbackUrl = 'http://example.com/callback';
@@ -64,10 +64,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         self::assertSame('application/json', $response->headers->get('content-type'));
         self::assertSame('{}', $response->getContent());
 
-        self::assertTrue($this->jobStore->hasJob());
+        self::assertTrue($this->jobStore->has());
         self::assertEquals(
             Job::create($label, $callbackUrl, $maximumDurationInSeconds),
-            $this->jobStore->getJob()
+            $this->jobStore->get()
         );
     }
 

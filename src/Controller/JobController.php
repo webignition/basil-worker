@@ -15,13 +15,14 @@ use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
-use App\Services\JobStore;
 use App\Services\SourceFactory;
 use App\Services\TestSerializer;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class JobController extends AbstractController
 {
@@ -35,7 +36,7 @@ class JobController extends AbstractController
     /**
      * @Route("/create", name="create", methods={"POST"})
      */
-    public function create(JobCreateRequest $request): JsonResponse
+    public function create(JobFactory $jobFactory, JobCreateRequest $request): JsonResponse
     {
         if ('' === $request->getLabel()) {
             return BadJobCreateRequestResponse::createLabelMissingResponse();
@@ -49,11 +50,11 @@ class JobController extends AbstractController
             return BadJobCreateRequestResponse::createMaximumDurationMissingResponse();
         }
 
-        if (true === $this->jobStore->hasJob()) {
+        if (true === $this->jobStore->has()) {
             return BadJobCreateRequestResponse::createJobAlreadyExistsResponse();
         }
 
-        $this->jobStore->create(
+        $jobFactory->create(
             $request->getLabel(),
             $request->getCallbackUrl(),
             $request->getMaximumDurationInSeconds()
@@ -71,7 +72,7 @@ class JobController extends AbstractController
         EventDispatcherInterface $eventDispatcher,
         AddSourcesRequest $addSourcesRequest
     ): JsonResponse {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return BadAddSourcesRequestResponse::createJobMissingResponse();
         }
 
@@ -112,11 +113,11 @@ class JobController extends AbstractController
         CompilationState $compilationState,
         ExecutionState $executionState
     ): JsonResponse {
-        if (false === $this->jobStore->hasJob()) {
+        if (false === $this->jobStore->has()) {
             return new JsonResponse([], 400);
         }
 
-        $job = $this->jobStore->getJob();
+        $job = $this->jobStore->get();
         $tests = $testRepository->findAll();
 
         $data = array_merge(

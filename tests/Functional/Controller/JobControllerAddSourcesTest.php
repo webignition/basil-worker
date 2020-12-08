@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Event\SourcesAddedEvent;
-use App\Services\JobStore;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EndToEndJob\Invokable;
@@ -18,6 +17,7 @@ use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
@@ -39,10 +39,10 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $this->injectContainerServicesIntoClassProperties();
         $this->initializeSourceFileStore();
 
-        $jobStore = self::$container->get(JobStore::class);
-        self::assertInstanceOf(JobStore::class, $jobStore);
+        $jobFactory = self::$container->get(JobFactory::class);
+        self::assertInstanceOf(JobFactory::class, $jobFactory);
 
-        $jobStore->create(md5('label content'), 'http://example.com/callback', 10);
+        $jobFactory->create(md5('label content'), 'http://example.com/callback', 10);
 
         self::assertSame([], $this->invokableHandler->invoke(SourceGetterFactory::getAll()));
         self::assertNull($this->invokableHandler->invoke(SourcesAddedEventGetter::get()));

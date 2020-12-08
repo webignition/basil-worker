@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Entity\Job;
-use App\Services\JobStore;
 use Mockery\MockInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 
 class MockJobStore
 {
@@ -25,28 +25,19 @@ class MockJobStore
         return $this->jobStore;
     }
 
-    public function withHasJobCall(bool $return): self
+    public function withHasCall(bool $return): self
     {
         $this->jobStore
-            ->shouldReceive('hasJob')
+            ->shouldReceive('has')
             ->andReturn($return);
 
         return $this;
     }
 
-    public function withCreateCall(string $label, string $callbackUrl, int $maximumDurationInSeconds): self
+    public function withGetCall(Job $job): self
     {
         $this->jobStore
-            ->shouldReceive('create')
-            ->with($label, $callbackUrl, $maximumDurationInSeconds);
-
-        return $this;
-    }
-
-    public function withGetJobCall(Job $job): self
-    {
-        $this->jobStore
-            ->shouldReceive('getJob')
+            ->shouldReceive('get')
             ->andReturn($job);
 
         return $this;
