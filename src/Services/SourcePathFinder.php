@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repository\SourceRepository;
 use App\Repository\TestRepository;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
 
 class SourcePathFinder
 {
     private TestRepository $testRepository;
-    private SourceRepository $sourceRepository;
+    private SourceStore $sourceStore;
 
-    public function __construct(TestRepository $testRepository, SourceRepository $sourceRepository)
+    public function __construct(TestRepository $testRepository, SourceStore $sourceStore)
     {
         $this->testRepository = $testRepository;
-        $this->sourceRepository = $sourceRepository;
+        $this->sourceStore = $sourceStore;
     }
 
     /**
@@ -28,7 +28,7 @@ class SourcePathFinder
 
     public function findNextNonCompiledPath(): ?string
     {
-        $sourcePaths = $this->sourceRepository->findAllRelativePaths();
+        $sourcePaths = $this->sourceStore->findAllPaths();
         $testPaths = $this->testRepository->findAllRelativeSources();
 
         foreach ($sourcePaths as $sourcePath) {

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Source;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
-use Doctrine\ORM\EntityManagerInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceFactory;
 
 class SourceSetupInvokableFactory
 {
@@ -36,16 +36,11 @@ class SourceSetupInvokableFactory
         $sourceSetup = $sourceSetup instanceof SourceSetup ? $sourceSetup : new SourceSetup();
 
         return new Invokable(
-            function (EntityManagerInterface $entityManager, SourceSetup $sourceSetup): Source {
-                $source = Source::create($sourceSetup->getType(), $sourceSetup->getPath());
-
-                $entityManager->persist($source);
-                $entityManager->flush();
-
-                return $source;
+            function (SourceFactory $sourceFactory, SourceSetup $sourceSetup): Source {
+                return $sourceFactory->create($sourceSetup->getType(), $sourceSetup->getPath());
             },
             [
-                new ServiceReference(EntityManagerInterface::class),
+                new ServiceReference(SourceFactory::class),
                 $sourceSetup,
             ]
         );

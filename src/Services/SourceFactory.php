@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Source;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
-use Doctrine\ORM\EntityManagerInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use webignition\BasilWorker\PersistenceBundle\Services\SourceFactory as BundleSourceFactory;
 
 class SourceFactory
 {
     private SourceFileStore $sourceFileStore;
-    private EntityManagerInterface $entityManager;
+    private BundleSourceFactory $bundleSourceFactory;
 
-    public function __construct(SourceFileStore $sourceFileStore, EntityManagerInterface $entityManager)
+    public function __construct(SourceFileStore $sourceFileStore, BundleSourceFactory $bundleSourceFactory)
     {
         $this->sourceFileStore = $sourceFileStore;
-        $this->entityManager = $entityManager;
+        $this->bundleSourceFactory = $bundleSourceFactory;
     }
 
     /**
@@ -55,10 +55,7 @@ class SourceFactory
 
             $this->sourceFileStore->store($uploadedSource, $uploadedSourceRelativePath);
 
-            $source = Source::create($sourceType, $uploadedSourceRelativePath);
-
-            $this->entityManager->persist($source);
-            $this->entityManager->flush();
+            $this->bundleSourceFactory->create($sourceType, $uploadedSourceRelativePath);
         }
     }
 }

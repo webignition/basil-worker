@@ -1,6 +1,12 @@
 {
     "type": "project",
     "license": "proprietary",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/webignition/basil-worker-persistence-bundle"
+        }
+    ],
     "require": {
         "php": ">=7.4",
         "ext-amqp": "*",
@@ -23,7 +29,7 @@
         "symfony/yaml": "5.2.*",
         "webignition/basil-compiler-models": "^0.14.0",
         "webignition/basil-runner-documents": "^0.2.0",
-        "webignition/basil-worker-persistence-bundle": "^0.2.0",
+        "webignition/basil-worker-persistence-bundle": "^0.3.0",
         "webignition/tcp-cli-proxy-client": "^0.11.0",
         "webignition/yaml-document": "^0.1.0",
         "webignition/yaml-document-generator": "^0.2.0"
@@ -134,5 +140,6 @@
             "allow-contrib": true,
             "require": "5.2.*"
         }
-    }
+    },
+    "minimum-stability": "dev"
 }
