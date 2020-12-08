@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use Mockery\MockInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class MockCallbackResponseHandler
 {

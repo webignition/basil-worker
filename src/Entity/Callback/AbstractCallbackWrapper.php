@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Entity\Callback;
 
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+
 abstract class AbstractCallbackWrapper implements CallbackInterface
 {
     private CallbackInterface $callback;

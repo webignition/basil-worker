@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Repository\TestRepository;
@@ -20,6 +19,7 @@ use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\InvokableFactory\JobSetup;
 use App\Tests\Services\InvokableFactory\TestGetterFactory;
 use Psr\Http\Message\RequestInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractEndToEndTest

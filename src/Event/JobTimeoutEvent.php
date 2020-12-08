@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\JobTimeoutCallback;
 use Symfony\Contracts\EventDispatcher\Event;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class JobTimeoutEvent extends Event implements CallbackEventInterface
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repository\CallbackRepository;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 
 class CompilationState
 {
@@ -19,12 +19,12 @@ class CompilationState
         self::STATE_FAILED,
     ];
 
-    private CallbackRepository $callbackRepository;
+    private CallbackStore $callbackStore;
     private SourcePathFinder $sourcePathFinder;
 
-    public function __construct(CallbackRepository $callbackRepository, SourcePathFinder $sourcePathFinder)
+    public function __construct(CallbackStore $callbackStore, SourcePathFinder $sourcePathFinder)
     {
-        $this->callbackRepository = $callbackRepository;
+        $this->callbackStore = $callbackStore;
         $this->sourcePathFinder = $sourcePathFinder;
     }
 
@@ -47,7 +47,7 @@ class CompilationState
      */
     public function getCurrentState(): string
     {
-        if (0 !== $this->callbackRepository->getCompileFailureTypeCount()) {
+        if (0 !== $this->callbackStore->getCompileFailureTypeCount()) {
             return CompilationState::STATE_FAILED;
         }
 

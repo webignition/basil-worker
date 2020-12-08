@@ -7,6 +7,7 @@ namespace App\Entity\Callback;
 use App\Model\BackoffStrategy\BackoffStrategyInterface;
 use App\Model\StampCollection;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class DelayedCallback extends AbstractCallbackWrapper implements StampedCallbackInterface
 {

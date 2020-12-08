@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use App\Entity\Callback\CallbackInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Contracts\EventDispatcher\Event;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class CallbackHttpErrorEvent extends Event implements CallbackEventInterface
 {

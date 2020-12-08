@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Entity\Callback;
 
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class CompileFailureCallback extends AbstractCallbackWrapper
 {

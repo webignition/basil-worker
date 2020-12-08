@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Callback\CallbackEntity;
-use App\Entity\Callback\CallbackInterface;
-use App\Services\CallbackStore;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\InvokableItemInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 
 class CallbackSetupInvokableFactory
 {

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageDispatcher;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
@@ -17,12 +16,12 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
-use App\Repository\CallbackRepository;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockTest;
 use App\Tests\Model\Entity\Callback\TestCallbackEntity;
 use App\Tests\Model\TestCallback;
 use App\Tests\Services\Asserter\MessengerAsserter;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -30,6 +29,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\StampInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
 
@@ -40,8 +41,8 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 
     private SendCallbackMessageDispatcher $messageDispatcher;
     private EventDispatcherInterface $eventDispatcher;
-    private CallbackRepository $callbackRepository;
     private MessengerAsserter $messengerAsserter;
+    private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {
@@ -68,7 +69,10 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
 
         $this->messageDispatcher->dispatchForCallbackEvent($event);
 
-        $callback = $this->callbackRepository->findOneBy([]);
+        $callbackRepository = $this->entityManager->getRepository(CallbackEntity::class);
+        $callbacks = $callbackRepository->findAll();
+        $callback = array_pop($callbacks);
+
         self::assertInstanceOf(CallbackInterface::class, $callback);
 
         $this->messengerAsserter->assertQueueCount(1);

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Event\SourceCompile;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Event\CallbackEventInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class SourceCompileFailureEvent extends AbstractSourceCompileEvent implements CallbackEventInterface
 {

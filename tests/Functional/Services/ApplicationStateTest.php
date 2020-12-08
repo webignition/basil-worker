@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -19,6 +18,7 @@ use App\Tests\Services\InvokableFactory\SourceSetupInvokableFactory;
 use App\Tests\Services\InvokableFactory\TestSetup;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class ApplicationStateTest extends AbstractBaseFunctionalTest

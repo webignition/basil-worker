@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\MessageDispatcher;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\StampedCallbackInterface;
 use App\Event\CallbackEventInterface;
 use App\Event\CallbackHttpErrorEvent;
@@ -12,10 +11,11 @@ use App\Event\JobTimeoutEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
-use App\Services\CallbackStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStateMutator;
 
 class SendCallbackMessageDispatcher implements EventSubscriberInterface
 {

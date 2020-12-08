@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repository\CallbackRepository;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
 
@@ -22,7 +22,7 @@ class ApplicationState
     private CompilationState $compilationState;
     private ExecutionState $executionState;
     private CallbackState $callbackState;
-    private CallbackRepository $callbackRepository;
+    private CallbackStore $callbackStore;
     private SourceStore $sourceStore;
 
     public function __construct(
@@ -30,14 +30,14 @@ class ApplicationState
         CompilationState $compilationState,
         ExecutionState $executionState,
         CallbackState $callbackState,
-        CallbackRepository $callbackRepository,
+        CallbackStore $callbackStore,
         SourceStore $sourceStore
     ) {
         $this->jobStore = $jobStore;
         $this->compilationState = $compilationState;
         $this->executionState = $executionState;
         $this->callbackState = $callbackState;
-        $this->callbackRepository = $callbackRepository;
+        $this->callbackStore = $callbackStore;
         $this->sourceStore = $sourceStore;
     }
 
@@ -61,7 +61,7 @@ class ApplicationState
             return self::STATE_AWAITING_JOB;
         }
 
-        if (0 !== $this->callbackRepository->getJobTimeoutTypeCount()) {
+        if (0 !== $this->callbackStore->getJobTimeoutTypeCount()) {
             return self::STATE_TIMED_OUT;
         }
 
