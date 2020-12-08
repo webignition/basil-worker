@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
-use App\Entity\Callback\CallbackEntity;
 use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
@@ -25,6 +24,7 @@ use App\Tests\Services\UploadedFileFactory;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
 use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;

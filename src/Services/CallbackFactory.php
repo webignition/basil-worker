@@ -7,6 +7,7 @@ namespace App\Services;
 use App\Entity\Callback\CompileFailureCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 use webignition\YamlDocument\Document;
 
 class CallbackFactory

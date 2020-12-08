@@ -10,6 +10,7 @@ use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
+use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 use webignition\YamlDocument\Document;
 
 class CallbackEventFactory

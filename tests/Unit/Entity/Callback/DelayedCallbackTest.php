@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity\Callback;
 
-use App\Entity\Callback\CallbackInterface;
 use App\Entity\Callback\DelayedCallback;
 use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
@@ -12,6 +11,7 @@ use App\Model\StampCollection;
 use App\Tests\Model\TestCallback;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\YamlDocument\Document;
 
 class DelayedCallbackTest extends TestCase

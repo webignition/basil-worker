@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use App\Entity\Callback\CallbackInterface;
 use Psr\EventDispatcher\StoppableEventInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 interface CallbackEventInterface extends StoppableEventInterface
 {

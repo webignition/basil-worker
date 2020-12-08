@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Entity\Callback;
 
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\YamlDocument\Document;
 
 class ExecuteDocumentReceivedCallback extends AbstractCallbackWrapper
