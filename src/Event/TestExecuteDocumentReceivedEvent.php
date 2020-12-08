@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Entity\Test;
+use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\YamlDocument\Document;
 

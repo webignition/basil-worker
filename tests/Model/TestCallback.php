@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use App\Entity\Callback\AbstractCallbackWrapper;
+use App\Model\Callback\AbstractCallbackWrapper;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 

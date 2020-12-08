@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Unit\Entity\Callback;
+namespace App\Tests\Unit\Model\Callback;
 
-use App\Entity\Callback\DelayedCallback;
-use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Model\Callback\DelayedCallback;
+use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use App\Model\StampCollection;
 use App\Tests\Model\TestCallback;
 use PHPUnit\Framework\TestCase;

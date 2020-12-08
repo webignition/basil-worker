@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Event\SourceCompile;
 
-use App\Entity\Callback\CompileFailureCallback;
 use App\Event\CallbackEventInterface;
+use App\Model\Callback\CompileFailureCallback;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 

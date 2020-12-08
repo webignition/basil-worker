@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Callback\DelayedCallback;
 use App\Event\CallbackHttpErrorEvent;
+use App\Model\Callback\DelayedCallback;
 use App\Model\StampCollection;
 use App\Services\CallbackResponseHandler;
 use App\Tests\AbstractBaseFunctionalTest;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Callback;
+namespace App\Model\Callback;
 
 use App\Model\BackoffStrategy\BackoffStrategyInterface;
 use App\Model\StampCollection;
