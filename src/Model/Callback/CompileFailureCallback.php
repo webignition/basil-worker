@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Entity\Callback;
+namespace App\Model\Callback;
 
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;

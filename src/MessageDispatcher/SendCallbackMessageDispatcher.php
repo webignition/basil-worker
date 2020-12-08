@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\MessageDispatcher;
 
-use App\Entity\Callback\StampedCallbackInterface;
 use App\Event\CallbackEventInterface;
 use App\Event\CallbackHttpErrorEvent;
 use App\Event\JobTimeoutEvent;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
+use App\Model\Callback\StampedCallbackInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\MessageBusInterface;

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Callback\DelayedCallback;
 use App\Event\CallbackHttpErrorEvent;
+use App\Model\Callback\DelayedCallback;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;

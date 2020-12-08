@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Callback\CompileFailureCallback;
-use App\Entity\Callback\ExecuteDocumentReceivedCallback;
 use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
+use App\Model\Callback\CompileFailureCallback;
+use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
 use webignition\YamlDocument\Document;

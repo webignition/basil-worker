@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageDispatcher;
 
-use App\Entity\Callback\CompileFailureCallback;
-use App\Entity\Callback\DelayedCallback;
-use App\Entity\Callback\ExecuteDocumentReceivedCallback;
-use App\Entity\Callback\JobTimeoutCallback;
 use App\Event\CallbackEventInterface;
 use App\Event\CallbackHttpErrorEvent;
 use App\Event\JobTimeoutEvent;
@@ -16,6 +12,10 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Message\SendCallback;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Model\Callback\CompileFailureCallback;
+use App\Model\Callback\DelayedCallback;
+use App\Model\Callback\ExecuteDocumentReceivedCallback;
+use App\Model\Callback\JobTimeoutCallback;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockTest;
 use App\Tests\Model\Entity\Callback\TestCallbackEntity;

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Callback\CompileFailureCallback;
 use App\Event\SourceCompile\SourceCompileFailureEvent;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
+use App\Model\Callback\CompileFailureCallback;
 use App\Services\SourceCompileEventFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
