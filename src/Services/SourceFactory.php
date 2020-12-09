@@ -9,7 +9,7 @@ use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceFactory as BundleSourceFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory as BundleSourceFactory;
 
 class SourceFactory
 {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
 
 class CompilationState
 {

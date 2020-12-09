@@ -20,9 +20,9 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 
 class JobController extends AbstractController
 {

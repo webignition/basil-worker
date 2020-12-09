@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 
 class ApplicationState
 {

@@ -9,7 +9,7 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory;
 
 class SourceSetupInvokableFactory
 {

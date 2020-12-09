@@ -13,11 +13,13 @@ use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class ExecuteTestHandler implements MessageHandlerInterface
 {
     private JobStore $jobStore;
+    private EntityPersister $entityPersister;
     private TestExecutor $testExecutor;
     private EventDispatcherInterface $eventDispatcher;
     private TestStateMutator $testStateMutator;
@@ -26,6 +28,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
 
     public function __construct(
         JobStore $jobStore,
+        EntityPersister $entityPersister,
         TestExecutor $testExecutor,
         EventDispatcherInterface $eventDispatcher,
         TestStateMutator $testStateMutator,
@@ -33,6 +36,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
         ExecutionState $executionState
     ) {
         $this->jobStore = $jobStore;
+        $this->entityPersister = $entityPersister;
         $this->testExecutor = $testExecutor;
         $this->eventDispatcher = $eventDispatcher;
         $this->testStateMutator = $testStateMutator;
@@ -62,7 +66,7 @@ class ExecuteTestHandler implements MessageHandlerInterface
         $job = $this->jobStore->get();
         if (false === $job->hasStarted()) {
             $job->setStartDateTime();
-            $this->jobStore->store($job);
+            $this->entityPersister->persist($job);
         }
 
         $this->testStateMutator->setRunning($test);

@@ -9,7 +9,7 @@ use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use Doctrine\ORM\EntityManagerInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 
 class SourceGetterFactory
 {

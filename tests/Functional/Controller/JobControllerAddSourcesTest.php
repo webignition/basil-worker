@@ -17,7 +17,7 @@ use App\Tests\Services\InvokableHandler;
 use App\Tests\Services\SourceFileStoreInitializer;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
-use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest

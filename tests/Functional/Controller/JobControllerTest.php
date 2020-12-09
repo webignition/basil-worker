@@ -19,7 +19,7 @@ use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
