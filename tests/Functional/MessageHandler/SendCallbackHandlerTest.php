@@ -13,7 +13,7 @@ use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
@@ -23,7 +23,7 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private SendCallbackHandler $handler;
-    private CallbackStore $callbackStore;
+    private CallbackRepository $callbackRepository;
     private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
@@ -61,7 +61,8 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
 
         $mockSender = new MockCallbackSender();
 
-        $expectedSentCallback = $this->callbackStore->get((int) $callback->getId());
+        $expectedSentCallback = $this->callbackRepository->find($callback->getId());
+
         if ($expectedSentCallback instanceof CallbackInterface) {
             $expectedSentCallback->setState(CallbackInterface::STATE_SENDING);
             $mockSender = $mockSender->withSendCall($expectedSentCallback);
