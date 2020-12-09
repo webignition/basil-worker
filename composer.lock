@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "16959f62bfdb8e21b2bcc91e16630bf1",
+    "content-hash": "4a85dc506f25c2958d0f353a9c2ca358",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5191,16 +5191,16 @@
         },
         {
             "name": "webignition/basil-worker-persistence-bundle",
-            "version": "0.5",
+            "version": "0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/basil-worker-persistence-bundle.git",
-                "reference": "9a7c029de8a40c74f492eb3c559acd7d61d688a8"
+                "reference": "4ff370a1aa5564f59a050451481f3be93cb6ca73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/9a7c029de8a40c74f492eb3c559acd7d61d688a8",
-                "reference": "9a7c029de8a40c74f492eb3c559acd7d61d688a8",
+                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/4ff370a1aa5564f59a050451481f3be93cb6ca73",
+                "reference": "4ff370a1aa5564f59a050451481f3be93cb6ca73",
                 "shasum": ""
             },
             "require": {
@@ -5272,10 +5272,10 @@
             ],
             "homepage": "https://github.com/webignition/basil-worker-persistence-bundle",
             "support": {
-                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.5",
+                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.6",
                 "issues": "https://github.com/webignition/basil-worker-persistence-bundle/issues"
             },
-            "time": "2020-12-09T10:45:27+00:00"
+            "time": "2020-12-09T16:56:00+00:00"
         },
         {
             "name": "webignition/error-handler",

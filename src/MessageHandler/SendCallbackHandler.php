@@ -9,27 +9,27 @@ use App\Services\CallbackSender;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\CallbackStateMutator;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 
 class SendCallbackHandler implements MessageHandlerInterface
 {
+    private CallbackRepository $repository;
     private CallbackSender $sender;
-    private CallbackStore $callbackStore;
     private CallbackStateMutator $stateMutator;
 
     public function __construct(
+        CallbackRepository $repository,
         CallbackSender $sender,
-        CallbackStore $callbackStore,
         CallbackStateMutator $stateMutator
     ) {
+        $this->repository = $repository;
         $this->sender = $sender;
-        $this->callbackStore = $callbackStore;
         $this->stateMutator = $stateMutator;
     }
 
     public function __invoke(SendCallback $message): void
     {
-        $callback = $this->callbackStore->get($message->getCallbackId());
+        $callback = $this->repository->find($message->getCallbackId());
 
         if ($callback instanceof CallbackInterface) {
             $this->stateMutator->setSending($callback);
