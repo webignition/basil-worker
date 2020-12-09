@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Entity;
 
-use App\Entity\Test;
 use Mockery\MockInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 
 class MockTest
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Test;
 use App\Model\RunnerTest\TestProxy;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\TcpCliProxyClient\Client;
 use webignition\TcpCliProxyClient\Handler;
 use webignition\YamlDocument\Document;

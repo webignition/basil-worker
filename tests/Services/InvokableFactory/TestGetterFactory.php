@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Test;
-use App\Repository\TestRepository;
 use App\Tests\Model\EndToEndJob\Invokable;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
 use PHPUnit\Framework\TestCase;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class TestGetterFactory
 {

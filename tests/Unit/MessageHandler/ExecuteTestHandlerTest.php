@@ -4,10 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\MessageHandler;
 
-use App\Entity\Test;
 use App\Message\ExecuteTest;
 use App\MessageHandler\ExecuteTestHandler;
-use App\Repository\TestRepository;
 use App\Services\ExecutionState;
 use App\Services\TestStateMutator;
 use App\Tests\Mock\Entity\MockJob;
@@ -19,7 +17,9 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class ExecuteTestHandlerTest extends TestCase

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a85dc506f25c2958d0f353a9c2ca358",
+    "content-hash": "30be7dbc9536206a7506ef723875dbff",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5191,16 +5191,16 @@
         },
         {
             "name": "webignition/basil-worker-persistence-bundle",
-            "version": "0.6",
+            "version": "0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/basil-worker-persistence-bundle.git",
-                "reference": "4ff370a1aa5564f59a050451481f3be93cb6ca73"
+                "reference": "7cab19a0bf18abb6e65880f00883358f0afb3b3a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/4ff370a1aa5564f59a050451481f3be93cb6ca73",
-                "reference": "4ff370a1aa5564f59a050451481f3be93cb6ca73",
+                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/7cab19a0bf18abb6e65880f00883358f0afb3b3a",
+                "reference": "7cab19a0bf18abb6e65880f00883358f0afb3b3a",
                 "shasum": ""
             },
             "require": {
@@ -5233,34 +5233,7 @@
                     "/Tests/"
                 ]
             },
-            "autoload-dev": {
-                "psr-4": {
-                    "webignition\\BasilWorker\\PersistenceBundle\\Tests\\": ""
-                }
-            },
-            "scripts": {
-                "cs-ecs": [
-                    "./vendor/bin/ecs check --ansi --no-progress-bar --config ecs.php"
-                ],
-                "cs-phpcs": [
-                    "./vendor/bin/phpcs"
-                ],
-                "cs": [
-                    "@cs-ecs",
-                    "@cs-phpcs"
-                ],
-                "static-analysis": [
-                    "./vendor/bin/phpstan analyse --ansi"
-                ],
-                "test": [
-                    "./vendor/bin/phpunit --colors=always"
-                ],
-                "ci": [
-                    "@cs",
-                    "@static-analysis",
-                    "@test"
-                ]
-            },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -5272,10 +5245,10 @@
             ],
             "homepage": "https://github.com/webignition/basil-worker-persistence-bundle",
             "support": {
-                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.6",
-                "issues": "https://github.com/webignition/basil-worker-persistence-bundle/issues"
+                "issues": "https://github.com/webignition/basil-worker-persistence-bundle/issues",
+                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.7"
             },
-            "time": "2020-12-09T16:56:00+00:00"
+            "time": "2020-12-09T18:52:37+00:00"
         },
         {
             "name": "webignition/error-handler",
@@ -10208,7 +10181,7 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,

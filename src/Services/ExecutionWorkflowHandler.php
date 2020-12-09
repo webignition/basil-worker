@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Test;
 use App\Event\SourceCompile\SourceCompileSuccessEvent;
 use App\Event\TestExecuteCompleteEvent;
 use App\Message\ExecuteTest;
-use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class ExecutionWorkflowHandler implements EventSubscriberInterface
 {

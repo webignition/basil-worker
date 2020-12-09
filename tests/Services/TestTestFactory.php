@@ -4,22 +4,22 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
-use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Services\TestFactory;
-use App\Services\TestStore;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\BasilModels\Test\Configuration as ModelTestConfiguration;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
 
 class TestTestFactory
 {
     private TestFactory $testFactory;
-    private TestStore $testStore;
+    private EntityPersister $entityPersister;
 
-    public function __construct(TestFactory $testFactory, TestStore $testStore)
+    public function __construct(TestFactory $testFactory, EntityPersister $entityPersister)
     {
         $this->testFactory = $testFactory;
-        $this->testStore = $testStore;
+        $this->entityPersister = $entityPersister;
     }
 
     /**
@@ -49,7 +49,7 @@ class TestTestFactory
 
         $test = $tests[0];
         $test->setState($state);
-        $this->testStore->store($test);
+        $this->entityPersister->persist($test);
 
         return $test;
     }

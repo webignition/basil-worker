@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\InvokableFactory;
 
-use App\Entity\Test;
-use App\Entity\TestConfiguration;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
 
 class TestSetup
 {

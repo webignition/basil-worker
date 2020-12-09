@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use App\Entity\Test;
 use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\YamlDocument\Document;
 
 class TestExecuteDocumentReceivedEvent extends AbstractTestEvent implements CallbackEventInterface

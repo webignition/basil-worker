@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
-use App\Entity\Test;
-use App\Entity\TestConfiguration;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
 
 abstract class AbstractBaseIntegrationTest extends AbstractBaseFunctionalTest
 {
