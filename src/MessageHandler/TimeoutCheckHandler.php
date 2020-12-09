@@ -9,7 +9,7 @@ use App\Message\TimeoutCheck;
 use App\MessageDispatcher\TimeoutCheckMessageDispatcher;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class TimeoutCheckHandler implements MessageHandlerInterface
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Mock\Services;
 
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 
 class MockJobFactory
 {

@@ -9,9 +9,9 @@ use App\Tests\Model\EndToEndJob\InvokableCollection;
 use App\Tests\Model\EndToEndJob\InvokableInterface;
 use App\Tests\Model\EndToEndJob\InvokableItemInterface;
 use App\Tests\Model\EndToEndJob\ServiceReference;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\CallbackFactory;
 
 class CallbackSetupInvokableFactory
 {
@@ -38,7 +38,7 @@ class CallbackSetupInvokableFactory
     private static function create(string $type, array $payload): InvokableItemInterface
     {
         return new Invokable(
-            function (CallbackStore $callbackStore, string $type, array $payload): CallbackInterface {
+            function (CallbackFactory $callbackFactory, string $type, array $payload): CallbackInterface {
                 if (
                     CallbackInterface::TYPE_COMPILE_FAILURE !== $type &&
                     CallbackInterface::TYPE_EXECUTE_DOCUMENT_RECEIVED !== $type &&
@@ -47,12 +47,10 @@ class CallbackSetupInvokableFactory
                     $type = CallbackInterface::TYPE_COMPILE_FAILURE;
                 }
 
-                $callback = CallbackEntity::create($type, $payload);
-
-                return $callbackStore->store($callback);
+                return $callbackFactory->create($type, $payload);
             },
             [
-                new ServiceReference(CallbackStore::class),
+                new ServiceReference(CallbackFactory::class),
                 $type,
                 $payload,
             ]
@@ -67,7 +65,7 @@ class CallbackSetupInvokableFactory
     private static function setState(InvokableItemInterface $creator, string $state): InvokableInterface
     {
         return new Invokable(
-            function (CallbackStore $callbackStore, CallbackInterface $callback, string $state): CallbackInterface {
+            function (EntityPersister $entityPersister, CallbackInterface $callback, string $state): CallbackInterface {
                 if (
                     CallbackInterface::STATE_AWAITING !== $state &&
                     CallbackInterface::STATE_QUEUED !== $state &&
@@ -79,11 +77,12 @@ class CallbackSetupInvokableFactory
                 }
 
                 $callback->setState($state);
+                $entityPersister->persist($callback);
 
-                return $callbackStore->store($callback);
+                return $callback;
             },
             [
-                new ServiceReference(CallbackStore::class),
+                new ServiceReference(EntityPersister::class),
                 $creator,
                 $state
             ]

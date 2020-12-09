@@ -21,9 +21,9 @@ use App\Tests\Mock\Services\MockSourceStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 
 class JobControllerTest extends TestCase
 {

@@ -10,16 +10,16 @@ use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Model\Callback\CompileFailureCallback;
 use App\Model\Callback\ExecuteDocumentReceivedCallback;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
 use webignition\YamlDocument\Document;
 
 class CallbackEventFactory
 {
-    private CallbackStore $callbackStore;
+    private EntityPersister $entityPersister;
 
-    public function __construct(CallbackStore $callbackStore)
+    public function __construct(EntityPersister $entityPersister)
     {
-        $this->callbackStore = $callbackStore;
+        $this->entityPersister = $entityPersister;
     }
 
     public function createSourceCompileFailureEvent(
@@ -27,7 +27,7 @@ class CallbackEventFactory
         ErrorOutputInterface $errorOutput
     ): SourceCompileFailureEvent {
         $callback = new CompileFailureCallback($errorOutput);
-        $this->callbackStore->store($callback);
+        $this->entityPersister->persist($callback->getEntity());
 
         return new SourceCompileFailureEvent($source, $errorOutput, $callback);
     }
@@ -37,7 +37,7 @@ class CallbackEventFactory
         Document $document
     ): TestExecuteDocumentReceivedEvent {
         $callback = new ExecuteDocumentReceivedCallback($document);
-        $this->callbackStore->store($callback);
+        $this->entityPersister->persist($callback->getEntity());
 
         return new TestExecuteDocumentReceivedEvent($test, $document, $callback);
     }

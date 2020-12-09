@@ -15,7 +15,7 @@ use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 

@@ -19,7 +19,8 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class ExecuteTestHandlerTest extends TestCase
 {
@@ -40,6 +41,7 @@ class ExecuteTestHandlerTest extends TestCase
 
         $handler = new ExecuteTestHandler(
             $jobStore,
+            \Mockery::mock(EntityPersister::class),
             $testExecutor,
             \Mockery::mock(EventDispatcherInterface::class),
             \Mockery::mock(TestStateMutator::class),

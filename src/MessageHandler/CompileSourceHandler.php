@@ -9,7 +9,7 @@ use App\Services\CompilationState;
 use App\Services\Compiler;
 use App\Services\SourceCompileEventDispatcher;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {

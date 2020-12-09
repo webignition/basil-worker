@@ -26,7 +26,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Services\JobStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 abstract class AbstractEndToEndTest extends AbstractBaseIntegrationTest

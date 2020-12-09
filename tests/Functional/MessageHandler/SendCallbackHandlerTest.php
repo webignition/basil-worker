@@ -13,7 +13,7 @@ use App\Tests\Services\InvokableFactory\CallbackSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 

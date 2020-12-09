@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repository\TestRepository;
-use webignition\BasilWorker\PersistenceBundle\Services\SourceStore;
+use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 
 class SourcePathFinder
 {
