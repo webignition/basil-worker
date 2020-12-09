@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Services\CallbackEventFactory;
@@ -14,6 +13,7 @@ use App\Tests\Services\InvokableFactory\TestMutatorFactory;
 use App\Tests\Services\InvokableFactory\TestSetupInvokableFactory;
 use App\Tests\Services\InvokableHandler;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 use webignition\YamlDocument\Document;
 

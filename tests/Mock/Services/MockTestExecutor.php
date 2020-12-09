@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use App\Entity\Test;
 use App\Services\TestExecutor;
 use Mockery\MockInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 
 class MockTestExecutor
 {

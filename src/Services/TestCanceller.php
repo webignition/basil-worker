@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Test;
 use App\Event\JobTimeoutEvent;
 use App\Event\TestFailedEvent;
-use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class TestCanceller implements EventSubscriberInterface
 {

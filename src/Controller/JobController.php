@@ -7,7 +7,6 @@ namespace App\Controller;
 use App\Event\SourcesAddedEvent;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
-use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
@@ -21,6 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
+use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
-use App\Entity\Test;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
@@ -20,6 +19,7 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\HttpHistoryContainer\Collection\HttpTransactionCollection;
 use webignition\HttpHistoryContainer\Transaction\HttpTransaction;
 use webignition\HttpHistoryContainer\Transaction\HttpTransactionInterface;

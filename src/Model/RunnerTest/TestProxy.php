@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\RunnerTest;
 
-use App\Entity\Test as TestEntity;
 use webignition\BasilRunnerDocuments\Test;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test as TestEntity;
 
 class TestProxy extends Test
 {

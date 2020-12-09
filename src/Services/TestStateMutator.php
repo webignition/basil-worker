@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Entity\Test;
 use App\Event\TestExecuteCompleteEvent;
 use App\Event\TestExecuteDocumentReceivedEvent;
 use App\Event\TestFailedEvent;
 use App\Model\Document\Step;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
 
 class TestStateMutator implements EventSubscriberInterface
 {
-    private TestStore $testStore;
+    private EntityPersister $entityPersister;
     private EventDispatcherInterface $eventDispatcher;
 
-    public function __construct(TestStore $testStore, EventDispatcherInterface $eventDispatcher)
+    public function __construct(EntityPersister $entityPersister, EventDispatcherInterface $eventDispatcher)
     {
-        $this->testStore = $testStore;
+        $this->entityPersister = $entityPersister;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -82,6 +83,6 @@ class TestStateMutator implements EventSubscriberInterface
     private function set(Test $test, string $state): void
     {
         $test->setState($state);
-        $this->testStore->store($test);
+        $this->entityPersister->persist($test);
     }
 }
