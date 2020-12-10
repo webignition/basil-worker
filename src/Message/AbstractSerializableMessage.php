@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-abstract class AbstractSerializableMessage implements SerializableMessageInterface
+abstract class AbstractSerializableMessage implements JsonSerializableMessageInterface
 {
     /**
      * @return array<mixed>

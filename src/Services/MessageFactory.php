@@ -5,38 +5,40 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Exception\UnknownMessageTypeException;
-use App\Message\CompileSource;
-use App\Message\ExecuteTest;
-use App\Message\SendCallback;
-use App\Message\SerializableMessageInterface;
-use App\Message\TimeoutCheck;
+use App\Message\JsonSerializableMessageInterface;
 
 class MessageFactory
 {
     /**
+     * @var array<string, class-string>
+     */
+    private array $typeToMessageClassMap;
+
+    /**
+     * @param array<string, class-string> $typeToMessageClassMap
+     */
+    public function __construct(array $typeToMessageClassMap)
+    {
+        $this->typeToMessageClassMap = $typeToMessageClassMap;
+    }
+
+    /**
      * @param string $type
      * @param array<mixed> $payload
      *
-     * @return SerializableMessageInterface
+     * @return JsonSerializableMessageInterface
      *
      * @throws UnknownMessageTypeException
      */
-    public function create(string $type, array $payload): SerializableMessageInterface
+    public function create(string $type, array $payload): JsonSerializableMessageInterface
     {
-        if (CompileSource::TYPE === $type) {
-            return CompileSource::createFromArray($payload);
-        }
+        $messageClass = $this->typeToMessageClassMap[$type] ?? null;
 
-        if (ExecuteTest::TYPE === $type) {
-            return ExecuteTest::createFromArray($payload);
-        }
-
-        if (SendCallback::TYPE === $type) {
-            return SendCallback::createFromArray($payload);
-        }
-
-        if (TimeoutCheck::TYPE === $type) {
-            return TimeoutCheck::createFromArray($payload);
+        if (is_string($messageClass)) {
+            $messageClassInterfaces = class_implements($messageClass);
+            if (in_array(JsonSerializableMessageInterface::class, $messageClassInterfaces)) {
+                return $messageClass::createFromArray($payload);
+            }
         }
 
         throw new UnknownMessageTypeException($type);

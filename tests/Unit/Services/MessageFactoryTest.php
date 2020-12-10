@@ -6,8 +6,8 @@ namespace App\Tests\Unit\Services;
 
 use App\Message\CompileSource;
 use App\Message\ExecuteTest;
+use App\Message\JsonSerializableMessageInterface;
 use App\Message\SendCallback;
-use App\Message\SerializableMessageInterface;
 use App\Message\TimeoutCheck;
 use App\Services\MessageFactory;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +20,12 @@ class MessageFactoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->factory = new MessageFactory();
+        $this->factory = new MessageFactory([
+            CompileSource::TYPE => CompileSource::class,
+            ExecuteTest::TYPE => ExecuteTest::class,
+            SendCallback::TYPE => SendCallback::class,
+            TimeoutCheck::TYPE => TimeoutCheck::class,
+        ]);
     }
 
     /**
@@ -28,7 +33,7 @@ class MessageFactoryTest extends TestCase
      *
      * @param array<mixed> $payload
      */
-    public function testCreate(string $type, array $payload, SerializableMessageInterface $expectedMessage)
+    public function testCreate(string $type, array $payload, JsonSerializableMessageInterface $expectedMessage)
     {
         self::assertEquals($expectedMessage, $this->factory->create($type, $payload));
     }
