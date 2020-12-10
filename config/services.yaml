@@ -91,11 +91,3 @@ services:
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         arguments:
             $recheckPeriodInSeconds: '%job_timeout_check_period%'
-
-    App\Services\MessageFactory:
-        arguments:
-            $typeToMessageClassMap:
-                'compile-source': 'App\Message\CompileSource'
-                'execute-test': 'App\Message\ExecuteTest'
-                'send-callback': 'App\Message\SendCallback'
-                'timeout-check': 'App\Message\TimeoutCheck'

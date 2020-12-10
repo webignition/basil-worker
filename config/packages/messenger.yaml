@@ -1,9 +1,7 @@
 framework:
     messenger:
         transports:
-            async:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                serializer: 'App\Messenger\JsonMessageSerializer'
+            async: '%env(MESSENGER_TRANSPORT_DSN)%'
 
         routing:
             '*': async
