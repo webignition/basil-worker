@@ -11,9 +11,19 @@ class CompileSource extends AbstractSerializableMessage
 
     private string $path;
 
-    public function __construct(string $source)
+    public function __construct(string $path)
     {
-        $this->path = $source;
+        $this->path = $path;
+    }
+
+    /**
+     * @param array<mixed> $data
+     *
+     * @return self
+     */
+    public static function createFromArray(array $data): self
+    {
+        return new CompileSource((string) ($data[self::PAYLOAD_KEY_PATH] ?? ''));
     }
 
     public function getPath(): string
@@ -31,11 +41,5 @@ class CompileSource extends AbstractSerializableMessage
         return [
             self::PAYLOAD_KEY_PATH => $this->path,
         ];
-    }
-
-    public function unserialize($serialized): void
-    {
-        $path = $this->decodePayloadValue($serialized, self::PAYLOAD_KEY_PATH);
-        $this->path = (string) ($path ?? '');
     }
 }

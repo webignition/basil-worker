@@ -5,28 +5,51 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Message;
 
 use App\Message\SendCallback;
-use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class SendCallbackTest extends TestCase
 {
-    use MockeryPHPUnitIntegration;
+    private const CALLBACK_ID = 9;
 
-    public function testSerializeDeserialize()
+    private SendCallback $message;
+
+    protected function setUp(): void
     {
-        $callbackId = 9;
+        parent::setUp();
 
-        $callback = \Mockery::mock(CallbackInterface::class);
-        $callback
-            ->shouldReceive('getId')
-            ->andReturn($callbackId);
+        $this->message = new SendCallback(self::CALLBACK_ID);
+    }
 
-        $message = new SendCallback($callback);
+    public function testGetCallbackId()
+    {
+        self::assertSame(self::CALLBACK_ID, $this->message->getCallbackId());
+    }
 
-        self::assertEquals(
-            $message,
-            unserialize(serialize($message))
+    public function testGetType()
+    {
+        self::assertSame(SendCallback::TYPE, $this->message->getType());
+    }
+
+    public function testGetPayload()
+    {
+        self::assertSame(
+            [
+                'callback_id' => $this->message->getCallbackId(),
+            ],
+            $this->message->getPayload()
+        );
+    }
+
+    public function testJsonSerialize()
+    {
+        self::assertSame(
+            [
+                'type' => SendCallback::TYPE,
+                'payload' => [
+                    'callback_id' => $this->message->getCallbackId(),
+                ],
+            ],
+            $this->message->jsonSerialize()
         );
     }
 }

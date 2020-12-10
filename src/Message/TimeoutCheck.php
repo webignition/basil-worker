@@ -8,6 +8,11 @@ class TimeoutCheck extends AbstractSerializableMessage
 {
     public const TYPE = 'timeout-check';
 
+    public static function createFromArray(array $data): self
+    {
+        return new TimeoutCheck();
+    }
+
     public function getType(): string
     {
         return self::TYPE;
@@ -16,9 +21,5 @@ class TimeoutCheck extends AbstractSerializableMessage
     public function getPayload(): array
     {
         return [];
-    }
-
-    public function unserialize($serialized)
-    {
     }
 }
