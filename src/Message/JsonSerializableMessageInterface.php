@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Message;
 
-interface SerializableMessageInterface extends \JsonSerializable
+interface JsonSerializableMessageInterface extends \JsonSerializable
 {
     public const KEY_TYPE = 'type';
     public const KEY_PAYLOAD = 'payload';

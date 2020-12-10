@@ -8,7 +8,7 @@ use App\Exception\UnknownMessageTypeException;
 use App\Message\CompileSource;
 use App\Message\ExecuteTest;
 use App\Message\SendCallback;
-use App\Message\SerializableMessageInterface;
+use App\Message\JsonSerializableMessageInterface;
 use App\Message\TimeoutCheck;
 
 class MessageFactory
@@ -17,11 +17,11 @@ class MessageFactory
      * @param string $type
      * @param array<mixed> $payload
      *
-     * @return SerializableMessageInterface
+     * @return JsonSerializableMessageInterface
      *
      * @throws UnknownMessageTypeException
      */
-    public function create(string $type, array $payload): SerializableMessageInterface
+    public function create(string $type, array $payload): JsonSerializableMessageInterface
     {
         if (CompileSource::TYPE === $type) {
             return CompileSource::createFromArray($payload);
