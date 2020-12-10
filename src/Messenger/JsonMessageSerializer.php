@@ -7,19 +7,16 @@ namespace App\Messenger;
 use App\Envelope\SerializableEnvelope;
 use App\Exception\UnknownMessageClassException;
 use App\Exception\UnknownMessageTypeException;
-use App\Services\MessageFactory;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\NonSendableStampInterface;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 
 class JsonMessageSerializer implements SerializerInterface
 {
-    private MessageFactory $messageFactory;
     private Decoder $decoder;
 
-    public function __construct(MessageFactory $messageFactory, Decoder $decoder)
+    public function __construct(Decoder $decoder)
     {
-        $this->messageFactory = $messageFactory;
         $this->decoder = $decoder;
     }
 

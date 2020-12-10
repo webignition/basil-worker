@@ -7,8 +7,8 @@ namespace App\Services;
 use App\Exception\UnknownMessageTypeException;
 use App\Message\CompileSource;
 use App\Message\ExecuteTest;
-use App\Message\SendCallback;
 use App\Message\JsonSerializableMessageInterface;
+use App\Message\SendCallback;
 use App\Message\TimeoutCheck;
 
 class MessageFactory

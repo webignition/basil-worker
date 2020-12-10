@@ -10,7 +10,6 @@ use App\Message\SendCallback;
 use App\Message\TimeoutCheck;
 use App\Messenger\JsonMessageSerializer;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\InvokableHandler;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
@@ -22,7 +21,6 @@ class JsonMessageSerializerTest extends AbstractBaseFunctionalTest
     use TestClassServicePropertyInjectorTrait;
 
     private JsonMessageSerializer $serializer;
-    private InvokableHandler $invokableHandler;
 
     protected function setUp(): void
     {
