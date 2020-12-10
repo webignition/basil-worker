@@ -50,7 +50,7 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
         ObjectReflector::setProperty($this->handler, SendCallbackHandler::class, 'stateMutator', $stateMutator);
         ObjectReflector::setProperty($this->handler, SendCallbackHandler::class, 'sender', $sender);
 
-        $message = new SendCallback($callback);
+        $message = new SendCallback((int) $callback->getId());
 
         ($this->handler)($message);
     }
@@ -70,7 +70,7 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
 
         ObjectReflector::setProperty($this->handler, SendCallbackHandler::class, 'sender', $mockSender->getMock());
 
-        $message = new SendCallback($callback);
+        $message = new SendCallback((int) $callback->getId());
 
         ($this->handler)($message);
     }

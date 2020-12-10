@@ -61,7 +61,7 @@ class SendCallbackMessageDispatcher implements EventSubscriberInterface
      */
     private function createCallbackEnvelope(CallbackInterface $callback): Envelope
     {
-        $sendCallbackMessage = new SendCallback($callback);
+        $sendCallbackMessage = new SendCallback((int) $callback->getId());
         $stamps = [];
 
         if ($callback instanceof StampedCallbackInterface) {
