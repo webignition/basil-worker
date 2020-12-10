@@ -14,7 +14,10 @@ class MessageFactory
      */
     private array $typeToMessageClassMap;
 
-    public function __construct($typeToMessageClassMap)
+    /**
+     * @param array<string, class-string> $typeToMessageClassMap
+     */
+    public function __construct(array $typeToMessageClassMap)
     {
         $this->typeToMessageClassMap = $typeToMessageClassMap;
     }
