@@ -16,6 +16,16 @@ class SendCallback extends AbstractSerializableMessage
         $this->callbackId = $callbackId;
     }
 
+    /**
+     * @param array<mixed> $data
+     *
+     * @return self
+     */
+    public static function createFromArray(array $data): self
+    {
+        return new SendCallback((int) ($data[self::PAYLOAD_KEY_CALLBACK_ID] ?? 0));
+    }
+
     public function getCallbackId(): int
     {
         return $this->callbackId;
@@ -31,11 +41,5 @@ class SendCallback extends AbstractSerializableMessage
         return [
             self::PAYLOAD_KEY_CALLBACK_ID => $this->callbackId,
         ];
-    }
-
-    public function unserialize($serialized): void
-    {
-        $callbackId = $this->decodePayloadValue($serialized, self::PAYLOAD_KEY_CALLBACK_ID);
-        $this->callbackId = (int) ($callbackId ?? 0);
     }
 }

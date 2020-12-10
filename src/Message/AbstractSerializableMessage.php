@@ -6,15 +6,15 @@ namespace App\Message;
 
 abstract class AbstractSerializableMessage implements SerializableMessageInterface
 {
-    public const KEY_TYPE = 'type';
-    public const KEY_PAYLOAD = 'payload';
-
-    public function serialize(): string
+    /**
+     * @return array<mixed>
+     */
+    public function jsonSerialize(): array
     {
-        return (string) json_encode([
+        return [
             self::KEY_TYPE => $this->getType(),
             self::KEY_PAYLOAD => $this->getPayload(),
-        ]);
+        ];
     }
 
     /**

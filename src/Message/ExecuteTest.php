@@ -16,6 +16,16 @@ class ExecuteTest extends AbstractSerializableMessage
         $this->testId = $testId;
     }
 
+    /**
+     * @param array<mixed> $data
+     *
+     * @return self
+     */
+    public static function createFromArray(array $data): self
+    {
+        return new ExecuteTest((int) ($data[self::PAYLOAD_KEY_TEST_ID] ?? 0));
+    }
+
     public function getTestId(): int
     {
         return $this->testId;
@@ -31,11 +41,5 @@ class ExecuteTest extends AbstractSerializableMessage
         return [
             self::PAYLOAD_KEY_TEST_ID => $this->testId,
         ];
-    }
-
-    public function unserialize($serialized): void
-    {
-        $testId = $this->decodePayloadValue($serialized, self::PAYLOAD_KEY_TEST_ID);
-        $this->testId = (int) ($testId ?? 0);
     }
 }

@@ -9,13 +9,47 @@ use PHPUnit\Framework\TestCase;
 
 class CompileSourceTest extends TestCase
 {
-    public function testSerializeDeserialize()
-    {
-        $message = new CompileSource('Test/test.yml');
+    private const PATH = 'Test/test.yml';
 
-        self::assertEquals(
-            $message,
-            unserialize(serialize($message))
+    private CompileSource $message;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->message = new CompileSource(self::PATH);
+    }
+
+    public function testGetPath()
+    {
+        self::assertSame(self::PATH, $this->message->getPath());
+    }
+
+    public function testGetType()
+    {
+        self::assertSame(CompileSource::TYPE, $this->message->getType());
+    }
+
+    public function testGetPayload()
+    {
+        self::assertSame(
+            [
+                'path' => $this->message->getPath(),
+            ],
+            $this->message->getPayload()
+        );
+    }
+
+    public function testJsonSerialize()
+    {
+        self::assertSame(
+            [
+                'type' => CompileSource::TYPE,
+                'payload' => [
+                    'path' => $this->message->getPath(),
+                ],
+            ],
+            $this->message->jsonSerialize()
         );
     }
 }
