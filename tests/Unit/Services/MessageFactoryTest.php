@@ -20,7 +20,12 @@ class MessageFactoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->factory = new MessageFactory();
+        $this->factory = new MessageFactory([
+            CompileSource::TYPE => CompileSource::class,
+            ExecuteTest::TYPE => ExecuteTest::class,
+            SendCallback::TYPE => SendCallback::class,
+            TimeoutCheck::TYPE => TimeoutCheck::class,
+        ]);
     }
 
     /**
