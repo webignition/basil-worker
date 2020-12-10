@@ -8,7 +8,7 @@ use App\Exception\UnknownMessageClassException;
 use App\Message\JsonSerializableMessageInterface;
 use Symfony\Component\Messenger\Envelope;
 
-class SerializableEnvelope implements JsonSerializableEnvelopeInterface
+class SerializableEnvelope implements SerializableEnvelopeInterface
 {
     private Envelope $envelope;
 
@@ -22,7 +22,7 @@ class SerializableEnvelope implements JsonSerializableEnvelopeInterface
      *
      * @throws UnknownMessageClassException
      */
-    public function jsonSerialize(): array
+    public function encode(): array
     {
         $message = $this->envelope->getMessage();
         if (!$message instanceof JsonSerializableMessageInterface) {

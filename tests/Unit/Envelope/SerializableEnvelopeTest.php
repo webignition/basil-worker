@@ -13,17 +13,17 @@ use Symfony\Component\Messenger\Stamp\DelayStamp;
 class SerializableEnvelopeTest extends TestCase
 {
     /**
-     * @dataProvider jsonSerializeDataProvider
+     * @dataProvider encodeDataProvider
      *
      * @param SerializableEnvelope $envelope
      * @param array<mixed> $expectedSerializedEnvelope
      */
-    public function testJsonSerialize(SerializableEnvelope $envelope, array $expectedSerializedEnvelope)
+    public function testEncode(SerializableEnvelope $envelope, array $expectedSerializedEnvelope)
     {
-        self::assertSame($expectedSerializedEnvelope, $envelope->jsonSerialize());
+        self::assertSame($expectedSerializedEnvelope, $envelope->encode());
     }
 
-    public function jsonSerializeDataProvider(): array
+    public function encodeDataProvider(): array
     {
         $compileSourceMessage = new CompileSource('Test/test.yml');
 
