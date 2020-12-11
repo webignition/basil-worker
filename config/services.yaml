@@ -92,7 +92,7 @@ services:
         arguments:
             $recheckPeriodInSeconds: '%job_timeout_check_period%'
 
-    App\Services\MessageFactory:
+    webignition\JsonMessageSerializerBundle\Services\MessageFactory:
         arguments:
             $typeToMessageClassMap:
                 'compile-source': 'App\Message\CompileSource'

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Message;
 
+use webignition\JsonMessageSerializerBundle\Message\AbstractSerializableMessage;
+
 class TimeoutCheck extends AbstractSerializableMessage
 {
     public const TYPE = 'timeout-check';

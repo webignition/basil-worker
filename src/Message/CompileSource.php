@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Message;
 
+use webignition\JsonMessageSerializerBundle\Message\AbstractSerializableMessage;
+
 class CompileSource extends AbstractSerializableMessage
 {
     public const TYPE = 'compile-source';

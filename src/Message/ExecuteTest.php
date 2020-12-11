@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Message;
 
+use webignition\JsonMessageSerializerBundle\Message\AbstractSerializableMessage;
+
 class ExecuteTest extends AbstractSerializableMessage
 {
     public const TYPE = 'execute-test';
