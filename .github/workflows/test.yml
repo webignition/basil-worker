@@ -33,7 +33,7 @@ jobs:
 
       - name: vagrant
         run: |
-          vagrant plugin install vagrant-vbguest
+#          vagrant plugin install vagrant-vbguest
           vagrant up basil-worker
           vagrant ssh basil-worker -c 'uname -a'
           vagrant ssh basil-worker -c 'lsb_release -a'
