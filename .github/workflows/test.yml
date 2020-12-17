@@ -34,6 +34,6 @@ jobs:
       - name: vagrant
         run: |
           vagrant plugin install vagrant-vbguest
-          vagrant up basil-worker-machine
-          vagrant ssh basil-worker-machine -c 'uname -a'
-          vagrant ssh basil-worker-machine -c 'lsb_release -a'
+          vagrant up basil-worker
+          vagrant ssh basil-worker -c 'uname -a'
+          vagrant ssh basil-worker -c 'lsb_release -a'
