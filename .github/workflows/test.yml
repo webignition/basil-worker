@@ -28,7 +28,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/.vagrant.d/boxes/cdaf-VAGRANTSLASH-WindowsServerDC
+            ~/.vagrant.d/boxes/focal-server-cloudimg-amd64-vagrant
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
       - name: vagrant
