@@ -1,8 +1,0 @@
-config:
-  browsers:
-    - chrome
-  url: https://example.com/one
-
-"verify page is open":
-  assertions:
-    - $page.url is

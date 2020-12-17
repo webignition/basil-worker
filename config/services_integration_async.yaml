@@ -1,7 +1,0 @@
-imports:
-    - { resource: services/integration.yaml }
-
-services:
-    _defaults:
-        autowire: true
-        autoconfigure: true
