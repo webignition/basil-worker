@@ -14,9 +14,9 @@ jobs:
       - name: Update packages
         run: |
           brew cask uninstall vagrant
-          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/7f340b97d60907da225e9f5c10e81f9285ef2edb/Casks/vagrant.rb
+          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/32db48c039763079ed12d6cc5f44b341d4ba68ed/Casks/vagrant.rb
           brew cask uninstall virtualbox
-          brew cask install https://raw.githubusercontent.com/danielmenezesbr/homebrew-cask/virtualbox-6024/Casks/virtualbox.rb
+          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/ed3d9dea892ac4bb658ef90751f292d377198648/Casks/virtualbox.rb
 
       - name: Show packages version
         run: |
