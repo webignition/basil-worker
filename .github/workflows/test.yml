@@ -32,7 +32,7 @@ jobs:
 
       - name: Lint provision.sh
         run: |
-          sudo apt-get install shellcheck
+          brew install shellcheck
           shellcheck provision.sh
 
       - name: Vagrant up
