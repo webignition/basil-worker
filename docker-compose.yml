@@ -62,15 +62,17 @@ services:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
       MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f/messages
     depends_on:
+      - compiler
+      - delegator
       - postgres
       - rabbitmq
 
   app-web:
     image: smartassert/basil-worker-web:0.1
+    container_name: web
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
       MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f/messages
-    container_name: web
     depends_on:
       - postgres
       - rabbitmq
