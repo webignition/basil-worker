@@ -1,0 +1,39 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build:
+    name: Build VM
+    runs-on: macos-10.15
+
+    steps:
+      - name: Update packages
+        run: |
+          brew cask uninstall vagrant
+          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/32db48c039763079ed12d6cc5f44b341d4ba68ed/Casks/vagrant.rb
+          brew cask uninstall virtualbox
+          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/ed3d9dea892ac4bb658ef90751f292d377198648/Casks/virtualbox.rb
+
+      - name: Show packages version
+        run: |
+          VBoxManage --version
+          vagrant up --version
+      - uses: actions/checkout@v2
+
+      - name: Cache multiple paths
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.vagrant.d/boxes/focal-server-cloudimg-amd64-vagrant
+          key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
+
+      - name: Vagrant up
+        run: |
+          vagrant up basil-worker
+          vagrant ssh basil-worker -c 'uname -a'
+          vagrant ssh basil-worker -c 'lsb_release -a'
