@@ -31,7 +31,10 @@ jobs:
         run: vagrant validate
 
       - name: Vagrant up
+        run: vagrant up basil_worker
+
+      - name: Verify VM state
         run: |
-          vagrant up basil_worker
           vagrant ssh basil_worker -c 'uname -a'
           vagrant ssh basil_worker -c 'lsb_release -a'
+          vagrant ssh basil_worker -c 'docker --version'
