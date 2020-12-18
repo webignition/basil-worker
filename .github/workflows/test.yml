@@ -8,6 +8,7 @@ on:
 
 jobs:
   build:
+    name: Build VM
     runs-on: macos-10.15
 
     steps:
