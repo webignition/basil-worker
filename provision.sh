@@ -21,3 +21,6 @@ sudo apt-get update && apt-get install -y \
 
 apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+mkdir -p /var/basil/source
+mkdir -p /var/basil/tests
