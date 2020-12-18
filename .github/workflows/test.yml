@@ -34,6 +34,6 @@ jobs:
 
       - name: Vagrant up
         run: |
-          vagrant up basil-worker
-          vagrant ssh basil-worker -c 'uname -a'
-          vagrant ssh basil-worker -c 'lsb_release -a'
+          vagrant up basil_worker
+          vagrant ssh basil_worker -c 'uname -a'
+          vagrant ssh basil_worker -c 'lsb_release -a'
