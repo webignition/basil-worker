@@ -27,6 +27,9 @@ jobs:
             ~/.vagrant.d/boxes/focal-server-cloudimg-amd64-vagrant
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
+      - name: Validate Vagrantfile
+        run: vagrant validate
+
       - name: Vagrant up
         run: |
           vagrant up basil_worker
