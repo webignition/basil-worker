@@ -35,3 +35,4 @@ jobs:
           vagrant up basil_worker
           vagrant ssh basil_worker -c 'uname -a'
           vagrant ssh basil_worker -c 'lsb_release -a'
+          vagrant ssh basil_worker -c 'docker --version'

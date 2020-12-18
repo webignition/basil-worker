@@ -6,5 +6,7 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provider "virtualbox" do |v|
       v.name = "basil_worker"
     end
+
+    basil_worker.vm.provision "shell", path: "provision.sh"
   end
 end
