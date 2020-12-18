@@ -30,6 +30,11 @@ jobs:
       - name: Validate Vagrantfile
         run: vagrant validate
 
+      - name: Lint provision.sh
+        run: |
+          brew install shellcheck
+          shellcheck provision.sh
+
       - name: Vagrant up
         run: vagrant up basil_worker
 
