@@ -15,17 +15,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Update packages
+      - name: Show package versions
         run: |
-          brew cask uninstall vagrant
-          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/32db48c039763079ed12d6cc5f44b341d4ba68ed/Casks/vagrant.rb
-          brew cask uninstall virtualbox
-          brew cask install https://raw.githubusercontent.com/Homebrew/homebrew-cask/ed3d9dea892ac4bb658ef90751f292d377198648/Casks/virtualbox.rb
-
-      - name: Show packages version
-        run: |
+          vagrant --version
           VBoxManage --version
-          vagrant up --version
 
       - name: Cache multiple paths
         uses: actions/cache@v2
