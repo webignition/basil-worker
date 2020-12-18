@@ -32,9 +32,8 @@ jobs:
             ~/.vagrant.d/boxes/focal-server-cloudimg-amd64-vagrant
           key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
 
-      - name: vagrant
+      - name: Vagrant up
         run: |
-          # vagrant plugin install vagrant-vbguest
           vagrant up basil-worker
           vagrant ssh basil-worker -c 'uname -a'
           vagrant ssh basil-worker -c 'lsb_release -a'
