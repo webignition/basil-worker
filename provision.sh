@@ -34,3 +34,4 @@ mkdir -p /var/basil/source
 mkdir -p /var/basil/tests
 
 sudo docker-compose --env-file .docker-compose.env up -d
+sudo docker-compose --env-file .docker-compose.env exec -T app-handler php bin/console doctrine:database:create --if-not-exists
