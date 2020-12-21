@@ -1,0 +1,78 @@
+version: "3"
+
+services:
+  compiler:
+    image: smartassert/basil-compiler:0.25
+    container_name: ${COMPILER_CONTAINER_NAME}
+    volumes:
+      - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
+      - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
+
+  chrome-runner:
+    image: smartassert/chrome-runner:0.14
+    container_name: ${CHROME_RUNNER_CONTAINER_NAME}
+    volumes:
+      - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
+
+  firefox-runner:
+    image: smartassert/firefox-runner:0.14
+    container_name: ${FIREFOX_RUNNER_CONTAINER_NAME}
+    volumes:
+      - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
+
+  delegator:
+    image: smartassert/basil-runner-delegator:0.4
+    container_name: ${DELEGATOR_CONTAINER_NAME}
+    environment:
+      CHROME_RUNNER_HOST: chrome-runner
+      CHROME_RUNNER_PORT: 8000
+      FIREFOX_RUNNER_HOST: firefox-runner
+      FIREFOX_RUNNER_PORT: 8000
+    depends_on:
+      - chrome-runner
+      - firefox-runner
+
+  rabbitmq:
+    image: rabbitmq:3
+    container_name: ${RABBITMQ_CONTAINER_NAME}
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+
+  postgres:
+    image: postgres:12.5
+    container_name: ${POSTGRES_CONTAINER_NAME}
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-app
+    ports:
+      - 80:80
+    links:
+      - app-web:app-web
+
+  app-handler:
+    image: smartassert/basil-worker-handler:0.1
+    container_name: handler
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
+      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f/messages
+    depends_on:
+      - compiler
+      - delegator
+      - postgres
+      - rabbitmq
+
+  app-web:
+    image: smartassert/basil-worker-web:0.1
+    container_name: web
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
+      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f/messages
+    depends_on:
+      - postgres
+      - rabbitmq

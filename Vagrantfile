@@ -7,6 +7,10 @@ Vagrant.configure("2") do |config|
       v.name = "basil_worker"
     end
 
+    basil_worker.vm.provision "file", source: "./.docker-compose.env", destination: "~/.docker-compose.env"
+    basil_worker.vm.provision "file", source: "./docker-compose.yml", destination: "~/docker-compose.yml"
+    basil_worker.vm.provision "file", source: "./nginx/Dockerfile", destination: "~/nginx/Dockerfile"
+    basil_worker.vm.provision "file", source: "./nginx/site.conf", destination: "~/nginx/site.conf"
     basil_worker.vm.provision "shell", path: "provision.sh"
   end
 end

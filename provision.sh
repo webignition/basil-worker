@@ -22,8 +22,15 @@ sudo apt-get update && apt-get install -y \
 apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+DOCKER_COMPOSE_BIN=/usr/local/bin/docker-compose
+if [ ! -f "$DOCKER_COMPOSE_BIN" ]; then
+  sudo curl \
+    -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" \
+    -o /usr/local/bin/docker-compose
+  sudo chmod +x /usr/local/bin/docker-compose
+fi
 
 mkdir -p /var/basil/source
 mkdir -p /var/basil/tests
+
+sudo docker-compose --env-file .docker-compose.env up -d
