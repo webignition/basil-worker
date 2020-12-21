@@ -50,4 +50,4 @@ jobs:
           vagrant port
 
       - name: Test
-        run: curl http://localhost/status
+        run: if [ $(curl -s "http://localhost:80/status") != "[]" ]; then exit 1; fi; exit 0;
