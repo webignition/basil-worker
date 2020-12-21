@@ -36,7 +36,7 @@ jobs:
           shellcheck provision.sh
 
       - name: Vagrant up
-        run: vagrant up basil_worker
+        run: HOST_PORT=80 vagrant up basil_worker
 
       - name: Verify VM state
         run: |
@@ -47,3 +47,7 @@ jobs:
           vagrant ssh basil_worker -c 'sudo docker-compose --env-file .docker-compose.env ps'
           vagrant ssh -c 'ls -la /var/basil/source'
           vagrant ssh -c 'ls -la /var/basil/tests'
+          vagrant port
+
+      - name: Test
+        run: curl http://localhost/status
