@@ -56,7 +56,7 @@ services:
       - app-web:app-web
 
   app-handler:
-    image: smartassert/basil-worker-handler:0.1
+    image: smartassert/basil-worker-handler:0.2
     container_name: handler
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
