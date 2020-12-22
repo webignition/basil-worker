@@ -1,0 +1,47 @@
+{
+  "builders": [
+    {
+      "type": "digitalocean",
+      "ssh_username": "root",
+      "api_token": "{{ user `digitalocean_api_token` }}",
+      "image": "ubuntu-20-04-x64",
+      "region": "lon1",
+      "size": "s-1vcpu-1gb",
+      "snapshot_name": "basil-worker-{{isotime \"2006-01-02-15:04:05\"}}"
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "docker-compose.yml",
+      "destination": "~/docker-compose.yml"
+    },
+    {
+      "type": "file",
+      "source": ".docker-compose.env",
+      "destination": "~/.docker-compose.env"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p ~/nginx"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "nginx/Dockerfile",
+      "destination": "~/nginx/Dockerfile"
+    },
+    {
+      "type": "file",
+      "source": "nginx/site.conf",
+      "destination": "~/nginx/site.conf"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "./provision.sh"
+      ]
+    }
+  ]
+}
