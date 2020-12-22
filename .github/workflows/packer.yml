@@ -32,3 +32,10 @@ jobs:
           ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
           ./verify-snapshot-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
           if [ $? -ne 0 ]; then exit 1; fi; exit 0;
+
+      - name: Remove created image
+        run: |
+          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
+          ./delete-snapshot.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          ./verify-snapshot-not-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          if [ $? -ne 0 ]; then exit 1; fi; exit 0;
