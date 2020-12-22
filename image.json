@@ -1,0 +1,13 @@
+{
+  "builders": [
+    {
+      "type": "digitalocean",
+      "ssh_username": "root",
+      "api_token": "{{ user `digitalocean_api_token` }}",
+      "image": "ubuntu-20-04-x64",
+      "region": "lon1",
+      "size": "s-1vcpu-1gb",
+      "snapshot_name": "basil-worker-{{isotime \"2006-01-02-15:04:05\"}}"
+    }
+  ]
+}
