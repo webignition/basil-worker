@@ -27,3 +27,5 @@ EXPECTED_RESPONSE_ID="\"${ID}\""
 if [ $RESPONSE_ID != $EXPECTED_RESPONSE_ID ]; then
   exit $EXIT_CODE_SNAPSHOT_ID_INCORRECT
 fi
+
+echo "Snapshot ${ID} created"
