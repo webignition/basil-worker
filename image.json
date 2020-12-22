@@ -9,5 +9,39 @@
       "size": "s-1vcpu-1gb",
       "snapshot_name": "basil-worker-{{isotime \"2006-01-02-15:04:05\"}}"
     }
+  ],
+  "provisioners": [
+    {
+      "type": "file",
+      "source": "docker-compose.yml",
+      "destination": "~/docker-compose.yml"
+    },
+    {
+      "type": "file",
+      "source": ".docker-compose.env",
+      "destination": "~/.docker-compose.env"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p ~/nginx"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "nginx/Dockerfile",
+      "destination": "~/nginx/Dockerfile"
+    },
+    {
+      "type": "file",
+      "source": "nginx/site.conf",
+      "destination": "~/nginx/site.conf"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "./provision.sh"
+      ]
+    }
   ]
 }
