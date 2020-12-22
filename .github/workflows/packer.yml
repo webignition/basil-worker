@@ -27,4 +27,8 @@ jobs:
           if [ $? -ne 0 ]; then exit 1; fi; exit 0;
 
       - name: Create image
-        run: packer build -var 'digitalocean_api_token=${{ secrets.DIGITALOCEAN_API_TOKEN }}' image.json
+        run: |
+          packer build -var 'digitalocean_api_token=${{ secrets.DIGITALOCEAN_API_TOKEN }}' image.json | tee packer.log
+          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
+          echo $ID
+          ./verify-snapshot.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
