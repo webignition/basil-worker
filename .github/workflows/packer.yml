@@ -24,7 +24,7 @@ jobs:
       - name: Set snapshot name
         id: snapshot_name
         env:
-          EVENT_NAME: ${{ github.event.event_name }}
+          EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.number }}
           RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
