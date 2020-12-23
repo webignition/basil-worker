@@ -5,6 +5,9 @@ on:
     branches:
       - master
   pull_request:
+  release:
+    types:
+      - published
 
 jobs:
   build:
@@ -14,6 +17,20 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      # PR event.number
+      # PR event.pull_request.created_at | tr -d '"'
+      # release event.release.tag_name | tr -d '"'
+      # release event.release.created_at | tr -d '"'
+      - name: Set snapshot name
+        id: snapshot_name
+        env:
+          EVENT_NAME: ${{ github.event.event_name }}
+          PR_NUMBER: ${{ github.event.number }}
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+        run: ./ci/create-snapshot-name.sh
+
+      - name: Verify snapshot name
+        run: echo ${{ steps.snapshot_name.outputs.value }}
 
       - name: Install packer
         run: |
