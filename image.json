@@ -1,4 +1,9 @@
 {
+  "variables": {
+    "digitalocean_api_token": null,
+    "snapshot_name": null
+  },
+  "sensitive-variables": ["digitalocean_api_token"],
   "builders": [
     {
       "type": "digitalocean",
