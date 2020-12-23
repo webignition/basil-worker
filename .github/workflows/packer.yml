@@ -17,10 +17,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      # PR event.number
-      # PR event.pull_request.created_at | tr -d '"'
-      # release event.release.tag_name | tr -d '"'
-      # release event.release.created_at | tr -d '"'
       - name: Set snapshot name
         id: snapshot_name
         run: |
@@ -49,17 +45,20 @@ jobs:
           -var 'digitalocean_api_token=${{ secrets.DIGITALOCEAN_API_TOKEN }}' \
           -var 'snapshot_name=${{ steps.snapshot_name.outputs.value }}' \
           image.json
-#
-#      - name: Create image
-#        run: |
-#          packer build -var 'digitalocean_api_token=${{ secrets.DIGITALOCEAN_API_TOKEN }}' image.json | tee packer.log
-#          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
-#          ./ci/verify-snapshot-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-#          if [ $? -ne 0 ]; then exit 1; fi; exit 0;
-#
-#      - name: Remove created image
-#        run: |
-#          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
-#          ./ci/delete-snapshot.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-#          ./ci/verify-snapshot-not-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
-#          if [ $? -ne 0 ]; then exit 1; fi; exit 0;
+
+      - name: Create image
+        run: |
+          packer build \
+          -var 'digitalocean_api_token=${{ secrets.DIGITALOCEAN_API_TOKEN }}' \
+          -var 'snapshot_name=${{ steps.snapshot_name.outputs.value }}' \
+          image.json | tee packer.log
+          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
+          ./ci/verify-snapshot-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          if [ $? -ne 0 ]; then exit 1; fi; exit 0;
+
+      - name: Remove created image
+        run: |
+          ID=$(cat packer.log | tail -1 | grep -P -o 'ID: \d+' | tr -d 'ID: ')
+          ./ci/delete-snapshot.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          ./ci/verify-snapshot-not-exists.sh $ID ${{ secrets.DIGITALOCEAN_API_TOKEN }}
+          if [ $? -ne 0 ]; then exit 1; fi; exit 0;
