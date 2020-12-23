@@ -23,14 +23,10 @@ jobs:
       # release event.release.created_at | tr -d '"'
       - name: Set snapshot name
         id: snapshot_name
-        env:
-          EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.number }}
-          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          EVENT_NAME=$EVENT_NAME \
-          PR_NUMBER=$PR_NUMBER \
-          RELEASE_TAG_NAME=$RELEASE_TAG_NAME \
+          EVENT_NAME=${{ github.event_name }} \
+          PR_NUMBER=${{ github.event.number }} \
+          RELEASE_TAG_NAME=${{ github.event.release.tag_name }} \
           ./ci/create-snapshot-name.sh
 
       - name: Verify snapshot name
