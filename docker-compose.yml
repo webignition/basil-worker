@@ -2,20 +2,20 @@ version: "3"
 
 services:
   compiler:
-    image: smartassert/basil-compiler:0.25
+    image: smartassert/basil-compiler:0.26
     container_name: ${COMPILER_CONTAINER_NAME}
     volumes:
       - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   chrome-runner:
-    image: smartassert/chrome-runner:0.14
+    image: smartassert/chrome-runner:0.15
     container_name: ${CHROME_RUNNER_CONTAINER_NAME}
     volumes:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   firefox-runner:
-    image: smartassert/firefox-runner:0.14
+    image: smartassert/firefox-runner:0.15
     container_name: ${FIREFOX_RUNNER_CONTAINER_NAME}
     volumes:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
@@ -56,7 +56,7 @@ services:
       - app-web:app-web
 
   app-handler:
-    image: smartassert/basil-worker-handler:0.2
+    image: smartassert/basil-worker-handler:0.3
     container_name: handler
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
