@@ -38,22 +38,3 @@ services:
     webignition\JsonMessageSerializerBundle\Services\MessageFactory:
         arguments:
             $typeToMessageClassMap: []
-
-#    app.services.path-prefix-remover.compiler-source:
-#        class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
-#        arguments:
-#            $prefix: '%compiler_source_directory%/'
-#
-#    app.services.path-prefix-remover.compiler-target:
-#        class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
-#        arguments:
-#            $prefix: '%compiler_target_directory%/'
-#
-#    App\Services\TestSerializer:
-#        arguments:
-#            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
-#            $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
-#
-#    webignition\BasilWorker\StateBundle\Services\SourcePathFinder:
-#        calls:
-#            - setCompilerSourcePathPrefixRemover: ['@app.services.path-prefix-remover.compiler-source']
