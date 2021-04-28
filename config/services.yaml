@@ -35,6 +35,10 @@ services:
         tags:
             - { name: controller.argument_value_resolver, priority: 50 }
 
+    App\Services\SourceFileStore:
+        arguments:
+            $path: '%kernel.project_dir%/var/basil'
+
     webignition\JsonMessageSerializerBundle\Services\MessageFactory:
         arguments:
             $typeToMessageClassMap: []
