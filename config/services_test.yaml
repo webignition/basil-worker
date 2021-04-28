@@ -2,3 +2,17 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+
+    App\Services\SourceFileStore:
+        public: true
+        arguments:
+            $path: '%kernel.project_dir%/var/basil'
+
+    App\Tests\Services\SourceFileStoreInitializer:
+        public: true
+
+    App\Tests\Services\BasilFixtureHandler:
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/Basil'
+            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
