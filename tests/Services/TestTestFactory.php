@@ -15,7 +15,7 @@ class TestTestFactory
     ) {
     }
 
-    public function createFromTestSetup(TestSetup $testSetup): Test
+    public function create(TestSetup $testSetup): Test
     {
         $test = $this->testFactory->create(
             $testSetup->getConfiguration(),

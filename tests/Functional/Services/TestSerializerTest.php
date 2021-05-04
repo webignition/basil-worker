@@ -34,7 +34,7 @@ class TestSerializerTest extends AbstractBaseFunctionalTest
      */
     public function testSerialize(TestSetup $setup, array $expectedSerializedTest): void
     {
-        $test = $this->testTestFactory->createFromTestSetup($setup);
+        $test = $this->testTestFactory->create($setup);
 
         self::assertSame(
             $expectedSerializedTest,
