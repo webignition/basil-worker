@@ -12,7 +12,7 @@ class MockUploadedSourceCollection
     /**
      * @var UploadedSourceCollection|MockInterface
      */
-    private UploadedSourceCollection|MockInterface $sources;
+    private UploadedSourceCollection | MockInterface $sources;
 
     public function __construct()
     {
