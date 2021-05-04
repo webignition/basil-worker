@@ -562,9 +562,6 @@
     "webignition/symfony-messenger-json-message-serializer-bundle": {
         "version": "0.2"
     },
-    "webignition/symfony-test-service-injector-trait": {
-        "version": "0.2"
-    },
     "webmozart/assert": {
         "version": "1.10.0"
     }

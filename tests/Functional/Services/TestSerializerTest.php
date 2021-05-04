@@ -8,12 +8,9 @@ use App\Services\TestSerializer;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\TestTestFactory;
-use webignition\SymfonyTestServiceInjectorTrait\TestClassServicePropertyInjectorTrait;
 
 class TestSerializerTest extends AbstractBaseFunctionalTest
 {
-    use TestClassServicePropertyInjectorTrait;
-
     private TestSerializer $testSerializer;
     private TestTestFactory $testTestFactory;
 
