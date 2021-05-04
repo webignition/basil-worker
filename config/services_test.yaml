@@ -11,6 +11,12 @@ services:
     App\Services\SourceFactory:
         public: true
 
+    App\Services\TestSerializer:
+        public: true
+        arguments:
+            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
+            $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
 
@@ -22,3 +28,6 @@ services:
         arguments:
             $fixturesPath: '%kernel.project_dir%/tests/Fixtures/Basil'
             $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+
+    App\Tests\Services\TestTestFactory:
+        public: true
