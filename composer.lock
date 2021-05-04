@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe5cba1d0a38c37c98a25b11457e49ea",
+    "content-hash": "4b9e045d00594fbb1fe1a67a0573ce67",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -9984,60 +9984,6 @@
             "time": "2021-02-18T10:13:47+00:00"
         },
         {
-            "name": "webignition/symfony-test-service-injector-trait",
-            "version": "0.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webignition/symfony-test-service-injector-trait.git",
-                "reference": "1a59c57b62cbfb3e2a2d4c8fa08131d2865b1a5b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webignition/symfony-test-service-injector-trait/zipball/1a59c57b62cbfb3e2a2d4c8fa08131d2865b1a5b",
-                "reference": "1a59c57b62cbfb3e2a2d4c8fa08131d2865b1a5b",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=7.4.0|^8"
-            },
-            "require-dev": {
-                "phpstan/phpstan": "^0.12.78",
-                "squizlabs/php_codesniffer": "^3.5",
-                "symplify/easy-coding-standard": "^9.2"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "webignition\\SymfonyTestServiceInjectorTrait\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Cram",
-                    "email": "webignition@gmail.com"
-                }
-            ],
-            "description": "Inject Symfony services into test class properties",
-            "homepage": "https://github.com/webignition/symfony-test-service-injector-trait",
-            "keywords": [
-                "inject",
-                "injection",
-                "property",
-                "symfony",
-                "test",
-                "testing"
-            ],
-            "support": {
-                "issues": "https://github.com/webignition/symfony-test-service-injector-trait/issues",
-                "source": "https://github.com/webignition/symfony-test-service-injector-trait/tree/0.2"
-            },
-            "time": "2021-02-23T15:51:16+00:00"
-        },
-        {
             "name": "webmozart/assert",
             "version": "1.10.0",
             "source": {
@@ -10102,7 +10048,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=7.4|^8",
+        "php": ">=8",
         "ext-amqp": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
