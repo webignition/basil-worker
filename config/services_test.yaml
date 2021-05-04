@@ -32,7 +32,18 @@ services:
     App\Tests\Services\TestTestFactory:
         public: true
 
+    App\Tests\Services\EnvironmentFactory:
+        public: true
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
     App\Tests\Services\Asserter\MessengerAsserter:
         public: true
         arguments:
             $transport: '@messenger.transport.async'
+
+    App\Tests\Services\Asserter\SourceEntityAsserter:
+        public: true
