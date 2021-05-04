@@ -8,7 +8,13 @@ services:
         arguments:
             $path: '%kernel.project_dir%/var/basil'
 
+    App\Services\SourceFactory:
+        public: true
+
     App\Tests\Services\SourceFileStoreInitializer:
+        public: true
+
+    App\Tests\Services\UploadedFileFactory:
         public: true
 
     App\Tests\Services\BasilFixtureHandler:
