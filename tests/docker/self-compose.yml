@@ -1,0 +1,27 @@
+version: "3"
+
+#services:
+#  nginx-app:
+#    build:
+#      context: ./nginx-app
+#      dockerfile: Dockerfile
+#    container_name: nginx-app
+#    ports:
+#      - 9090:80
+#    links:
+#      - app-web:app-web
+#    volumes:
+#      - ../../var/log/nginx-app:/var/log/nginx:rw
+#
+#  app-web:
+#    build:
+#      context: ../..
+#      args:
+#        DATABASE_URL: postgresql://postgres:${WORKER_POSTGRES_PASSWORD}@postgres:${WORKER_POSTGRES_EXPOSED_PORT}/basil-worker-db?serverVersion=12&charset=utf8
+#        MESSENGER_TRANSPORT_DSN: amqp://${WORKER_RABBITMQ_USER}:${WORKER_RABBITMQ_PASS}@rabbitmq:5672/%2f/messages
+#    container_name: test-basil-worker-web
+#    volumes:
+#      - ../../var:/app/var:rw
+#    depends_on:
+#      - postgres
+#      - rabbitmq
