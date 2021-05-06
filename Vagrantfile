@@ -15,10 +15,17 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "./docker-compose.yml", destination: "~/docker-compose.yml"
     basil_worker.vm.provision "file", source: "./nginx/Dockerfile", destination: "~/nginx/Dockerfile"
     basil_worker.vm.provision "file", source: "./nginx/site.conf", destination: "~/nginx/site.conf"
-    basil_worker.vm.provision "file", source: "./provision/self-test/test-chrome.yml", destination: "~/self-test/test-chrome.yml"
+    basil_worker.vm.provision "file", source: "./provision/self-test/test.yml", destination: "~/self-test/test.yml"
     basil_worker.vm.provision "shell", path: "provision/provision.sh"
     basil_worker.vm.provision "shell", path: "provision/self-test/docker-compose-services.sh"
     basil_worker.vm.provision "shell", path: "provision/self-test/compiler.sh"
-    basil_worker.vm.provision "shell", path: "provision/self-test/chrome-runner.sh"
+    basil_worker.vm.provision "shell" do |s|
+        s.path = "provision/self-test/runner.sh"
+        s.args = "chrome"
+    end
+    basil_worker.vm.provision "shell" do |s|
+        s.path = "provision/self-test/runner.sh"
+        s.args = "firefox"
+    end
   end
 end
