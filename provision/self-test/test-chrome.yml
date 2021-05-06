@@ -5,4 +5,4 @@ config:
 
 "verify page is open":
   assertions:
-    - $page.url is "http://example.com"
+    - $page.url is "http://example.com/"
