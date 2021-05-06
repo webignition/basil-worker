@@ -3,26 +3,26 @@ version: "3"
 services:
   compiler:
     image: smartassert/basil-compiler:0.27
-    container_name: ${COMPILER_CONTAINER_NAME}
+    container_name: compiler
     volumes:
       - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   chrome-runner:
     image: smartassert/chrome-runner:0.16
-    container_name: ${CHROME_RUNNER_CONTAINER_NAME}
+    container_name: chrome-runner
     volumes:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   firefox-runner:
     image: smartassert/firefox-runner:0.16
-    container_name: ${FIREFOX_RUNNER_CONTAINER_NAME}
+    container_name: firefox-runner
     volumes:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   delegator:
     image: smartassert/basil-runner-delegator:0.5
-    container_name: ${DELEGATOR_CONTAINER_NAME}
+    container_name: delegator
     environment:
       CHROME_RUNNER_HOST: chrome-runner
       CHROME_RUNNER_PORT: 8000
@@ -34,14 +34,14 @@ services:
 
   rabbitmq:
     image: rabbitmq:3
-    container_name: ${RABBITMQ_CONTAINER_NAME}
+    container_name: rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
 
   postgres:
     image: postgres:12.5
-    container_name: ${POSTGRES_CONTAINER_NAME}
+    container_name: postgres
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
 
