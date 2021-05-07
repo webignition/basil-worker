@@ -8,39 +8,45 @@ EXIT_CODE_RUNNER_FAILED=101
 ICON_FAILED="𐄂"
 ICON_PASSED="✓"
 
-sed "s/BROWSER/${BROWSER}/g" ./self-test/test.yml | sudo tee /var/basil/source/test-${BROWSER}.yml
-COMPILE_OUTPUT=$(sudo docker-compose --env-file .docker-compose.env exec -T compiler ./compiler --source=/app/source/test-${BROWSER}.yml --target=/app/tests)
-if [ $? -ne 0 ]; then
-    echo "$ICON_FAILED compiler test failed"
-    exit $EXIT_CODE_COMPILER_FAILED
-fi
-echo "$ICON_PASSED compiler test passed"
+LOCAL_SOURCE_PATH="/var/basil/source"
+LOCAL_TARGET_PATH="/var/basil/tests"
 
-COMPILED_TARGET_LINE=$(echo -e "$COMPILE_OUTPUT" | grep "/app/tests/Generated")
+TEST_FILENAME="test-${BROWSER}.yml"
+LOCAL_TEST_PATH="${LOCAL_SOURCE_PATH}/${TEST_FILENAME}"
+
+sed "s/BROWSER/${BROWSER}/g" ./self-test/test.yml | sudo tee ${LOCAL_TEST_PATH}
+COMPILE_OUTPUT=$(sudo docker-compose --env-file .docker-compose.env exec -T compiler ./compiler --source=/app/source/${TEST_FILENAME} --target=/app/tests)
+if [ $? -ne 0 ]; then
+    echo "${ICON_FAILED} compiler test failed"
+    exit ${EXIT_CODE_COMPILER_FAILED}
+fi
+echo "${ICON_PASSED} compiler test passed"
+
+COMPILED_TARGET_LINE=$(echo -e "${COMPILE_OUTPUT}" | grep "/app/tests/Generated")
 COMPILED_TARGET=$(echo "${COMPILED_TARGET_LINE/target: /}" | xargs)
 
-sudo docker-compose --env-file .docker-compose.env exec -T ${BROWSER}-runner ./bin/runner --path=$COMPILED_TARGET
+sudo docker-compose --env-file .docker-compose.env exec -T ${BROWSER}-runner ./bin/runner --path=${COMPILED_TARGET}
 if [ $? -ne 0 ]; then
-    echo "$ICON_FAILED ${BROWSER}-runner test failed"
-    exit $EXIT_CODE_RUNNER_FAILED
+    echo "${ICON_FAILED} ${BROWSER}-runner test failed"
+    exit ${EXIT_CODE_RUNNER_FAILED}
 fi
-echo "$ICON_PASSED ${BROWSER}-runner test passed"
+echo "${ICON_PASSED} ${BROWSER}-runner test passed"
 
-sudo rm -Rf /var/basil/source/*.yml
-sudo rm -Rf /var/basil/tests/*.php
+sudo rm ${LOCAL_TEST_PATH}
+sudo rm ${LOCAL_TARGET_PATH}/*.php
 
-# Verify /var/basil/source is empty
-SOURCE_PATH_FILE_COUNT=$(ls -A /var/basil/source | wc -l)
-if [ $SOURCE_PATH_FILE_COUNT -eq 0 ]; then
-    echo "$ICON_PASSED /var/basil/source is empty";
+# Verify local source path is empty
+LOCAL_SOURCE_PATH_FILE_COUNT=$(ls -A /var/basil/source | wc -l)
+if [ $LOCAL_SOURCE_PATH_FILE_COUNT -eq 0 ]; then
+    echo "${ICON_PASSED} ${LOCAL_SOURCE_PATH} is empty";
 else
-    echo "$ICON_FAILED /var/basil/source is not empty";
+    echo "${ICON_FAILED} ${LOCAL_SOURCE_PATH} is not empty";
 fi
 
-# Verify /var/basil/tests is empty
+# Verify local target path is empty
 TESTS_PATH_FILE_COUNT=$(ls -A /var/basil/tests | wc -l)
 if [ $TESTS_PATH_FILE_COUNT -eq 0 ]; then
-    echo "$ICON_PASSED /var/basil/tests is empty";
+    echo "${ICON_PASSED} ${LOCAL_TARGET_PATH} is empty";
 else
-    echo "$ICON_FAILED /var/basil/tests is not empty";
+    echo "${ICON_FAILED} ${LOCAL_TARGET_PATH} is not empty";
 fi
