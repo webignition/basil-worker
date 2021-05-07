@@ -19,11 +19,11 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "shell", path: "provision/provision.sh"
     basil_worker.vm.provision "shell", path: "provision/self-test/docker-compose-services.sh"
     basil_worker.vm.provision "shell" do |s|
-        s.path = "provision/self-test/runner.sh"
+        s.path = "provision/self-test/delegator.sh"
         s.args = "chrome"
     end
     basil_worker.vm.provision "shell" do |s|
-        s.path = "provision/self-test/runner.sh"
+        s.path = "provision/self-test/delegator.sh"
         s.args = "firefox"
     end
   end

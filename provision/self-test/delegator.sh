@@ -27,12 +27,12 @@ echo "${ICON_PASSED} compiler test passed"
 COMPILED_TARGET_LINE=$(echo -e "${COMPILE_OUTPUT}" | grep "/app/tests/Generated")
 COMPILED_TARGET=$(echo "${COMPILED_TARGET_LINE/target: /}" | xargs)
 
-sudo docker-compose --env-file .docker-compose.env exec -T ${BROWSER}-runner ./bin/runner --path=${COMPILED_TARGET}
+sudo docker-compose --env-file .docker-compose.env exec -T delegator ./bin/delegator  --browser ${BROWSER} ${COMPILED_TARGET}
 if [ $? -ne 0 ]; then
-    echo "${ICON_FAILED} ${BROWSER}-runner test failed"
+    echo "${ICON_FAILED} ${BROWSER} delegator test failed"
     exit ${EXIT_CODE_RUNNER_FAILED}
 fi
-echo "${ICON_PASSED} ${BROWSER}-runner test passed"
+echo "${ICON_PASSED} ${BROWSER} delegator test passed"
 
 sudo rm ${LOCAL_TEST_PATH}
 sudo rm ${LOCAL_TARGET_PATH}/*.php
