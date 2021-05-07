@@ -4,6 +4,8 @@ BROWSER=$1
 
 EXIT_CODE_COMPILER_FAILED=100
 EXIT_CODE_RUNNER_FAILED=101
+EXIT_CODE_LOCAL_SOURCE_PATH_NOT_EMPTY=102
+EXIT_CODE_LOCAL_COMPILED_TARGET=103
 
 ICON_FAILED="𐄂"
 ICON_PASSED="✓"
@@ -41,6 +43,7 @@ if [ $LOCAL_SOURCE_PATH_FILE_COUNT -eq 0 ]; then
     echo "${ICON_PASSED} ${LOCAL_SOURCE_PATH} is empty";
 else
     echo "${ICON_FAILED} ${LOCAL_SOURCE_PATH} is not empty";
+    exit ${EXIT_CODE_LOCAL_SOURCE_PATH_NOT_EMPTY}
 fi
 
 # Verify local target path is empty
@@ -49,4 +52,5 @@ if [ $TESTS_PATH_FILE_COUNT -eq 0 ]; then
     echo "${ICON_PASSED} ${LOCAL_TARGET_PATH} is empty";
 else
     echo "${ICON_FAILED} ${LOCAL_TARGET_PATH} is not empty";
+    exit ${EXIT_CODE_LOCAL_TARGET_PATH_NOT_EMPTY}
 fi
