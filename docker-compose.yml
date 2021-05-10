@@ -72,6 +72,8 @@ services:
       - 80:80
     links:
       - app-web:app-web
+    volumes:
+      - /var/log/nginx:/var/log/nginx
 
   app-handler:
     image: smartassert/basil-worker-handler:0.4
