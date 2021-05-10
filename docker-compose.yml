@@ -100,3 +100,5 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+    volumes:
+      - /var/log/app-web:/app/var/log
