@@ -72,6 +72,8 @@ services:
       - 80:80
     links:
       - app-web:app-web
+    volumes:
+      - /var/log/nginx:/var/log/nginx
 
   app-handler:
     image: smartassert/basil-worker-handler:0.4
@@ -86,6 +88,8 @@ services:
       - delegator
       - postgres
       - rabbitmq
+    volumes:
+      - /var/log/app-handler:/app/var/log
 
   app-web:
     image: smartassert/basil-worker-web:0.2
@@ -98,3 +102,5 @@ services:
     depends_on:
       - postgres
       - rabbitmq
+    volumes:
+      - /var/log/app-web:/app/var/log
