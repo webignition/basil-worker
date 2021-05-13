@@ -16,6 +16,8 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "./nginx/Dockerfile", destination: "~/nginx/Dockerfile"
     basil_worker.vm.provision "file", source: "./nginx/site.conf", destination: "~/nginx/site.conf"
     basil_worker.vm.provision "file", source: "./self-test/fixtures", destination: "~/self-test/fixtures"
+    basil_worker.vm.provision "file", source: "./self-test/app/composer.json", destination: "~/self-test/app/composer.json"
+    basil_worker.vm.provision "file", source: "./self-test/app/src", destination: "~/self-test/app/src"
     basil_worker.vm.provision "shell", path: "provision/provision.sh"
     basil_worker.vm.provision "shell", path: "self-test/docker-compose-services.sh"
     basil_worker.vm.provision "shell" do |s|
@@ -26,5 +28,6 @@ Vagrant.configure("2") do |config|
         s.path = "self-test/delegator.sh"
         s.args = "firefox"
     end
+    basil_worker.vm.provision "shell", path: "self-test/app.sh"
   end
 end
