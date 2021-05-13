@@ -16,7 +16,7 @@ LOCAL_TARGET_PATH="/var/basil/tests"
 TEST_FILENAME="test-${BROWSER}.yml"
 LOCAL_TEST_PATH="${LOCAL_SOURCE_PATH}/${TEST_FILENAME}"
 
-sed "s/BROWSER/${BROWSER}/g" ./self-test/test.yml | sudo tee ${LOCAL_TEST_PATH}
+sed "s/{{ BROWSER }}/${BROWSER}/g" ./self-test/test.yml | sudo tee ${LOCAL_TEST_PATH}
 COMPILE_OUTPUT=$(sudo docker-compose --env-file .docker-compose.env exec -T compiler ./compiler --source=/app/source/${TEST_FILENAME} --target=/app/tests)
 if [ $? -ne 0 ]; then
     echo "${ICON_FAILED} compiler test failed"

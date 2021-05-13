@@ -1,6 +1,6 @@
 config:
   browsers:
-    - BROWSER
+    - {{ BROWSER }}
   url: http://example.com
 
 "verify page is open":
