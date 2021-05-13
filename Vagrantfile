@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "./docker-compose.yml", destination: "~/docker-compose.yml"
     basil_worker.vm.provision "file", source: "./nginx/Dockerfile", destination: "~/nginx/Dockerfile"
     basil_worker.vm.provision "file", source: "./nginx/site.conf", destination: "~/nginx/site.conf"
-    basil_worker.vm.provision "file", source: "./self-test/test.yml", destination: "~/self-test/test.yml"
+    basil_worker.vm.provision "file", source: "./self-test/fixtures", destination: "~/self-test/fixtures"
     basil_worker.vm.provision "shell", path: "provision/provision.sh"
     basil_worker.vm.provision "shell", path: "self-test/docker-compose-services.sh"
     basil_worker.vm.provision "shell" do |s|
