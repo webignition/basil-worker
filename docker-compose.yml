@@ -104,3 +104,4 @@ services:
       - rabbitmq
     volumes:
       - /var/log/app-web:/app/var/log
+      - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
