@@ -76,7 +76,7 @@ services:
       - /var/log/nginx:/var/log/nginx
 
   app-handler:
-    image: smartassert/basil-worker-handler:0.4
+    image: smartassert/basil-worker-handler:0.7
     container_name: app-handler
     networks:
       - primary
