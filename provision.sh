@@ -31,8 +31,11 @@ if [ ! -f "$DOCKER_COMPOSE_BIN" ]; then
 fi
 
 mkdir -p /var/basil/source
+chown -R www-data:www-data /var/basil/source
 mkdir -p /var/basil/tests
-mkdir -p /var/log/
+chown -R www-data:www-data /var/basil/tests
+mkdir -p /var/log
+chown -R www-data:www-data /var/log
 
 sudo docker-compose --env-file .docker-compose.env up -d
 sudo docker-compose --env-file .docker-compose.env exec -T app-handler php bin/console doctrine:database:create --if-not-exists
