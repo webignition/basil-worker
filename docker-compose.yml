@@ -92,7 +92,7 @@ services:
       - /var/log/app-handler:/app/var/log
 
   app-web:
-    image: smartassert/basil-worker-web:0.2
+    image: smartassert/basil-worker-web:0.3
     container_name: app-web
     networks:
       - primary
