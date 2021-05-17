@@ -2,10 +2,6 @@
 
 PACKAGES="php7.4-cli php7.4-curl php7.4-dom php7.4-mbstring zip"
 
-EXIT_CODE_COMPOSER_INSTALL_FAILED=100
-EXIT_CODE_COMPOSER_PLATFORM_REQUIREMENTS_FAILED=101
-EXIT_CODE_PHPUNIT_ASSERTIONS_FAILED=102
-
 INITIAL_DIRECTORY=$(echo $PWD)
 
 # Setup
@@ -20,21 +16,23 @@ curl https://getcomposer.org/download/latest-stable/composer.phar --output compo
 
 php composer.phar update --quiet
 if [ 0 -ne $? ]; then
-    exit ${EXIT_CODE_COMPOSER_INSTALL_FAILED}
+    exit $?
 fi
 
 php composer.phar check-platform-reqs --quiet
 if [ 0 -ne $? ]; then
-    exit ${EXIT_CODE_COMPOSER_PLATFORM_REQUIREMENTS_FAILED}
+    exit $?
 fi
 
 # Run
 php ./vendor/bin/phpunit ./src/ApplicationTest.php
-if [ 0 -ne $? ]; then
-    exit ${EXIT_CODE_PHPUNIT_ASSERTIONS_FAILED}
-fi
+LAST_EXIT_CODE=$?
 
-sleep 5
+if [ ${LAST_EXIT_CODE} -eq 0 ]; then
+    sleep 10
+    sudo docker logs callback-receiver | php ./vendor/bin/phpunit ./src/CallbackReceiverLogTest.php
+    LAST_EXIT_CODE=$?
+fi
 
 ## Teardown
 cd $INITIAL_DIRECTORY
@@ -59,3 +57,7 @@ for TABLE in ${DB_TABLES[*]}
 sudo apt-get -qq -y remove ${PACKAGES} > /dev/null
 sudo apt-get -qq -y autoremove > /dev/null
 sudo rm -Rf ./self-test
+
+if [ 0 -ne ${LAST_EXIT_CODE} ]; then
+    exit ${LAST_EXIT_CODE}
+fi
