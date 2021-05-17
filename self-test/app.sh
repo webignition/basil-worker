@@ -9,6 +9,9 @@ EXIT_CODE_PHPUNIT_ASSERTIONS_FAILED=102
 INITIAL_DIRECTORY=$(echo $PWD)
 
 # Setup
+sudo docker-compose --env-file .docker-compose.env -f docker-compose.yml -f self-test/services.yml build
+sudo docker-compose --env-file .docker-compose.env -f docker-compose.yml -f self-test/services.yml up -d
+
 cd ./self-test/app
 
 sudo apt-get -qq update > /dev/null
@@ -31,14 +34,20 @@ if [ 0 -ne $? ]; then
     exit ${EXIT_CODE_PHPUNIT_ASSERTIONS_FAILED}
 fi
 
-cd $INITIAL_DIRECTORY
+sleep 5
 
-# Teardown
+## Teardown
+cd $INITIAL_DIRECTORY
+sudo docker-compose --env-file .docker-compose.env -f docker-compose.yml -f self-test/services.yml stop http-fixtures
+sudo docker-compose --env-file .docker-compose.env -f docker-compose.yml -f self-test/services.yml stop callback-receiver
+sudo docker-compose --env-file .docker-compose.env up -d --remove-orphans
+
 DB_TABLES=(
-  job
-  test_configuration
-  test
-  callback_entity
+  "job"
+  "test"
+  "test_configuration"
+  "callback_entity"
+  "source"
 )
 
 for TABLE in ${DB_TABLES[*]}

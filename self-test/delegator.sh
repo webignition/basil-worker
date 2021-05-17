@@ -14,9 +14,8 @@ LOCAL_SOURCE_PATH="/var/basil/source"
 LOCAL_TARGET_PATH="/var/basil/tests"
 
 TEST_FILENAME="test-${BROWSER}.yml"
-LOCAL_TEST_PATH="${LOCAL_SOURCE_PATH}/${TEST_FILENAME}"
 
-sed "s/{{ BROWSER }}/${BROWSER}/g" ./self-test/fixtures/basil/test.yml | sudo tee ${LOCAL_TEST_PATH}
+sed "s/{{ BROWSER }}/${BROWSER}/g" ./self-test/fixtures/basil/test.yml | sudo tee "${LOCAL_SOURCE_PATH}/${TEST_FILENAME}"
 COMPILE_OUTPUT=$(sudo docker-compose --env-file .docker-compose.env exec -T compiler ./compiler --source=/app/source/${TEST_FILENAME} --target=/app/tests)
 if [ $? -ne 0 ]; then
     echo "${ICON_FAILED} compiler test failed"
@@ -38,7 +37,7 @@ fi
 echo "${ICON_PASSED} ${BROWSER} delegator test passed"
 
 sudo docker rm -f http-fixtures
-sudo rm ${LOCAL_TEST_PATH}
+sudo rm ${LOCAL_SOURCE_PATH}/*.yml
 sudo rm ${LOCAL_TARGET_PATH}/*.php
 
 # Verify local source path is empty

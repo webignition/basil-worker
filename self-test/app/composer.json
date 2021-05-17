@@ -3,9 +3,7 @@
     "license": "proprietary",
     "require": {
         "guzzlehttp/guzzle": "^7.3",
-        "phpunit/phpunit": "^9.5",
-        "symfony/console": "^5.2",
-        "symfony/process": "^5.2"
+        "phpunit/phpunit": "^9.5"
     },
     "autoload": {
         "psr-4": {

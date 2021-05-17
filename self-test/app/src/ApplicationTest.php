@@ -6,40 +6,23 @@ namespace App;
 
 use GuzzleHttp\Client;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Output\StreamOutput;
 
 class ApplicationTest extends TestCase
 {
-    private const CALLBACK_WEB_SERVER_PORT = 8080;
-    private const CALLBACK_WEB_SERVER_LOG_PATH = 'web-server.log';
     private const JOB_LABEL = 'job-label-content';
     private const JOB_MAXIMUM_DURATION_IN_SECONDS = 600;
 
+    private const CALLBACK_URL = 'http://callback-receiver:8080/';
+
     private static Client $httpClient;
-    private static OutputInterface $output;
-    private static CallbackWebServer $callbackWebServer;
+    private static string $fixturePath;
 
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
 
         self::$httpClient = new Client();
-        self::$output = new StreamOutput(STDOUT);
-
-        self::$callbackWebServer = new CallbackWebServer(
-            self::CALLBACK_WEB_SERVER_PORT,
-            self::CALLBACK_WEB_SERVER_LOG_PATH,
-            self::$output
-        );
-        self::$callbackWebServer->start();
-    }
-
-    public static function tearDownAfterClass(): void
-    {
-        parent::tearDownAfterClass();
-
-        self::$callbackWebServer->stop();
+        self::$fixturePath = realpath(getcwd() . '/../fixtures');
     }
 
     public function testCreateJob()
@@ -47,33 +30,86 @@ class ApplicationTest extends TestCase
         $createJobResponse = self::$httpClient->post('http://localhost/create', [
             'form_params' => [
                 'label' => self::JOB_LABEL,
-                'callback-url' => self::$callbackWebServer->getUrl(),
+                'callback-url' => self::CALLBACK_URL,
                 'maximum-duration-in-seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
             ],
         ]);
         self::assertSame(200, $createJobResponse->getStatusCode());
-
-        $this->assertJobStatus([
-            'label' => self::JOB_LABEL,
-            'callback_url' => self::$callbackWebServer->getUrl(),
-            'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
-            'sources' => [],
-            'compilation_state' => 'awaiting',
-            'execution_state' => 'awaiting',
-            'tests' => [],
-        ]);
+        self::assertSame('application/json', $createJobResponse->getHeaderLine('content-type'));
+        self::assertSame(
+            [
+                'label' => self::JOB_LABEL,
+                'callback_url' => self::CALLBACK_URL,
+                'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
+                'sources' => [],
+                'compilation_state' => 'awaiting',
+                'execution_state' => 'awaiting',
+                'tests' => [],
+            ],
+            $this->getJobStatus()
+        );
     }
 
     /**
-     * @param array<mixed> $expectedJobData
+     * @depends testCreateJob
      */
-    private function assertJobStatus(array $expectedJobData): void
+    public function testAddSources(): void
+    {
+        $addSourcesResponse = self::$httpClient->post('http://localhost/add-sources', [
+            'multipart' => [
+                [
+                    'name' => base64_encode('manifest'),
+                    'contents' => (string) file_get_contents(self::$fixturePath . '/basil/manifest.txt'),
+                    'filename' => 'manifest.txt'
+                ],
+                $this->createFileUploadData('test.yml', [
+                    '{{ BROWSER }}' => 'chrome',
+                ]),
+            ],
+        ]);
+
+        self::assertSame(200, $addSourcesResponse->getStatusCode());
+        self::assertSame('application/json', $addSourcesResponse->getHeaderLine('content-type'));
+        self::assertSame(
+            [
+                'label' => self::JOB_LABEL,
+                'callback_url' => self::CALLBACK_URL,
+                'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
+                'sources' => [
+                    'test.yml',
+                ],
+                'compilation_state' => 'running',
+                'execution_state' => 'awaiting',
+                'tests' => [],
+            ],
+            $this->getJobStatus()
+        );
+    }
+
+    private function getJobStatus(): array
     {
         $response = self::$httpClient->get('http://localhost/status');
         self::assertSame(200, $response->getStatusCode());
-        self::assertSame(
-            $expectedJobData,
-            json_decode($response->getBody()->getContents(), true)
-        );
+
+        $data = json_decode($response->getBody()->getContents(), true);
+
+        return is_array($data) ? $data : [];
+    }
+
+    /**
+     * @param array<mixed> $replacements
+     *
+     * @return array<string, string>
+     */
+    private function createFileUploadData(string $path, array $replacements = []): array
+    {
+        $contents = (string) file_get_contents(self::$fixturePath . '/basil/' . $path);
+        $contents = str_replace(array_keys($replacements), array_values($replacements), $contents);
+
+        return [
+            'name' => base64_encode($path),
+            'contents' => $contents,
+            'filename' => $path
+        ];
     }
 }
