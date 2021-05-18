@@ -47,6 +47,52 @@
       "scripts": [
         "./provision.sh"
       ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p ~/self-test"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "self-test/fixtures",
+      "destination": "~/self-test/fixtures"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "./self-test/docker-compose-services.sh",
+        "./self-test/delegator.sh chrome",
+        "./self-test/delegator.sh firefox"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "mkdir -p ~/self-test/app"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "self-test/app/composer.json",
+      "destination": "~/self-test/app/composer.json"
+    },
+    {
+      "type": "file",
+      "source": "self-test/app/src",
+      "destination": "~/self-test/app/src"
+    },
+    {
+      "type": "file",
+      "source": "self-test/services.yml",
+      "destination": "~/self-test/services.yml"
+    },
+    {
+      "type": "shell",
+      "scripts": [
+        "./self-test/app.sh"
+      ]
     }
   ]
 }
