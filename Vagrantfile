@@ -11,15 +11,18 @@ Vagrant.configure("2") do |config|
 
     basil_worker.vm.network "forwarded_port", guest: 80, host: host_port
 
+    # Copy system files and provision for use
     basil_worker.vm.provision "file", source: "./.docker-compose.env", destination: "~/.docker-compose.env"
     basil_worker.vm.provision "file", source: "./docker-compose.yml", destination: "~/docker-compose.yml"
     basil_worker.vm.provision "file", source: "./nginx/Dockerfile", destination: "~/nginx/Dockerfile"
     basil_worker.vm.provision "file", source: "./nginx/site.conf", destination: "~/nginx/site.conf"
+    basil_worker.vm.provision "shell", path: "provision.sh"
+
+    # Copy self-test files and run self-test process
     basil_worker.vm.provision "file", source: "./self-test/fixtures", destination: "~/self-test/fixtures"
     basil_worker.vm.provision "file", source: "./self-test/app/composer.json", destination: "~/self-test/app/composer.json"
     basil_worker.vm.provision "file", source: "./self-test/app/src", destination: "~/self-test/app/src"
     basil_worker.vm.provision "file", source: "./self-test/services.yml", destination: "~/self-test/services.yml"
-    basil_worker.vm.provision "shell", path: "provision.sh"
     basil_worker.vm.provision "shell", path: "self-test/docker-compose-services.sh"
     basil_worker.vm.provision "shell" do |s|
         s.path = "self-test/delegator.sh"
