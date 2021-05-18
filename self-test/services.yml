@@ -6,26 +6,11 @@ services:
     container_name: http-fixtures
     networks:
       - primary
-#    ports:
-#      - 7080:80
     volumes:
-      - /home/vagrant/self-test/fixtures/http:/usr/share/nginx/html
-
-#  callback-receiver:
-#    build:
-#      context: ./self-test/callback-receiver
-#      dockerfile: Dockerfile
-#    container_name: callback-receiver
-#    networks:
-#      - primary
-#    ports:
-#      - 9090:9090
+      - ./self-test/fixtures/http:/usr/share/nginx/html
 
   callback-receiver:
     image: mendhak/http-https-echo:19
     container_name: callback-receiver
     networks:
       - primary
-#    ports:
-#      - 8080:80
-#      - 8443:443
