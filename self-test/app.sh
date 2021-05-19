@@ -25,9 +25,22 @@ php ./vendor/bin/phpunit ./src/ApplicationTest.php
 LAST_EXIT_CODE=$?
 
 if [ "$LAST_EXIT_CODE" -eq 0 ]; then
-    sleep 10
-    sudo docker logs callback-receiver | php ./vendor/bin/phpunit ./src/CallbackReceiverLogTest.php
-    LAST_EXIT_CODE=$?
+    COUNTER=0
+    RETRY_LIMIT=5
+    CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE=1
+
+    until [ $COUNTER -gt $RETRY_LIMIT ]
+    do
+      if [ "$CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE" -ne 0 ]; then
+          sleep 3
+          sudo docker logs callback-receiver | php ./vendor/bin/phpunit --stop-on-failure ./src/CallbackReceiverLogTest.php
+          CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE=$?
+      fi
+
+      COUNTER=$((COUNTER + 1 ))
+    done
+
+    LAST_EXIT_CODE=$CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE
 fi
 
 ## Teardown
