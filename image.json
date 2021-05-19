@@ -62,8 +62,24 @@
     {
       "type": "shell",
       "scripts": [
-        "./self-test/docker-compose-services.sh",
-        "./self-test/delegator.sh chrome",
+        "./self-test/docker-compose-services.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "BROWSER=chrome"
+      ],
+      "scripts": [
+        "./self-test/delegator.sh"
+      ]
+    },
+    {
+      "type": "shell",
+      "environment_vars": [
+        "BROWSER=firefox"
+      ],
+      "scripts": [
         "./self-test/delegator.sh firefox"
       ]
     },
