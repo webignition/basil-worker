@@ -1,7 +1,5 @@
 #!/usr/bin/env bash
 
-BROWSER=$1
-
 ICON_FAILED="𐄂"
 ICON_PASSED="✓"
 
