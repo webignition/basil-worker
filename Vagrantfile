@@ -24,14 +24,8 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "./self-test/app/src", destination: "~/self-test/app/src"
     basil_worker.vm.provision "file", source: "./self-test/services.yml", destination: "~/self-test/services.yml"
     basil_worker.vm.provision "shell", path: "self-test/docker-compose-services.sh"
-    basil_worker.vm.provision "shell" do |s|
-        s.path = "self-test/delegator.sh"
-        s.args = "chrome"
-    end
-    basil_worker.vm.provision "shell" do |s|
-        s.path = "self-test/delegator.sh"
-        s.args = "firefox"
-    end
+    basil_worker.vm.provision "shell", path: "self-test/delegator.sh", env: {"BROWSER" => "chrome"}
+    basil_worker.vm.provision "shell", path: "self-test/delegator.sh", env: {"BROWSER" => "firefox"}
     basil_worker.vm.provision "shell", path: "self-test/app.sh"
   end
 end
