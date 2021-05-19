@@ -80,7 +80,7 @@
         "BROWSER=firefox"
       ],
       "scripts": [
-        "./self-test/delegator.sh firefox"
+        "./self-test/delegator.sh"
       ]
     },
     {
