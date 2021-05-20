@@ -50,8 +50,8 @@ class TestSerializerTest extends AbstractBaseFunctionalTest
         return [
             'with compiler source path, with compiler target path' => [
                 'setup' => (new TestSetup())
-                    ->withSource('var/basil/source/Test/test.yml')
-                    ->withTarget('var/basil/tests/GeneratedTest.php'),
+                    ->withSource('var/basil/local/source/Test/test.yml')
+                    ->withTarget('var/basil/local/tests/GeneratedTest.php'),
                 'expectedSerializedTest' => [
                     'configuration' => [
                         'browser' => 'chrome',

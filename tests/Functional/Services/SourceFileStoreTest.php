@@ -58,7 +58,7 @@ class SourceFileStoreTest extends AbstractBaseFunctionalTest
             'default' => [
                 'uploadedFileFixturePath' => 'Test/chrome-open-index.yml',
                 'relativePath' => 'Test/chrome-open-index.yml',
-                'expectedFile' => new File(getcwd() . '/var/basil/source/Test/chrome-open-index.yml', false),
+                'expectedFile' => new File(getcwd() . '/var/basil/local/source/Test/chrome-open-index.yml', false),
             ],
         ];
     }
