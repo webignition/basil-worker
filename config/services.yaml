@@ -37,7 +37,7 @@ services:
 
     App\Services\SourceFileStore:
         arguments:
-            $path: '%kernel.project_dir%/var/basil'
+            $path: '%compiler_source_directory%'
 
     webignition\JsonMessageSerializerBundle\Services\MessageFactory:
         arguments:

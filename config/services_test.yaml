@@ -6,7 +6,7 @@ services:
     App\Services\SourceFileStore:
         public: true
         arguments:
-            $path: '%kernel.project_dir%/var/basil'
+            $path: '%kernel.project_dir%/%compiler_source_directory%'
 
     App\Services\SourceFactory:
         public: true
