@@ -64,7 +64,9 @@ jobs:
           DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/worker-db?charset=UTF-8
 
       - name: Teardown functional test environment
-        run: composer functional-teardown
+        run: |
+          composer functional-teardown
+          rm -Rf $PWD/var/basil/local/source/*
 
   integration:
     name: Integration tests - PHP ${{ matrix.php-versions }} ${{ matrix.operating-system }}
@@ -100,4 +102,7 @@ jobs:
         run: composer test-integration
 
       - name: Teardown integration test environment
-        run: sudo composer integration-teardown
+        run: |
+          sudo composer integration-teardown
+          sudo rm -Rf $PWD/var/basil/local/source/*
+          sudo rm -Rf $PWD/var/basil/local/tests/*
