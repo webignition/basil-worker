@@ -108,7 +108,7 @@
             "@test-unit",
             "@test-functional"
         ],
-        "functional-start": "LOCAL_SOURCE_PATH=\"$PWD/var/basil/local/source\" docker-compose --env-file ./.docker-compose.env up -d postgres",
+        "functional-start": "docker-compose --env-file ./.docker-compose.env up -d postgres",
         "functional-status": "docker-compose --env-file ./.docker-compose.env ps postgres",
         "functional-teardown": [
             "docker-compose --env-file ./.docker-compose.env down",
@@ -116,6 +116,20 @@
         ],
         "functional-setup": [
             "@functional-start",
+            "sleep 2",
+            "@db-setup"
+        ],
+        "integration-start": [
+            "LOCAL_SOURCE_PATH=\"$PWD/var/basil/local/source\" docker-compose --env-file ./.docker-compose.env up -d --build",
+            "docker-compose --env-file ./.docker-compose.env stop app-handler",
+            "docker-compose --env-file ./.docker-compose.env exec -T app-web chown -R www-data:www-data /app/source"
+        ],
+        "integration-status": "docker-compose --env-file ./.docker-compose.env ps",
+        "integration-teardown": [
+            "@functional-teardown"
+        ],
+        "integration-setup": [
+            "@integration-start",
             "sleep 2",
             "@db-setup"
         ],
