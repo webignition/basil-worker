@@ -60,6 +60,8 @@ services:
       - primary
     environment:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    ports:
+      - ${POSTGRES_EXPOSED_PORT}:5432
 
   nginx:
     build:

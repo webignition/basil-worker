@@ -89,7 +89,7 @@
             "php bin/console doctrine:migrations:migrate --no-interaction --quiet"
         ],
         "db-recreate": [
-            "php bin/console doctrine:database:drop --force --quiet",
+            "php bin/console doctrine:database:drop --if-exists --force --quiet",
             "@db-setup"
         ],
         "cs-ecs": "./vendor/bin/ecs check src tests --ansi --no-progress-bar --config ecs.php",
@@ -108,12 +108,14 @@
             "@test-unit",
             "@test-functional"
         ],
-        "integration-start": "docker-compose -f tests/docker/services-compose.yml -f tests/docker/self-compose.yml up -d --build",
-        "integration-status": "docker-compose -f tests/docker/services-compose.yml -f tests/docker/self-compose.yml ps",
-        "integration-stop": "docker-compose -f tests/docker/services-compose.yml -f tests/docker/self-compose.yml stop",
-        "integration-destroy": "docker-compose -f tests/docker/services-compose.yml -f tests/docker/self-compose.yml down",
-        "integration-setup": [
-            "@integration-start",
+        "functional-start": "LOCAL_SOURCE_PATH=\"$PWD/var/basil/local/source\" docker-compose --env-file ./.docker-compose.env up -d postgres",
+        "functional-status": "docker-compose --env-file ./.docker-compose.env ps postgres",
+        "functional-teardown": [
+            "docker-compose --env-file ./.docker-compose.env down",
+            "rm -Rf $PWD/var/basil/local/source/*"
+        ],
+        "functional-setup": [
+            "@functional-start",
             "sleep 2",
             "@db-setup"
         ],

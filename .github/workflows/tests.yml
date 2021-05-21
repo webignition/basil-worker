@@ -55,10 +55,13 @@ jobs:
         with:
           args: --ignore-platform-reqs --quiet
 
-      - name: Setup integration environment
-        run: composer integration-setup
-        
+      - name: Setup functional test environment
+        run: composer functional-setup
+
       - name: Run tests
         run: composer test-functional
         env:
-          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/basil-worker-db?charset=UTF-8
+          DATABASE_URL: postgres://postgres:password!@127.0.0.1:5432/worker-db?charset=UTF-8
+
+      - name: Teardown functional test environment
+        run: composer functional-teardown
