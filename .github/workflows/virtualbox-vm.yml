@@ -38,17 +38,3 @@ jobs:
 
       - name: Vagrant up
         run: HOST_PORT=80 vagrant up basil_worker
-
-      - name: Verify VM state
-        run: |
-          vagrant ssh basil_worker -c 'uname -a'
-          vagrant ssh basil_worker -c 'lsb_release -a'
-          vagrant ssh basil_worker -c 'docker --version'
-          vagrant ssh basil_worker -c 'sudo docker-compose --version'
-          vagrant ssh basil_worker -c 'sudo docker-compose --env-file .docker-compose.env ps'
-          vagrant ssh -c 'ls -la /var/basil/source'
-          vagrant ssh -c 'ls -la /var/basil/tests'
-          vagrant port
-
-      - name: Test
-        run: if [ $(curl -s "http://localhost:80/status") != "[]" ]; then exit 1; fi; exit 0;

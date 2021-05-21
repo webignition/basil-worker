@@ -97,7 +97,7 @@ services:
 
   app-web:
     build:
-      context: .
+      context: $APP_BUILD_CONTEXT
       args:
         DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
         MESSENGER_TRANSPORT_DSN: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/%2f/messages
