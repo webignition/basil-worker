@@ -20,6 +20,112 @@ source "digitalocean" "worker_base" {
 build {
   sources = ["source.digitalocean.worker_base"]
 
+  # Copy application files for building image
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/bin"
+    source      = "bin"
+  }
+
+  provisioner "file" {
+    destination = "~/build/"
+    source      = "composer.json"
+  }
+
+  provisioner "file" {
+    destination = "~/build/"
+    source      = "composer.lock"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/"
+    source      = "config/bundles.php"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config/packages"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/cache.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/doctrine.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/doctrine_migrations.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/framework.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/messenger.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/"
+    source      = "config/packages/routing.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/prod"
+    source      = "config/packages/prod"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config/routes"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/routes/"
+    source      = "config/routes/annotations.yaml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/"
+    source      = "config/services.yaml"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/public"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/public/"
+    source      = "public/index.php"
+  }
+
+  provisioner "file" {
+    destination = "~/build"
+    source      = "src"
+  }
+
+  provisioner "file" {
+    destination = "~/build"
+    source      = "migrations"
+  }
+
+  provisioner "file" {
+    destination = "~/build/"
+    source      = "Dockerfile"
+  }
+
   # Copy system files and provision for use
   provisioner "file" {
     destination = "~/docker-compose.yml"
@@ -46,8 +152,19 @@ build {
   }
 
   provisioner "shell" {
+    inline = ["echo $pwd"]
+  }
+
+//  provisioner "shell" {
+//    scripts = ["./provision.sh"]
+//  }
+//
+  provisioner "shell" {
+    environment_vars = ["APP_BUILD_CONTEXT=~/build", "LOCAL_SOURCE_PATH=/var/basil/source"]
     scripts = ["./provision.sh"]
   }
+
+  # basil_worker.vm.provision "shell", path: "provision.sh", env: {"APP_BUILD_CONTEXT" => "/home/vagrant/build", "LOCAL_SOURCE_PATH" => "/var/basil/source"}
 
   # Copy docker services self-test files and run docker services self-test process
   provisioner "shell" {
