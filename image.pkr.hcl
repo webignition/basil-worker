@@ -31,12 +31,12 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/bin"
+    destination = "~/build/"
     source      = "composer.json"
   }
 
   provisioner "file" {
-    destination = "~/build/bin"
+    destination = "~/build/"
     source      = "composer.lock"
   }
 
@@ -45,7 +45,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/config"
+    destination = "~/build/config/"
     source      = "config/bundles.php"
   }
 
@@ -54,32 +54,32 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/cache.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/doctrine.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/doctrine_migrations.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/framework.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/messenger.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config/packages"
+    destination = "~/build/config/packages/"
     source      = "config/packages/routing.yaml"
   }
 
@@ -93,12 +93,12 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/config/routes"
+    destination = "~/build/config/routes/"
     source      = "config/routes/annotations.yaml"
   }
 
   provisioner "file" {
-    destination = "~/build/config"
+    destination = "~/build/config/"
     source      = "config/services.yaml"
   }
 
@@ -107,7 +107,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/public"
+    destination = "~/build/public/"
     source      = "public/index.php"
   }
 
@@ -122,7 +122,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build"
+    destination = "~/build/"
     source      = "Dockerfile"
   }
 
@@ -152,8 +152,19 @@ build {
   }
 
   provisioner "shell" {
+    inline = ["echo $pwd"]
+  }
+
+//  provisioner "shell" {
+//    scripts = ["./provision.sh"]
+//  }
+//
+  provisioner "shell" {
+    environment_vars = ["APP_BUILD_CONTEXT=~/build", "LOCAL_SOURCE_PATH=/var/basil/source"]
     scripts = ["./provision.sh"]
   }
+
+  # basil_worker.vm.provision "shell", path: "provision.sh", env: {"APP_BUILD_CONTEXT" => "/home/vagrant/build", "LOCAL_SOURCE_PATH" => "/var/basil/source"}
 
   # Copy docker services self-test files and run docker services self-test process
   provisioner "shell" {
