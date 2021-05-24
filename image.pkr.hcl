@@ -128,8 +128,8 @@ build {
 
   # Copy system files and provision for use
   provisioner "file" {
-    destination = "~/docker-compose.yaml"
-    source      = "docker-compose.yaml"
+    destination = "~/docker-compose.yml"
+    source      = "docker-compose.yml"
   }
 
   provisioner "file" {
