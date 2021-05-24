@@ -55,32 +55,32 @@ build {
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/cache.yml"
+    source      = "config/packages/cache.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/doctrine.yml"
+    source      = "config/packages/doctrine.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/doctrine_migrations.yml"
+    source      = "config/packages/doctrine_migrations.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/framework.yml"
+    source      = "config/packages/framework.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/messenger.yml"
+    source      = "config/packages/messenger.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config/packages"
-    source      = "config/packages/routing.yml"
+    source      = "config/packages/routing.yaml"
   }
 
   provisioner "file" {
@@ -94,12 +94,12 @@ build {
 
   provisioner "file" {
     destination = "~/build/config/routes"
-    source      = "config/routes/annotations.yml"
+    source      = "config/routes/annotations.yaml"
   }
 
   provisioner "file" {
     destination = "~/build/config"
-    source      = "config/services.yml"
+    source      = "config/services.yaml"
   }
 
   provisioner "shell" {
@@ -128,8 +128,8 @@ build {
 
   # Copy system files and provision for use
   provisioner "file" {
-    destination = "~/docker-compose.yml"
-    source      = "docker-compose.yml"
+    destination = "~/docker-compose.yaml"
+    source      = "docker-compose.yaml"
   }
 
   provisioner "file" {
@@ -195,8 +195,8 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/self-test/services.yml"
-    source      = "self-test/services.yml"
+    destination = "~/self-test/services.yaml"
+    source      = "self-test/services.yaml"
   }
 
   provisioner "shell" {
