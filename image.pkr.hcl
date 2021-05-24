@@ -195,8 +195,8 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/self-test/services.yaml"
-    source      = "self-test/services.yaml"
+    destination = "~/self-test/services.yml"
+    source      = "self-test/services.yml"
   }
 
   provisioner "shell" {
