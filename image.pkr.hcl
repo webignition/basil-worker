@@ -20,6 +20,112 @@ source "digitalocean" "worker_base" {
 build {
   sources = ["source.digitalocean.worker_base"]
 
+  # Copy application files for building image
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/bin"
+    source      = "bin"
+  }
+
+  provisioner "file" {
+    destination = "~/build/bin"
+    source      = "composer.json"
+  }
+
+  provisioner "file" {
+    destination = "~/build/bin"
+    source      = "composer.lock"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config"
+    source      = "config/bundles.php"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config/packages"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/cache.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/doctrine.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/doctrine_migrations.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/framework.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/messenger.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages"
+    source      = "config/packages/routing.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/packages/prod"
+    source      = "config/packages/prod"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/config/routes"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/config/routes"
+    source      = "config/routes/annotations.yml"
+  }
+
+  provisioner "file" {
+    destination = "~/build/config"
+    source      = "config/services.yml"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/public"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/public"
+    source      = "public/index.php"
+  }
+
+  provisioner "file" {
+    destination = "~/build"
+    source      = "src"
+  }
+
+  provisioner "file" {
+    destination = "~/build"
+    source      = "migrations"
+  }
+
+  provisioner "file" {
+    destination = "~/build"
+    source      = "Dockerfile"
+  }
+
   # Copy system files and provision for use
   provisioner "file" {
     destination = "~/docker-compose.yml"
