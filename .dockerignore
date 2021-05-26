@@ -1,0 +1,15 @@
+# Ignore everything
+**
+
+# Allow source
+!/bin/console
+!/composer.json
+!/composer.lock
+!/config/bundles.php
+!/config/packages/*.yaml
+!/config/packages/prod/**
+!/config/routes/annotations.yaml
+!/config/services.yaml
+!/public/index.php
+!/src
+!/migrations

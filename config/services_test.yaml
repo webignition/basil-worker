@@ -1,0 +1,51 @@
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Services\SourceFileStore:
+        public: true
+        arguments:
+            $path: '%kernel.project_dir%/%compiler_source_directory%'
+
+    App\Services\SourceFactory:
+        public: true
+
+    App\Services\TestSerializer:
+        public: true
+        arguments:
+            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
+            $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
+
+    App\Tests\Services\SourceFileStoreInitializer:
+        public: true
+        arguments:
+            $path: '%kernel.project_dir%/%compiler_source_directory%'
+
+    App\Tests\Services\UploadedFileFactory:
+        public: true
+
+    App\Tests\Services\BasilFixtureHandler:
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/Basil'
+            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+
+    App\Tests\Services\TestTestFactory:
+        public: true
+
+    App\Tests\Services\EnvironmentFactory:
+        public: true
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
+    App\Tests\Services\Asserter\MessengerAsserter:
+        public: true
+        arguments:
+            $transport: '@messenger.transport.async'
+
+    App\Tests\Services\Asserter\SourceEntityAsserter:
+        public: true

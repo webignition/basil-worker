@@ -1,0 +1,63 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    compiler_source_directory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+    compiler_target_directory: '%env(COMPILER_TARGET_DIRECTORY)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+            - '../src/Tests/'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    # add more service definitions when explicit configuration is needed
+    # please note that last definitions always *replace* previous ones
+    App\ArgumentResolver\EncapsulatingRequestResolver:
+        tags:
+            - { name: controller.argument_value_resolver, priority: 50 }
+
+    App\Services\SourceFileStore:
+        arguments:
+            $path: '%compiler_source_directory%'
+
+    webignition\JsonMessageSerializerBundle\Services\MessageFactory:
+        arguments:
+            $typeToMessageClassMap: []
+
+    app.services.path-prefix-remover.compiler-source:
+        class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
+        arguments:
+            $prefix: '%compiler_source_directory%/'
+
+    app.services.path-prefix-remover.compiler-target:
+        class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
+        arguments:
+            $prefix: '%compiler_target_directory%/'
+
+    App\Services\TestSerializer:
+        arguments:
+            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
+            $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
+
+    webignition\BasilWorker\StateBundle\Services\SourcePathFinder:
+        calls:
+            - setCompilerSourcePathPrefixRemover: ['@app.services.path-prefix-remover.compiler-source']
