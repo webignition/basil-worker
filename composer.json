@@ -23,7 +23,8 @@
         "webignition/basil-worker-persistence-bundle": "^0.8.0",
         "webignition/basil-worker-state-bundle": "^0.2.0",
         "webignition/string-prefix-remover": "^0.2.0",
-        "webignition/symfony-messenger-json-message-serializer-bundle": "^0.2.0"
+        "webignition/symfony-messenger-json-message-serializer-bundle": "^0.2.0",
+        "webignition/yaml-document": "^0.2.0"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^6.5",

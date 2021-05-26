@@ -562,6 +562,9 @@
     "webignition/symfony-messenger-json-message-serializer-bundle": {
         "version": "0.2"
     },
+    "webignition/yaml-document": {
+        "version": "0.2"
+    },
     "webmozart/assert": {
         "version": "1.10.0"
     }
