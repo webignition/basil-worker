@@ -21,6 +21,9 @@ services:
             $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
             $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
 
+    App\Services\CallbackResponseHandler:
+        public: true
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
         arguments:
@@ -52,4 +55,7 @@ services:
             $transport: '@messenger.transport.async'
 
     App\Tests\Services\Asserter\SourceEntityAsserter:
+        public: true
+
+    App\Tests\Services\CallbackHttpErrorEventSubscriber:
         public: true
