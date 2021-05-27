@@ -124,8 +124,8 @@ class JobController extends AbstractController
             $job->jsonSerialize(),
             [
                 'sources' => $sourceStore->findAllPaths(),
-                'compilation_state' => $compilationState->get(),
-                'execution_state' => $executionState->get(),
+                'compilation_state' => (string) $compilationState,
+                'execution_state' => (string) $executionState,
                 'tests' => $testSerializer->serializeCollection($tests),
             ]
         );
