@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "99e5ef41fbc9f8d53e7d314af95cdef2",
+    "content-hash": "7790b1935c5ae9f4a32a878dedbeec86",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -4776,6 +4776,56 @@
             "time": "2021-02-18T15:16:57+00:00"
         },
         {
+            "name": "webignition/basil-runner-documents",
+            "version": "0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/basil-runner-documents.git",
+                "reference": "7a9e5ab84c6f2120b12fb0ac4377d54ffbf1dec6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/basil-runner-documents/zipball/7a9e5ab84c6f2120b12fb0ac4377d54ffbf1dec6",
+                "reference": "7a9e5ab84c6f2120b12fb0ac4377d54ffbf1dec6",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4|^8"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^0.12.77",
+                "phpstan/phpstan-mockery": "^0.12.12",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symplify/easy-coding-standard": "^9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\BasilRunnerDocuments\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "Models for documents that can be output by the runner",
+            "homepage": "https://github.com/webignition/basil-runner-documents",
+            "support": {
+                "issues": "https://github.com/webignition/basil-runner-documents/issues",
+                "source": "https://github.com/webignition/basil-runner-documents/tree/0.3"
+            },
+            "time": "2021-02-19T18:28:56+00:00"
+        },
+        {
             "name": "webignition/basil-worker-persistence-bundle",
             "version": "0.8",
             "source": {
@@ -5047,6 +5097,64 @@
                 "source": "https://github.com/webignition/yaml-document/tree/0.2"
             },
             "time": "2021-02-19T18:46:55+00:00"
+        },
+        {
+            "name": "webignition/yaml-document-generator",
+            "version": "0.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/webignition/yaml-document-generator.git",
+                "reference": "14b1d66c431b2fc98d0a506d06e088ebb724b0a3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/webignition/yaml-document-generator/zipball/14b1d66c431b2fc98d0a506d06e088ebb724b0a3",
+                "reference": "14b1d66c431b2fc98d0a506d06e088ebb724b0a3",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.4|^8",
+                "symfony/yaml": "^5.2",
+                "webignition/basil-runner-documents": ">=0.2,<1"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.4",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan": "^0.12.77",
+                "phpstan/phpstan-mockery": "^0.12.12",
+                "phpunit/phpunit": "^9.5",
+                "squizlabs/php_codesniffer": "^3.5",
+                "symplify/easy-coding-standard": "^9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "webignition\\YamlDocumentGenerator\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jon Cram",
+                    "email": "webignition@gmail.com"
+                }
+            ],
+            "description": "Generate a yaml document from an array of data",
+            "homepage": "https://github.com/webignition/yaml-document-generator",
+            "keywords": [
+                "collection",
+                "parser",
+                "set",
+                "yaml"
+            ],
+            "support": {
+                "issues": "https://github.com/webignition/yaml-document-generator/issues",
+                "source": "https://github.com/webignition/yaml-document-generator/tree/0.3"
+            },
+            "time": "2021-02-19T18:37:59+00:00"
         }
     ],
     "packages-dev": [
