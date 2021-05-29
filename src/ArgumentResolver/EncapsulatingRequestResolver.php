@@ -24,9 +24,6 @@ class EncapsulatingRequestResolver implements ArgumentValueResolverInterface
     }
 
     /**
-     * @param Request $request
-     * @param ArgumentMetadata $argument
-     *
      * @return \Generator<EncapsulatingRequestInterface>
      */
     public function resolve(Request $request, ArgumentMetadata $argument): \Generator

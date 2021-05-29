@@ -32,10 +32,7 @@ class ClientRequestSender
     }
 
     /**
-     * @param UploadedFile $manifest
      * @param UploadedFile[] $sourceUploadedFiles
-     *
-     * @return Response
      */
     public function addJobSources(UploadedFile $manifest, array $sourceUploadedFiles): Response
     {

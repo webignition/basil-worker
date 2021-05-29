@@ -28,7 +28,8 @@ class MockArgumentMetadata
     {
         $this->argumentMetadata
             ->shouldReceive('getType')
-            ->andReturn($type);
+            ->andReturn($type)
+        ;
 
         return $this;
     }

@@ -81,7 +81,8 @@ class EncapsulatingRequestResolverTest extends TestCase
 
         $argumentMetadata = (new MockArgumentMetadata())
             ->withGetTypeCall(JobCreateRequest::class)
-            ->getMock();
+            ->getMock()
+        ;
 
         return [
             'JobCreateRequest: empty' => [
@@ -159,7 +160,8 @@ class EncapsulatingRequestResolverTest extends TestCase
 
         $argumentMetadata = (new MockArgumentMetadata())
             ->withGetTypeCall(AddSourcesRequest::class)
-            ->getMock();
+            ->getMock()
+        ;
 
         return [
             'AddSourcesRequest: empty' => [

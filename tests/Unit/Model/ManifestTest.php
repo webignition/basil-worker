@@ -18,7 +18,6 @@ class ManifestTest extends TestCase
     /**
      * @dataProvider createDataProvider
      *
-     * @param UploadedFile $uploadedFile
      * @param string[] $expectedTestPaths
      */
     public function testCreate(
@@ -27,7 +26,8 @@ class ManifestTest extends TestCase
         array $expectedTestPaths
     ): void {
         PHPMockery::mock('App\Model', 'file_get_contents')
-            ->andReturn($manifestContent);
+            ->andReturn($manifestContent)
+        ;
 
         $manifest = new Manifest($uploadedFile);
 
@@ -42,7 +42,8 @@ class ManifestTest extends TestCase
         $uploadedFile = (new MockUploadedFile())
             ->withGetErrorCall(0)
             ->withGetPathnameCall('/tmp/manifest.txt')
-            ->getMock();
+            ->getMock()
+        ;
 
         return [
             'empty' => [

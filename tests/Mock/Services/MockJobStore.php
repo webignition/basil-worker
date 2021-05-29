@@ -29,7 +29,8 @@ class MockJobStore
     {
         $this->jobStore
             ->shouldReceive('has')
-            ->andReturn($return);
+            ->andReturn($return)
+        ;
 
         return $this;
     }
@@ -38,7 +39,8 @@ class MockJobStore
     {
         $this->jobStore
             ->shouldReceive('get')
-            ->andReturn($job);
+            ->andReturn($job)
+        ;
 
         return $this;
     }

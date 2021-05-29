@@ -28,7 +28,8 @@ class MockJobCreateRequest
     {
         $this->jobCreateRequest
             ->shouldReceive('getLabel')
-            ->andReturn($label);
+            ->andReturn($label)
+        ;
 
         return $this;
     }
@@ -37,7 +38,8 @@ class MockJobCreateRequest
     {
         $this->jobCreateRequest
             ->shouldReceive('getCallbackUrl')
-            ->andReturn($callbackUrl);
+            ->andReturn($callbackUrl)
+        ;
 
         return $this;
     }
@@ -46,7 +48,8 @@ class MockJobCreateRequest
     {
         $this->jobCreateRequest
             ->shouldReceive('getMaximumDurationInSeconds')
-            ->andReturn($maximumDurationInSeconds);
+            ->andReturn($maximumDurationInSeconds)
+        ;
 
         return $this;
     }

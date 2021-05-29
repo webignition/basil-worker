@@ -28,7 +28,8 @@ class MockJobFactory
     {
         $this->jobFactory
             ->shouldReceive('create')
-            ->with($label, $callbackUrl, $maximumDurationInSeconds);
+            ->with($label, $callbackUrl, $maximumDurationInSeconds)
+        ;
 
         return $this;
     }

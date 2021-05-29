@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class MockUploadedFile
 {
     /**
-     * @var UploadedFile|MockInterface
+     * @var MockInterface|UploadedFile
      */
     private UploadedFile $uploadedFile;
 
@@ -28,7 +28,8 @@ class MockUploadedFile
     {
         $this->uploadedFile
             ->shouldReceive('getError')
-            ->andReturn($error);
+            ->andReturn($error)
+        ;
 
         return $this;
     }
@@ -37,7 +38,8 @@ class MockUploadedFile
     {
         $this->uploadedFile
             ->shouldReceive('getPathname')
-            ->andReturn($pathname);
+            ->andReturn($pathname)
+        ;
 
         return $this;
     }

@@ -32,7 +32,8 @@ class SourceFactoryTest extends TestCase
             ->shouldReceive('getTestPaths')
             ->andReturn([
                 $path,
-            ]);
+            ])
+        ;
 
         self::expectExceptionObject(new MissingTestSourceException($path));
 
