@@ -149,20 +149,23 @@ class JobControllerTest extends TestCase
     public function addSourcesDataProvider(): array
     {
         $job = (new MockJob())
-            ->getMock();
+            ->getMock()
+        ;
 
         $nonEmptyManifest = (new MockManifest())
             ->withGetTestPathsCall([
                 'Test/test1.yml',
             ])
-            ->getMock();
+            ->getMock()
+        ;
 
         $uploadedSources = (new MockUploadedSourceCollection())->getMock();
         $emptySourceFactory = (new MockSourceFactory())->getMock();
 
         $emptySourceStore = (new MockSourceStore())
             ->withHasAnyCall(false)
-            ->getMock();
+            ->getMock()
+        ;
 
         return [
             'job missing' => [

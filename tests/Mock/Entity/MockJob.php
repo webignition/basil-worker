@@ -28,7 +28,8 @@ class MockJob
     {
         $this->job
             ->shouldReceive('getCallbackUrl')
-            ->andReturn($callbackUrl);
+            ->andReturn($callbackUrl)
+        ;
 
         return $this;
     }
@@ -37,7 +38,8 @@ class MockJob
     {
         $this->job
             ->shouldReceive('getLabel')
-            ->andReturn($label);
+            ->andReturn($label)
+        ;
 
         return $this;
     }
@@ -46,7 +48,8 @@ class MockJob
     {
         $this->job
             ->shouldReceive('hasReachedMaximumDuration')
-            ->andReturn($hasReachedMaximumDuration);
+            ->andReturn($hasReachedMaximumDuration)
+        ;
 
         return $this;
     }
@@ -55,7 +58,8 @@ class MockJob
     {
         $this->job
             ->shouldReceive('getMaximumDurationInSeconds')
-            ->andReturn($maximumDurationInSeconds);
+            ->andReturn($maximumDurationInSeconds)
+        ;
 
         return $this;
     }

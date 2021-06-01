@@ -11,7 +11,7 @@ class Manifest
     private UploadedFile $uploadedFile;
 
     /**
-     * @var string[]|null
+     * @var null|string[]
      */
     private ?array $lines = null;
 

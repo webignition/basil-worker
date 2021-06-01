@@ -10,7 +10,7 @@ use Mockery\MockInterface;
 class MockUploadedSourceCollection
 {
     /**
-     * @var UploadedSourceCollection|MockInterface
+     * @var MockInterface|UploadedSourceCollection
      */
     private UploadedSourceCollection | MockInterface $sources;
 
@@ -29,7 +29,8 @@ class MockUploadedSourceCollection
         $this->sources
             ->shouldReceive('contains')
             ->with($path)
-            ->andReturn($contains);
+            ->andReturn($contains)
+        ;
 
         return $this;
     }
@@ -39,7 +40,8 @@ class MockUploadedSourceCollection
         $this->sources
             ->shouldReceive('offsetGet')
             ->with($offset)
-            ->andReturn($return);
+            ->andReturn($return)
+        ;
 
         return $this;
     }

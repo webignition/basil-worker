@@ -30,7 +30,8 @@ class MockAddSourcesRequest
     {
         $this->addSourcesRequest
             ->shouldReceive('getManifest')
-            ->andReturn($manifest);
+            ->andReturn($manifest)
+        ;
 
         return $this;
     }
@@ -39,7 +40,8 @@ class MockAddSourcesRequest
     {
         $this->addSourcesRequest
             ->shouldReceive('getUploadedSources')
-            ->andReturn($sources);
+            ->andReturn($sources)
+        ;
 
         return $this;
     }

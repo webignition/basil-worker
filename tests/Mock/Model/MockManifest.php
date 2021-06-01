@@ -33,7 +33,8 @@ class MockManifest
     {
         $this->manifest
             ->shouldReceive('getTestPaths')
-            ->andReturn($testPaths);
+            ->andReturn($testPaths)
+        ;
 
         return $this;
     }

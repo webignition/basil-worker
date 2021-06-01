@@ -10,7 +10,7 @@ use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 class MockSourceStore
 {
     /**
-     * @var SourceStore|MockInterface
+     * @var MockInterface|SourceStore
      */
     private SourceStore $sourceStore;
 
@@ -29,7 +29,8 @@ class MockSourceStore
         $this->sourceStore
             ->shouldReceive('hasAny')
             ->withNoArgs()
-            ->andReturn($hasAny);
+            ->andReturn($hasAny)
+        ;
 
         return $this;
     }

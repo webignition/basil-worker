@@ -12,7 +12,7 @@ use Mockery\MockInterface;
 class MockSourceFactory
 {
     /**
-     * @var SourceFactory|MockInterface
+     * @var MockInterface|SourceFactory
      */
     private SourceFactory $sourceFactory;
 
@@ -34,7 +34,8 @@ class MockSourceFactory
         $this->sourceFactory
             ->shouldReceive('createCollectionFromManifest')
             ->with($manifest, $sources)
-            ->andThrow($exception);
+            ->andThrow($exception)
+        ;
 
         return $this;
     }

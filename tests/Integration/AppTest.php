@@ -108,8 +108,6 @@ class AppTest extends TestCase
     }
 
     /**
-     * @param string $url
-     *
      * @return array<mixed>
      */
     private function getJsonResponse(string $url): array
@@ -121,12 +119,10 @@ class AppTest extends TestCase
 
         $body = $response->getBody()->getContents();
 
-        return  json_decode($body, true);
+        return json_decode($body, true);
     }
 
     /**
-     * @param string $path
-     *
      * @return array<string, string>
      */
     private function createFileUploadData(string $path): array

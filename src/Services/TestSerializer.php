@@ -39,8 +39,6 @@ class TestSerializer
     }
 
     /**
-     * @param Test $test
-     *
      * @return array<mixed>
      */
     public function serialize(Test $test): array

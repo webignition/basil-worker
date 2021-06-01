@@ -23,9 +23,6 @@ class SourceFactory
     }
 
     /**
-     * @param Manifest $manifest
-     * @param UploadedSourceCollection $uploadedSources
-     *
      * @throws MissingTestSourceException
      */
     public function createCollectionFromManifest(Manifest $manifest, UploadedSourceCollection $uploadedSources): void
@@ -44,8 +41,7 @@ class SourceFactory
         }
 
         foreach ($uploadedSources as $uploadedSource) {
-            /** @var UploadedSource$uploadedSource */
-
+            /** @var UploadedSource $uploadedSource */
             $uploadedSourceRelativePath = $uploadedSource->getPath();
             $sourceType = Source::TYPE_RESOURCE;
 
