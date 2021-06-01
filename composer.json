@@ -24,6 +24,7 @@
         "webignition/basil-worker-state-bundle": "^0.8.0",
         "webignition/string-prefix-remover": "^0.2.0",
         "webignition/symfony-messenger-json-message-serializer-bundle": "^0.2.0",
+        "webignition/tcp-cli-proxy-client": "^0.12.0",
         "webignition/yaml-document": "^0.2.0",
         "webignition/yaml-document-generator": "^0.3.0"
     },
@@ -111,7 +112,7 @@
         "functional-start": "docker-compose --env-file ./.docker-compose.env up -d postgres",
         "functional-status": "docker-compose --env-file ./.docker-compose.env ps postgres",
         "functional-teardown": [
-            "docker-compose --env-file ./.docker-compose.env down"
+            "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml down"
         ],
         "functional-setup": [
             "@functional-start",
@@ -119,11 +120,11 @@
             "@db-setup"
         ],
         "integration-start": [
-            "LOCAL_SOURCE_PATH=\"$PWD/var/basil/local/source\" docker-compose --env-file ./.docker-compose.env up -d --build",
+            "LOCAL_SOURCE_PATH=\"$PWD/tests/Fixtures/Basil\" docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml up -d --build",
             "docker-compose --env-file ./.docker-compose.env stop app-handler",
             "docker-compose --env-file ./.docker-compose.env exec -T app-web chown -R www-data:www-data /app/source"
         ],
-        "integration-status": "docker-compose --env-file ./.docker-compose.env ps",
+        "integration-status": "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml ps",
         "integration-teardown": [
             "@functional-teardown"
         ],

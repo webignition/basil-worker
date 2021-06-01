@@ -496,6 +496,9 @@
     "webignition/basil-worker-state-bundle": {
         "version": "0.2"
     },
+    "webignition/error-handler": {
+        "version": "0.2"
+    },
     "webignition/http-history-container": {
         "version": "1.16"
     },
@@ -507,6 +510,9 @@
     },
     "webignition/symfony-messenger-json-message-serializer-bundle": {
         "version": "0.2"
+    },
+    "webignition/tcp-cli-proxy-client": {
+        "version": "0.12"
     },
     "webignition/yaml-document": {
         "version": "0.2"
