@@ -25,9 +25,6 @@ class BackoffStrategyFactoryTest extends TestCase
 
     /**
      * @dataProvider createDataProvider
-     *
-     * @param object $context
-     * @param BackoffStrategyInterface $expectedBackoffStrategy
      */
     public function testCreate(object $context, BackoffStrategyInterface $expectedBackoffStrategy): void
     {

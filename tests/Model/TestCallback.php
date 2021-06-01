@@ -37,7 +37,7 @@ class TestCallback extends AbstractCallbackWrapper
     public function withRetryCount(int $retryCount): self
     {
         $new = clone $this;
-        for ($i = 0; $i < $retryCount; $i++) {
+        for ($i = 0; $i < $retryCount; ++$i) {
             $new->incrementRetryCount();
         }
 
