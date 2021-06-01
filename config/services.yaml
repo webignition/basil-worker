@@ -65,3 +65,22 @@ services:
     App\Services\TestDocumentMutator:
         arguments:
             $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
+
+    app.services.compiler-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(COMPILER_HOST)%'
+            $port: '%env(COMPILER_PORT)%'
+
+    Symfony\Component\Yaml\Parser:
+        class: Symfony\Component\Yaml\Parser
+
+    App\Services\Compiler:
+        arguments:
+            $client: '@app.services.compiler-client'
+            $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+            $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
+
+    webignition\TcpCliProxyClient\HandlerFactory:
+        class: webignition\TcpCliProxyClient\HandlerFactory

@@ -17,6 +17,13 @@ services:
             $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
             $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
 
+    App\Services\Compiler:
+        public: true
+        arguments:
+            $client: '@app.services.compiler-client'
+            $compilerSourceDirectory: '%kernel.project_dir%/%compiler_source_directory%'
+            $compilerTargetDirectory: '%kernel.project_dir%/%compiler_target_directory%'
+
     App\Services\CallbackResponseHandler:
         public: true
 
