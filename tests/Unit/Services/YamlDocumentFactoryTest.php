@@ -22,7 +22,7 @@ class YamlDocumentFactoryTest extends TestCase
     /**
      * @dataProvider processDataProvider
      *
-     * @param string[] $contentChunks
+     * @param string[]   $contentChunks
      * @param Document[] $expectedDocuments
      */
     public function testProcess(array $contentChunks, array $expectedDocuments): void
