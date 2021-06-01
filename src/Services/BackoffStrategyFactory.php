@@ -13,11 +13,6 @@ class BackoffStrategyFactory
 {
     private const MILLISECONDS_PER_SECOND = 1000;
 
-    /**
-     * @param object $context
-     *
-     * @return BackoffStrategyInterface
-     */
     public function create(object $context): BackoffStrategyInterface
     {
         if ($context instanceof ResponseInterface) {
