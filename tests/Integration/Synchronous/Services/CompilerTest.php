@@ -39,12 +39,17 @@ class CompilerTest extends AbstractBaseIntegrationTest
             'compilerTargetDirectory',
             self::COMPILER_TARGET_DIRECTORY
         );
+    }
 
-//        $kernelProjectDirectory = self::$container->getParameter('kernel.project_dir');
-//        $compilerSourceDirectory = self::$container->getParameter('compiler_source_directory');
-//        $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
-//
-//        var_dump($kernelProjectDirectory . '/' .$compilerSourceDirectory);
+    protected function tearDown(): void
+    {
+        $compilerClient = self::$container->get('app.services.compiler-client');
+        self::assertInstanceOf(Client::class, $compilerClient);
+
+        $request = 'rm ' . self::COMPILER_TARGET_DIRECTORY . '/*.php';
+        $compilerClient->request($request);
+
+        parent::tearDown();
     }
 
     /**
@@ -57,13 +62,9 @@ class CompilerTest extends AbstractBaseIntegrationTest
         /** @var SuiteManifest $suiteManifest */
         $suiteManifest = $this->compiler->compile($source);
 
-//        ini_set('xdebug.var_display_max_depth', '6');
-//        var_dump($suiteManifest);
-
         self::assertInstanceOf(SuiteManifest::class, $suiteManifest);
 
         $expectedSuiteManifestData = $this->replaceSuiteManifestDataPlaceholders($expectedSuiteManifestData);
-
         $expectedSuiteManifest = SuiteManifest::fromArray($expectedSuiteManifestData);
 
         self::assertEquals($expectedSuiteManifest, $suiteManifest);
@@ -74,13 +75,16 @@ class CompilerTest extends AbstractBaseIntegrationTest
      */
     public function compileSuccessDataProvider(): array
     {
+        $sourcePath = self::COMPILER_SOURCE_DIRECTORY;
+        $targetPath = self::COMPILER_TARGET_DIRECTORY;
+
         return [
             'Test/chrome-open-index.yml: single-browser test' => [
                 'source' => 'Test/chrome-open-index.yml',
                 'expectedSuiteManifestData' => [
                     'config' => [
-                        'source' => self::COMPILER_SOURCE_DIRECTORY . '/Test/chrome-open-index.yml',
-                        'target' => self::COMPILER_TARGET_DIRECTORY,
+                        'source' => $sourcePath . '/Test/chrome-open-index.yml',
+                        'target' => $targetPath,
                         'base-class' => 'webignition\BaseBasilTestCase\AbstractBaseTest',
                     ],
                     'manifests' => [
@@ -89,9 +93,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx-html/index.html'
                             ],
-                            'source' => self::COMPILER_SOURCE_DIRECTORY . '/Test/chrome-open-index.yml',
-                            'target' =>
-                                self::COMPILER_TARGET_DIRECTORY . '/Generated2380721d052389cf928f39ac198a41baTest.php',
+                            'source' => $sourcePath . '/Test/chrome-open-index.yml',
+                            'target' => $targetPath . '/Generated2380721d052389cf928f39ac198a41baTest.php',
                             'step_count' => 1,
                         ],
                     ],
@@ -101,8 +104,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
                 'source' => 'Test/chrome-firefox-open-index.yml',
                 'expectedSuiteManifestData' => [
                     'config' => [
-                        'source' => self::COMPILER_SOURCE_DIRECTORY . '/Test/chrome-firefox-open-index.yml',
-                        'target' => self::COMPILER_TARGET_DIRECTORY,
+                        'source' => $sourcePath . '/Test/chrome-firefox-open-index.yml',
+                        'target' => $targetPath,
                         'base-class' => 'webignition\BaseBasilTestCase\AbstractBaseTest',
                     ],
                     'manifests' => [
@@ -111,9 +114,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
                                 'browser' => 'chrome',
                                 'url' => 'http://nginx-html/index.html'
                             ],
-                            'source' => self::COMPILER_SOURCE_DIRECTORY . '/Test/chrome-firefox-open-index.yml',
-                            'target' =>
-                                self::COMPILER_TARGET_DIRECTORY . '/Generated45ead8003cb8ba3fa966dc1ad5a91372Test.php',
+                            'source' => $sourcePath . '/Test/chrome-firefox-open-index.yml',
+                            'target' => $targetPath . '/Generated45ead8003cb8ba3fa966dc1ad5a91372Test.php',
                             'step_count' => 1,
                         ],
                         [
@@ -121,9 +123,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
                                 'browser' => 'firefox',
                                 'url' => 'http://nginx-html/index.html'
                             ],
-                            'source' => self::COMPILER_SOURCE_DIRECTORY . '/Test/chrome-firefox-open-index.yml',
-                            'target' =>
-                                self::COMPILER_TARGET_DIRECTORY . '/Generated88b4291e887760b0fe2eec8891356665Test.php',
+                            'source' => $sourcePath . '/Test/chrome-firefox-open-index.yml',
+                            'target' => $targetPath . '/Generated88b4291e887760b0fe2eec8891356665Test.php',
                             'step_count' => 1,
                         ],
                     ],
@@ -156,13 +157,16 @@ class CompilerTest extends AbstractBaseIntegrationTest
      */
     public function compileFailureDataProvider(): array
     {
+        $sourcePath = self::COMPILER_SOURCE_DIRECTORY;
+        $targetPath = self::COMPILER_TARGET_DIRECTORY;
+
         return [
             'unparseable assertion' => [
                 'source' => 'InvalidTest/invalid-unparseable-assertion.yml',
                 'expectedErrorOutputData' => [
                     'config' => [
-                        'source' => self::COMPILER_SOURCE_DIRECTORY . '/InvalidTest/invalid-unparseable-assertion.yml',
-                        'target' => self::COMPILER_TARGET_DIRECTORY,
+                        'source' => $sourcePath . '/InvalidTest/invalid-unparseable-assertion.yml',
+                        'target' => $targetPath,
                         'base-class' => 'webignition\BaseBasilTestCase\AbstractBaseTest',
                     ],
                     'error' => [
@@ -170,8 +174,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
                         'message' => 'Unparseable test',
                         'context' => [
                             'type' => 'test',
-                            'test_path' =>
-                                self::COMPILER_SOURCE_DIRECTORY . '/InvalidTest/invalid-unparseable-assertion.yml',
+                            'test_path' => $sourcePath . '/InvalidTest/invalid-unparseable-assertion.yml',
                             'step_name' => 'verify page is open',
                             'reason' => 'empty-value',
                             'statement_type' => 'assertion',
@@ -217,16 +220,5 @@ class CompilerTest extends AbstractBaseIntegrationTest
         }
 
         return $data;
-    }
-
-    protected function tearDown(): void
-    {
-        $compilerClient = self::$container->get('app.services.compiler-client');
-        self::assertInstanceOf(Client::class, $compilerClient);
-
-        $request = 'rm ' . self::COMPILER_TARGET_DIRECTORY . '/*.php';
-        $compilerClient->request($request);
-
-        parent::tearDown();
     }
 }
