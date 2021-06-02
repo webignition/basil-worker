@@ -55,6 +55,17 @@ services:
     App\Services\EventCallbackFactory\TestEventCallbackFactory:
         public: true
 
+    App\Services\CallbackFactory:
+        public: true
+        arguments:
+            $eventCallbackFactories:
+                - '@App\Services\EventCallbackFactory\CompilationStartedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\CompilationPassedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\CompilationFailedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\TestEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\JobTimeoutEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\NoPayloadEventCallbackFactory'
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
         arguments:
