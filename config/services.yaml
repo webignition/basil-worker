@@ -68,12 +68,26 @@ services:
         arguments:
             $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
 
+    webignition\TcpCliProxyClient\HandlerFactory:
+        class: webignition\TcpCliProxyClient\HandlerFactory
+
     app.services.compiler-client:
         class: webignition\TcpCliProxyClient\Client
         factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
         arguments:
             $host: '%env(COMPILER_HOST)%'
             $port: '%env(COMPILER_PORT)%'
+
+    app.services.delegator-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(DELEGATOR_HOST)%'
+            $port: '%env(DELEGATOR_PORT)%'
+
+    App\Services\TestExecutor:
+        arguments:
+            $delegatorClient: '@app.services.delegator-client'
 
     Symfony\Component\Yaml\Parser:
         class: Symfony\Component\Yaml\Parser
@@ -83,9 +97,6 @@ services:
             $client: '@app.services.compiler-client'
             $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
             $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
-
-    webignition\TcpCliProxyClient\HandlerFactory:
-        class: webignition\TcpCliProxyClient\HandlerFactory
 
     Psr\Http\Client\ClientInterface:
         class: GuzzleHttp\Client
