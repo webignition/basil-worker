@@ -10,10 +10,7 @@ use GuzzleHttp\HandlerStack;
 class HandlerStackFactory
 {
     /**
-     * @param callable $handler
      * @param MiddlewareFactoryInterface[] $middlewareFactories
-     *
-     * @return HandlerStack
      */
     public function create(callable $handler, array $middlewareFactories = []): HandlerStack
     {

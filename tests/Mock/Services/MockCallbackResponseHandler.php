@@ -31,7 +31,8 @@ class MockCallbackResponseHandler
         $this->mock
             ->shouldReceive('handle')
             ->once()
-            ->with($callback, $context);
+            ->with($callback, $context)
+        ;
 
         return $this;
     }
@@ -43,7 +44,8 @@ class MockCallbackResponseHandler
         }
 
         $this->mock
-            ->shouldNotReceive('handle');
+            ->shouldNotReceive('handle')
+        ;
 
         return $this;
     }

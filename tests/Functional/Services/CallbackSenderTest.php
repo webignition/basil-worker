@@ -50,7 +50,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleCall()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->createJob();
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
@@ -68,7 +69,7 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     {
         $dataSets = [];
 
-        for ($statusCode = 100; $statusCode < 300; $statusCode++) {
+        for ($statusCode = 100; $statusCode < 300; ++$statusCode) {
             $dataSets[(string) $statusCode] = [
                 'response' => new Response($statusCode),
             ];
@@ -89,7 +90,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
 
         $responseHandler = (new MockCallbackResponseHandler())
             ->withHandleCall($callback, $httpFixture)
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->createJob();
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
@@ -119,7 +121,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     {
         $responseHandler = (new MockCallbackResponseHandler())
             ->withoutHandleCall()
-            ->getMock();
+            ->getMock()
+        ;
 
         $this->setCallbackResponseHandlerOnCallbackSender($responseHandler);
 

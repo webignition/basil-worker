@@ -20,7 +20,8 @@ class CallbackRequestTest extends TestCase
         $job = (new MockJob())
             ->withGetCallbackUrlCall($jobCallbackUrl)
             ->withGetLabelCall($jobLabel)
-            ->getMock();
+            ->getMock()
+        ;
 
         $callbackType = 'callback type';
         $callbackData = [
@@ -31,10 +32,12 @@ class CallbackRequestTest extends TestCase
         $callback = \Mockery::mock(CallbackInterface::class);
         $callback
             ->shouldReceive('getType')
-            ->andReturn($callbackType);
+            ->andReturn($callbackType)
+        ;
         $callback
             ->shouldReceive('getPayload')
-            ->andReturn($callbackData);
+            ->andReturn($callbackData)
+        ;
 
         $request = new CallbackRequest($callback, $job);
 
