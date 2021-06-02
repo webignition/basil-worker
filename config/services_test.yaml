@@ -75,6 +75,9 @@ services:
     App\Services\TestCanceller:
         public: true
 
+    App\Services\CompilationWorkflowHandler:
+        public: true
+
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
