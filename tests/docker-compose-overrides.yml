@@ -8,3 +8,7 @@ services:
   compiler:
     ports:
       - 9500:8000
+
+  delegator:
+    ports:
+      - 9501:8000

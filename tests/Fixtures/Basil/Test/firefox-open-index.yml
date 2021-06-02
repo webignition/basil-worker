@@ -1,0 +1,8 @@
+config:
+  browsers:
+    - firefox
+  url: http://nginx-html/index.html
+
+"verify page is open":
+  assertions:
+    - $page.url is "http://nginx-html/index.html"
