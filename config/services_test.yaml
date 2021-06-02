@@ -69,6 +69,9 @@ services:
     App\Services\TestFactory:
         public: true
 
+    App\MessageDispatcher\TimeoutCheckMessageDispatcher:
+        public: true
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
         arguments:
@@ -110,6 +113,11 @@ services:
 
     App\Tests\Services\CallbackHttpErrorEventSubscriber:
         public: true
+
+    App\Tests\Services\EventListenerRemover:
+        public: true
+        arguments:
+            $container: '@test.service_container'
 
     app.tests.services.guzzle.handler.queuing:
         public: true
