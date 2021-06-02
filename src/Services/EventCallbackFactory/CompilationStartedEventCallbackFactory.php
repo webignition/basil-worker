@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\EventCallbackFactory;
 
-use App\Event\SourceCompilation\SourceCompilationStartedEvent;
+use App\Event\SourceCompilation\StartedEvent;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
@@ -12,12 +12,12 @@ class CompilationStartedEventCallbackFactory extends AbstractCompilationEventCal
 {
     public function handles(Event $event): bool
     {
-        return $event instanceof SourceCompilationStartedEvent;
+        return $event instanceof StartedEvent;
     }
 
     public function createForEvent(Event $event): ?CallbackInterface
     {
-        if ($event instanceof SourceCompilationStartedEvent) {
+        if ($event instanceof StartedEvent) {
             return $this->create(
                 CallbackInterface::TYPE_COMPILATION_STARTED,
                 $this->createPayload($event)

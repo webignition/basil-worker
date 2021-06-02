@@ -6,7 +6,7 @@ namespace App\Event\SourceCompilation;
 
 use webignition\BasilCompilerModels\OutputInterface;
 
-interface SourceCompilationOutcomeEventInterface extends SourceCompilationEventInterface
+interface OutcomeEventInterface extends EventInterface
 {
     public function getOutput(): OutputInterface;
 }

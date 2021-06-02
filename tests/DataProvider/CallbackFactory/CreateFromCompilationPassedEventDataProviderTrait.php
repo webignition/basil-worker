@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\DataProvider\CallbackFactory;
 
-use App\Event\SourceCompilation\SourceCompilationFailedEvent;
-use App\Event\SourceCompilation\SourceCompilationPassedEvent;
+use App\Event\SourceCompilation\FailedEvent;
+use App\Event\SourceCompilation\PassedEvent;
 use App\Tests\Mock\Entity\MockCallback;
 use App\Tests\Mock\MockSuiteManifest;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
@@ -18,8 +18,8 @@ trait CreateFromCompilationPassedEventDataProviderTrait
     public function createFromCompilationPassedEventDataProvider(): array
     {
         return [
-            SourceCompilationFailedEvent::class => [
-                'event' => new SourceCompilationPassedEvent(
+            FailedEvent::class => [
+                'event' => new PassedEvent(
                     '/app/source/test.yml',
                     (new MockSuiteManifest())->getMock()
                 ),

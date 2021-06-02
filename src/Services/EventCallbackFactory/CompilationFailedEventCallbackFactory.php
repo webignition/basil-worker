@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services\EventCallbackFactory;
 
-use App\Event\SourceCompilation\SourceCompilationFailedEvent;
+use App\Event\SourceCompilation\FailedEvent;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
@@ -12,12 +12,12 @@ class CompilationFailedEventCallbackFactory extends AbstractCompilationEventCall
 {
     public function handles(Event $event): bool
     {
-        return $event instanceof SourceCompilationFailedEvent;
+        return $event instanceof FailedEvent;
     }
 
     public function createForEvent(Event $event): ?CallbackInterface
     {
-        if ($event instanceof SourceCompilationFailedEvent) {
+        if ($event instanceof FailedEvent) {
             return $this->create(
                 CallbackInterface::TYPE_COMPILATION_FAILED,
                 $this->createPayload($event, [
