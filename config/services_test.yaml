@@ -69,6 +69,9 @@ services:
     App\Services\TestFactory:
         public: true
 
+    App\Services\ApplicationWorkflowHandler:
+        public: true
+
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
