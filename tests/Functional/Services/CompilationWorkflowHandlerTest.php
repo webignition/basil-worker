@@ -10,8 +10,7 @@ use App\Message\CompileSourceMessage;
 use App\Message\TimeoutCheckMessage;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Services\CompilationWorkflowHandler;
-// todo: uncomment in #888
-//use App\Services\ExecutionWorkflowHandler;
+use App\Services\ExecutionWorkflowHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Model\EnvironmentSetup;
@@ -57,10 +56,9 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 JobReadyEvent::class => ['dispatchForEvent'],
                 PassedEvent::class => ['dispatchForEvent'],
             ],
-            // todo: uncomment in #888
-            //            ExecutionWorkflowHandler::class => [
-            //                PassedEvent::class => ['dispatchExecutionStartedEvent'],
-            //            ],
+            ExecutionWorkflowHandler::class => [
+                PassedEvent::class => ['dispatchExecutionStartedEvent'],
+            ],
         ]);
     }
 

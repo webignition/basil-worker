@@ -6,15 +6,12 @@ namespace App\Tests\Functional\Services;
 
 use App\Event\JobCompletedEvent;
 use App\Event\JobFailedEvent;
-// todo: uncomment in #888
-// use App\Event\JobReadyEvent;
 use App\Event\TestFailedEvent;
 use App\Event\TestPassedEvent;
 use App\Message\JobCompletedCheckMessage;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\Services\ApplicationWorkflowHandler;
-// todo: uncomment in #888
-//use App\Services\ExecutionWorkflowHandler;
+use App\Services\ExecutionWorkflowHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Entity\MockTest;
 use App\Tests\Mock\MockEventDispatcher;
@@ -61,13 +58,12 @@ class ApplicationWorkflowHandlerTest extends AbstractBaseFunctionalTest
                 TestPassedEvent::class => ['dispatchForEvent'],
                 TestFailedEvent::class => ['dispatchForEvent'],
             ],
-            // todo: uncomment in #888
-            //            ExecutionWorkflowHandler::class => [
-            //                TestPassedEvent::class => [
-            //                    'dispatchExecutionCompletedEvent',
-            //                    'dispatchNextExecuteTestMessageFromTestPassedEvent',
-            //                ],
-            //            ],
+            ExecutionWorkflowHandler::class => [
+                TestPassedEvent::class => [
+                    'dispatchExecutionCompletedEvent',
+                    'dispatchNextExecuteTestMessageFromTestPassedEvent',
+                ],
+            ],
         ]);
     }
 
