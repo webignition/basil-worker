@@ -84,3 +84,6 @@ services:
 
     webignition\TcpCliProxyClient\HandlerFactory:
         class: webignition\TcpCliProxyClient\HandlerFactory
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client

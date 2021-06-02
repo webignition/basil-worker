@@ -3,6 +3,9 @@ services:
         autowire: true
         autoconfigure: true
 
+    App\Services\CallbackSender:
+        public: true
+
     App\Services\SourceFileStore:
         public: true
         arguments:
@@ -80,3 +83,23 @@ services:
 
     App\Tests\Services\CallbackHttpErrorEventSubscriber:
         public: true
+
+    app.tests.services.guzzle.handler.queuing:
+        public: true
+        class: GuzzleHttp\Handler\MockHandler
+        factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
+
+    GuzzleHttp\HandlerStack:
+        factory: [ '@App\Tests\Services\Guzzle\HandlerStackFactory', 'create' ]
+        arguments:
+            $handler: '@app.tests.services.guzzle.handler.queuing'
+
+    App\Tests\Services\Guzzle\HandlerFactory: ~
+
+    App\Tests\Services\Guzzle\HandlerStackFactory: ~
+
+    App\Tests\Services\Guzzle\ClientFactory: ~
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+        factory: [ '@App\Tests\Services\Guzzle\ClientFactory', 'get' ]
