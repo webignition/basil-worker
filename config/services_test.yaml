@@ -74,6 +74,9 @@ services:
     App\Services\CompilationWorkflowHandler:
         public: true
 
+    App\Services\ExecutionWorkflowHandler:
+        public: true
+
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
