@@ -18,6 +18,9 @@ services:
     App\Services\SourceFactory:
         public: true
 
+    App\Services\TestStateMutator:
+        public: true
+
     App\Services\TestSerializer:
         public: true
         arguments:
@@ -67,6 +70,9 @@ services:
             $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
 
     App\Tests\Services\TestTestFactory:
+        public: true
+
+    App\Tests\Services\TestTestMutator:
         public: true
 
     App\Tests\Services\EnvironmentFactory:
