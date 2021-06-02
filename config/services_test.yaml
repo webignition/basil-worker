@@ -72,6 +72,9 @@ services:
     App\Services\ApplicationWorkflowHandler:
         public: true
 
+    App\Services\TestCanceller:
+        public: true
+
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
@@ -112,6 +115,9 @@ services:
         public: true
 
     App\Tests\Services\CallbackHttpErrorEventSubscriber:
+        public: true
+
+    App\Tests\Services\Asserter\TestEntityAsserter:
         public: true
 
     App\Tests\Services\EventListenerRemover:
