@@ -66,6 +66,9 @@ services:
                 - '@App\Services\EventCallbackFactory\JobTimeoutEventCallbackFactory'
                 - '@App\Services\EventCallbackFactory\NoPayloadEventCallbackFactory'
 
+    App\Services\TestFactory:
+        public: true
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
         arguments:
