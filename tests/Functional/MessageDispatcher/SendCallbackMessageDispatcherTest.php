@@ -22,8 +22,7 @@ use App\Message\SendCallbackMessage;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\MessageDispatcher\TimeoutCheckMessageDispatcher;
 use App\Services\ApplicationWorkflowHandler;
-// todo: uncomment in #888
-//use App\Services\ExecutionWorkflowHandler;
+use App\Services\ExecutionWorkflowHandler;
 use App\Services\TestFactory;
 use App\Services\TestStateMutator;
 use App\Tests\AbstractBaseFunctionalTest;
@@ -76,10 +75,9 @@ class SendCallbackMessageDispatcherTest extends AbstractBaseFunctionalTest
             TestFactory::class => [
                 PassedEvent::class => ['createFromSourceCompileSuccessEvent'],
             ],
-            // todo: uncomment in #888
-            //            ExecutionWorkflowHandler::class => [
-            //                CompilationCompletedEvent::class => ['dispatchExecutionStartedEvent'],
-            //            ],
+            ExecutionWorkflowHandler::class => [
+                CompilationCompletedEvent::class => ['dispatchExecutionStartedEvent'],
+            ],
             TimeoutCheckMessageDispatcher::class => [
                 JobReadyEvent::class => ['dispatch'],
             ],
