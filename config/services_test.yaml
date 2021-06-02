@@ -31,6 +31,24 @@ services:
     App\Services\CallbackResponseHandler:
         public: true
 
+    App\Services\EventCallbackFactory\CompilationFailedEventCallbackFactory:
+        public: true
+
+    App\Services\EventCallbackFactory\CompilationPassedEventCallbackFactory:
+        public: true
+
+    App\Services\EventCallbackFactory\CompilationStartedEventCallbackFactory:
+        public: true
+
+    App\Services\EventCallbackFactory\JobTimeoutEventCallbackFactory:
+        public: true
+
+    App\Services\EventCallbackFactory\NoPayloadEventCallbackFactory:
+        public: true
+
+    App\Services\EventCallbackFactory\TestEventCallbackFactory:
+        public: true
+
     App\Tests\Services\SourceFileStoreInitializer:
         public: true
         arguments:
