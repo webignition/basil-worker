@@ -12,6 +12,11 @@ class TestEventCallbackFactoryTest extends AbstractEventCallbackFactoryTest
 {
     use CreateFromTestEventDataProviderTrait;
 
+    public function createDataProvider(): array
+    {
+        return $this->createFromTestEventEventDataProvider();
+    }
+
     protected function getCallbackFactory(): ?EventCallbackFactoryInterface
     {
         $callbackFactory = self::$container->get(TestEventCallbackFactory::class);
@@ -19,10 +24,5 @@ class TestEventCallbackFactoryTest extends AbstractEventCallbackFactoryTest
         return $callbackFactory instanceof TestEventCallbackFactory
             ? $callbackFactory
             : null;
-    }
-
-    public function createDataProvider(): array
-    {
-        return $this->createFromTestEventEventDataProvider();
     }
 }

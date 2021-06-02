@@ -22,15 +22,6 @@ class NoPayloadEventCallbackFactoryTest extends AbstractEventCallbackFactoryTest
     use CreateFromJobCompletedEventDataProviderTrait;
     use CreateFromJobFailedEventDataProviderTrait;
 
-    protected function getCallbackFactory(): ?EventCallbackFactoryInterface
-    {
-        $callbackFactory = self::$container->get(NoPayloadEventCallbackFactory::class);
-
-        return $callbackFactory instanceof NoPayloadEventCallbackFactory
-            ? $callbackFactory
-            : null;
-    }
-
     public function createDataProvider(): array
     {
         return array_merge(
@@ -41,5 +32,14 @@ class NoPayloadEventCallbackFactoryTest extends AbstractEventCallbackFactoryTest
             $this->createFromExecutionCompletedEventDataProvider(),
             $this->createFromJobFailedEventDataProvider(),
         );
+    }
+
+    protected function getCallbackFactory(): ?EventCallbackFactoryInterface
+    {
+        $callbackFactory = self::$container->get(NoPayloadEventCallbackFactory::class);
+
+        return $callbackFactory instanceof NoPayloadEventCallbackFactory
+            ? $callbackFactory
+            : null;
     }
 }

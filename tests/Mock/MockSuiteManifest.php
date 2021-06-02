@@ -33,7 +33,8 @@ class MockSuiteManifest
 
         $this->mock
             ->shouldReceive('getTestManifests')
-            ->andReturn($testManifests);
+            ->andReturn($testManifests)
+        ;
 
         return $this;
     }

@@ -30,12 +30,12 @@ class NoPayloadEventCallbackFactory extends AbstractEventCallbackFactory
     public function handles(Event $event): bool
     {
         return
-            $event instanceof JobReadyEvent ||
-            $event instanceof CompilationCompletedEvent ||
-            $event instanceof ExecutionStartedEvent ||
-            $event instanceof ExecutionCompletedEvent ||
-            $event instanceof JobCompletedEvent ||
-            $event instanceof JobFailedEvent
+            $event instanceof JobReadyEvent
+            || $event instanceof CompilationCompletedEvent
+            || $event instanceof ExecutionStartedEvent
+            || $event instanceof ExecutionCompletedEvent
+            || $event instanceof JobCompletedEvent
+            || $event instanceof JobFailedEvent
             ;
     }
 

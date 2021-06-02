@@ -13,13 +13,6 @@ abstract class AbstractEventCallbackFactoryTest extends AbstractBaseFunctionalTe
 {
     private EventCallbackFactoryInterface $callbackFactory;
 
-    abstract protected function getCallbackFactory(): ?EventCallbackFactoryInterface;
-
-    /**
-     * @return array[]
-     */
-    abstract public function createDataProvider(): array;
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -29,6 +22,11 @@ abstract class AbstractEventCallbackFactoryTest extends AbstractBaseFunctionalTe
             $this->callbackFactory = $callbackFactory;
         }
     }
+
+    /**
+     * @return array[]
+     */
+    abstract public function createDataProvider(): array;
 
     public function testCreateForEventUnsupportedEvent(): void
     {
@@ -50,4 +48,6 @@ abstract class AbstractEventCallbackFactoryTest extends AbstractBaseFunctionalTe
             self::assertSame($expectedCallback->getPayload(), $callback->getPayload());
         }
     }
+
+    abstract protected function getCallbackFactory(): ?EventCallbackFactoryInterface;
 }

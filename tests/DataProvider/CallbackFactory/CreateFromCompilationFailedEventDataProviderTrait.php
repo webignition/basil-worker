@@ -23,7 +23,8 @@ trait CreateFromCompilationFailedEventDataProviderTrait
         $errorOutput = \Mockery::mock(ErrorOutputInterface::class);
         $errorOutput
             ->shouldReceive('getData')
-            ->andReturn($errorOutputData);
+            ->andReturn($errorOutputData)
+        ;
 
         return [
             FailedEvent::class => [

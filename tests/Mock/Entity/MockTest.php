@@ -33,7 +33,8 @@ class MockTest
         $this->mock
             ->shouldReceive('hasState')
             ->with($state)
-            ->andReturn($has);
+            ->andReturn($has)
+        ;
 
         return $this;
     }
@@ -46,7 +47,8 @@ class MockTest
 
         $this->mock
             ->shouldReceive('setState')
-            ->with($state);
+            ->with($state)
+        ;
 
         return $this;
     }

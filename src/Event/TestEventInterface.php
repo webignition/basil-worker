@@ -10,5 +10,6 @@ use webignition\YamlDocument\Document;
 interface TestEventInterface
 {
     public function getTest(): Test;
+
     public function getDocument(): Document;
 }

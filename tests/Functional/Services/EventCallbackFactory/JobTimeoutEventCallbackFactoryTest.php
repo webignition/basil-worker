@@ -12,6 +12,11 @@ class JobTimeoutEventCallbackFactoryTest extends AbstractEventCallbackFactoryTes
 {
     use CreateFromJobTimeoutEventDataProviderTrait;
 
+    public function createDataProvider(): array
+    {
+        return $this->createFromJobTimeoutEventDataProvider();
+    }
+
     protected function getCallbackFactory(): ?EventCallbackFactoryInterface
     {
         $callbackFactory = self::$container->get(JobTimeoutEventCallbackFactory::class);
@@ -19,10 +24,5 @@ class JobTimeoutEventCallbackFactoryTest extends AbstractEventCallbackFactoryTes
         return $callbackFactory instanceof JobTimeoutEventCallbackFactory
             ? $callbackFactory
             : null;
-    }
-
-    public function createDataProvider(): array
-    {
-        return $this->createFromJobTimeoutEventDataProvider();
     }
 }

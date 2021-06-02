@@ -32,7 +32,8 @@ class MockCallback
 
         $this->mock
             ->shouldReceive('getType')
-            ->andReturn($type);
+            ->andReturn($type)
+        ;
 
         return $this;
     }
@@ -48,7 +49,8 @@ class MockCallback
 
         $this->mock
             ->shouldReceive('getPayload')
-            ->andReturn($payload);
+            ->andReturn($payload)
+        ;
 
         return $this;
     }

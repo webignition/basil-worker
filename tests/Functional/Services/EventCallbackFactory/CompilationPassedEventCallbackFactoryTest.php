@@ -12,6 +12,11 @@ class CompilationPassedEventCallbackFactoryTest extends AbstractEventCallbackFac
 {
     use CreateFromCompilationPassedEventDataProviderTrait;
 
+    public function createDataProvider(): array
+    {
+        return $this->createFromCompilationPassedEventDataProvider();
+    }
+
     protected function getCallbackFactory(): ?EventCallbackFactoryInterface
     {
         $callbackFactory = self::$container->get(CompilationPassedEventCallbackFactory::class);
@@ -19,10 +24,5 @@ class CompilationPassedEventCallbackFactoryTest extends AbstractEventCallbackFac
         return $callbackFactory instanceof CompilationPassedEventCallbackFactory
             ? $callbackFactory
             : null;
-    }
-
-    public function createDataProvider(): array
-    {
-        return $this->createFromCompilationPassedEventDataProvider();
     }
 }
