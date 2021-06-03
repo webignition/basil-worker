@@ -109,6 +109,9 @@ services:
     App\Tests\Services\TestTestMutator:
         public: true
 
+    App\Tests\Services\TestCallbackFactory:
+        public: true
+
     App\Tests\Services\EnvironmentFactory:
         public: true
 
