@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
+use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
@@ -15,12 +16,17 @@ class Environment
     /**
      * @var Source[]
      */
-    private array $sources;
+    private array $sources = [];
 
     /**
      * @var Test[]
      */
-    private array $tests;
+    private array $tests = [];
+
+    /**
+     * @var CallbackInterface[]
+     */
+    private array $callbacks = [];
 
     public function getJob(): Job
     {
@@ -41,6 +47,14 @@ class Environment
     public function getTests(): array
     {
         return $this->tests;
+    }
+
+    /**
+     * @return CallbackInterface[]
+     */
+    public function getCallbacks(): array
+    {
+        return $this->callbacks;
     }
 
     public function withJob(Job $job): self
@@ -69,6 +83,17 @@ class Environment
     {
         $new = clone $this;
         $new->tests = $tests;
+
+        return $new;
+    }
+
+    /**
+     * @param CallbackInterface[] $callbacks
+     */
+    public function withCallbacks(array $callbacks): self
+    {
+        $new = clone $this;
+        $new->callbacks = $callbacks;
 
         return $new;
     }
