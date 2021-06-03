@@ -1,3 +1,6 @@
+imports:
+    - { resource: services/test_common.yaml }
+
 parameters:
     basil_local_fixtures_path: '%env(BASIL_LOCAL_FIXTURES_PATH)%'
     basil_local_source_path: '%env(BASIL_LOCAL_SOURCE_PATH)%'
@@ -103,16 +106,7 @@ services:
             $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
             $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
 
-    App\Tests\Services\TestTestFactory:
-        public: true
-
     App\Tests\Services\TestTestMutator:
-        public: true
-
-    App\Tests\Services\TestCallbackFactory:
-        public: true
-
-    App\Tests\Services\EnvironmentFactory:
         public: true
 
     App\Tests\Services\ClientRequestSender:
