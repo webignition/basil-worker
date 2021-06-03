@@ -138,10 +138,10 @@
             "@db-setup"
         ],
         "test-integration": [
-            "./vendor/bin/phpunit tests/Integration/AppTest.php",
-            "./vendor/bin/phpunit tests/Integration/Synchronous/Services/CompilerTest.php"
+            "./vendor/bin/phpunit tests/Integration/AppTest.php"
         ],
         "test-integration-async": "./vendor/bin/phpunit -c phpunit.integration_async.xml",
+        "test-integration-sync": "./vendor/bin/phpunit -c phpunit.integration_sync.xml",
         "ci": [
             "@cs",
             "@static-analysis",

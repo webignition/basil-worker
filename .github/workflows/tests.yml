@@ -100,12 +100,15 @@ jobs:
 
       - name: Run tests
         run: |
-          composer test-integration
+          composer test-integration-sync
+          composer db-recreate
           php bin/console --env=integration_async messenger:consume async > /dev/null &
           composer test-integration-async
+          php bin/console --env=integration_async messenger:stop
+          composer db-recreate
+          composer test-integration
 
       - name: Teardown integration test environment
         run: |
-          php bin/console --env=integration_async messenger:stop
           sudo composer integration-teardown
           sudo rm -Rf $PWD/var/basil/local/tests/*
