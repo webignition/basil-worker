@@ -9,6 +9,7 @@ use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
+use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\Integration\HttpLogReader;
@@ -23,9 +24,8 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     private EnvironmentFactory $environmentFactory;
     private EntityPersister $entityPersister;
     private HttpLogReader $httpLogReader;
-    private EntityRefresher $entityRefresher;
-    private CallbackRepository $callbackRepository;
     private MessageBusInterface $messageBus;
+    private CallableInvoker $callableInvoker;
 
     protected function setUp(): void
     {
@@ -43,17 +43,13 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         \assert($httpLogReader instanceof HttpLogReader);
         $this->httpLogReader = $httpLogReader;
 
-        $entityRefresher = self::$container->get(EntityRefresher::class);
-        \assert($entityRefresher instanceof EntityRefresher);
-        $this->entityRefresher = $entityRefresher;
-
-        $callbackRepository = self::$container->get(CallbackRepository::class);
-        \assert($callbackRepository instanceof CallbackRepository);
-        $this->callbackRepository = $callbackRepository;
-
         $messageBus = self::$container->get(MessageBusInterface::class);
         \assert($messageBus instanceof MessageBusInterface);
         $this->messageBus = $messageBus;
+
+        $callableInvoker = self::$container->get(CallableInvoker::class);
+        \assert($callableInvoker instanceof CallableInvoker);
+        $this->callableInvoker = $callableInvoker;
 
         $this->httpLogReader->reset();
     }
@@ -82,11 +78,11 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $this->messageBus->dispatch(new SendCallbackMessage((int) $callback->getId()));
 
         $intervalInMicroseconds = 100000;
-        while (false === $waitUntil($this->entityRefresher, $this->callbackRepository)) {
+        while (false === $this->callableInvoker->invoke($waitUntil)) {
             usleep($intervalInMicroseconds);
         }
 
-        $assertions($this->callbackRepository, $this->httpLogReader);
+        $this->callableInvoker->invoke($assertions);
     }
 
     /**
@@ -126,7 +122,7 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
                     'maximum_duration_in_seconds' => 600,
                 ]),
                 'waitUntil' => $this->createWaitUntilCallbackIsFinished(),
-                'assertions' => function (CallbackRepository $callbackRepository, HttpLogReader $httpLogReader) {
+                'assertions' => function (HttpLogReader $httpLogReader) {
                     $httpTransactions = $httpLogReader->getTransactions();
                     self::assertCount(4, $httpTransactions);
 
