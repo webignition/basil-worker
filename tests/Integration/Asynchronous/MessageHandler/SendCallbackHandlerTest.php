@@ -52,7 +52,7 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $this->callbackRepository = $callbackRepository;
 
         $messageBus = self::$container->get(MessageBusInterface::class);
-        \asserT($messageBus instanceof MessageBusInterface);
+        \assert($messageBus instanceof MessageBusInterface);
         $this->messageBus = $messageBus;
 
         $this->httpLogReader->reset();

@@ -16,7 +16,8 @@ class HttpLoggerFactory
         $logger = new Logger('');
         $logHandler = new StreamHandler($path);
         $logHandler
-            ->setFormatter(new LineFormatter('%message%' . "\n"));
+            ->setFormatter(new LineFormatter('%message%' . "\n"))
+        ;
 
         $logger->pushHandler($logHandler);
 
