@@ -135,3 +135,8 @@ services:
             $middleware:
                 - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware'
                 - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware'
+
+    webignition\YamlDocumentGenerator\YamlGenerator:
+        class: webignition\YamlDocumentGenerator\YamlGenerator
+
+    Symfony\Component\Yaml\Dumper: ~
