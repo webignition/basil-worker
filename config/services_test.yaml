@@ -1,3 +1,6 @@
+imports:
+    - { resource: services/test_common.yaml }
+
 services:
     _defaults:
         autowire: true
@@ -99,16 +102,7 @@ services:
             $fixturesPath: '%kernel.project_dir%/tests/Fixtures/Basil'
             $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
 
-    App\Tests\Services\TestTestFactory:
-        public: true
-
     App\Tests\Services\TestTestMutator:
-        public: true
-
-    App\Tests\Services\TestCallbackFactory:
-        public: true
-
-    App\Tests\Services\EnvironmentFactory:
         public: true
 
     App\Tests\Services\ClientRequestSender:
