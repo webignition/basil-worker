@@ -18,6 +18,11 @@ class EnvironmentSetup
      */
     private array $testSetups = [];
 
+    /**
+     * @var CallbackSetup[]
+     */
+    private array $callbackSetups = [];
+
     public function __construct()
     {
         $this->jobSetup = new JobSetup();
@@ -73,6 +78,27 @@ class EnvironmentSetup
         $new = clone $this;
         $new->testSetups = array_filter($testSetups, function ($value) {
             return $value instanceof TestSetup;
+        });
+
+        return $new;
+    }
+
+    /**
+     * @return CallbackSetup[]
+     */
+    public function getCallbackSetups(): array
+    {
+        return $this->callbackSetups;
+    }
+
+    /**
+     * @param CallbackSetup[] $callbackSetups
+     */
+    public function withCallbackSetups(array $callbackSetups): self
+    {
+        $new = clone $this;
+        $new->callbackSetups = array_filter($callbackSetups, function ($value) {
+            return $value instanceof CallbackSetup;
         });
 
         return $new;
