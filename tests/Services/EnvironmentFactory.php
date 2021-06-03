@@ -15,6 +15,7 @@ class EnvironmentFactory
         private JobFactory $jobFactory,
         private SourceFactory $sourceFactory,
         private TestTestFactory $testTestFactory,
+        private TestCallbackFactory $testCallbackFactory,
     ) {
     }
 
@@ -38,10 +39,16 @@ class EnvironmentFactory
             $tests[] = $this->testTestFactory->create($testSetup);
         }
 
+        $callbacks = [];
+        foreach ($setup->getCallbackSetups() as $callbackSetup) {
+            $callbacks[] = $this->testCallbackFactory->create($callbackSetup);
+        }
+
         return (new Environment())
             ->withJob($job)
             ->withSources($sources)
             ->withTests($tests)
+            ->withCallbacks($callbacks)
         ;
     }
 }
