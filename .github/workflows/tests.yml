@@ -99,9 +99,13 @@ jobs:
           sudo chown -R www-data:www-data $PWD/var/basil/local
 
       - name: Run tests
-        run: composer test-integration
+        run: |
+          composer test-integration
+          php bin/console --env=integration_async messenger:consume async > /dev/null &
+          composer test-integration-async
 
       - name: Teardown integration test environment
         run: |
+          php bin/console --env=integration_async messenger:stop
           sudo composer integration-teardown
           sudo rm -Rf $PWD/var/basil/local/tests/*
