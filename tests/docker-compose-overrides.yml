@@ -12,3 +12,13 @@ services:
   delegator:
     ports:
       - 9501:8000
+
+  rabbitmq:
+    ports:
+      - 5672:5672
+
+  httpbin:
+    image: kennethreitz/httpbin
+    container_name: httpbin
+    ports:
+      - 8080:80

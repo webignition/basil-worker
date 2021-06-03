@@ -136,6 +136,9 @@
     "mockery/mockery": {
         "version": "1.4.3"
     },
+    "monolog/monolog": {
+        "version": "2.2.0"
+    },
     "myclabs/deep-copy": {
         "version": "1.10.2"
     },
