@@ -21,9 +21,7 @@ use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackReposi
 
 class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
 {
-    private EnvironmentFactory $environmentFactory;
     private EntityPersister $entityPersister;
-    private HttpLogReader $httpLogReader;
     private MessageBusInterface $messageBus;
     private CallableInvoker $callableInvoker;
 
@@ -31,17 +29,9 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     {
         parent::setUp();
 
-        $environmentFactory = self::$container->get(EnvironmentFactory::class);
-        \assert($environmentFactory instanceof EnvironmentFactory);
-        $this->environmentFactory = $environmentFactory;
-
         $entityPersister = self::$container->get(EntityPersister::class);
         \assert($entityPersister instanceof EntityPersister);
         $this->entityPersister = $entityPersister;
-
-        $httpLogReader = self::$container->get(HttpLogReader::class);
-        \assert($httpLogReader instanceof HttpLogReader);
-        $this->httpLogReader = $httpLogReader;
 
         $messageBus = self::$container->get(MessageBusInterface::class);
         \assert($messageBus instanceof MessageBusInterface);
@@ -50,27 +40,18 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $callableInvoker = self::$container->get(CallableInvoker::class);
         \assert($callableInvoker instanceof CallableInvoker);
         $this->callableInvoker = $callableInvoker;
-
-        $this->httpLogReader->reset();
-    }
-
-    protected function tearDown(): void
-    {
-        parent::tearDown();
-
-        $this->httpLogReader->reset();
     }
 
     /**
      * @dataProvider sendDataProvider
      */
     public function testSend(
-        EnvironmentSetup $setup,
+        callable $setup,
         CallbackInterface $callback,
         callable $waitUntil,
         callable $assertions
     ): void {
-        $this->environmentFactory->create($setup);
+        $this->callableInvoker->invoke($setup);
 
         $callback->setState(CallbackInterface::STATE_SENDING);
         $this->entityPersister->persist($callback->getEntity());
@@ -90,14 +71,16 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
      */
     public function sendDataProvider(): array
     {
-        $callbackBaseUrl = $_ENV['CALLBACK_BASE_URL'] ?? '';
-
         return [
             'success' => [
-                'setup' => (new EnvironmentSetup())
-                    ->withJobSetup(
-                        (new JobSetup())->withCallbackUrl($callbackBaseUrl . '/status/200')
-                    ),
+                'setup' => function (EnvironmentFactory $environmentFactory) {
+                    $environmentFactory->create(
+                        (new EnvironmentSetup())
+                            ->withJobSetup(
+                                (new JobSetup())->withCallbackUrl($_ENV['CALLBACK_BASE_URL'] . '/status/200')
+                            )
+                    );
+                },
                 'callback' => CallbackEntity::create(CallbackInterface::TYPE_JOB_TIME_OUT, [
                     'maximum_duration_in_seconds' => 600,
                 ]),
@@ -114,16 +97,23 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
                 },
             ],
             'verify retried http transactions are delayed' => [
-                'setup' => (new EnvironmentSetup())
-                    ->withJobSetup(
-                        (new JobSetup())->withCallbackUrl($callbackBaseUrl . '/status/500')
-                    ),
+                'setup' => function (EnvironmentFactory $environmentFactory, HttpLogReader $httpLogReader) {
+                    $environmentFactory->create(
+                        (new EnvironmentSetup())
+                            ->withJobSetup(
+                                (new JobSetup())->withCallbackUrl($_ENV['CALLBACK_BASE_URL'] . '/status/500')
+                            )
+                    );
+
+                    $httpLogReader->reset();
+                },
                 'callback' => CallbackEntity::create(CallbackInterface::TYPE_JOB_TIME_OUT, [
                     'maximum_duration_in_seconds' => 600,
                 ]),
                 'waitUntil' => $this->createWaitUntilCallbackIsFinished(),
                 'assertions' => function (HttpLogReader $httpLogReader) {
                     $httpTransactions = $httpLogReader->getTransactions();
+
                     self::assertCount(4, $httpTransactions);
 
                     $transactionPeriods = $httpTransactions->getPeriods()->getPeriodsInMicroseconds();
