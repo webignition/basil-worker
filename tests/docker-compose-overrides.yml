@@ -22,3 +22,8 @@ services:
     container_name: httpbin
     ports:
       - 8080:80
+
+  nginx-html:
+    image: nginx:1.19
+    volumes:
+      - ./tests/Fixtures/Html:/usr/share/nginx/html
