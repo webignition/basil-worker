@@ -139,10 +139,7 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     private function createWaitUntilCallbackIsFinished(): callable
     {
         return function (EntityRefresher $entityRefresher, CallbackRepository $callbackRepository) {
-            $entityRefresher->refreshForEntities([
-                CallbackEntity::class,
-            ]);
-
+            $entityRefresher->refresh();
             $callbacks = $callbackRepository->findAll();
 
             /** @var CallbackInterface $callback */
