@@ -11,6 +11,13 @@ services:
 
     App\Tests\Services\EntityRefresher:
         public: true
+        arguments:
+            $entityClassNames:
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Job'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Source'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Test'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity'
 
     App\Services\BackoffStrategyFactory:
         class: App\Tests\Services\Integration\BackoffStrategyFactory
