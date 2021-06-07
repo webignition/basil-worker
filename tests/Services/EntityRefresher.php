@@ -9,16 +9,18 @@ use Doctrine\Persistence\ObjectRepository;
 
 class EntityRefresher
 {
-    public function __construct(private EntityManagerInterface $entityManager)
-    {
+    /**
+     * @param array<class-string> $entityClassNames
+     */
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private array $entityClassNames,
+    ) {
     }
 
-    /**
-     * @param array<class-string> $classNames
-     */
-    public function refreshForEntities(array $classNames): void
+    public function refresh(): void
     {
-        foreach ($classNames as $className) {
+        foreach ($this->entityClassNames as $className) {
             $this->refreshForEntity($className);
         }
     }
@@ -26,7 +28,7 @@ class EntityRefresher
     /**
      * @param class-string $className
      */
-    public function refreshForEntity(string $className): void
+    private function refreshForEntity(string $className): void
     {
         $repository = $this->entityManager->getRepository($className);
         if ($repository instanceof ObjectRepository) {
