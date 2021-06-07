@@ -10,7 +10,7 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
 use App\Tests\Services\CallableInvoker;
-use App\Tests\Services\EntityRefresher;
+use App\Tests\Services\EntityRetriever;
 use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\Integration\HttpLogReader;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -24,6 +24,7 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     private EntityPersister $entityPersister;
     private MessageBusInterface $messageBus;
     private CallableInvoker $callableInvoker;
+    private EntityRetriever $entityRetriever;
 
     protected function setUp(): void
     {
@@ -40,6 +41,10 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $callableInvoker = self::$container->get(CallableInvoker::class);
         \assert($callableInvoker instanceof CallableInvoker);
         $this->callableInvoker = $callableInvoker;
+
+        $entityRetriever = self::$container->get(EntityRetriever::class);
+        \assert($entityRetriever instanceof EntityRetriever);
+        $this->entityRetriever = $entityRetriever;
     }
 
     /**
@@ -48,7 +53,6 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     public function testSend(
         callable $setup,
         CallbackInterface $callback,
-        callable $waitUntil,
         callable $assertions
     ): void {
         $this->callableInvoker->invoke($setup);
@@ -59,7 +63,7 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $this->messageBus->dispatch(new SendCallbackMessage((int) $callback->getId()));
 
         $intervalInMicroseconds = 100000;
-        while (false === $this->callableInvoker->invoke($waitUntil)) {
+        while (false === $this->isCallbackFinished()) {
             usleep($intervalInMicroseconds);
         }
 
@@ -84,7 +88,6 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
                 'callback' => CallbackEntity::create(CallbackInterface::TYPE_JOB_TIME_OUT, [
                     'maximum_duration_in_seconds' => 600,
                 ]),
-                'waitUntil' => $this->createWaitUntilCallbackIsFinished(),
                 'assertions' => function (CallbackRepository $callbackRepository) {
                     $callbacks = $callbackRepository->findAll();
                     self::assertCount(1, $callbacks);
@@ -110,7 +113,6 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
                 'callback' => CallbackEntity::create(CallbackInterface::TYPE_JOB_TIME_OUT, [
                     'maximum_duration_in_seconds' => 600,
                 ]),
-                'waitUntil' => $this->createWaitUntilCallbackIsFinished(),
                 'assertions' => function (HttpLogReader $httpLogReader) {
                     $httpTransactions = $httpLogReader->getTransactions();
 
@@ -136,19 +138,14 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         ];
     }
 
-    private function createWaitUntilCallbackIsFinished(): callable
+    private function isCallbackFinished(): bool
     {
-        return function (EntityRefresher $entityRefresher, CallbackRepository $callbackRepository) {
-            $entityRefresher->refresh();
-            $callbacks = $callbackRepository->findAll();
+        $callback = $this->entityRetriever->first(CallbackEntity::class);
+        \assert($callback instanceof CallbackEntity);
 
-            /** @var CallbackInterface $callback */
-            $callback = $callbacks[0];
-
-            return in_array($callback->getState(), [
-                CallbackInterface::STATE_COMPLETE,
-                CallbackInterface::STATE_FAILED,
-            ]);
-        };
+        return in_array($callback->getState(), [
+            CallbackInterface::STATE_COMPLETE,
+            CallbackInterface::STATE_FAILED,
+        ]);
     }
 }
