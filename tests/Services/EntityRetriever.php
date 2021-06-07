@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ObjectRepository;
 
 class EntityRetriever
 {
