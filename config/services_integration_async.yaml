@@ -19,6 +19,9 @@ services:
                 - 'webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration'
                 - 'webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity'
 
+    App\Tests\Services\EntityRetriever:
+        public: true
+
     App\Services\BackoffStrategyFactory:
         class: App\Tests\Services\Integration\BackoffStrategyFactory
         arguments:
