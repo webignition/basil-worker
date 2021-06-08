@@ -68,9 +68,9 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param string[] $expectedSourcePaths
+     * @param string[]                  $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
-     * @param ExecutionState::STATE_* $expectedExecutionEndState
+     * @param ExecutionState::STATE_*   $expectedExecutionEndState
      * @param ApplicationState::STATE_* $expectedApplicationEndState
      */
     public function testCreateAddSourcesCompileExecute(
@@ -544,7 +544,7 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
 
     /**
      * @param CallbackInterface::TYPE_* $type
-     * @param array<mixed> $payload
+     * @param array<mixed>              $payload
      */
     private function createExpectedRequest(
         string $label,
@@ -581,7 +581,7 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
 
     /**
      * @param CompilationState::STATE_* $expectedCompilationState
-     * @param ExecutionState::STATE_* $expectedExecutionState
+     * @param ExecutionState::STATE_*   $expectedExecutionState
      * @param ApplicationState::STATE_* $expectedApplicationState
      */
     private function assertSystemState(

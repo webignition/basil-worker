@@ -27,7 +27,7 @@ class SourceFactory
 
         $sources = [];
         foreach ($sourcePaths as $sourcePath) {
-            $sourceType = substr_count($sourcePath, 'Test/') === 0
+            $sourceType = 0 === substr_count($sourcePath, 'Test/')
                 ? Source::TYPE_RESOURCE
                 : Source::TYPE_TEST;
 
