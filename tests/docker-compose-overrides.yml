@@ -25,5 +25,7 @@ services:
 
   nginx-html:
     image: nginx:1.19
+    networks:
+      - primary
     volumes:
       - ./tests/Fixtures/Html:/usr/share/nginx/html
