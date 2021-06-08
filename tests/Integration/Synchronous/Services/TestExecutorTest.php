@@ -118,11 +118,15 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                                 '  -' . "\n" .
                                 '    type: assertion' . "\n" .
                                 '    source: \'$page.url is "http://nginx-html/index.html"\'' . "\n" .
-                                '    status: passed' . "\n"
+                                '    status: passed' . "\n" .
+                                '    transformations:' . "\n" .
+                                '      -' . "\n" .
+                                '        type: resolution' . "\n" .
+                                '        source: \'$page.url is $index.url\'' . "\n"
                             );
 
                             if ($event instanceof TestStepPassedEvent) {
-                                self::assertEquals($event->getDocument(), $expectedDocument);
+                                self::assertEquals($expectedDocument, $event->getDocument());
                             }
 
                             return true;
