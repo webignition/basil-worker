@@ -18,7 +18,7 @@ class BasilFixtureHandler
         $this->uploadedPath = $uploadedPath;
     }
 
-    public function createUploadedFile(string $relativePath): UploadedFile
+    public function storeUploadedFile(string $relativePath): string
     {
         $fixturePath = $this->fixturesPath . '/' . $relativePath;
         $uploadedFilePath = $this->uploadedPath . '/' . $relativePath;
@@ -31,6 +31,13 @@ class BasilFixtureHandler
 
             copy($fixturePath, $uploadedFilePath);
         }
+
+        return $uploadedFilePath;
+    }
+
+    public function createUploadedFile(string $relativePath): UploadedFile
+    {
+        $uploadedFilePath = $this->storeUploadedFile($relativePath);
 
         return new UploadedFile($uploadedFilePath, '', 'text/yaml', null, true);
     }
