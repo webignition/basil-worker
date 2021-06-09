@@ -21,6 +21,16 @@ services:
                 - 'webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration'
                 - 'webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity'
 
+    App\Tests\Services\EntityRemover:
+        public: true
+        arguments:
+            $entityClassNames:
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Job'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Test'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity'
+                - 'webignition\BasilWorker\PersistenceBundle\Entity\Source'
+
     App\Tests\Services\Integration\HttpLoggerFactory:
 
     app.tests.services.integration.httplogger:
