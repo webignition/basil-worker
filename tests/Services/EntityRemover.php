@@ -9,18 +9,15 @@ use Doctrine\Persistence\ObjectRepository;
 
 class EntityRemover
 {
-    /**
-     * @param array<class-string> $entityClassNames
-     */
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private array $entityClassNames,
+        private EntityClassNames $entityClassNames,
     ) {
     }
 
     public function removeAll(): void
     {
-        foreach ($this->entityClassNames as $className) {
+        foreach ($this->entityClassNames->get() as $className) {
             $this->removeForEntity($className);
         }
     }

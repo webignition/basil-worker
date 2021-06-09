@@ -9,18 +9,15 @@ use Doctrine\Persistence\ObjectRepository;
 
 class EntityRefresher
 {
-    /**
-     * @param array<class-string> $entityClassNames
-     */
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private array $entityClassNames,
+        private EntityClassNames $entityClassNames
     ) {
     }
 
     public function refresh(): void
     {
-        foreach ($this->entityClassNames as $className) {
+        foreach ($this->entityClassNames->get() as $className) {
             $this->refreshForEntity($className);
         }
     }
