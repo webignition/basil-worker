@@ -39,10 +39,14 @@ class CompilerTest extends AbstractBaseIntegrationTest
             'compilerTargetDirectory',
             self::COMPILER_TARGET_DIRECTORY
         );
+
+        $this->entityRemover->removeAll();
     }
 
     protected function tearDown(): void
     {
+        $this->entityRemover->removeAll();
+
         $compilerClient = self::$container->get('app.services.compiler-client');
         self::assertInstanceOf(Client::class, $compilerClient);
 
