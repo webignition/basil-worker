@@ -26,14 +26,5 @@ abstract class AbstractBaseIntegrationTest extends AbstractBaseFunctionalTest
         $entityRemover = self::$container->get(EntityRemover::class);
         \assert($entityRemover instanceof EntityRemover);
         $this->entityRemover = $entityRemover;
-
-        $this->entityRemover->removeAll();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->entityRemover->removeAll();
-
-        parent::tearDown();
     }
 }

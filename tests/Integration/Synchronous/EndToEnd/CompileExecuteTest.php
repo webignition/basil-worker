@@ -10,9 +10,11 @@ use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
 use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\EntityRefresher;
+use App\Tests\Services\EntityRemover;
 use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use SebastianBergmann\Timer\Timer;
@@ -63,6 +65,15 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
         $entityRefresher = self::$container->get(EntityRefresher::class);
         \assert($entityRefresher instanceof EntityRefresher);
         $this->entityRefresher = $entityRefresher;
+
+        $this->entityRemover->removeAll();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->entityRemover->removeAll();
+
+        parent::tearDown();
     }
 
     /**

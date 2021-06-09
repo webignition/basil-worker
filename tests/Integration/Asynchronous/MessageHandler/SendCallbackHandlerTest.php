@@ -45,6 +45,15 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
         $entityRetriever = self::$container->get(EntityRetriever::class);
         \assert($entityRetriever instanceof EntityRetriever);
         $this->entityRetriever = $entityRetriever;
+
+        $this->entityRemover->removeAll();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->entityRemover->removeAll();
+
+        parent::tearDown();
     }
 
     /**
