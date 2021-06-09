@@ -63,6 +63,15 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
         $entityRefresher = self::$container->get(EntityRefresher::class);
         \assert($entityRefresher instanceof EntityRefresher);
         $this->entityRefresher = $entityRefresher;
+
+        $this->entityRemover->removeAll();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->entityRemover->removeAll();
+
+        parent::tearDown();
     }
 
     /**

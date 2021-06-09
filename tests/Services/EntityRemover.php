@@ -7,31 +7,33 @@ namespace App\Tests\Services;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 
-class EntityRefresher
+class EntityRemover
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private EntityClassNames $entityClassNames
+        private EntityClassNames $entityClassNames,
     ) {
     }
 
-    public function refresh(): void
+    public function removeAll(): void
     {
         foreach ($this->entityClassNames->get() as $className) {
-            $this->refreshForEntity($className);
+            $this->removeForEntity($className);
         }
     }
 
     /**
      * @param class-string $className
      */
-    private function refreshForEntity(string $className): void
+    private function removeForEntity(string $className): void
     {
         $repository = $this->entityManager->getRepository($className);
         if ($repository instanceof ObjectRepository) {
             $entities = $repository->findAll();
+
             foreach ($entities as $entity) {
-                $this->entityManager->refresh($entity);
+                $this->entityManager->remove($entity);
+                $this->entityManager->flush();
             }
         }
     }
