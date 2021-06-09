@@ -29,9 +29,6 @@ class Compiler
 
         $handler = $this->handlerFactory->createWithScalarOutput($output, $exitCode);
 
-//        var_dump($this->compilerSourceDirectory, $this->compilerTargetDirectory);
-//        exit();
-
         $this->client->request(
             sprintf(
                 './compiler --source=%s --target=%s',
