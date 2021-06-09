@@ -1,10 +1,6 @@
 imports:
     - { resource: services/test_common.yaml }
 
-parameters:
-    basil_local_fixtures_path: '%env(BASIL_LOCAL_FIXTURES_PATH)%'
-    basil_local_source_path: '%env(BASIL_LOCAL_SOURCE_PATH)%'
-
 services:
     _defaults:
         autowire: true
