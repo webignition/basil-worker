@@ -15,5 +15,5 @@ services:
     App\Tests\Services\BasilFixtureHandler:
         public: true
         arguments:
-            $fixturesPath: '%kernel.project_dir%/tests/Fixtures/Basil'
-            $uploadedPath: '%kernel.project_dir%/tests/Fixtures/Uploaded'
+            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
+            $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
