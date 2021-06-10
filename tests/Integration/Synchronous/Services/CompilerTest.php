@@ -53,6 +53,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
         $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
         $compilerClient->request($request);
 
+        $this->basilFixtureHandler->emptyUploadedPath();
+
         parent::tearDown();
     }
 
