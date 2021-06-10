@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Services;
 
 use App\Model\UploadedFileKey;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class BasilFixtureHandler
@@ -33,6 +34,20 @@ class BasilFixtureHandler
         }
 
         return $uploadedFilePath;
+    }
+
+    public function emptyUploadedPath(): void
+    {
+        $finder = new Finder();
+        $finder->files()->in($this->uploadedPath);
+
+        foreach ($finder as $file) {
+            $path = $file->getPathname();
+
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
     }
 
     public function createUploadedFile(string $relativePath): UploadedFile
