@@ -27,16 +27,22 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private Response $response;
     private SourceEntityAsserter $sourceEntityAsserter;
     private MessengerAsserter $messengerAsserter;
-    private FileStoreHandler $fileStoreHandler;
+    private FileStoreHandler $localSourceStoreHandler;
+    private FileStoreHandler $uploadStoreHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $fileStoreHandler = self::$container->get('app.tests.services.file_store_handler.source');
-        \assert($fileStoreHandler instanceof FileStoreHandler);
-        $this->fileStoreHandler = $fileStoreHandler;
-        $this->fileStoreHandler->clear();
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
+
+        $uploadStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
+        \assert($uploadStoreHandler instanceof FileStoreHandler);
+        $this->uploadStoreHandler = $uploadStoreHandler;
+        $this->uploadStoreHandler->clear();
 
         $jobFactory = self::$container->get(JobFactory::class);
         self::assertInstanceOf(JobFactory::class, $jobFactory);
@@ -63,15 +69,23 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
         \assert($basilFixtureHandler instanceof BasilFixtureHandler);
 
+        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
+        \assert($uploadedFileFactory instanceof UploadedFileFactory);
+
+        $uploadedFileCollection = $uploadedFileFactory->createCollection(
+            $this->uploadStoreHandler->copyFixtures(self::EXPECTED_SOURCES)
+        );
+
         $this->response = $clientRequestSender->addJobSources(
             $uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
-            $basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
+            $uploadedFileCollection
         );
     }
 
     protected function tearDown(): void
     {
-        $this->fileStoreHandler->clear();
+        $this->localSourceStoreHandler->clear();
+        $this->uploadStoreHandler->clear();
 
         parent::tearDown();
     }

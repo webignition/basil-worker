@@ -44,4 +44,21 @@ class FileStoreHandler
 
         return $destination;
     }
+
+    /**
+     * @param string[] $relativePaths
+     *
+     * @return array<string, string>
+     */
+    public function copyFixtures(array $relativePaths): array
+    {
+        $storedPaths = [];
+
+        foreach ($relativePaths as $relativePath) {
+            $storedPath = $this->copyFixture($relativePath);
+            $storedPaths[$relativePath] = $storedPath;
+        }
+
+        return $storedPaths;
+    }
 }

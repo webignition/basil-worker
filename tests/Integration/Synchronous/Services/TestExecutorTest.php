@@ -12,7 +12,7 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
-use App\Tests\Services\BasilFixtureHandler;
+use App\Tests\Services\FileStoreHandler;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
@@ -24,8 +24,8 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
     private TestExecutor $testExecutor;
     private Compiler $compiler;
     private TestFactory $testFactory;
-    private BasilFixtureHandler $basilFixtureHandler;
     private string $compilerTargetDirectory;
+    private FileStoreHandler $localSourceStoreHandler;
 
     protected function setUp(): void
     {
@@ -43,14 +43,15 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         \assert($testFactory instanceof TestFactory);
         $this->testFactory = $testFactory;
 
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
-        $this->basilFixtureHandler = $basilFixtureHandler;
-
         $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
         if (is_string($compilerTargetDirectory)) {
             $this->compilerTargetDirectory = $compilerTargetDirectory;
         }
+
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
 
         $this->entityRemover->removeAll();
     }
@@ -65,7 +66,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
         $compilerClient->request($request);
 
-        $this->basilFixtureHandler->emptyUploadedPath();
+        $this->localSourceStoreHandler->clear();
 
         parent::tearDown();
     }
@@ -81,7 +82,7 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         ExpectedDispatchedEventCollection $expectedDispatchedEvents
     ): void {
         foreach ($sources as $source) {
-            $this->basilFixtureHandler->storeUploadedFile($source);
+            $this->localSourceStoreHandler->copyFixture($source);
         }
 
         /** @var SuiteManifest $suiteManifest */
