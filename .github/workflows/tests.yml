@@ -96,7 +96,7 @@ jobs:
           mkdir -p $PWD/var/basil/local/tests
           composer integration-setup
           composer integration-chown-app-source
-          sudo chown -R www-data:www-data $PWD/var/basil/local
+          sudo chown -R www-data:www-data $PWD/tests/Fixtures/Uploaded
 
       - name: Run tests
         run: |
