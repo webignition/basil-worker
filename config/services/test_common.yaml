@@ -1,6 +1,7 @@
 parameters:
     basil_local_fixtures_path: '%env(BASIL_LOCAL_FIXTURES_PATH)%'
     basil_local_source_path: '%env(BASIL_LOCAL_SOURCE_PATH)%'
+    basil_local_upload_path: '%env(BASIL_LOCAL_UPLOAD_PATH)%'
 
 services:
     _defaults:
@@ -20,4 +21,5 @@ services:
         public: true
         arguments:
             $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
-            $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
+            $uploadPath: '%kernel.project_dir%/%basil_local_upload_path%'
+            $localSourcePath: '%kernel.project_dir%/%basil_local_source_path%'
