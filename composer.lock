@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4c33baf6e6aba0ad38d948dfd469fca8",
+    "content-hash": "0e93cb0d856c2d8c8b40702e8931df05",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -4603,16 +4603,16 @@
         },
         {
             "name": "symfony/yaml",
-            "version": "v5.2.5",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "298a08ddda623485208506fcee08817807a251dd"
+                "reference": "3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/298a08ddda623485208506fcee08817807a251dd",
-                "reference": "298a08ddda623485208506fcee08817807a251dd",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11",
+                "reference": "3bbcf262fceb3d8f48175302e6ba0ac96e3a5a11",
                 "shasum": ""
             },
             "require": {
@@ -4658,7 +4658,7 @@
             "description": "Loads and dumps YAML files",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/yaml/tree/v5.2.5"
+                "source": "https://github.com/symfony/yaml/tree/v5.3.0"
             },
             "funding": [
                 {
@@ -4674,7 +4674,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-06T07:59:01+00:00"
+            "time": "2021-05-26T17:43:10+00:00"
         },
         {
             "name": "webignition/basil-compiler-models",
@@ -4777,16 +4777,16 @@
         },
         {
             "name": "webignition/basil-worker-persistence-bundle",
-            "version": "0.26",
+            "version": "0.27",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/basil-worker-persistence-bundle.git",
-                "reference": "a471913bc0717f0eb13cd2d17736dae91dace5a0"
+                "reference": "563df4b7ecac917eea2a053561e728c9ac24c87b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/a471913bc0717f0eb13cd2d17736dae91dace5a0",
-                "reference": "a471913bc0717f0eb13cd2d17736dae91dace5a0",
+                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/563df4b7ecac917eea2a053561e728c9ac24c87b",
+                "reference": "563df4b7ecac917eea2a053561e728c9ac24c87b",
                 "shasum": ""
             },
             "require": {
@@ -4795,10 +4795,12 @@
                 "php": "8.*",
                 "symfony/config": "^5.2",
                 "symfony/dependency-injection": "^5.2",
-                "symfony/http-kernel": "^5.2"
+                "symfony/http-kernel": "^5.2",
+                "symfony/yaml": "^5.3"
             },
             "require-dev": {
                 "doctrine/doctrine-bundle": "^2.2",
+                "friendsofphp/php-cs-fixer": "^3.0",
                 "mockery/mockery": "^1.4",
                 "phpstan/extension-installer": "^1.1",
                 "phpstan/phpstan": "^0.12.78",
@@ -4806,8 +4808,7 @@
                 "phpstan/phpstan-phpunit": "^0.12.17",
                 "phpstan/phpstan-symfony": "^0.12.20",
                 "phpunit/phpunit": "^9.5",
-                "squizlabs/php_codesniffer": "dev-master",
-                "symplify/easy-coding-standard": "^9.2",
+                "squizlabs/php_codesniffer": "^3.6",
                 "webignition/object-reflector": "^1.0"
             },
             "type": "symfony-bundle",
@@ -4832,38 +4833,39 @@
             "homepage": "https://github.com/webignition/basil-worker-persistence-bundle",
             "support": {
                 "issues": "https://github.com/webignition/basil-worker-persistence-bundle/issues",
-                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.26"
+                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.27"
             },
-            "time": "2021-04-09T13:30:25+00:00"
+            "time": "2021-06-10T16:27:17+00:00"
         },
         {
             "name": "webignition/basil-worker-state-bundle",
-            "version": "0.8",
+            "version": "0.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/webignition/basil-worker-state-bundle.git",
-                "reference": "0929ca87b6936408ec30ef0675dc45f455039933"
+                "reference": "337ebad83b8a95ae18a5da38f5a9fde443a3e5dc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-state-bundle/zipball/0929ca87b6936408ec30ef0675dc45f455039933",
-                "reference": "0929ca87b6936408ec30ef0675dc45f455039933",
+                "url": "https://api.github.com/repos/webignition/basil-worker-state-bundle/zipball/337ebad83b8a95ae18a5da38f5a9fde443a3e5dc",
+                "reference": "337ebad83b8a95ae18a5da38f5a9fde443a3e5dc",
                 "shasum": ""
             },
             "require": {
                 "doctrine/doctrine-bundle": "^2.2",
                 "php": "8.*",
-                "webignition/basil-worker-persistence-bundle": ">=0.24,<1",
+                "symfony/yaml": "^5.3",
+                "webignition/basil-worker-persistence-bundle": ">=0.27,<1",
                 "webignition/string-prefix-remover": ">=0.2,<1"
             },
             "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.0",
                 "phpstan/extension-installer": "^1.0",
                 "phpstan/phpstan": "^0.12.58",
                 "phpstan/phpstan-phpunit": "^0.12.16",
                 "phpstan/phpstan-symfony": "^0.12.11",
                 "phpunit/phpunit": "^9.4",
-                "squizlabs/php_codesniffer": "dev-master",
-                "symplify/easy-coding-standard": "9.*",
+                "squizlabs/php_codesniffer": "^3.6",
                 "webignition/symfony-test-service-injector-trait": "^0.2.0"
             },
             "type": "symfony-bundle",
@@ -4888,9 +4890,9 @@
             "homepage": "https://github.com/webignition/basil-worker-state-bundle",
             "support": {
                 "issues": "https://github.com/webignition/basil-worker-state-bundle/issues",
-                "source": "https://github.com/webignition/basil-worker-state-bundle/tree/0.8"
+                "source": "https://github.com/webignition/basil-worker-state-bundle/tree/0.9"
             },
-            "time": "2021-03-05T18:03:15+00:00"
+            "time": "2021-06-10T17:00:43+00:00"
         },
         {
             "name": "webignition/string-prefix-remover",
