@@ -435,91 +435,90 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
                     $this->assertRequestCollectionsAreEquivalent($expectedHttpRequests, $transactions->getRequests());
                 },
             ],
-//            'step failed' => [
-//                'setup' => (new EnvironmentSetup())
-//                    ->withJobSetup(
-//                        (new JobSetup())
-//                            ->withLabel($label)
-//                            ->withCallbackUrl($callbackUrl)
-//                            ->withLocalSourcePaths([
-//                                'Test/chrome-open-index-with-step-failure.yml',
-//                                'Test/chrome-open-index.yml',
-//                            ]),
-//                    ),
-//                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
-//                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
-//                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
-//                'assertions' => function (HttpLogReader $httpLogReader) use ($label, $callbackUrl) {
-//                    $transactions = $httpLogReader->getTransactions();
-//                    $httpLogReader->reset();
-//
-//                    $expectedHttpRequests = new RequestCollection([
-//                        'step/failed' => $this->createExpectedRequest(
-//                            $label,
-//                            $callbackUrl,
-//                            CallbackInterface::TYPE_STEP_FAILED,
-//                            [
-//                                'type' => 'step',
-//                                'name' => 'fail on intentionally-missing element',
-//                                'status' => 'failed',
-//                                'statements' => [
-//                                    [
-//                                        'type' => 'assertion',
-//                                        'source' => '$".non-existent" exists',
-//                                        'status' => 'failed',
-//                                        'summary' => [
-//                                            'operator' => 'exists',
-//                                            'source' => [
-//                                                'type' => 'node',
-//                                                'body' => [
-//                                                    'type' => 'element',
-//                                                    'identifier' => [
-//                                                        'source' => '$".non-existent"',
-//                                                        'properties' => [
-//                                                            'type' => 'css',
-//                                                            'locator' => '.non-existent',
-//                                                            'position' => 1,
-//                                                        ],
-//                                                    ],
-//                                                ],
-//                                            ],
-//                                        ],
-//                                    ],
-//                                ],
-//                            ]
-//                        ),
-//                        'test/failed' => $this->createExpectedRequest(
-//                            $label,
-//                            $callbackUrl,
-//                            CallbackInterface::TYPE_TEST_FAILED,
-//                            [
-//                                'type' => 'test',
-//                                'path' => 'Test/chrome-open-index-with-step-failure.yml',
-//                                'config' => [
-//                                    'browser' => 'chrome',
-//                                    'url' => 'http://nginx-html/index.html',
-//                                ],
-//                            ]
-//                        ),
-//                        'job/failed' => $this->createExpectedRequest(
-//                            $label,
-//                            $callbackUrl,
-//                            CallbackInterface::TYPE_JOB_FAILED,
-//                            []
-//                        ),
-//                    ]);
-//
-//                    $transactions = $transactions->slice(
-//                        -1 * $expectedHttpRequests->count(),
-//                        null
-//                    );
-//
-//                    $requests = $transactions->getRequests();
-//
-//                    self::assertCount(count($expectedHttpRequests), $requests);
-//                    $this->assertRequestCollectionsAreEquivalent($expectedHttpRequests, $requests);
-//                },
-//            ],
+            'step failed' => [
+                'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(
+                        (new JobSetup())
+                            ->withLabel($label)
+                            ->withCallbackUrl($callbackUrl)
+                            ->withLocalSourcePaths([
+                                'Test/chrome-open-index-with-step-failure.yml',
+                            ]),
+                    ),
+                'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
+                'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
+                'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
+                'assertions' => function (HttpLogReader $httpLogReader) use ($label, $callbackUrl) {
+                    $transactions = $httpLogReader->getTransactions();
+                    $httpLogReader->reset();
+
+                    $expectedHttpRequests = new RequestCollection([
+                        'step/failed' => $this->createExpectedRequest(
+                            $label,
+                            $callbackUrl,
+                            CallbackInterface::TYPE_STEP_FAILED,
+                            [
+                                'type' => 'step',
+                                'name' => 'fail on intentionally-missing element',
+                                'status' => 'failed',
+                                'statements' => [
+                                    [
+                                        'type' => 'assertion',
+                                        'source' => '$".non-existent" exists',
+                                        'status' => 'failed',
+                                        'summary' => [
+                                            'operator' => 'exists',
+                                            'source' => [
+                                                'type' => 'node',
+                                                'body' => [
+                                                    'type' => 'element',
+                                                    'identifier' => [
+                                                        'source' => '$".non-existent"',
+                                                        'properties' => [
+                                                            'type' => 'css',
+                                                            'locator' => '.non-existent',
+                                                            'position' => 1,
+                                                        ],
+                                                    ],
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ]
+                        ),
+                        'test/failed' => $this->createExpectedRequest(
+                            $label,
+                            $callbackUrl,
+                            CallbackInterface::TYPE_TEST_FAILED,
+                            [
+                                'type' => 'test',
+                                'path' => 'Test/chrome-open-index-with-step-failure.yml',
+                                'config' => [
+                                    'browser' => 'chrome',
+                                    'url' => 'http://nginx-html/index.html',
+                                ],
+                            ]
+                        ),
+                        'job/failed' => $this->createExpectedRequest(
+                            $label,
+                            $callbackUrl,
+                            CallbackInterface::TYPE_JOB_FAILED,
+                            []
+                        ),
+                    ]);
+
+                    $transactions = $transactions->slice(
+                        -1 * $expectedHttpRequests->count(),
+                        null
+                    );
+
+                    $requests = $transactions->getRequests();
+
+                    self::assertCount(count($expectedHttpRequests), $requests);
+                    $this->assertRequestCollectionsAreEquivalent($expectedHttpRequests, $requests);
+                },
+            ],
         ];
     }
 
