@@ -61,7 +61,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
     /**
      * @dataProvider compileSuccessDataProvider
      *
-     * @param string[] $sources
+     * @param string[]     $sources
      * @param array<mixed> $expectedSuiteManifestData
      */
     public function testCompileSuccess(array $sources, string $test, array $expectedSuiteManifestData): void
@@ -151,7 +151,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
     /**
      * @dataProvider compileFailureDataProvider
      *
-     * @param string[] $sources
+     * @param string[]     $sources
      * @param array<mixed> $expectedErrorOutputData
      */
     public function testCompileFailure(array $sources, string $test, array $expectedErrorOutputData): void
