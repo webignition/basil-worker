@@ -94,7 +94,6 @@ jobs:
       - name: Setup integration test environment
         run: |
           composer integration-setup
-          composer integration-chown-app-source
 
       - name: Run tests
         run: |
