@@ -9,14 +9,18 @@ class JobSetup
     private string $label;
     private string $callbackUrl;
     private int $maximumDurationInSeconds;
-    private string $manifestPath;
+
+    /**
+     * @var string[]
+     */
+    private array $localSourcePaths;
 
     public function __construct()
     {
         $this->label = md5('label content');
         $this->callbackUrl = 'http://example.com/callback';
         $this->maximumDurationInSeconds = 600;
-        $this->manifestPath = '';
+        $this->localSourcePaths = [];
     }
 
     public function getLabel(): string
@@ -34,9 +38,12 @@ class JobSetup
         return $this->maximumDurationInSeconds;
     }
 
-    public function getManifestPath(): string
+    /**
+     * @return string[]
+     */
+    public function getLocalSourcePaths(): array
     {
-        return $this->manifestPath;
+        return $this->localSourcePaths;
     }
 
     public function withLabel(string $label): self
@@ -55,10 +62,13 @@ class JobSetup
         return $new;
     }
 
-    public function withManifestPath(string $manifestPath): self
+    /**
+     * @param string[] $localSourcePaths
+     */
+    public function withLocalSourcePaths(array $localSourcePaths): self
     {
         $new = clone $this;
-        $new->manifestPath = $manifestPath;
+        $new->localSourcePaths = $localSourcePaths;
 
         return $new;
     }

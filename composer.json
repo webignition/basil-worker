@@ -122,7 +122,7 @@
             "@db-setup"
         ],
         "integration-start": [
-            "LOCAL_SOURCE_PATH=\"$PWD/tests/Fixtures/Basil\" docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml up -d --build",
+            "LOCAL_SOURCE_PATH=\"$PWD/tests/Fixtures/Uploaded\" docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml up -d --build",
             "docker-compose --env-file ./.docker-compose.env stop app-handler"
         ],
         "integration-chown-app-source": [

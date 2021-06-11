@@ -8,6 +8,7 @@ use App\Message\JobReadyMessage;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
+use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\EnvironmentFactory;
@@ -35,6 +36,7 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
     private MessageBusInterface $messageBus;
     private SourceStore $sourceStore;
     private EntityRefresher $entityRefresher;
+    private BasilFixtureHandler $basilFixtureHandler;
 
     protected function setUp(): void
     {
@@ -64,6 +66,10 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
         \assert($entityRefresher instanceof EntityRefresher);
         $this->entityRefresher = $entityRefresher;
 
+        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
+        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
+        $this->basilFixtureHandler = $basilFixtureHandler;
+
         $this->entityRemover->removeAll();
     }
 
@@ -77,14 +83,12 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param string[]                  $expectedSourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_*   $expectedExecutionEndState
      * @param ApplicationState::STATE_* $expectedApplicationEndState
      */
     public function testCreateAddSourcesCompileExecute(
         EnvironmentSetup $setup,
-        array $expectedSourcePaths,
         string $expectedCompilationEndState,
         string $expectedExecutionEndState,
         string $expectedApplicationEndState,
@@ -98,14 +102,19 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
             ApplicationState::STATE_AWAITING_SOURCES
         );
 
-        $this->sourceFactory->createFromManifestPath($setup->getJobSetup()->getManifestPath());
+        $jobSetup = $setup->getJobSetup();
+        $localSourcePaths = $jobSetup->getLocalSourcePaths();
+        foreach ($localSourcePaths as $localSourcePath) {
+            $this->basilFixtureHandler->storeUploadedFile($localSourcePath);
+            $this->sourceFactory->createFromSourcePath($localSourcePath);
+        }
 
         $timer = new Timer();
         $timer->start();
 
         $this->messageBus->dispatch(new JobReadyMessage());
 
-        self::assertSame($expectedSourcePaths, $this->sourceStore->findAllPaths());
+        self::assertSame($localSourcePaths, $this->sourceStore->findAllPaths());
 
         $intervalInMicroseconds = 100000;
         while (false === $this->isApplicationFinished()) {
@@ -141,13 +150,13 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
                         (new JobSetup())
                             ->withLabel($label)
                             ->withCallbackUrl($callbackUrl)
-                            ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
+                            ->withLocalSourcePaths([
+                                'Page/index.yml',
+                                'Test/chrome-open-index.yml',
+                                'Test/chrome-firefox-open-index.yml',
+                                'Test/chrome-open-form.yml',
+                            ]),
                     ),
-                'expectedSourcePaths' => [
-                    'Test/chrome-open-index.yml',
-                    'Test/chrome-firefox-open-index.yml',
-                    'Test/chrome-open-form.yml',
-                ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
@@ -423,12 +432,11 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
                         (new JobSetup())
                             ->withLabel($label)
                             ->withCallbackUrl($callbackUrl)
-                            ->withManifestPath(getcwd() . '/tests/Fixtures/Manifest/manifest-step-failure.txt'),
+                            ->withLocalSourcePaths([
+                                'Test/chrome-open-index-with-step-failure.yml',
+                                'Test/chrome-open-index.yml',
+                            ]),
                     ),
-                'expectedSourcePaths' => [
-                    'Test/chrome-open-index-with-step-failure.yml',
-                    'Test/chrome-open-index.yml',
-                ],
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,

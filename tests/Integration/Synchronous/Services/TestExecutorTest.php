@@ -12,6 +12,7 @@ use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
+use App\Tests\Services\BasilFixtureHandler;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
@@ -20,12 +21,11 @@ use webignition\YamlDocument\Document;
 
 class TestExecutorTest extends AbstractBaseIntegrationTest
 {
-    private const COMPILER_SOURCE_DIRECTORY = '/app/source';
-    private const COMPILER_TARGET_DIRECTORY = '/app/tests';
-
     private TestExecutor $testExecutor;
     private Compiler $compiler;
     private TestFactory $testFactory;
+    private BasilFixtureHandler $basilFixtureHandler;
+    private string $compilerTargetDirectory;
 
     protected function setUp(): void
     {
@@ -43,19 +43,14 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         \assert($testFactory instanceof TestFactory);
         $this->testFactory = $testFactory;
 
-        ObjectReflector::setProperty(
-            $compiler,
-            Compiler::class,
-            'compilerSourceDirectory',
-            self::COMPILER_SOURCE_DIRECTORY
-        );
+        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
+        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
+        $this->basilFixtureHandler = $basilFixtureHandler;
 
-        ObjectReflector::setProperty(
-            $compiler,
-            Compiler::class,
-            'compilerTargetDirectory',
-            self::COMPILER_TARGET_DIRECTORY
-        );
+        $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
+        if (is_string($compilerTargetDirectory)) {
+            $this->compilerTargetDirectory = $compilerTargetDirectory;
+        }
 
         $this->entityRemover->removeAll();
     }
@@ -67,19 +62,31 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         $compilerClient = self::$container->get('app.services.compiler-client');
         self::assertInstanceOf(Client::class, $compilerClient);
 
-        $request = 'rm ' . self::COMPILER_TARGET_DIRECTORY . '/*.php';
+        $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
         $compilerClient->request($request);
+
+        $this->basilFixtureHandler->emptyUploadedPath();
 
         parent::tearDown();
     }
 
     /**
      * @dataProvider executeSuccessDataProvider
+     *
+     * @param string[] $sources
      */
-    public function testExecute(string $source, ExpectedDispatchedEventCollection $expectedDispatchedEvents): void
-    {
+    public function testExecute(
+        array $sources,
+        string $testSource,
+        ExpectedDispatchedEventCollection $expectedDispatchedEvents
+    ): void {
+        foreach ($sources as $source) {
+            $this->basilFixtureHandler->storeUploadedFile($source);
+        }
+
         /** @var SuiteManifest $suiteManifest */
-        $suiteManifest = $this->compiler->compile($source);
+        $suiteManifest = $this->compiler->compile($testSource);
+
         self::assertInstanceOf(SuiteManifest::class, $suiteManifest);
 
         $tests = $this->testFactory->createFromManifestCollection($suiteManifest->getTestManifests());
@@ -108,7 +115,11 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
     {
         return [
             'Test/chrome-open-index.yml: single-browser test (chrome)' => [
-                'source' => 'Test/chrome-open-index.yml',
+                'sources' => [
+                    'Page/index.yml',
+                    'Test/chrome-open-index.yml',
+                ],
+                'testSource' => 'Test/chrome-open-index.yml',
                 'expectedDispatchedEventCollection' => new ExpectedDispatchedEventCollection([
                     new ExpectedDispatchedEvent(
                         function (Event $event): bool {
@@ -139,7 +150,10 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                 ]),
             ],
             'Test/chrome-open-index.yml: single-browser test (firefox)' => [
-                'source' => 'Test/firefox-open-index.yml',
+                'sources' => [
+                    'Test/firefox-open-index.yml',
+                ],
+                'testSource' => 'Test/firefox-open-index.yml',
                 'expectedDispatchedEventCollection' => new ExpectedDispatchedEventCollection([
                     new ExpectedDispatchedEvent(
                         function (Event $event): bool {
@@ -166,7 +180,10 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
                 ]),
             ],
             'Test/chrome-firefox-open-index.yml: multi-browser test' => [
-                'source' => 'Test/chrome-firefox-open-index.yml',
+                'sources' => [
+                    'Test/chrome-firefox-open-index.yml',
+                ],
+                'testSource' => 'Test/chrome-firefox-open-index.yml',
                 'expectedDispatchedEventCollection' => new ExpectedDispatchedEventCollection([
                     new ExpectedDispatchedEvent(
                         function (Event $event): bool {
