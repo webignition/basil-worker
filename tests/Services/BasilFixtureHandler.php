@@ -27,6 +27,8 @@ class BasilFixtureHandler
         if (!file_exists($uploadedFilePath)) {
             $directory = dirname($uploadedFilePath);
             if (!file_exists($directory)) {
+                var_dump($directory);
+
                 mkdir($directory, 0777, true);
             }
 
