@@ -17,19 +17,16 @@ services:
     App\Tests\Services\EnvironmentFactory:
         public: true
 
-    App\Tests\Services\BasilFixtureHandler:
-        public: true
-        arguments:
-            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
-
     app.tests.services.file_store_handler.local_source:
         class: App\Tests\Services\FileStoreHandler
         public: true
         arguments:
+            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
             $path: '%kernel.project_dir%/%basil_local_source_path%'
 
     app.tests.services.file_store_handler.uploaded:
         class: App\Tests\Services\FileStoreHandler
         public: true
         arguments:
+            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
             $path: '%kernel.project_dir%/%basil_local_upload_path%'

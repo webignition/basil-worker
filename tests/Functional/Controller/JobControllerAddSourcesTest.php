@@ -8,7 +8,6 @@ use App\Message\JobReadyMessage;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\Asserter\SourceEntityAsserter;
-use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
@@ -65,9 +64,6 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
         $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
         \assert($uploadedFileFactory instanceof UploadedFileFactory);
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
 
         $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
         \assert($uploadedFileFactory instanceof UploadedFileFactory);
