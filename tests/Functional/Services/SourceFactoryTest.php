@@ -12,7 +12,7 @@ use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\SourceFileStoreHandler;
+use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
@@ -23,6 +23,7 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
 {
     private SourceFactory $factory;
     private SourceFileStore $sourceFileStore;
+    private FileStoreHandler $fileStoreHandler;
 
     /**
      * @var ObjectRepository<Source>
@@ -41,15 +42,23 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         \assert($store instanceof SourceFileStore);
         $this->sourceFileStore = $store;
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
-        $sourceFileStoreInitializer->clear();
+        $fileStoreHandler = self::$container->get('app.tests.services.file_store_handler.source');
+        \assert($fileStoreHandler instanceof FileStoreHandler);
+        $this->fileStoreHandler = $fileStoreHandler;
+        $this->fileStoreHandler->clear();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         \assert($entityManager instanceof EntityManagerInterface);
         $sourceRepository = $entityManager->getRepository(Source::class);
         \assert($sourceRepository instanceof ObjectRepository);
         $this->sourceRepository = $sourceRepository;
+    }
+
+    protected function tearDown(): void
+    {
+        $this->fileStoreHandler->clear();
+
+        parent::tearDown();
     }
 
     /**

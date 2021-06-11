@@ -8,12 +8,13 @@ use App\Model\UploadedSource;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\SourceFileStoreHandler;
+use App\Tests\Services\FileStoreHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 class SourceFileStoreTest extends AbstractBaseFunctionalTest
 {
     private SourceFileStore $store;
+    private FileStoreHandler $fileStoreHandler;
 
     protected function setUp(): void
     {
@@ -23,9 +24,17 @@ class SourceFileStoreTest extends AbstractBaseFunctionalTest
         \assert($store instanceof SourceFileStore);
         $this->store = $store;
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
-        $sourceFileStoreInitializer->clear();
+        $fileStoreHandler = self::$container->get('app.tests.services.file_store_handler.source');
+        \assert($fileStoreHandler instanceof FileStoreHandler);
+        $this->fileStoreHandler = $fileStoreHandler;
+        $this->fileStoreHandler->clear();
+    }
+
+    protected function tearDown(): void
+    {
+        $this->fileStoreHandler->clear();
+
+        parent::tearDown();
     }
 
     /**

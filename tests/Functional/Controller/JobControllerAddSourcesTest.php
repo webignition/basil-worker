@@ -10,7 +10,7 @@ use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\Asserter\SourceEntityAsserter;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\SourceFileStoreHandler;
+use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
@@ -27,14 +27,16 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private Response $response;
     private SourceEntityAsserter $sourceEntityAsserter;
     private MessengerAsserter $messengerAsserter;
+    private FileStoreHandler $fileStoreHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
-        $sourceFileStoreInitializer->clear();
+        $fileStoreHandler = self::$container->get('app.tests.services.file_store_handler.source');
+        \assert($fileStoreHandler instanceof FileStoreHandler);
+        $this->fileStoreHandler = $fileStoreHandler;
+        $this->fileStoreHandler->clear();
 
         $jobFactory = self::$container->get(JobFactory::class);
         self::assertInstanceOf(JobFactory::class, $jobFactory);
@@ -65,6 +67,13 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
             $uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
             $basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
         );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->fileStoreHandler->clear();
+
+        parent::tearDown();
     }
 
     public function testResponse(): void
