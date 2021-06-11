@@ -9,9 +9,8 @@ use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\Asserter\SourceEntityAsserter;
-use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\SourceFileStoreInitializer;
+use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
@@ -29,14 +28,22 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private SourceEntityAsserter $sourceEntityAsserter;
     private MessengerAsserter $messengerAsserter;
     private JsonResponseAsserter $jsonResponseAsserter;
+    private FileStoreHandler $localSourceStoreHandler;
+    private FileStoreHandler $uploadStoreHandler;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreInitializer);
-        $sourceFileStoreInitializer->initialize();
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
+
+        $uploadStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
+        \assert($uploadStoreHandler instanceof FileStoreHandler);
+        $this->uploadStoreHandler = $uploadStoreHandler;
+        $this->uploadStoreHandler->clear();
 
         $jobFactory = self::$container->get(JobFactory::class);
         self::assertInstanceOf(JobFactory::class, $jobFactory);
@@ -60,8 +67,12 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
         \assert($uploadedFileFactory instanceof UploadedFileFactory);
 
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
+        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
+        \assert($uploadedFileFactory instanceof UploadedFileFactory);
+
+        $uploadedFileCollection = $uploadedFileFactory->createCollection(
+            $this->uploadStoreHandler->copyFixtures(self::EXPECTED_SOURCES)
+        );
 
         $jsonResponseAsserter = self::$container->get(JsonResponseAsserter::class);
         \assert($jsonResponseAsserter instanceof JsonResponseAsserter);
@@ -69,8 +80,16 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
         $this->response = $clientRequestSender->addJobSources(
             $uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
-            $basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
+            $uploadedFileCollection
         );
+    }
+
+    protected function tearDown(): void
+    {
+        $this->localSourceStoreHandler->clear();
+        $this->uploadStoreHandler->clear();
+
+        parent::tearDown();
     }
 
     public function testResponse(): void

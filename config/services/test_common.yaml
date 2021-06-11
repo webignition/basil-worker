@@ -1,6 +1,7 @@
 parameters:
     basil_local_fixtures_path: '%env(BASIL_LOCAL_FIXTURES_PATH)%'
     basil_local_source_path: '%env(BASIL_LOCAL_SOURCE_PATH)%'
+    basil_local_upload_path: '%env(BASIL_LOCAL_UPLOAD_PATH)%'
 
 services:
     _defaults:
@@ -16,8 +17,16 @@ services:
     App\Tests\Services\EnvironmentFactory:
         public: true
 
-    App\Tests\Services\BasilFixtureHandler:
+    app.tests.services.file_store_handler.local_source:
+        class: App\Tests\Services\FileStoreHandler
         public: true
         arguments:
             $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
-            $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
+            $path: '%kernel.project_dir%/%basil_local_source_path%'
+
+    app.tests.services.file_store_handler.uploaded:
+        class: App\Tests\Services\FileStoreHandler
+        public: true
+        arguments:
+            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
+            $path: '%kernel.project_dir%/%basil_local_upload_path%'

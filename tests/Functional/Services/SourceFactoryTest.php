@@ -11,18 +11,19 @@ use App\Model\UploadedSourceCollection;
 use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\SourceFileStoreInitializer;
+use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
 
 class SourceFactoryTest extends AbstractBaseFunctionalTest
 {
     private SourceFactory $factory;
     private SourceFileStore $sourceFileStore;
+    private FileStoreHandler $localSourceStoreHandler;
+    private FileStoreHandler $uploadStoreHandler;
+    private UploadedFileFactory $uploadedFileFactory;
 
     /**
      * @var ObjectRepository<Source>
@@ -41,9 +42,19 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         \assert($store instanceof SourceFileStore);
         $this->sourceFileStore = $store;
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreInitializer);
-        $sourceFileStoreInitializer->initialize();
+        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
+        \assert($uploadedFileFactory instanceof UploadedFileFactory);
+        $this->uploadedFileFactory = $uploadedFileFactory;
+
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
+
+        $uploadStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
+        \assert($uploadStoreHandler instanceof FileStoreHandler);
+        $this->uploadStoreHandler = $uploadStoreHandler;
+        $this->uploadStoreHandler->clear();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         \assert($entityManager instanceof EntityManagerInterface);
@@ -52,21 +63,31 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         $this->sourceRepository = $sourceRepository;
     }
 
+    protected function tearDown(): void
+    {
+        $this->localSourceStoreHandler->clear();
+        $this->uploadStoreHandler->clear();
+
+        parent::tearDown();
+    }
+
     /**
      * @dataProvider createCollectionFromManifestDataProvider
      *
-     * @param string[] $uploadedSourcePaths
+     * @param string[] $fixturePaths
      * @param string[] $expectedStoredTestPaths
      * @param Source[] $expectedSources
      */
     public function testCreateCollectionFromManifest(
         string $manifestPath,
-        array $uploadedSourcePaths,
+        array $fixturePaths,
         array $expectedStoredTestPaths,
         array $expectedSources
     ): void {
-        $manifestUploadedFile = $this->createUploadedFile($manifestPath);
-        $uploadedSourceFiles = $this->createUploadedFileCollection($uploadedSourcePaths);
+        $manifestUploadedFile = $this->uploadedFileFactory->createForManifest($manifestPath);
+        $uploadedSourceFiles = $this->uploadedFileFactory->createCollection(
+            $this->uploadStoreHandler->copyFixtures($fixturePaths)
+        );
 
         foreach ($uploadedSourceFiles as $encodedKey => $uploadedFile) {
             unset($uploadedSourceFiles[$encodedKey]);
@@ -108,13 +129,13 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         return [
             'empty manifest' => [
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/empty.txt',
-                'uploadedSourcePaths' => [],
+                'fixturePaths' => [],
                 'expectedStoredTestPaths' => [],
                 'expectedSources' => [],
             ],
             'non-empty manifest' => [
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
-                'uploadedSourcePaths' => [
+                'fixturePaths' => [
                     'Test/chrome-open-index.yml',
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
@@ -131,26 +152,5 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
                 ],
             ],
         ];
-    }
-
-    private function createUploadedFile(string $manifestPath): UploadedFile
-    {
-        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
-        \assert($uploadedFileFactory instanceof UploadedFileFactory);
-
-        return $uploadedFileFactory->createForManifest($manifestPath);
-    }
-
-    /**
-     * @param string[] $uploadedSourcePaths
-     *
-     * @return UploadedFile[]
-     */
-    private function createUploadedFileCollection(array $uploadedSourcePaths): array
-    {
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
-
-        return $basilFixtureHandler->createUploadFileCollection($uploadedSourcePaths);
     }
 }

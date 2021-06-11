@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Synchronous\Services;
 
 use App\Services\Compiler;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
-use App\Tests\Services\BasilFixtureHandler;
+use App\Tests\Services\FileStoreHandler;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\TcpCliProxyClient\Client;
@@ -14,9 +14,10 @@ use webignition\TcpCliProxyClient\Client;
 class CompilerTest extends AbstractBaseIntegrationTest
 {
     private Compiler $compiler;
-    private BasilFixtureHandler $basilFixtureHandler;
     private string $compilerSourceDirectory;
     private string $compilerTargetDirectory;
+    private FileStoreHandler $localSourceStoreHandler;
+    private FileStoreHandler $uploadedStoreHandler;
 
     protected function setUp(): void
     {
@@ -25,10 +26,6 @@ class CompilerTest extends AbstractBaseIntegrationTest
         $compiler = self::$container->get(Compiler::class);
         \assert($compiler instanceof Compiler);
         $this->compiler = $compiler;
-
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
-        $this->basilFixtureHandler = $basilFixtureHandler;
 
         $compilerSourceDirectory = self::$container->getParameter('compiler_source_directory');
         if (is_string($compilerSourceDirectory)) {
@@ -39,6 +36,16 @@ class CompilerTest extends AbstractBaseIntegrationTest
         if (is_string($compilerTargetDirectory)) {
             $this->compilerTargetDirectory = $compilerTargetDirectory;
         }
+
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
+
+        $uploadedStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
+        \assert($uploadedStoreHandler instanceof FileStoreHandler);
+        $this->uploadedStoreHandler = $uploadedStoreHandler;
+        $this->uploadedStoreHandler->clear();
 
         $this->entityRemover->removeAll();
     }
@@ -53,7 +60,8 @@ class CompilerTest extends AbstractBaseIntegrationTest
         $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
         $compilerClient->request($request);
 
-        $this->basilFixtureHandler->emptyUploadedPath();
+        $this->localSourceStoreHandler->clear();
+        $this->uploadedStoreHandler->clear();
 
         parent::tearDown();
     }
@@ -67,7 +75,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
     public function testCompileSuccess(array $sources, string $test, array $expectedSuiteManifestData): void
     {
         foreach ($sources as $source) {
-            $this->basilFixtureHandler->storeUploadedFile($source);
+            $this->localSourceStoreHandler->copyFixture($source);
         }
 
         /** @var SuiteManifest $suiteManifest */
@@ -157,7 +165,7 @@ class CompilerTest extends AbstractBaseIntegrationTest
     public function testCompileFailure(array $sources, string $test, array $expectedErrorOutputData): void
     {
         foreach ($sources as $source) {
-            $this->basilFixtureHandler->storeUploadedFile($source);
+            $this->localSourceStoreHandler->copyFixture($source);
         }
 
         /** @var ErrorOutput $errorOutput */

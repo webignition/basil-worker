@@ -8,10 +8,10 @@ use App\Message\JobReadyMessage;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
-use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\EnvironmentFactory;
+use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\SourceFactory;
 use GuzzleHttp\Psr7\Request;
@@ -36,7 +36,8 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
     private MessageBusInterface $messageBus;
     private SourceStore $sourceStore;
     private EntityRefresher $entityRefresher;
-    private BasilFixtureHandler $basilFixtureHandler;
+    private FileStoreHandler $localSourceStoreHandler;
+    private FileStoreHandler $uploadStoreHandler;
 
     protected function setUp(): void
     {
@@ -66,9 +67,15 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
         \assert($entityRefresher instanceof EntityRefresher);
         $this->entityRefresher = $entityRefresher;
 
-        $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
-        \assert($basilFixtureHandler instanceof BasilFixtureHandler);
-        $this->basilFixtureHandler = $basilFixtureHandler;
+        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
+        \assert($localSourceStoreHandler instanceof FileStoreHandler);
+        $this->localSourceStoreHandler = $localSourceStoreHandler;
+        $this->localSourceStoreHandler->clear();
+
+        $uploadStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
+        \assert($uploadStoreHandler instanceof FileStoreHandler);
+        $this->uploadStoreHandler = $uploadStoreHandler;
+        $this->uploadStoreHandler->clear();
 
         $this->entityRemover->removeAll();
     }
@@ -76,6 +83,8 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
     protected function tearDown(): void
     {
         $this->entityRemover->removeAll();
+        $this->localSourceStoreHandler->clear();
+        $this->uploadStoreHandler->clear();
 
         parent::tearDown();
     }
@@ -105,7 +114,7 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
         $jobSetup = $setup->getJobSetup();
         $localSourcePaths = $jobSetup->getLocalSourcePaths();
         foreach ($localSourcePaths as $localSourcePath) {
-            $this->basilFixtureHandler->storeUploadedFile($localSourcePath);
+            $this->localSourceStoreHandler->copyFixture($localSourcePath);
             $this->sourceFactory->createFromSourcePath($localSourcePath);
         }
 
@@ -434,7 +443,6 @@ class CompileExecuteTest extends AbstractBaseIntegrationTest
                             ->withCallbackUrl($callbackUrl)
                             ->withLocalSourcePaths([
                                 'Test/chrome-open-index-with-step-failure.yml',
-                                'Test/chrome-open-index.yml',
                             ]),
                     ),
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,

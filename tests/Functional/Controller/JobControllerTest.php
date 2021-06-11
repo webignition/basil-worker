@@ -146,12 +146,12 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         (new SourceSetup())->withPath('Test/test3.yml'),
                     ])->withTestSetups([
                         (new TestSetup())
-                            ->withSource('var/basil/local/source/Test/test1.yml')
-                            ->withTarget('var/basil/local/tests/GeneratedTest1.php')
+                            ->withSource('tests/Fixtures/CompilerSource/Test/test1.yml')
+                            ->withTarget('tests/Fixtures/CompilerTarget/GeneratedTest1.php')
                             ->withStepCount(3),
                         (new TestSetup())
-                            ->withSource('var/basil/local/source/Test/test2.yml')
-                            ->withTarget('var/basil/local/tests/GeneratedTest2.php')
+                            ->withSource('tests/Fixtures/CompilerSource/Test/test2.yml')
+                            ->withTarget('tests/Fixtures/CompilerTarget/GeneratedTest2.php')
                             ->withStepCount(2),
                     ]),
                 'expectedResponseData' => [
