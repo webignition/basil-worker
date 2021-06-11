@@ -88,7 +88,7 @@ services:
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
-    App\Tests\Services\SourceFileStoreInitializer:
+    App\Tests\Services\SourceFileStoreHandler:
         public: true
         arguments:
             $path: '%kernel.project_dir%/%compiler_source_directory%'

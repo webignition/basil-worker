@@ -10,7 +10,7 @@ use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\Asserter\SourceEntityAsserter;
 use App\Tests\Services\BasilFixtureHandler;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\SourceFileStoreInitializer;
+use App\Tests\Services\SourceFileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
@@ -32,9 +32,9 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     {
         parent::setUp();
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreInitializer);
-        $sourceFileStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
+        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
+        $sourceFileStoreInitializer->clear();
 
         $jobFactory = self::$container->get(JobFactory::class);
         self::assertInstanceOf(JobFactory::class, $jobFactory);

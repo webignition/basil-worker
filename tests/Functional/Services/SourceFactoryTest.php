@@ -12,7 +12,7 @@ use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\SourceFileStoreInitializer;
+use App\Tests\Services\SourceFileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
@@ -41,9 +41,9 @@ class SourceFactoryTest extends AbstractBaseFunctionalTest
         \assert($store instanceof SourceFileStore);
         $this->sourceFileStore = $store;
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreInitializer);
-        $sourceFileStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
+        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
+        $sourceFileStoreInitializer->clear();
 
         $entityManager = self::$container->get(EntityManagerInterface::class);
         \assert($entityManager instanceof EntityManagerInterface);

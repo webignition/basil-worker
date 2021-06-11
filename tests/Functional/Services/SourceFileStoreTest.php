@@ -8,7 +8,7 @@ use App\Model\UploadedSource;
 use App\Services\SourceFileStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\BasilFixtureHandler;
-use App\Tests\Services\SourceFileStoreInitializer;
+use App\Tests\Services\SourceFileStoreHandler;
 use Symfony\Component\HttpFoundation\File\File;
 
 class SourceFileStoreTest extends AbstractBaseFunctionalTest
@@ -23,9 +23,9 @@ class SourceFileStoreTest extends AbstractBaseFunctionalTest
         \assert($store instanceof SourceFileStore);
         $this->store = $store;
 
-        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreInitializer::class);
-        \assert($sourceFileStoreInitializer instanceof SourceFileStoreInitializer);
-        $sourceFileStoreInitializer->initialize();
+        $sourceFileStoreInitializer = self::$container->get(SourceFileStoreHandler::class);
+        \assert($sourceFileStoreInitializer instanceof SourceFileStoreHandler);
+        $sourceFileStoreInitializer->clear();
     }
 
     /**
