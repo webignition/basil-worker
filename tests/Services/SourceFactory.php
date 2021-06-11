@@ -10,30 +10,16 @@ use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory as 
 class SourceFactory
 {
     public function __construct(
-        private BasilFixtureHandler $basilFixtureHandler,
         private BundleSourceFactory $bundleSourceFactory,
     ) {
     }
 
-    /**
-     * @return array<string, Source>
-     */
-    public function createFromManifestPath(string $manifestPath): array
+    public function createFromSourcePath(string $sourcePath): Source
     {
-        $manifestContent = (string) file_get_contents($manifestPath);
-        $sourcePaths = array_filter(explode("\n", $manifestContent));
+        $sourceType = 0 === substr_count($sourcePath, 'Test/')
+            ? Source::TYPE_RESOURCE
+            : Source::TYPE_TEST;
 
-        $this->basilFixtureHandler->createUploadFileCollection($sourcePaths);
-
-        $sources = [];
-        foreach ($sourcePaths as $sourcePath) {
-            $sourceType = 0 === substr_count($sourcePath, 'Test/')
-                ? Source::TYPE_RESOURCE
-                : Source::TYPE_TEST;
-
-            $sources[$sourcePath] = $this->bundleSourceFactory->create($sourceType, $sourcePath);
-        }
-
-        return $sources;
+        return $this->bundleSourceFactory->create($sourceType, $sourcePath);
     }
 }
