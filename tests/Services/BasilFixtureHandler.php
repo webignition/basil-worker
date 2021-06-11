@@ -28,6 +28,7 @@ class BasilFixtureHandler
             $directory = dirname($uploadedFilePath);
             if (!file_exists($directory)) {
                 var_dump($directory);
+                var_dump(shell_exec('whoami'));
 
                 mkdir($directory, 0777, true);
             }
