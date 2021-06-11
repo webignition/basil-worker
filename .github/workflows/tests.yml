@@ -103,6 +103,7 @@ jobs:
           composer test-integration-async
           php bin/console --env=integration_async messenger:stop
           composer db-recreate
+          composer integration-chown-app-source
           composer test-integration
 
       - name: Teardown integration test environment
