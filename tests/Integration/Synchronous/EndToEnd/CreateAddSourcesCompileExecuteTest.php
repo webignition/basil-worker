@@ -7,9 +7,9 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 use App\Message\JobReadyMessage;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
+use App\Tests\Services\Asserter\SystemStateAsserter;
 use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\EntityRefresher;
 use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\UploadedFileFactory;
@@ -30,11 +30,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
 
     private CallableInvoker $callableInvoker;
     private MessageBusInterface $messageBus;
-    private EntityRefresher $entityRefresher;
     private FileStoreHandler $localSourceStoreHandler;
     private FileStoreHandler $uploadStoreHandler;
     private ClientRequestSender $clientRequestSender;
     private JsonResponseAsserter $jsonResponseAsserter;
+    private SystemStateAsserter $systemStateAsserter;
 
     protected function setUp(): void
     {
@@ -47,10 +47,6 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $messageBus = self::$container->get(MessageBusInterface::class);
         \assert($messageBus instanceof MessageBusInterface);
         $this->messageBus = $messageBus;
-
-        $entityRefresher = self::$container->get(EntityRefresher::class);
-        \assert($entityRefresher instanceof EntityRefresher);
-        $this->entityRefresher = $entityRefresher;
 
         $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
         \assert($localSourceStoreHandler instanceof FileStoreHandler);
@@ -69,6 +65,10 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $jsonResponseAsserter = self::$container->get(JsonResponseAsserter::class);
         \assert($jsonResponseAsserter instanceof JsonResponseAsserter);
         $this->jsonResponseAsserter = $jsonResponseAsserter;
+
+        $systemStateAsserter = self::$container->get(SystemStateAsserter::class);
+        \assert($systemStateAsserter instanceof SystemStateAsserter);
+        $this->systemStateAsserter = $systemStateAsserter;
 
         $this->entityRemover->removeAll();
     }
@@ -130,7 +130,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
             $statusResponse
         );
 
-        $this->assertSystemState(
+        $this->systemStateAsserter->assertSystemState(
             CompilationState::STATE_AWAITING,
             ExecutionState::STATE_AWAITING,
             ApplicationState::STATE_AWAITING_SOURCES
@@ -157,13 +157,12 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
 
         $duration = $timer->stop();
 
-        $this->assertSystemState(
+        $this->systemStateAsserter->assertSystemState(
             $expectedCompilationEndState,
             $expectedExecutionEndState,
             $expectedApplicationEndState
         );
 
-        $this->entityRefresher->refresh();
         $this->callableInvoker->invoke($assertions);
 
         self::assertLessThanOrEqual(self::MAX_DURATION_IN_SECONDS, $duration->asSeconds());
@@ -604,30 +603,5 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                 'payload' => $payload,
             ])
         );
-    }
-
-    /**
-     * @param CompilationState::STATE_* $expectedCompilationState
-     * @param ExecutionState::STATE_*   $expectedExecutionState
-     * @param ApplicationState::STATE_* $expectedApplicationState
-     */
-    private function assertSystemState(
-        string $expectedCompilationState,
-        string $expectedExecutionState,
-        string $expectedApplicationState
-    ): void {
-        $this->entityRefresher->refresh();
-
-        $compilationState = self::$container->get(CompilationState::class);
-        \assert($compilationState instanceof CompilationState);
-        self::assertSame($expectedCompilationState, (string) $compilationState);
-
-        $executionState = self::$container->get(ExecutionState::class);
-        \assert($executionState instanceof ExecutionState);
-        self::assertSame($expectedExecutionState, (string) $executionState);
-
-        $applicationState = self::$container->get(ApplicationState::class);
-        \assert($applicationState instanceof ApplicationState);
-        self::assertSame($expectedApplicationState, (string) $applicationState);
     }
 }
