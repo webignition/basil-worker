@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Controller;
 
 use App\Message\JobReadyMessage;
 use App\Tests\AbstractBaseFunctionalTest;
+use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\Asserter\SourceEntityAsserter;
 use App\Tests\Services\BasilFixtureHandler;
@@ -27,6 +28,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
     private Response $response;
     private SourceEntityAsserter $sourceEntityAsserter;
     private MessengerAsserter $messengerAsserter;
+    private JsonResponseAsserter $jsonResponseAsserter;
 
     protected function setUp(): void
     {
@@ -61,6 +63,10 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $basilFixtureHandler = self::$container->get(BasilFixtureHandler::class);
         \assert($basilFixtureHandler instanceof BasilFixtureHandler);
 
+        $jsonResponseAsserter = self::$container->get(JsonResponseAsserter::class);
+        \assert($jsonResponseAsserter instanceof JsonResponseAsserter);
+        $this->jsonResponseAsserter = $jsonResponseAsserter;
+
         $this->response = $clientRequestSender->addJobSources(
             $uploadedFileFactory->createForManifest(getcwd() . '/tests/Fixtures/Manifest/manifest.txt'),
             $basilFixtureHandler->createUploadFileCollection(self::EXPECTED_SOURCES)
@@ -69,9 +75,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 
     public function testResponse(): void
     {
-        self::assertSame(200, $this->response->getStatusCode());
-        self::assertSame('application/json', $this->response->headers->get('content-type'));
-        self::assertSame('{}', $this->response->getContent());
+        $this->jsonResponseAsserter->assertJsonResponse(200, (object) [], $this->response);
     }
 
     public function testSourcesAreCreated(): void

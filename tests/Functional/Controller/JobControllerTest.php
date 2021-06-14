@@ -9,9 +9,9 @@ use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Model\TestSetup;
+use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EnvironmentFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
@@ -20,6 +20,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     private JobStore $jobStore;
     private ClientRequestSender $clientRequestSender;
     private EnvironmentFactory $environmentFactory;
+    private JsonResponseAsserter $jsonResponseAsserter;
 
     protected function setUp(): void
     {
@@ -36,6 +37,10 @@ class JobControllerTest extends AbstractBaseFunctionalTest
         $environmentFactory = self::$container->get(EnvironmentFactory::class);
         \assert($environmentFactory instanceof EnvironmentFactory);
         $this->environmentFactory = $environmentFactory;
+
+        $jsonResponseAsserter = self::$container->get(JsonResponseAsserter::class);
+        \assert($jsonResponseAsserter instanceof JsonResponseAsserter);
+        $this->jsonResponseAsserter = $jsonResponseAsserter;
     }
 
     public function testCreate(): void
@@ -48,9 +53,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
         $response = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
 
-        self::assertSame(200, $response->getStatusCode());
-        self::assertSame('application/json', $response->headers->get('content-type'));
-        self::assertSame('{}', $response->getContent());
+        $this->jsonResponseAsserter->assertJsonResponse(200, (object) [], $response);
 
         self::assertTrue($this->jobStore->has());
         self::assertEquals(
@@ -63,37 +66,21 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     {
         $response = $this->clientRequestSender->getStatus();
 
-        $expectedResponse = new JsonResponse([], 400);
-
-        self::assertSame(
-            $expectedResponse->getStatusCode(),
-            $response->getStatusCode()
-        );
-
-        self::assertJsonStringEqualsJsonString(
-            (string) $expectedResponse->getContent(),
-            (string) $response->getContent()
-        );
+        $this->jsonResponseAsserter->assertJsonResponse(400, [], $response);
     }
 
     /**
      * @dataProvider statusDataProvider
+     *
+     * @param array<mixed> $expectedResponseData
      */
-    public function testStatus(EnvironmentSetup $setup, JsonResponse $expectedResponse): void
+    public function testStatus(EnvironmentSetup $setup, array $expectedResponseData): void
     {
         $this->environmentFactory->create($setup);
 
         $response = $this->clientRequestSender->getStatus();
 
-        self::assertSame(
-            $expectedResponse->getStatusCode(),
-            $response->getStatusCode()
-        );
-
-        self::assertJsonStringEqualsJsonString(
-            (string) $expectedResponse->getContent(),
-            (string) $response->getContent()
-        );
+        $this->jsonResponseAsserter->assertJsonResponse(200, $expectedResponseData, $response);
     }
 
     /**
@@ -110,17 +97,15 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             ->withCallbackUrl('http://example.com/callback')
                             ->withMaximumDurationInSeconds(10)
                     ),
-                'expectedResponse' => new JsonResponse(
-                    [
-                        'label' => 'label content',
-                        'callback_url' => 'http://example.com/callback',
-                        'maximum_duration_in_seconds' => 10,
-                        'sources' => [],
-                        'compilation_state' => 'awaiting',
-                        'execution_state' => 'awaiting',
-                        'tests' => [],
-                    ]
-                ),
+                'expectedResponseData' => [
+                    'label' => 'label content',
+                    'callback_url' => 'http://example.com/callback',
+                    'maximum_duration_in_seconds' => 10,
+                    'sources' => [],
+                    'compilation_state' => 'awaiting',
+                    'execution_state' => 'awaiting',
+                    'tests' => [],
+                ],
             ],
             'new job, has sources, no tests' => [
                 'setup' => (new EnvironmentSetup())
@@ -134,21 +119,19 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                         (new SourceSetup())->withPath('Test/test2.yml'),
                         (new SourceSetup())->withPath('Test/test3.yml'),
                     ]),
-                'expectedResponse' => new JsonResponse(
-                    [
-                        'label' => 'label content',
-                        'callback_url' => 'http://example.com/callback',
-                        'maximum_duration_in_seconds' => 11,
-                        'sources' => [
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                            'Test/test3.yml',
-                        ],
-                        'compilation_state' => 'running',
-                        'execution_state' => 'awaiting',
-                        'tests' => [],
-                    ]
-                ),
+                'expectedResponseData' => [
+                    'label' => 'label content',
+                    'callback_url' => 'http://example.com/callback',
+                    'maximum_duration_in_seconds' => 11,
+                    'sources' => [
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                        'Test/test3.yml',
+                    ],
+                    'compilation_state' => 'running',
+                    'execution_state' => 'awaiting',
+                    'tests' => [],
+                ],
             ],
             'new job, has sources, has tests, compilation not complete' => [
                 'setup' => (new EnvironmentSetup())
@@ -171,44 +154,42 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                             ->withTarget('var/basil/local/tests/GeneratedTest2.php')
                             ->withStepCount(2),
                     ]),
-                'expectedResponse' => new JsonResponse(
-                    [
-                        'label' => 'label content',
-                        'callback_url' => 'http://example.com/callback',
-                        'maximum_duration_in_seconds' => 12,
-                        'sources' => [
-                            'Test/test1.yml',
-                            'Test/test2.yml',
-                            'Test/test3.yml',
-                        ],
-                        'compilation_state' => 'running',
-                        'execution_state' => 'awaiting',
-                        'tests' => [
-                            [
-                                'configuration' => [
-                                    'browser' => 'chrome',
-                                    'url' => 'http://example.com',
-                                ],
-                                'source' => 'Test/test1.yml',
-                                'target' => 'GeneratedTest1.php',
-                                'step_count' => 3,
-                                'state' => 'awaiting',
-                                'position' => 1,
+                'expectedResponseData' => [
+                    'label' => 'label content',
+                    'callback_url' => 'http://example.com/callback',
+                    'maximum_duration_in_seconds' => 12,
+                    'sources' => [
+                        'Test/test1.yml',
+                        'Test/test2.yml',
+                        'Test/test3.yml',
+                    ],
+                    'compilation_state' => 'running',
+                    'execution_state' => 'awaiting',
+                    'tests' => [
+                        [
+                            'configuration' => [
+                                'browser' => 'chrome',
+                                'url' => 'http://example.com',
                             ],
-                            [
-                                'configuration' => [
-                                    'browser' => 'chrome',
-                                    'url' => 'http://example.com',
-                                ],
-                                'source' => 'Test/test2.yml',
-                                'target' => 'GeneratedTest2.php',
-                                'step_count' => 2,
-                                'state' => 'awaiting',
-                                'position' => 2,
-                            ],
+                            'source' => 'Test/test1.yml',
+                            'target' => 'GeneratedTest1.php',
+                            'step_count' => 3,
+                            'state' => 'awaiting',
+                            'position' => 1,
                         ],
-                    ]
-                ),
+                        [
+                            'configuration' => [
+                                'browser' => 'chrome',
+                                'url' => 'http://example.com',
+                            ],
+                            'source' => 'Test/test2.yml',
+                            'target' => 'GeneratedTest2.php',
+                            'step_count' => 2,
+                            'state' => 'awaiting',
+                            'position' => 2,
+                        ],
+                    ],
+                ],
             ],
         ];
     }
