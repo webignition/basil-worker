@@ -61,9 +61,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
 
     public function testStatusNoJob(): void
     {
-        $this->client->request('GET', '/status');
-
-        $response = $this->client->getResponse();
+        $response = $this->clientRequestSender->getStatus();
 
         $expectedResponse = new JsonResponse([], 400);
 
@@ -85,9 +83,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
     {
         $this->environmentFactory->create($setup);
 
-        $this->client->request('GET', '/status');
-
-        $response = $this->client->getResponse();
+        $response = $this->clientRequestSender->getStatus();
 
         self::assertSame(
             $expectedResponse->getStatusCode(),
