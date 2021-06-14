@@ -85,7 +85,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
     /**
      * @dataProvider createAddSourcesCompileExecuteDataProvider
      *
-     * @param string[] $sourcePaths
+     * @param string[]                  $sourcePaths
      * @param CompilationState::STATE_* $expectedCompilationEndState
      * @param ExecutionState::STATE_*   $expectedExecutionEndState
      * @param ApplicationState::STATE_* $expectedApplicationEndState
