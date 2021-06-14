@@ -15,7 +15,6 @@ use App\Services\SourceFactory;
 use App\Services\TestSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
@@ -23,6 +22,7 @@ use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 use webignition\BasilWorker\StateBundle\Services\CompilationState;
 use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class JobController extends AbstractController
 {
@@ -69,7 +69,7 @@ class JobController extends AbstractController
     public function addSources(
         SourceStore $sourceStore,
         SourceFactory $sourceFactory,
-        MessageBusInterface $messageBus,
+        MessageDispatcher $messageDispatcher,
         AddSourcesRequest $addSourcesRequest
     ): JsonResponse {
         if (false === $this->jobStore->has()) {
@@ -98,7 +98,7 @@ class JobController extends AbstractController
             return BadAddSourcesRequestResponse::createSourceMissingResponse($testSourceException->getPath());
         }
 
-        $messageBus->dispatch(new JobReadyMessage());
+        $messageDispatcher->dispatch(new JobReadyMessage());
 
         return new JsonResponse();
     }
