@@ -30,3 +30,19 @@ services:
         arguments:
             $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
             $path: '%kernel.project_dir%/%basil_local_upload_path%'
+
+    App\Tests\Services\ClientRequestSender:
+        public: true
+        arguments:
+            $client: '@test.client'
+
+    App\Tests\Services\Asserter\JsonResponseAsserter:
+        public: true
+
+    App\Tests\Services\UploadedFileFactory:
+        public: true
+
+    App\Services\SourceFileStore:
+        public: true
+        arguments:
+            $path: '%kernel.project_dir%/%basil_local_source_path%'

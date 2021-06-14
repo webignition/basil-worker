@@ -7,13 +7,11 @@ services:
         autowire: true
         autoconfigure: true
 
-    App\Tests\Services\SourceFactory:
-        public: true
-
     webignition\SymfonyMessengerMessageDispatcher\Middleware\IgnoredMessageMiddleware:
         arguments:
             $messageClassNames:
                 - App\Message\TimeoutCheckMessage
+                - App\Message\JobReadyMessage
 
     webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher:
         arguments:
