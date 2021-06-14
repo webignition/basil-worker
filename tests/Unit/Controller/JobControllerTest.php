@@ -20,7 +20,6 @@ use App\Tests\Mock\Services\MockSourceFactory;
 use App\Tests\Mock\Services\MockSourceStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
