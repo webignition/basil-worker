@@ -9,11 +9,6 @@ services:
     App\Services\CallbackSender:
         public: true
 
-    App\Services\SourceFileStore:
-        public: true
-        arguments:
-            $path: '%kernel.project_dir%/%compiler_source_directory%'
-
     App\Services\SourceFactory:
         public: true
 
@@ -88,16 +83,8 @@ services:
     App\MessageDispatcher\TimeoutCheckMessageDispatcher:
         public: true
 
-    App\Tests\Services\UploadedFileFactory:
-        public: true
-
     App\Tests\Services\TestTestMutator:
         public: true
-
-    App\Tests\Services\ClientRequestSender:
-        public: true
-        arguments:
-            $client: '@test.client'
 
     App\Tests\Services\Asserter\MessengerAsserter:
         public: true
@@ -105,9 +92,6 @@ services:
             $transport: '@messenger.transport.async'
 
     App\Tests\Services\Asserter\SourceEntityAsserter:
-        public: true
-
-    App\Tests\Services\Asserter\JsonResponseAsserter:
         public: true
 
     App\Tests\Services\CallbackHttpErrorEventSubscriber:
