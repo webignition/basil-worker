@@ -12,6 +12,7 @@ use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\IntegrationJobProperties;
 use App\Tests\Services\UploadedFileFactory;
 use Psr\Http\Message\RequestInterface;
 use SebastianBergmann\Timer\Timer;
@@ -33,6 +34,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
     private ApplicationStateHandler $applicationStateHandler;
     private CallableInvoker $callableInvoker;
     private FileStoreHandler $localSourceStoreHandler;
+    private IntegrationJobProperties $jobProperties;
 
     protected function setUp(): void
     {
@@ -67,6 +69,10 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $callableInvoker = self::$container->get(CallableInvoker::class);
         \assert($callableInvoker instanceof CallableInvoker);
         $this->callableInvoker = $callableInvoker;
+
+        $jobProperties = self::$container->get(IntegrationJobProperties::class);
+        \assert($jobProperties instanceof IntegrationJobProperties);
+        $this->jobProperties = $jobProperties;
     }
 
     protected function tearDown(): void
@@ -98,8 +104,8 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $statusResponse = $this->clientRequestSender->getStatus();
         $this->jsonResponseAsserter->assertJsonResponse(400, [], $statusResponse);
 
-        $label = md5('label content');
-        $callbackUrl = ($_ENV['CALLBACK_BASE_URL'] ?? '') . '/status/200';
+        $label = $this->jobProperties->getLabel();
+        $callbackUrl = $this->jobProperties->getCallbackUrl();
 
         $createResponse = $this->clientRequestSender->createJob($label, $callbackUrl, $jobMaximumDurationInSeconds);
         $this->jsonResponseAsserter->assertJsonResponse(200, (object) [], $createResponse);

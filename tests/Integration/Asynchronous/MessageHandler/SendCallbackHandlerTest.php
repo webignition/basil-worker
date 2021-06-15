@@ -13,6 +13,7 @@ use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\EntityRetriever;
 use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\IntegrationJobProperties;
 use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
@@ -86,11 +87,11 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
     {
         return [
             'success' => [
-                'setup' => function (EnvironmentFactory $environmentFactory) {
+                'setup' => function (EnvironmentFactory $environmentFactory, IntegrationJobProperties $jobProperties) {
                     $environmentFactory->create(
                         (new EnvironmentSetup())
                             ->withJobSetup(
-                                (new JobSetup())->withCallbackUrl($_ENV['CALLBACK_BASE_URL'] . '/status/200')
+                                (new JobSetup())->withCallbackUrl($jobProperties->getCallbackUrl())
                             )
                     );
                 },
@@ -109,11 +110,15 @@ class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
                 },
             ],
             'verify retried http transactions are delayed' => [
-                'setup' => function (EnvironmentFactory $environmentFactory, HttpLogReader $httpLogReader) {
+                'setup' => function (
+                    EnvironmentFactory $environmentFactory,
+                    HttpLogReader $httpLogReader,
+                    IntegrationJobProperties $jobProperties
+                ) {
                     $environmentFactory->create(
                         (new EnvironmentSetup())
                             ->withJobSetup(
-                                (new JobSetup())->withCallbackUrl($_ENV['CALLBACK_BASE_URL'] . '/status/500')
+                                (new JobSetup())->withCallbackUrl($jobProperties->createCallbackUrlForStatusCode(500))
                             )
                     );
 

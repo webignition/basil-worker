@@ -72,3 +72,8 @@ services:
 
     App\Tests\Services\ApplicationStateHandler:
         public: true
+
+    App\Tests\Services\IntegrationJobProperties:
+        public: true
+        arguments:
+            $baseUrl: '%env(CALLBACK_BASE_URL)%'
