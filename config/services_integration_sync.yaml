@@ -20,8 +20,5 @@ services:
                 - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware'
                 - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware'
 
-    App\Tests\Services\Asserter\SystemStateAsserter:
-        public: true
-
-    App\Tests\Services\ApplicationStateHandler:
+    App\Tests\Services\IntegrationCallbackRequestFactory:
         public: true
