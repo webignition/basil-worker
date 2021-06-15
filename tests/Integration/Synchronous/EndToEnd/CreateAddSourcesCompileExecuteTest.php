@@ -13,9 +13,9 @@ use App\Tests\Services\CallableInvoker;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\Integration\HttpLogReader;
+use App\Tests\Services\IntegrationCallbackRequestFactory;
 use App\Tests\Services\IntegrationJobProperties;
 use App\Tests\Services\UploadedFileFactory;
-use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
 use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -202,77 +202,61 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
-                'assertions' => function (HttpLogReader $httpLogReader, IntegrationJobProperties $jobProperties) {
+                'assertions' => function (
+                    HttpLogReader $httpLogReader,
+                    IntegrationJobProperties $jobProperties,
+                    IntegrationCallbackRequestFactory $requestFactory,
+                ) {
                     $expectedHttpRequests = new RequestCollection([
-                        'job/started' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'job/started' => $requestFactory->create(
                             CallbackInterface::TYPE_JOB_STARTED,
                             []
                         ),
-                        'compilation/started: chrome-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/started: chrome-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_STARTED,
                             [
                                 'source' => 'Test/chrome-open-index.yml',
                             ]
                         ),
-                        'compilation/passed: chrome-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/passed: chrome-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_PASSED,
                             [
                                 'source' => 'Test/chrome-open-index.yml',
                             ]
                         ),
-                        'compilation/started: chrome-firefox-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/started: chrome-firefox-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_STARTED,
                             [
                                 'source' => 'Test/chrome-firefox-open-index.yml',
                             ]
                         ),
-                        'compilation/passed: chrome-firefox-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/passed: chrome-firefox-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_PASSED,
                             [
                                 'source' => 'Test/chrome-firefox-open-index.yml',
                             ]
                         ),
-                        'compilation/started: chrome--open-form' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/started: chrome--open-form' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_STARTED,
                             [
                                 'source' => 'Test/chrome-open-form.yml',
                             ]
                         ),
-                        'compilation/passed: chrome--open-form' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/passed: chrome--open-form' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_PASSED,
                             [
                                 'source' => 'Test/chrome-open-form.yml',
                             ]
                         ),
-                        'compilation/completed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'compilation/completed' => $requestFactory->create(
                             CallbackInterface::TYPE_COMPILATION_SUCCEEDED,
                             []
                         ),
-                        'execution/started' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'execution/started' => $requestFactory->create(
                             CallbackInterface::TYPE_EXECUTION_STARTED,
                             []
                         ),
-                        'test/started: chrome-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/started: chrome-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_STARTED,
                             [
                                 'type' => 'test',
@@ -283,9 +267,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'step/passed: chrome-open-index: open' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'step/passed: chrome-open-index: open' => $requestFactory->create(
                             CallbackInterface::TYPE_STEP_PASSED,
                             [
                                 'type' => 'step',
@@ -306,9 +288,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/passed: chrome-open-index' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/passed: chrome-open-index' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_PASSED,
                             [
                                 'type' => 'test',
@@ -319,9 +299,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/started: chrome-firefox-open-index: chrome' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/started: chrome-firefox-open-index: chrome' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_STARTED,
                             [
                                 'type' => 'test',
@@ -332,9 +310,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'step/passed: chrome-firefox-open-index: chrome, open' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'step/passed: chrome-firefox-open-index: chrome, open' => $requestFactory->create(
                             CallbackInterface::TYPE_STEP_PASSED,
                             [
                                 'type' => 'step',
@@ -349,9 +325,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/passed: chrome-firefox-open-index: chrome' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/passed: chrome-firefox-open-index: chrome' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_PASSED,
                             [
                                 'type' => 'test',
@@ -362,9 +336,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/started: chrome-firefox-open-index: firefox' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/started: chrome-firefox-open-index: firefox' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_STARTED,
                             [
                                 'type' => 'test',
@@ -375,9 +347,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'step/passed: chrome-firefox-open-index: firefox open' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'step/passed: chrome-firefox-open-index: firefox open' => $requestFactory->create(
                             CallbackInterface::TYPE_STEP_PASSED,
                             [
                                 'type' => 'step',
@@ -392,9 +362,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/passed: chrome-firefox-open-index: firefox' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/passed: chrome-firefox-open-index: firefox' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_PASSED,
                             [
                                 'type' => 'test',
@@ -405,9 +373,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/started: chrome-open-form' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/started: chrome-open-form' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_STARTED,
                             [
                                 'type' => 'test',
@@ -418,9 +384,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'step/passed: chrome-open-form: open' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'step/passed: chrome-open-form: open' => $requestFactory->create(
                             CallbackInterface::TYPE_STEP_PASSED,
                             [
                                 'type' => 'step',
@@ -435,9 +399,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/passed: chrome-open-form' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/passed: chrome-open-form' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_PASSED,
                             [
                                 'type' => 'test',
@@ -448,15 +410,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'execution/completed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'execution/completed' => $requestFactory->create(
                             CallbackInterface::TYPE_EXECUTION_COMPLETED,
                             []
                         ),
-                        'job/completed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'job/completed' => $requestFactory->create(
                             CallbackInterface::TYPE_JOB_COMPLETED,
                             []
                         ),
@@ -476,14 +434,16 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
-                'assertions' => function (HttpLogReader $httpLogReader, IntegrationJobProperties $jobProperties) {
+                'assertions' => function (
+                    HttpLogReader $httpLogReader,
+                    IntegrationJobProperties $jobProperties,
+                    IntegrationCallbackRequestFactory $requestFactory,
+                ) {
                     $transactions = $httpLogReader->getTransactions();
                     $httpLogReader->reset();
 
                     $expectedHttpRequests = new RequestCollection([
-                        'step/failed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'step/failed' => $requestFactory->create(
                             CallbackInterface::TYPE_STEP_FAILED,
                             [
                                 'type' => 'step',
@@ -515,9 +475,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'test/failed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'test/failed' => $requestFactory->create(
                             CallbackInterface::TYPE_TEST_FAILED,
                             [
                                 'type' => 'test',
@@ -528,9 +486,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                                 ],
                             ]
                         ),
-                        'job/failed' => $this->createExpectedRequest(
-                            $jobProperties->getLabel(),
-                            $jobProperties->getCallbackUrl(),
+                        'job/failed' => $requestFactory->create(
                             CallbackInterface::TYPE_JOB_FAILED,
                             []
                         ),
@@ -592,30 +548,6 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
             json_decode($expected->getBody()->getContents(), true),
             json_decode($actual->getBody()->getContents(), true),
             'Body of request at index ' . $requestIndex . ' not as expected'
-        );
-    }
-
-    /**
-     * @param CallbackInterface::TYPE_* $type
-     * @param array<mixed>              $payload
-     */
-    private function createExpectedRequest(
-        string $label,
-        string $callbackUrl,
-        string $type,
-        array $payload
-    ): RequestInterface {
-        return new Request(
-            'POST',
-            $callbackUrl,
-            [
-                'content-type' => 'application/json',
-            ],
-            (string) json_encode([
-                'label' => $label,
-                'type' => $type,
-                'payload' => $payload,
-            ])
         );
     }
 }
