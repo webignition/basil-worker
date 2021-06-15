@@ -13,6 +13,7 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
+        "guzzlehttp/guzzle": "^7.3",
         "symfony/console": "5.2.*",
         "symfony/dotenv": "5.2.*",
         "symfony/flex": "^1.12",
@@ -32,7 +33,6 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^6.5",
         "friendsofphp/php-cs-fixer": "^3.0",
-        "guzzlehttp/guzzle": "^7.2",
         "mockery/mockery": "^1.4",
         "monolog/monolog": "^2.2",
         "php-mock/php-mock": "^2.3",
