@@ -6,6 +6,7 @@ namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Message\JobReadyMessage;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
+use App\Tests\Services\ApplicationStateHandler;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\Asserter\SystemStateAsserter;
 use App\Tests\Services\CallableInvoker;
@@ -35,6 +36,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
     private ClientRequestSender $clientRequestSender;
     private JsonResponseAsserter $jsonResponseAsserter;
     private SystemStateAsserter $systemStateAsserter;
+    private ApplicationStateHandler $applicationStateHandler;
 
     protected function setUp(): void
     {
@@ -69,6 +71,10 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $systemStateAsserter = self::$container->get(SystemStateAsserter::class);
         \assert($systemStateAsserter instanceof SystemStateAsserter);
         $this->systemStateAsserter = $systemStateAsserter;
+
+        $applicationStateHandler = self::$container->get(ApplicationStateHandler::class);
+        \assert($applicationStateHandler instanceof ApplicationStateHandler);
+        $this->applicationStateHandler = $applicationStateHandler;
 
         $this->entityRemover->removeAll();
     }
@@ -154,6 +160,11 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
         $timer->start();
 
         $this->messageBus->dispatch(new JobReadyMessage());
+
+        $this->applicationStateHandler->waitUntilStateIs([
+            ApplicationState::STATE_COMPLETE,
+            ApplicationState::STATE_TIMED_OUT,
+        ]);
 
         $duration = $timer->stop();
 
