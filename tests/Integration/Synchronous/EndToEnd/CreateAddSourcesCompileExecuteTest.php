@@ -5,19 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Integration\Synchronous\EndToEnd;
 
 use App\Message\JobReadyMessage;
-use App\Tests\Integration\AbstractBaseIntegrationTest;
-use App\Tests\Services\ApplicationStateHandler;
-use App\Tests\Services\Asserter\JsonResponseAsserter;
-use App\Tests\Services\Asserter\SystemStateAsserter;
-use App\Tests\Services\CallableInvoker;
-use App\Tests\Services\ClientRequestSender;
-use App\Tests\Services\FileStoreHandler;
+use App\Tests\Integration\AbstractCreateAddSourcesCompileExecuteTest;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\IntegrationCallbackRequestFactory;
 use App\Tests\Services\IntegrationJobProperties;
-use App\Tests\Services\UploadedFileFactory;
 use Psr\Http\Message\RequestInterface;
-use SebastianBergmann\Timer\Timer;
 use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\StateBundle\Services\ApplicationState;
@@ -26,165 +18,8 @@ use webignition\BasilWorker\StateBundle\Services\ExecutionState;
 use webignition\HttpHistoryContainer\Collection\RequestCollection;
 use webignition\HttpHistoryContainer\Collection\RequestCollectionInterface;
 
-class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
+class CreateAddSourcesCompileExecuteTest extends AbstractCreateAddSourcesCompileExecuteTest
 {
-    private const MAX_DURATION_IN_SECONDS = 30;
-
-    private CallableInvoker $callableInvoker;
-    private MessageBusInterface $messageBus;
-    private FileStoreHandler $localSourceStoreHandler;
-    private FileStoreHandler $uploadStoreHandler;
-    private ClientRequestSender $clientRequestSender;
-    private JsonResponseAsserter $jsonResponseAsserter;
-    private SystemStateAsserter $systemStateAsserter;
-    private ApplicationStateHandler $applicationStateHandler;
-    private IntegrationJobProperties $jobProperties;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $callableInvoker = self::$container->get(CallableInvoker::class);
-        \assert($callableInvoker instanceof CallableInvoker);
-        $this->callableInvoker = $callableInvoker;
-
-        $messageBus = self::$container->get(MessageBusInterface::class);
-        \assert($messageBus instanceof MessageBusInterface);
-        $this->messageBus = $messageBus;
-
-        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
-        \assert($localSourceStoreHandler instanceof FileStoreHandler);
-        $this->localSourceStoreHandler = $localSourceStoreHandler;
-        $this->localSourceStoreHandler->clear();
-
-        $uploadStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
-        \assert($uploadStoreHandler instanceof FileStoreHandler);
-        $this->uploadStoreHandler = $uploadStoreHandler;
-        $this->uploadStoreHandler->clear();
-
-        $clientRequestSender = self::$container->get(ClientRequestSender::class);
-        \assert($clientRequestSender instanceof ClientRequestSender);
-        $this->clientRequestSender = $clientRequestSender;
-
-        $jsonResponseAsserter = self::$container->get(JsonResponseAsserter::class);
-        \assert($jsonResponseAsserter instanceof JsonResponseAsserter);
-        $this->jsonResponseAsserter = $jsonResponseAsserter;
-
-        $systemStateAsserter = self::$container->get(SystemStateAsserter::class);
-        \assert($systemStateAsserter instanceof SystemStateAsserter);
-        $this->systemStateAsserter = $systemStateAsserter;
-
-        $applicationStateHandler = self::$container->get(ApplicationStateHandler::class);
-        \assert($applicationStateHandler instanceof ApplicationStateHandler);
-        $this->applicationStateHandler = $applicationStateHandler;
-
-        $jobProperties = self::$container->get(IntegrationJobProperties::class);
-        \assert($jobProperties instanceof IntegrationJobProperties);
-        $this->jobProperties = $jobProperties;
-
-        $this->entityRemover->removeAll();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->entityRemover->removeAll();
-        $this->localSourceStoreHandler->clear();
-        $this->uploadStoreHandler->clear();
-
-        parent::tearDown();
-    }
-
-    /**
-     * @dataProvider createAddSourcesCompileExecuteDataProvider
-     *
-     * @param string[]                  $sourcePaths
-     * @param CompilationState::STATE_* $expectedCompilationEndState
-     * @param ExecutionState::STATE_*   $expectedExecutionEndState
-     * @param ApplicationState::STATE_* $expectedApplicationEndState
-     */
-    public function testCreateAddSourcesCompileExecute(
-        string $manifestPath,
-        array $sourcePaths,
-        string $expectedCompilationEndState,
-        string $expectedExecutionEndState,
-        string $expectedApplicationEndState,
-        callable $assertions
-    ): void {
-        $statusResponse = $this->clientRequestSender->getStatus();
-        $this->jsonResponseAsserter->assertJsonResponse(400, [], $statusResponse);
-
-        $label = $this->jobProperties->getLabel();
-        $callbackUrl = $this->jobProperties->getCallbackUrl();
-        $maximumDurationInSeconds = 99;
-
-        $createResponse = $this->clientRequestSender->createJob($label, $callbackUrl, $maximumDurationInSeconds);
-        $this->jsonResponseAsserter->assertJsonResponse(200, (object) [], $createResponse);
-
-        $expectedJobProperties = [
-            'label' => $label,
-            'callback_url' => $callbackUrl,
-            'maximum_duration_in_seconds' => $maximumDurationInSeconds,
-        ];
-
-        $statusResponse = $this->clientRequestSender->getStatus();
-
-        $this->jsonResponseAsserter->assertJsonResponse(
-            200,
-            array_merge(
-                $expectedJobProperties,
-                [
-                    'compilation_state' => CompilationState::STATE_AWAITING,
-                    'execution_state' => ExecutionState::STATE_AWAITING,
-                    'sources' => [],
-                    'tests' => [],
-                ]
-            ),
-            $statusResponse
-        );
-
-        $this->systemStateAsserter->assertSystemState(
-            CompilationState::STATE_AWAITING,
-            ExecutionState::STATE_AWAITING,
-            ApplicationState::STATE_AWAITING_SOURCES
-        );
-
-        $uploadedFileFactory = self::$container->get(UploadedFileFactory::class);
-        \assert($uploadedFileFactory instanceof UploadedFileFactory);
-
-        $uploadedFileCollection = $uploadedFileFactory->createCollection(
-            $this->uploadStoreHandler->copyFixtures($sourcePaths)
-        );
-
-        $addSourcesResponse = $this->clientRequestSender->addJobSources(
-            $uploadedFileFactory->createForManifest($manifestPath),
-            $uploadedFileCollection
-        );
-
-        $this->jsonResponseAsserter->assertJsonResponse(200, (object) [], $addSourcesResponse);
-
-        $timer = new Timer();
-        $timer->start();
-
-        $this->messageBus->dispatch(new JobReadyMessage());
-
-        $this->applicationStateHandler->waitUntilStateIs([
-            ApplicationState::STATE_COMPLETE,
-            ApplicationState::STATE_TIMED_OUT,
-        ]);
-
-        $duration = $timer->stop();
-
-        $this->systemStateAsserter->assertSystemState(
-            $expectedCompilationEndState,
-            $expectedExecutionEndState,
-            $expectedApplicationEndState
-        );
-
-        $this->callableInvoker->invoke($assertions);
-
-        self::assertLessThanOrEqual(self::MAX_DURATION_IN_SECONDS, $duration->asSeconds());
-    }
-
     /**
      * @return array[]
      */
@@ -192,6 +27,7 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
     {
         return [
             'default' => [
+                'jobMaximumDurationInSeconds' => 60,
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest.txt',
                 'sourcePaths' => [
                     'Page/index.yml',
@@ -199,6 +35,9 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                     'Test/chrome-firefox-open-index.yml',
                     'Test/chrome-open-form.yml',
                 ],
+                'postAddSources' => function (MessageBusInterface $messageBus) {
+                    $messageBus->dispatch(new JobReadyMessage());
+                },
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_COMPLETE,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
@@ -427,10 +266,14 @@ class CreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
                 },
             ],
             'step failed' => [
+                'jobMaximumDurationInSeconds' => 60,
                 'manifestPath' => getcwd() . '/tests/Fixtures/Manifest/manifest-step-failure.txt',
                 'sourcePaths' => [
                     'Test/chrome-open-index-with-step-failure.yml',
                 ],
+                'postAddSources' => function (MessageBusInterface $messageBus) {
+                    $messageBus->dispatch(new JobReadyMessage());
+                },
                 'expectedCompilationEndState' => CompilationState::STATE_COMPLETE,
                 'expectedExecutionEndState' => ExecutionState::STATE_CANCELLED,
                 'expectedApplicationEndState' => ApplicationState::STATE_COMPLETE,
