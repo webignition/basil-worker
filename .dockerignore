@@ -3,6 +3,7 @@
 
 # Allow source
 !/bin/console
+!/build/supervisor
 !/composer.json
 !/composer.lock
 !/config/bundles.php

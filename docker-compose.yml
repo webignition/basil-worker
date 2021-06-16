@@ -77,24 +77,6 @@ services:
     volumes:
       - /var/log/nginx:/var/log/nginx
 
-  app-handler:
-    image: smartassert/basil-worker-handler:0.7
-    container_name: app-handler
-    networks:
-      - primary
-    environment:
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
-      MESSENGER_TRANSPORT_DSN: amqp://guest:guest@rabbitmq:5672/%2f/messages
-    depends_on:
-      - compiler
-      - delegator
-      - postgres
-      - rabbitmq
-    volumes:
-      - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
-      - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
-      - /var/log/app-handler:/app/var/log
-
   app-web:
     build:
       context: $APP_BUILD_CONTEXT
@@ -105,8 +87,11 @@ services:
     networks:
       - primary
     depends_on:
+      - compiler
+      - delegator
       - postgres
       - rabbitmq
     volumes:
       - /var/log/app-web:/app/var/log
       - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
+      - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
