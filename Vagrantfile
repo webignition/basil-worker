@@ -29,6 +29,7 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "src", destination: "~/build/"
     basil_worker.vm.provision "file", source: "migrations", destination: "~/build/"
     basil_worker.vm.provision "file", source: "Dockerfile", destination: "~/build/"
+    basil_worker.vm.provision "file", source: "./supervisor", destination: "~/build/"
 
     # Copy system files and provision for use
     basil_worker.vm.provision "file", source: "./.docker-compose.env", destination: "~/.docker-compose.env"
