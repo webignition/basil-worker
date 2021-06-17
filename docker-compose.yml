@@ -6,7 +6,7 @@ networks:
 
 services:
   compiler:
-    image: smartassert/basil-compiler:0.28
+    image: ghcr.io/smartassert/compiler:0.29
     container_name: compiler
     networks:
       - primary
