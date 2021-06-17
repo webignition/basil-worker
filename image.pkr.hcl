@@ -140,7 +140,7 @@ build {
   }
 
   provisioner "file" {
-    destination = "~/build/supervisor/conf.d"
+    destination = "~/build/supervisor/conf.d/"
     source      = "supervisor/conf.d/app.conf"
   }
 
