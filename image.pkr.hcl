@@ -126,6 +126,24 @@ build {
     source      = "Dockerfile"
   }
 
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/supervisor"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/supervisor/"
+    source      = "supervisor/supervisord.conf"
+  }
+
+  provisioner "shell" {
+    inline = ["mkdir -p ~/build/supervisor/conf.d"]
+  }
+
+  provisioner "file" {
+    destination = "~/build/supervisor/conf.d"
+    source      = "supervisor/conf.d/app.conf"
+  }
+
   # Copy system files and provision for use
   provisioner "file" {
     destination = "~/docker-compose.yml"
