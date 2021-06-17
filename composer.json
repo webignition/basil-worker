@@ -125,6 +125,7 @@
             "LOCAL_SOURCE_PATH=\"$PWD/tests/Fixtures/CompilerSource\" docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-overrides.yml up -d --build",
             "docker-compose --env-file ./.docker-compose.env stop app-web"
         ],
+        "integration-app-start": "docker-compose --env-file ./.docker-compose.env start app-web",
         "integration-chown-app-source": [
             "docker-compose --env-file ./.docker-compose.env exec -T app-web chown -R www-data:www-data /app/source"
         ],
@@ -138,7 +139,6 @@
             "@db-setup"
         ],
         "test-integration": [
-            "docker-compose --env-file ./.docker-compose.env start app-web",
             "./vendor/bin/phpunit tests/Integration/AppTest.php"
         ],
         "test-integration-async": "./vendor/bin/phpunit -c phpunit.integration_async.xml",
