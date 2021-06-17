@@ -138,6 +138,7 @@
             "@db-setup"
         ],
         "test-integration": [
+            "docker-compose --env-file ./.docker-compose.env start app-web",
             "./vendor/bin/phpunit tests/Integration/AppTest.php"
         ],
         "test-integration-async": "./vendor/bin/phpunit -c phpunit.integration_async.xml",
