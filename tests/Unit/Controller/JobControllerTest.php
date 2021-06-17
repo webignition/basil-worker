@@ -20,10 +20,10 @@ use App\Tests\Mock\Services\MockSourceFactory;
 use App\Tests\Mock\Services\MockSourceStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
+use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class JobControllerTest extends TestCase
 {
@@ -128,7 +128,7 @@ class JobControllerTest extends TestCase
         $response = $controller->addSources(
             $sourceStore,
             $sourceFactory,
-            \Mockery::mock(MessageBusInterface::class),
+            \Mockery::mock(MessageDispatcher::class),
             $addSourcesRequest
         );
 

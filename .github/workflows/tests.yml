@@ -93,16 +93,21 @@ jobs:
 
       - name: Setup integration test environment
         run: |
-          mkdir -p $PWD/var/basil/local/source
-          mkdir -p $PWD/var/basil/local/tests
           composer integration-setup
-          sudo chown -R www-data:www-data $PWD/var/basil/local
 
       - name: Run tests
-        run: composer test-integration
+        run: |
+          composer test-integration-sync
+          composer db-recreate
+          php bin/console --env=integration_async messenger:consume async > /dev/null &
+          composer test-integration-async
+          php bin/console --env=integration_async messenger:stop
+          composer db-recreate
+          composer integration-app-start
+          composer integration-chown-app-source
+          composer test-integration
 
       - name: Teardown integration test environment
         run: |
           sudo composer integration-teardown
-          sudo rm -Rf $PWD/var/basil/local/source/*
           sudo rm -Rf $PWD/var/basil/local/tests/*

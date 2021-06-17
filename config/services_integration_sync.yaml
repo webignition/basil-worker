@@ -1,0 +1,24 @@
+imports:
+    - { resource: services/test_common.yaml }
+    - { resource: services/integration_common.yaml }
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    webignition\SymfonyMessengerMessageDispatcher\Middleware\IgnoredMessageMiddleware:
+        arguments:
+            $messageClassNames:
+                - App\Message\TimeoutCheckMessage
+                - App\Message\JobReadyMessage
+
+    webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher:
+        arguments:
+            $middleware:
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\IgnoredMessageMiddleware'
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware'
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware'
+
+    App\Tests\Services\IntegrationCallbackRequestFactory:
+        public: true

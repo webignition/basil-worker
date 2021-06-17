@@ -6,6 +6,8 @@
 parameters:
     compiler_source_directory: '%env(COMPILER_SOURCE_DIRECTORY)%'
     compiler_target_directory: '%env(COMPILER_TARGET_DIRECTORY)%'
+    callback_retry_limit: '%env(CALLBACK_RETRY_LIMIT)%'
+    job_timeout_check_period_ms: '%env(JOB_TIMEOUT_CHECK_PERIOD_MS)%'
 
 services:
     # default configuration for services in *this* file
@@ -41,7 +43,13 @@ services:
 
     webignition\JsonMessageSerializerBundle\Services\MessageFactory:
         arguments:
-            $typeToMessageClassMap: []
+            $typeToMessageClassMap:
+                'job-ready': 'App\Message\JobReadyMessage'
+                'compile-source': 'App\Message\CompileSourceMessage'
+                'execute-test': 'App\Message\ExecuteTestMessage'
+                'send-callback': 'App\Message\SendCallbackMessage'
+                'timeout-check': 'App\Message\TimeoutCheckMessage'
+                'job-complete-check': 'App\Message\JobCompletedCheckMessage'
 
     app.services.path-prefix-remover.compiler-source:
         class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
@@ -61,3 +69,80 @@ services:
     webignition\BasilWorker\StateBundle\Services\SourcePathFinder:
         calls:
             - setCompilerSourcePathPrefixRemover: ['@app.services.path-prefix-remover.compiler-source']
+
+    App\Services\TestDocumentMutator:
+        arguments:
+            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
+
+    webignition\TcpCliProxyClient\HandlerFactory:
+        class: webignition\TcpCliProxyClient\HandlerFactory
+
+    app.services.compiler-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(COMPILER_HOST)%'
+            $port: '%env(COMPILER_PORT)%'
+
+    app.services.delegator-client:
+        class: webignition\TcpCliProxyClient\Client
+        factory: [ 'webignition\TcpCliProxyClient\Client', 'createFromHostAndPort' ]
+        arguments:
+            $host: '%env(DELEGATOR_HOST)%'
+            $port: '%env(DELEGATOR_PORT)%'
+
+    App\Services\TestExecutor:
+        arguments:
+            $delegatorClient: '@app.services.delegator-client'
+
+    Symfony\Component\Yaml\Parser:
+        class: Symfony\Component\Yaml\Parser
+
+    App\Services\Compiler:
+        arguments:
+            $client: '@app.services.compiler-client'
+            $compilerSourceDirectory: '%env(COMPILER_SOURCE_DIRECTORY)%'
+            $compilerTargetDirectory: '%env(COMPILER_TARGET_DIRECTORY)%'
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+
+    App\Services\CallbackFactory:
+        arguments:
+            $eventCallbackFactories:
+                - '@App\Services\EventCallbackFactory\CompilationStartedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\CompilationPassedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\CompilationFailedEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\TestEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\JobTimeoutEventCallbackFactory'
+                - '@App\Services\EventCallbackFactory\NoPayloadEventCallbackFactory'
+
+    app.message_dispatcher.backoff_strategy.fixed:
+        class: webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\FixedBackoffStrategy
+        arguments:
+            $delayInMilliseconds: '%job_timeout_check_period_ms%'
+
+    app.message_dispatcher.backoff_strategy.exponential:
+        class: webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\ExponentialBackoffStrategy
+
+    webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware:
+        arguments:
+            $backoffStrategies:
+                App\Message\TimeoutCheckMessage: '@app.message_dispatcher.backoff_strategy.fixed'
+                App\Message\SendCallbackMessage: '@app.message_dispatcher.backoff_strategy.exponential'
+
+    webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware:
+        arguments:
+            $retryLimits:
+                App\Message\SendCallbackMessage: '%callback_retry_limit%'
+
+    webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher:
+        arguments:
+            $middleware:
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware'
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware'
+
+    webignition\YamlDocumentGenerator\YamlGenerator:
+        class: webignition\YamlDocumentGenerator\YamlGenerator
+
+    Symfony\Component\Yaml\Dumper: ~

@@ -8,7 +8,6 @@ Services=(
   rabbitmq
   postgres
   nginx
-  app-handler
   app-web
 )
 

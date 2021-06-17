@@ -1,50 +1,13 @@
-parameters:
-    basil_local_fixtures_path: '%env(BASIL_LOCAL_FIXTURES_PATH)%'
-    basil_local_source_path: '%env(BASIL_LOCAL_SOURCE_PATH)%'
+imports:
+    - { resource: services/test_common.yaml }
 
 services:
     _defaults:
         autowire: true
         autoconfigure: true
 
-    App\Services\SourceFileStore:
+    App\Tests\Services\TestTestMutator:
         public: true
-        arguments:
-            $path: '%kernel.project_dir%/%compiler_source_directory%'
-
-    App\Services\SourceFactory:
-        public: true
-
-    App\Services\TestSerializer:
-        public: true
-        arguments:
-            $compilerSourcePathPrefixRemover: '@app.services.path-prefix-remover.compiler-source'
-            $compilerTargetPathPrefixRemover: '@app.services.path-prefix-remover.compiler-target'
-
-    App\Tests\Services\SourceFileStoreInitializer:
-        public: true
-        arguments:
-            $path: '%kernel.project_dir%/%compiler_source_directory%'
-
-    App\Tests\Services\UploadedFileFactory:
-        public: true
-
-    App\Tests\Services\BasilFixtureHandler:
-        public: true
-        arguments:
-            $fixturesPath: '%kernel.project_dir%/%basil_local_fixtures_path%'
-            $uploadedPath: '%kernel.project_dir%/%basil_local_source_path%'
-
-    App\Tests\Services\TestTestFactory:
-        public: true
-
-    App\Tests\Services\EnvironmentFactory:
-        public: true
-
-    App\Tests\Services\ClientRequestSender:
-        public: true
-        arguments:
-            $client: '@test.client'
 
     App\Tests\Services\Asserter\MessengerAsserter:
         public: true
@@ -54,5 +17,33 @@ services:
     App\Tests\Services\Asserter\SourceEntityAsserter:
         public: true
 
-    App\Tests\Services\Asserter\JsonResponseAsserter:
+    App\Tests\Services\CallbackHttpErrorEventSubscriber:
         public: true
+
+    App\Tests\Services\Asserter\TestEntityAsserter:
+        public: true
+
+    App\Tests\Services\EventListenerRemover:
+        public: true
+        arguments:
+            $container: '@test.service_container'
+
+    app.tests.services.guzzle.handler.queuing:
+        public: true
+        class: GuzzleHttp\Handler\MockHandler
+        factory: [ '@App\Tests\Services\Guzzle\HandlerFactory', 'createQueuingMockHandler' ]
+
+    GuzzleHttp\HandlerStack:
+        factory: [ '@App\Tests\Services\Guzzle\HandlerStackFactory', 'create' ]
+        arguments:
+            $handler: '@app.tests.services.guzzle.handler.queuing'
+
+    App\Tests\Services\Guzzle\HandlerFactory: ~
+
+    App\Tests\Services\Guzzle\HandlerStackFactory: ~
+
+    App\Tests\Services\Guzzle\ClientFactory: ~
+
+    Psr\Http\Client\ClientInterface:
+        class: GuzzleHttp\Client
+        factory: [ '@App\Tests\Services\Guzzle\ClientFactory', 'get' ]

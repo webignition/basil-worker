@@ -38,7 +38,7 @@ mkdir -p /var/log
 chown -R www-data:www-data /var/log
 
 sudo APP_BUILD_CONTEXT="$APP_BUILD_CONTEXT" LOCAL_SOURCE_PATH="$LOCAL_SOURCE_PATH" docker-compose --env-file .docker-compose.env up -d
-sudo docker-compose --env-file .docker-compose.env exec -T app-handler php bin/console doctrine:database:create --if-not-exists
-sudo docker-compose --env-file .docker-compose.env exec -T app-handler php bin/console doctrine:migrations:migrate --no-interaction
+sudo docker-compose --env-file .docker-compose.env exec -T app-web php bin/console doctrine:database:create --if-not-exists
+sudo docker-compose --env-file .docker-compose.env exec -T app-web php bin/console doctrine:migrations:migrate --no-interaction
 
 rm -Rf "$APP_BUILD_CONTEXT"

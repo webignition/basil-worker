@@ -10,6 +10,7 @@
 !/config/packages/prod/**
 !/config/routes/annotations.yaml
 !/config/services.yaml
+!/migrations
 !/public/index.php
 !/src
-!/migrations
+!/supervisor
