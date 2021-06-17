@@ -15,6 +15,7 @@ for Service in ${Services[*]}
   do
     if ! sudo docker-compose --env-file .docker-compose.env ps --services --filter "status=running" | grep "$Service"; then
         echo "$Service not ok"
+        docker-compose --env-file .docker-compose.env ps
         exit 1
     fi
   done
