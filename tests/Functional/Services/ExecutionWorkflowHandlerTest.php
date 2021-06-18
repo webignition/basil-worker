@@ -15,6 +15,7 @@ use App\Services\ApplicationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EnvironmentSetup;
+use App\Tests\Model\JobSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\EnvironmentFactory;
@@ -98,6 +99,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'two tests, none run' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())->withSource('/app/source/Test/test1.yml'),
                         (new TestSetup())->withSource('/app/source/Test/test2.yml'),
@@ -106,6 +108,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -117,6 +120,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'three tests, first, second complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -134,6 +138,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToCompilationCompletedEvent(): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withTestSetups([
                 (new TestSetup())
                     ->withSource('/app/source/Test/test1.yml')
@@ -191,6 +196,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'single test, not complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -202,6 +208,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'single test, is complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -213,6 +220,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'multiple tests, not complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -227,6 +235,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'multiple tests, complete' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())
                             ->withSource('/app/source/Test/test1.yml')
@@ -245,6 +254,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToTestPassedEventExecutionNotComplete(): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withTestSetups([
                 (new TestSetup())
                     ->withSource('/app/source/Test/test1.yml')
@@ -274,6 +284,7 @@ class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToTestPassedEventExecutionComplete(): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withTestSetups([
                 (new TestSetup())
                     ->withSource('/app/source/Test/test1.yml')
