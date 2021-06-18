@@ -21,7 +21,7 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilWorker\PersistenceBundle\Entity\Job;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use App\Services\ExecutionState;
 use webignition\ObjectReflector\ObjectReflector;
 
 class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest

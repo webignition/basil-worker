@@ -13,9 +13,9 @@ use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\IntegrationJobProperties;
 use App\Tests\Services\UploadedFileFactory;
 use SebastianBergmann\Timer\Timer;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 
 abstract class AbstractCreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
 {

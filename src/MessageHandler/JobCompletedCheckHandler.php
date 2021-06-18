@@ -8,7 +8,7 @@ use App\Event\JobCompletedEvent;
 use App\Message\JobCompletedCheckMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
+use App\Services\ApplicationState;
 
 class JobCompletedCheckHandler implements MessageHandlerInterface
 {

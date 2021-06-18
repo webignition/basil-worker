@@ -15,7 +15,7 @@ use App\Tests\Model\ExpectedDispatchedEventCollection;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
+use App\Services\ApplicationState;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobCompletedCheckHandlerTest extends AbstractBaseFunctionalTest

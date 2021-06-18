@@ -10,9 +10,9 @@ use Psr\Http\Message\RequestInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractCreateAddSourcesCompileExecuteTest
 {

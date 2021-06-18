@@ -12,7 +12,7 @@ use App\Message\JobCompletedCheckMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
+use App\Services\ApplicationState;
 
 class ApplicationWorkflowHandler implements EventSubscriberInterface
 {

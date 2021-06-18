@@ -13,7 +13,7 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
+use App\Services\CompilationState;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {

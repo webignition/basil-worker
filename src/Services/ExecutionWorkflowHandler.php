@@ -16,7 +16,7 @@ use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use App\Services\ExecutionState;
 
 class ExecutionWorkflowHandler implements EventSubscriberInterface
 {

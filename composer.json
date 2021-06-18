@@ -22,7 +22,6 @@
         "symfony/yaml": "5.3.*",
         "webignition/basil-compiler-models": "^0.15.0",
         "webignition/basil-worker-persistence-bundle": "^0.27.0",
-        "webignition/basil-worker-state-bundle": "^0.9.0",
         "webignition/string-prefix-remover": "^0.2.0",
         "webignition/symfony-messenger-json-message-serializer-bundle": "^0.2.0",
         "webignition/symfony-messenger-message-dispatcher": ">=0.4,<1",

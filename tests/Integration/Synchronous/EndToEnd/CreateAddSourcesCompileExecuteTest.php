@@ -12,9 +12,9 @@ use App\Tests\Services\IntegrationJobProperties;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use webignition\HttpHistoryContainer\Collection\RequestCollection;
 use webignition\HttpHistoryContainer\Collection\RequestCollectionInterface;
 

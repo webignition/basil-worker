@@ -23,7 +23,7 @@ use App\Tests\Services\EventListenerRemover;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
+use App\Services\ApplicationState;
 use webignition\ObjectReflector\ObjectReflector;
 use webignition\YamlDocument\Document;
 
