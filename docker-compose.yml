@@ -6,7 +6,7 @@ networks:
 
 services:
   compiler:
-    image: smartassert/basil-compiler:0.28
+    image: ghcr.io/smartassert/compiler:0.29
     container_name: compiler
     networks:
       - primary
@@ -15,7 +15,7 @@ services:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   chrome-runner:
-    image: smartassert/chrome-runner:0.16
+    image: ghcr.io/smartassert/chrome-runner:0.18
     container_name: chrome-runner
     networks:
       - primary
@@ -23,7 +23,7 @@ services:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   firefox-runner:
-    image: smartassert/firefox-runner:0.16
+    image: ghcr.io/smartassert/firefox-runner:0.18
     container_name: firefox-runner
     networks:
       - primary
@@ -31,7 +31,7 @@ services:
       - ${LOCAL_TARGET_PATH}:${TARGET_PATH}
 
   delegator:
-    image: smartassert/basil-runner-delegator:0.5
+    image: ghcr.io/smartassert/runner-delegator:0.6
     container_name: delegator
     networks:
       - primary
