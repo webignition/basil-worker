@@ -14,6 +14,7 @@ use App\Services\ExecutionWorkflowHandler;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
 use App\Tests\Model\EnvironmentSetup;
+use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\MessengerAsserter;
@@ -81,10 +82,12 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
     {
         return [
             'no sources' => [
-                'setup' => new EnvironmentSetup(),
+                'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup()),
             ],
             'no non-compiled sources' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withTestSetups([
                         (new TestSetup())->withSource('/app/source/Test/test1.yml')
                     ]),
@@ -115,6 +118,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
         return [
             'no sources compiled' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withSourceSetups([
                         (new SourceSetup())->withPath('Test/test1.yml'),
                         (new SourceSetup())->withPath('Test/test2.yml'),
@@ -123,6 +127,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
             ],
             'all but one sources compiled' => [
                 'setup' => (new EnvironmentSetup())
+                    ->withJobSetup(new JobSetup())
                     ->withSourceSetups([
                         (new SourceSetup())->withPath('Test/test1.yml'),
                         (new SourceSetup())->withPath('Test/test2.yml'),
@@ -143,6 +148,7 @@ class CompilationWorkflowHandlerTest extends AbstractBaseFunctionalTest
     public function testSubscribesToEvents(Event $event, array $expectedQueuedMessages): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withSourceSetups([
                 (new SourceSetup())->withPath('Test/test1.yml'),
                 (new SourceSetup())->withPath('Test/test2.yml'),

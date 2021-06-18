@@ -11,6 +11,7 @@ use App\Tests\Mock\Services\MockCallbackSender;
 use App\Tests\Mock\Services\MockCallbackStateMutator;
 use App\Tests\Model\CallbackSetup;
 use App\Tests\Model\EnvironmentSetup;
+use App\Tests\Model\JobSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
@@ -71,6 +72,7 @@ class SendCallbackHandlerTest extends AbstractBaseFunctionalTest
     public function testInvokeCallbackExists(): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withCallbackSetups([
                 new CallbackSetup(),
             ])

@@ -23,11 +23,6 @@ class EnvironmentSetup
      */
     private array $callbackSetups = [];
 
-    public function __construct()
-    {
-        $this->jobSetup = new JobSetup();
-    }
-
     public function getJobSetup(): JobSetup
     {
         return $this->jobSetup;

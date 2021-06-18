@@ -16,6 +16,7 @@ use App\Tests\Mock\Services\MockCompiler;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
+use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -59,7 +60,10 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
 
     public function testInvokeJobInWrongState(): void
     {
-        $this->environmentFactory->create(new EnvironmentSetup());
+        $this->environmentFactory->create(
+            (new EnvironmentSetup())
+                ->withJobSetup(new JobSetup()),
+        );
 
         $eventDispatcher = (new MockEventDispatcher())
             ->withoutDispatchCall()
@@ -76,6 +80,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     {
         $sourcePath = 'Test/test1.yml';
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withSourceSetups([
                 (new SourceSetup())->withPath($sourcePath),
             ])
@@ -141,6 +146,7 @@ class CompileSourceHandlerTest extends AbstractBaseFunctionalTest
     {
         $sourcePath = 'Test/test1.yml';
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withSourceSetups([
                 (new SourceSetup())->withPath($sourcePath),
             ])

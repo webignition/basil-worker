@@ -14,6 +14,7 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
+use App\Tests\Model\JobSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -46,6 +47,7 @@ class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest
     public function testInvokeExecuteSuccess(): void
     {
         $environmentSetup = (new EnvironmentSetup())
+            ->withJobSetup(new JobSetup())
             ->withTestSetups([
                 new TestSetup(),
             ])
