@@ -7,7 +7,6 @@ namespace App\Services;
 use App\Event\TestStepFailedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
 
 class TestStateMutator implements EventSubscriberInterface
 {
