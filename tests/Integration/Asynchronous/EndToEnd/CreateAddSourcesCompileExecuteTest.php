@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
+use App\Repository\TestRepository;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
@@ -12,7 +13,6 @@ use App\Tests\Services\Integration\HttpLogReader;
 use Psr\Http\Message\RequestInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractCreateAddSourcesCompileExecuteTest
 {

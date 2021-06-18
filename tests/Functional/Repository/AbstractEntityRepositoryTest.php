@@ -19,8 +19,7 @@ abstract class AbstractEntityRepositoryTest extends AbstractBaseFunctionalTest
      * @var EntityRepository<T>
      */
     protected EntityRepository $repository;
-
-    private EntityManagerInterface $entityManager;
+    protected EntityManagerInterface $entityManager;
 
     protected function setUp(): void
     {

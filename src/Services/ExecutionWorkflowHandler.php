@@ -10,12 +10,12 @@ use App\Event\ExecutionStartedEvent;
 use App\Event\TestPassedEvent;
 use App\Message\ExecuteTestMessage;
 use App\Repository\CallbackRepository;
+use App\Repository\TestRepository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class ExecutionWorkflowHandler implements EventSubscriberInterface
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 use webignition\StringPrefixRemover\DefinedStringPrefixRemover;
 

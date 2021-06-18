@@ -8,6 +8,7 @@ use App\Event\TestFailedEvent;
 use App\Event\TestPassedEvent;
 use App\Event\TestStartedEvent;
 use App\Message\ExecuteTestMessage;
+use App\Repository\TestRepository;
 use App\Services\EntityPersister;
 use App\Services\ExecutionState;
 use App\Services\TestDocumentFactory;
@@ -16,7 +17,6 @@ use App\Services\TestStateMutator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class ExecuteTestHandler implements MessageHandlerInterface

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\Asserter;
 
+use App\Repository\TestRepository;
 use PHPUnit\Framework\TestCase;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class TestEntityAsserter
 {
