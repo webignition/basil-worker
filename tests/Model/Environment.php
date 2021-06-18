@@ -11,7 +11,7 @@ use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 
 class Environment
 {
-    private Job $job;
+    private ?Job $job;
 
     /**
      * @var Source[]
@@ -28,7 +28,7 @@ class Environment
      */
     private array $callbacks = [];
 
-    public function getJob(): Job
+    public function getJob(): ?Job
     {
         return $this->job;
     }

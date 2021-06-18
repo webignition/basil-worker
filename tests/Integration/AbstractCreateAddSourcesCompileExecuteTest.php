@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration;
 
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Tests\Services\ApplicationStateHandler;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\Asserter\SystemStateAsserter;
@@ -13,9 +16,6 @@ use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\IntegrationJobProperties;
 use App\Tests\Services\UploadedFileFactory;
 use SebastianBergmann\Timer\Timer;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
 
 abstract class AbstractCreateAddSourcesCompileExecuteTest extends AbstractBaseIntegrationTest
 {

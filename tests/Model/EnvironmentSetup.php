@@ -6,7 +6,7 @@ namespace App\Tests\Model;
 
 class EnvironmentSetup
 {
-    private JobSetup $jobSetup;
+    private ?JobSetup $jobSetup = null;
 
     /**
      * @var SourceSetup[]
@@ -23,7 +23,7 @@ class EnvironmentSetup
      */
     private array $callbackSetups = [];
 
-    public function getJobSetup(): JobSetup
+    public function getJobSetup(): ?JobSetup
     {
         return $this->jobSetup;
     }

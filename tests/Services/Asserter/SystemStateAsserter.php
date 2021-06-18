@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\Asserter;
 
+use App\Services\ApplicationState;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
 use App\Tests\Services\EntityRefresher;
 use PHPUnit\Framework\TestCase;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
-use webignition\BasilWorker\StateBundle\Services\CompilationState;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
 
 class SystemStateAsserter
 {

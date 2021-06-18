@@ -6,6 +6,7 @@ namespace App\Tests\Unit\MessageHandler;
 
 use App\Message\ExecuteTestMessage;
 use App\MessageHandler\ExecuteTestHandler;
+use App\Services\ExecutionState;
 use App\Services\TestDocumentFactory;
 use App\Services\TestStateMutator;
 use App\Tests\Mock\Entity\MockJob;
@@ -21,7 +22,6 @@ use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
 use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use webignition\BasilWorker\StateBundle\Services\ExecutionState;
 
 class ExecuteTestHandlerTest extends TestCase
 {

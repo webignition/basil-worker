@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ca39168d557248f9c0c267a409e41cb5",
+    "content-hash": "1740fce21a92117fc4f74ddf20251aeb",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5268,63 +5268,6 @@
                 "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.27"
             },
             "time": "2021-06-10T16:27:17+00:00"
-        },
-        {
-            "name": "webignition/basil-worker-state-bundle",
-            "version": "0.9",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webignition/basil-worker-state-bundle.git",
-                "reference": "337ebad83b8a95ae18a5da38f5a9fde443a3e5dc"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-state-bundle/zipball/337ebad83b8a95ae18a5da38f5a9fde443a3e5dc",
-                "reference": "337ebad83b8a95ae18a5da38f5a9fde443a3e5dc",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/doctrine-bundle": "^2.2",
-                "php": "8.*",
-                "symfony/yaml": "^5.3",
-                "webignition/basil-worker-persistence-bundle": ">=0.27,<1",
-                "webignition/string-prefix-remover": ">=0.2,<1"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.0",
-                "phpstan/extension-installer": "^1.0",
-                "phpstan/phpstan": "^0.12.58",
-                "phpstan/phpstan-phpunit": "^0.12.16",
-                "phpstan/phpstan-symfony": "^0.12.11",
-                "phpunit/phpunit": "^9.4",
-                "squizlabs/php_codesniffer": "^3.6",
-                "webignition/symfony-test-service-injector-trait": "^0.2.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "webignition\\BasilWorker\\StateBundle\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Cram",
-                    "email": "webignition@gmail.com"
-                }
-            ],
-            "homepage": "https://github.com/webignition/basil-worker-state-bundle",
-            "support": {
-                "issues": "https://github.com/webignition/basil-worker-state-bundle/issues",
-                "source": "https://github.com/webignition/basil-worker-state-bundle/tree/0.9"
-            },
-            "time": "2021-06-10T17:00:43+00:00"
         },
         {
             "name": "webignition/error-handler",
