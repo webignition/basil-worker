@@ -7,6 +7,7 @@ namespace App\Tests\Functional\MessageHandler;
 use App\Event\JobCompletedEvent;
 use App\Message\JobCompletedCheckMessage;
 use App\MessageHandler\JobCompletedCheckHandler;
+use App\Services\ApplicationState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Mock\Services\MockApplicationState;
@@ -15,7 +16,6 @@ use App\Tests\Model\ExpectedDispatchedEventCollection;
 use App\Tests\Services\Asserter\MessengerAsserter;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Contracts\EventDispatcher\Event;
-use App\Services\ApplicationState;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobCompletedCheckHandlerTest extends AbstractBaseFunctionalTest

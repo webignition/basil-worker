@@ -20,7 +20,6 @@ class CallbackStateTest extends AbstractBaseFunctionalTest
     {
         parent::setUp();
 
-
         $callbackState = self::$container->get(CallbackState::class);
         if ($callbackState instanceof CallbackState) {
             $this->callbackState = $callbackState;
@@ -198,7 +197,6 @@ class CallbackStateTest extends AbstractBaseFunctionalTest
         $callbackSetup = (new CallbackSetup())->withState($state);
 
         return $this->testCallbackFactory->create($callbackSetup);
-
 //        $entity = CallbackEntity::create(CallbackInterface::TYPE_STEP_PASSED, []);
 //        $entity->setState($state);
 //

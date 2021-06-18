@@ -11,8 +11,6 @@ use App\Message\CompileSourceMessage;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use App\Services\CompilationState;
-use App\Services\SourcePathFinder;
 
 class CompilationWorkflowHandler implements EventSubscriberInterface
 {

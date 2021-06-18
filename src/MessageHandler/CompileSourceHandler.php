@@ -8,12 +8,12 @@ use App\Event\SourceCompilation\FailedEvent as SourceCompilationFailedEvent;
 use App\Event\SourceCompilation\PassedEvent as SourceCompilationPassedEvent;
 use App\Event\SourceCompilation\StartedEvent as SourceCompilationStartedEvent;
 use App\Message\CompileSourceMessage;
+use App\Services\CompilationState;
 use App\Services\Compiler;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use App\Services\CompilationState;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {

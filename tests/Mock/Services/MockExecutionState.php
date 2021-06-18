@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
-use Mockery\MockInterface;
 use App\Services\ExecutionState;
+use Mockery\MockInterface;
 
 class MockExecutionState
 {

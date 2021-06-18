@@ -6,17 +6,11 @@ namespace App\Tests\Functional\Services;
 
 use App\Services\ApplicationState;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Tests\Model\CallbackConfiguration;
 use App\Tests\Model\CallbackSetup;
-use App\Tests\Model\EntityConfiguration;
 use App\Tests\Model\EnvironmentSetup;
-use App\Tests\Model\JobConfiguration;
 use App\Tests\Model\JobSetup;
-use App\Tests\Model\SourceConfiguration;
 use App\Tests\Model\SourceSetup;
-use App\Tests\Model\TestConfiguration;
 use App\Tests\Model\TestSetup;
-use App\Tests\Services\EntityCreator;
 use App\Tests\Services\EnvironmentFactory;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
