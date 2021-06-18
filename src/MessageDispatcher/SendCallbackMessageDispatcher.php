@@ -22,11 +22,11 @@ use App\Event\TestStepFailedEvent;
 use App\Event\TestStepPassedEvent;
 use App\Message\SendCallbackMessage;
 use App\Services\CallbackFactory;
+use App\Services\CallbackStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStateMutator;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class SendCallbackMessageDispatcher extends AbstractMessageDispatcher implements EventSubscriberInterface
