@@ -8,6 +8,7 @@ use App\Message\ExecuteTestMessage;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Repository\TestRepository;
 use App\Services\EntityPersister;
+use App\Services\EntityStore\JobStore;
 use App\Services\ExecutionState;
 use App\Services\TestDocumentFactory;
 use App\Services\TestStateMutator;
@@ -21,7 +22,6 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class ExecuteTestHandlerTest extends TestCase
 {

@@ -9,6 +9,7 @@ use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\EntityFactory\JobFactory;
+use App\Services\EntityStore\JobStore;
 use App\Services\SourceFactory;
 use App\Tests\Mock\Entity\MockJob;
 use App\Tests\Mock\Model\MockManifest;
@@ -21,7 +22,6 @@ use App\Tests\Mock\Services\MockSourceFactory;
 use App\Tests\Mock\Services\MockSourceStore;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
