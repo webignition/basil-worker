@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Test;
 use App\Event\JobTimeoutEvent;
 use App\Event\TestStepFailedEvent;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use App\Entity\Test;
 
 class TestCanceller implements EventSubscriberInterface
 {

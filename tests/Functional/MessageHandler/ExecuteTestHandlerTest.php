@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageHandler;
 
+use App\Entity\Job;
+use App\Entity\Test;
 use App\Event\TestPassedEvent;
 use App\Event\TestStartedEvent;
 use App\Message\ExecuteTestMessage;
@@ -20,8 +22,6 @@ use App\Tests\Model\JobSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use App\Entity\Job;
-use App\Entity\Test;
 use webignition\ObjectReflector\ObjectReflector;
 
 class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest

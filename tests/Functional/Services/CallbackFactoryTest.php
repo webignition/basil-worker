@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\DataProvider\CallbackFactory\CreateFromCompilationCompletedEventDataProviderTrait;
@@ -19,7 +20,6 @@ use App\Tests\DataProvider\CallbackFactory\CreateFromJobTimeoutEventDataProvider
 use App\Tests\DataProvider\CallbackFactory\CreateFromTestEventDataProviderTrait;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Contracts\EventDispatcher\Event;
-use App\Entity\Callback\CallbackInterface;
 
 class CallbackFactoryTest extends AbstractBaseFunctionalTest
 {

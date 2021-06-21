@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityStore;
 
+use App\Entity\TestConfiguration;
 use App\Services\EntityStore\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\TestConfiguration;
 
 class TestConfigurationStoreTest extends AbstractBaseFunctionalTest
 {

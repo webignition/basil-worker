@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Test;
 use App\Event\TestStepFailedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use App\Entity\Test;
 
 class TestStateMutator implements EventSubscriberInterface
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\EntityStore;
 
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Job;
+use Doctrine\ORM\EntityManagerInterface;
 
 class JobStore
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\DataProvider\CallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\SourceCompilation\StartedEvent;
 use App\Tests\Mock\Entity\MockCallback;
-use App\Entity\Callback\CallbackInterface;
 
 trait CreateFromCompilationStartedEventDataProviderTrait
 {

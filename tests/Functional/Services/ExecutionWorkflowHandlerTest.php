@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 use App\Event\CompilationCompletedEvent;
 use App\Event\ExecutionStartedEvent;
 use App\Event\SourceCompilation\PassedEvent;
@@ -22,8 +24,6 @@ use App\Tests\Services\Asserter\MessengerAsserter;
 use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\EventListenerRemover;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use App\Entity\Callback\CallbackInterface;
-use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
 class ExecutionWorkflowHandlerTest extends AbstractBaseFunctionalTest

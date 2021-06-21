@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CompilationState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\CallbackSetup;
@@ -12,7 +13,6 @@ use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
-use App\Entity\Callback\CallbackInterface;
 
 class CompilationStateTest extends AbstractBaseFunctionalTest
 {

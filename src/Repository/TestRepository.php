@@ -2,16 +2,16 @@
 
 namespace App\Repository;
 
+use App\Entity\Test;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Test;
 
 /**
- * @method Test|null find($id, $lockMode = null, $lockVersion = null)
- * @method Test|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|Test find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Test findOneBy(array $criteria, array $orderBy = null)
  * @method Test[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *
  * @extends ServiceEntityRepository<Test>

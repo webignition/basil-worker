@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
 use App\Services\EntityFactory\JobFactory;
@@ -15,7 +16,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
-use App\Entity\Callback\CallbackInterface;
 use webignition\ObjectReflector\ObjectReflector;
 
 class CallbackSenderTest extends AbstractBaseFunctionalTest

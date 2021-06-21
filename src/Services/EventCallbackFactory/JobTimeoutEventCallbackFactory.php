@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\EventCallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\JobTimeoutEvent;
 use Symfony\Contracts\EventDispatcher\Event;
-use App\Entity\Callback\CallbackInterface;
 
 class JobTimeoutEventCallbackFactory extends AbstractEventCallbackFactory
 {

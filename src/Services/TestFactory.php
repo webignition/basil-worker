@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Event\SourceCompilation\PassedEvent;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use webignition\BasilCompilerModels\TestManifest;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Event\SourceCompilation\PassedEvent;
 use App\Services\EntityFactory\TestFactory as TestEntityFactory;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use webignition\BasilCompilerModels\TestManifest;
 
 class TestFactory implements EventSubscriberInterface
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Model\RunnerTest;
 
-use webignition\BasilRunnerDocuments\TestConfiguration;
 use App\Entity\TestConfiguration as TestConfigurationEntity;
+use webignition\BasilRunnerDocuments\TestConfiguration;
 
 class TestConfigurationProxy extends TestConfiguration
 {

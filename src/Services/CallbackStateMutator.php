@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Callback\CallbackInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 class CallbackStateMutator
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityFactory;
 
+use App\Entity\Job;
 use App\Services\EntityFactory\JobFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\Job;
 
 class JobFactoryTest extends AbstractBaseFunctionalTest
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EntityStore\CallbackStore;
 use App\Services\EntityStore\JobStore;
 use App\Services\EntityStore\SourceStore;
-use App\Entity\Callback\CallbackInterface;
 
 class ApplicationState implements \Stringable
 {

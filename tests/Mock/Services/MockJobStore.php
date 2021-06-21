@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
+use App\Entity\Job;
 use App\Services\EntityStore\JobStore;
 use Mockery\MockInterface;
-use App\Entity\Job;
 
 class MockJobStore
 {

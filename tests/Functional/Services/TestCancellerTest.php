@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Test;
 use App\Event\JobTimeoutEvent;
 use App\Event\TestStepFailedEvent;
 use App\Services\TestCanceller;
@@ -12,7 +13,6 @@ use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\TestEntityAsserter;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest

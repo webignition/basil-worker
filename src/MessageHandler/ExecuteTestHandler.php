@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Entity\Test;
 use App\Event\TestFailedEvent;
 use App\Event\TestPassedEvent;
 use App\Event\TestStartedEvent;
@@ -17,7 +18,6 @@ use App\Services\TestExecutor;
 use App\Services\TestStateMutator;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use App\Entity\Test;
 
 class ExecuteTestHandler implements MessageHandlerInterface
 {

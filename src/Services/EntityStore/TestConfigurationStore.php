@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services\EntityStore;
 
+use App\Entity\TestConfiguration;
 use App\Repository\TestConfigurationRepository;
 use App\Services\EntityFactory\TestConfigurationFactory;
-use App\Entity\TestConfiguration;
 
 class TestConfigurationStore
 {

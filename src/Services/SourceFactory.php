@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Source;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
-use App\Entity\Source;
 use App\Services\EntityFactory\SourceFactory as SourceEntityFactory;
 
 class SourceFactory

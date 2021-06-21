@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityStore;
 
+use App\Entity\Job;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\Job;
 
 class JobStoreTest extends AbstractBaseFunctionalTest
 {

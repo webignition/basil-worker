@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Controller;
 
+use App\Entity\Job;
 use App\Services\EntityStore\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EnvironmentSetup;
@@ -13,7 +14,6 @@ use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EnvironmentFactory;
-use App\Entity\Job;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
 {

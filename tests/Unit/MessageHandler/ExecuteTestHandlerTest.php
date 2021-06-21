@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\MessageHandler;
 
+use App\Entity\Test;
 use App\Message\ExecuteTestMessage;
 use App\MessageHandler\ExecuteTestHandler;
 use App\Repository\TestRepository;
@@ -21,7 +22,6 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use App\Entity\Test;
 
 class ExecuteTestHandlerTest extends TestCase
 {

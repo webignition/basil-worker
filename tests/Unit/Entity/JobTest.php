@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use PHPUnit\Framework\TestCase;
 use App\Entity\Job;
+use PHPUnit\Framework\TestCase;
 use webignition\ObjectReflector\ObjectReflector;
 
 class JobTest extends TestCase

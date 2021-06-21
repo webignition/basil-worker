@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Repository\TestConfigurationRepository;
 use App\Entity\EntityInterface;
 use App\Entity\TestConfiguration;
+use App\Repository\TestConfigurationRepository;
 
 /**
  * @extends AbstractEntityRepositoryTest<TestConfiguration>

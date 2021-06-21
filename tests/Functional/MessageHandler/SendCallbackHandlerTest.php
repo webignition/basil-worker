@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageHandler;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Message\SendCallbackMessage;
 use App\MessageHandler\SendCallbackHandler;
 use App\Repository\CallbackRepository;
@@ -15,7 +16,6 @@ use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use App\Entity\Callback\CallbackInterface;
 use webignition\ObjectReflector\ObjectReflector;
 
 class SendCallbackHandlerTest extends AbstractBaseFunctionalTest

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Entity;
 
-use PHPUnit\Framework\TestCase;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
+use PHPUnit\Framework\TestCase;
 
 class CallbackEntityTest extends TestCase
 {

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityFactory;
 
+use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use App\Services\EntityFactory\TestFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\TestConfiguration;
 
 class TestFactoryTest extends AbstractBaseFunctionalTest
 {

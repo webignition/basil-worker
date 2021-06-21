@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use App\Model\Callback\AbstractCallbackWrapper;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
+use App\Model\Callback\AbstractCallbackWrapper;
 
 class TestCallback extends AbstractCallbackWrapper
 {

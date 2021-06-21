@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 use App\Services\CallbackState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\CallbackSetup;
 use App\Tests\Services\TestCallbackFactory;
-use App\Entity\Callback\CallbackEntity;
-use App\Entity\Callback\CallbackInterface;
 
 class CallbackStateTest extends AbstractBaseFunctionalTest
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\DataProvider\CallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\TestFailedEvent;
 use App\Event\TestPassedEvent;
 use App\Event\TestStartedEvent;
@@ -11,7 +12,6 @@ use App\Event\TestStepFailedEvent;
 use App\Event\TestStepPassedEvent;
 use App\Tests\Mock\Entity\MockCallback;
 use App\Tests\Mock\Entity\MockTest;
-use App\Entity\Callback\CallbackInterface;
 use webignition\YamlDocument\Document;
 
 trait CreateFromTestEventDataProviderTrait

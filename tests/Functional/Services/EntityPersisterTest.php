@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
-use App\Services\EntityPersister;
-use App\Tests\AbstractBaseFunctionalTest;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\EntityInterface;
 use App\Entity\Job;
 use App\Entity\Source;
+use App\Services\EntityPersister;
+use App\Tests\AbstractBaseFunctionalTest;
+use Doctrine\ORM\EntityManagerInterface;
 
 class EntityPersisterTest extends AbstractBaseFunctionalTest
 {

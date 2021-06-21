@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityStore;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EntityFactory\CallbackFactory;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\Callback\CallbackInterface;
 
 class CallbackStoreTest extends AbstractBaseFunctionalTest
 {

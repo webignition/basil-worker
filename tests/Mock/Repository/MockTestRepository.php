@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Repository;
 
+use App\Entity\Test;
 use App\Repository\TestRepository;
 use Mockery\MockInterface;
-use App\Entity\Test;
 
 class MockTestRepository
 {

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Repository\SourceRepository;
 use App\Entity\EntityInterface;
 use App\Entity\Source;
+use App\Repository\SourceRepository;
 
 /**
  * @extends AbstractEntityRepositoryTest<Source>

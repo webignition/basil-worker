@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\Asserter;
 
+use App\Entity\Test;
 use App\Repository\TestRepository;
 use PHPUnit\Framework\TestCase;
-use App\Entity\Test;
 
 class TestEntityAsserter
 {

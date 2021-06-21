@@ -2,13 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\TestConfiguration;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\TestConfiguration;
 
 /**
- * @method TestConfiguration|null find($id, $lockMode = null, $lockVersion = null)
- * @method TestConfiguration|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|TestConfiguration find($id, $lockMode = null, $lockVersion = null)
+ * @method null|TestConfiguration findOneBy(array $criteria, array $orderBy = null)
  * @method TestConfiguration[]    findAll()
  * @method TestConfiguration[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *

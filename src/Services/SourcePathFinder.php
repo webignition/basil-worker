@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Source;
 use App\Repository\TestRepository;
 use App\Services\EntityStore\SourceStore;
-use App\Entity\Source;
 use webignition\StringPrefixRemover\DefinedStringPrefixRemover;
 
 class SourcePathFinder

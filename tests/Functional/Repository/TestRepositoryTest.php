@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Repository\TestRepository;
-use App\Services\EntityStore\TestConfigurationStore;
 use App\Entity\EntityInterface;
 use App\Entity\Test;
 use App\Entity\TestConfiguration;
+use App\Repository\TestRepository;
+use App\Services\EntityStore\TestConfigurationStore;
 use webignition\ObjectReflector\ObjectReflector;
 
 /**

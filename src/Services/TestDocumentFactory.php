@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Model\RunnerTest\TestProxy;
 use App\Entity\Test as TestEntity;
+use App\Model\RunnerTest\TestProxy;
 use webignition\YamlDocument\Document;
 use webignition\YamlDocumentGenerator\YamlGenerator;
 

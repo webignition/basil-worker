@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Repository\TestRepository;
 use App\Entity\Test;
+use App\Repository\TestRepository;
 
 class ExecutionState implements \Stringable
 {

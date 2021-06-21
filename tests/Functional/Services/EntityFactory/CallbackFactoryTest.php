@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EntityFactory\CallbackFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\Callback\CallbackInterface;
 
 class CallbackFactoryTest extends AbstractBaseFunctionalTest
 {

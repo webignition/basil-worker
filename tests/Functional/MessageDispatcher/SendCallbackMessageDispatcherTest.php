@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageDispatcher;
 
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 use App\Event\CallbackHttpErrorEvent;
 use App\Event\CompilationCompletedEvent;
 use App\Event\ExecutionStartedEvent;
@@ -36,9 +39,6 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
-use App\Entity\Callback\CallbackEntity;
-use App\Entity\Callback\CallbackInterface;
-use App\Entity\Test;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 use webignition\YamlDocument\Document;
 

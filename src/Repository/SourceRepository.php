@@ -2,13 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Source;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Source;
 
 /**
- * @method Source|null find($id, $lockMode = null, $lockVersion = null)
- * @method Source|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|Source find($id, $lockMode = null, $lockVersion = null)
+ * @method null|Source findOneBy(array $criteria, array $orderBy = null)
  * @method Source[]    findAll()
  * @method Source[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *

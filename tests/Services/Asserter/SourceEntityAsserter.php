@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Services\Asserter;
 
+use App\Entity\Source;
 use App\Services\EntityStore\SourceStore;
 use App\Services\SourceFileStore;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
-use App\Entity\Source;
 
 class SourceEntityAsserter
 {

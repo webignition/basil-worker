@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\MessageDispatcher;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\CallbackHttpErrorEvent;
 use App\Event\CompilationCompletedEvent;
 use App\Event\ExecutionCompletedEvent;
@@ -26,7 +27,6 @@ use App\Services\CallbackStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Contracts\EventDispatcher\Event;
-use App\Entity\Callback\CallbackInterface;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class SendCallbackMessageDispatcher extends AbstractMessageDispatcher implements EventSubscriberInterface

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 use App\Event\CompilationCompletedEvent;
 use App\Event\ExecutionCompletedEvent;
 use App\Event\ExecutionStartedEvent;
@@ -14,8 +16,6 @@ use App\Repository\TestRepository;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use App\Entity\Callback\CallbackInterface;
-use App\Entity\Test;
 
 class ExecutionWorkflowHandler implements EventSubscriberInterface
 {

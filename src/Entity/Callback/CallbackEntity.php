@@ -47,7 +47,6 @@ class CallbackEntity implements CallbackInterface
     /**
      * @param self::TYPE_* $type
      * @param array<mixed> $payload
-     *
      */
     public static function create(string $type, array $payload): self
     {
@@ -114,6 +113,6 @@ class CallbackEntity implements CallbackInterface
 
     public function incrementRetryCount(): void
     {
-        $this->retryCount++;
+        $this->retryCount = $this->retryCount + 1;
     }
 }

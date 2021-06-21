@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Entity;
 
-use Mockery\MockInterface;
 use App\Entity\Test;
+use Mockery\MockInterface;
 
 class MockTest
 {

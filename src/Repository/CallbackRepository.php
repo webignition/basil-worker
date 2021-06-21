@@ -2,13 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Callback\CallbackEntity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Callback\CallbackEntity;
 
 /**
- * @method CallbackEntity|null find($id, $lockMode = null, $lockVersion = null)
- * @method CallbackEntity|null findOneBy(array $criteria, array $orderBy = null)
+ * @method null|CallbackEntity find($id, $lockMode = null, $lockVersion = null)
+ * @method null|CallbackEntity findOneBy(array $criteria, array $orderBy = null)
  * @method CallbackEntity[]    findAll()
  * @method CallbackEntity[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  *

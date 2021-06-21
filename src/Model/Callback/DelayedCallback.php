@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Model\Callback;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Model\BackoffStrategy\BackoffStrategyInterface;
 use App\Model\StampCollection;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
-use App\Entity\Callback\CallbackInterface;
 
 class DelayedCallback extends AbstractCallbackWrapper implements StampedCallbackInterface
 {

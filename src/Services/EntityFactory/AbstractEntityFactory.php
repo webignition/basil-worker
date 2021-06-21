@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\EntityFactory;
 
-use App\Services\EntityPersister;
 use App\Entity\EntityInterface;
+use App\Services\EntityPersister;
 
 abstract class AbstractEntityFactory
 {

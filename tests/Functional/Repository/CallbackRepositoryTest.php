@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Repository;
 
-use App\Repository\CallbackRepository;
 use App\Entity\Callback\CallbackEntity;
 use App\Entity\Callback\CallbackInterface;
 use App\Entity\EntityInterface;
+use App\Repository\CallbackRepository;
 
 /**
  * @extends AbstractEntityRepositoryTest<CallbackEntity>

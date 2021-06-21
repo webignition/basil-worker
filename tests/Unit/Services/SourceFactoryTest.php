@@ -7,11 +7,11 @@ namespace App\Tests\Unit\Services;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSourceCollection;
+use App\Services\EntityFactory\SourceFactory as SourceEntityFactory;
 use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\Mock\Model\MockUploadedSourceCollection;
 use PHPUnit\Framework\TestCase;
-use App\Services\EntityFactory\SourceFactory as SourceEntityFactory;
 
 class SourceFactoryTest extends TestCase
 {

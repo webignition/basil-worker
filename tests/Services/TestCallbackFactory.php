@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EntityFactory\CallbackFactory as CallbackEntityFactory;
 use App\Tests\Model\CallbackSetup;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Callback\CallbackInterface;
 
 class TestCallbackFactory
 {

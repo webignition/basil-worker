@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services\EntityFactory;
 
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use App\Repository\TestRepository;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\TestConfigurationStore;
-use App\Entity\Test;
-use App\Entity\TestConfiguration;
 
 class TestFactory extends AbstractEntityFactory
 {

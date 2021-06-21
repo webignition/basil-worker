@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\EndToEnd;
 
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 use App\Repository\TestRepository;
 use App\Services\ApplicationState;
 use App\Services\CompilationState;
@@ -11,8 +13,6 @@ use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractCreateAddSourcesCompileExecuteTest;
 use App\Tests\Services\Integration\HttpLogReader;
 use Psr\Http\Message\RequestInterface;
-use App\Entity\Callback\CallbackInterface;
-use App\Entity\Test;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractCreateAddSourcesCompileExecuteTest
 {

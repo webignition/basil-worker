@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EntityStore;
 
+use App\Entity\Source;
 use App\Services\EntityFactory\SourceFactory;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use App\Entity\Source;
 
 class SourceStoreTest extends AbstractBaseFunctionalTest
 {

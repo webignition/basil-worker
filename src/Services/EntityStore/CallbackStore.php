@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\EntityStore;
 
-use App\Repository\CallbackRepository;
 use App\Entity\Callback\CallbackInterface;
+use App\Repository\CallbackRepository;
 
 class CallbackStore
 {

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services\EventCallbackFactory;
 
-use App\Services\EntityFactory\CallbackFactory as CallbackEntityFactory;
 use App\Entity\Callback\CallbackInterface;
+use App\Services\EntityFactory\CallbackFactory as CallbackEntityFactory;
 
 abstract class AbstractEventCallbackFactory implements EventCallbackFactoryInterface
 {

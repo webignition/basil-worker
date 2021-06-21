@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services\EventCallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EventCallbackFactory\EventCallbackFactoryInterface;
 use App\Tests\AbstractBaseFunctionalTest;
 use Symfony\Contracts\EventDispatcher\Event;
-use App\Entity\Callback\CallbackInterface;
 
 abstract class AbstractEventCallbackFactoryTest extends AbstractBaseFunctionalTest
 {
