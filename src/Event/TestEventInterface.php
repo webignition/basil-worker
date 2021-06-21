@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Event;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
 interface TestEventInterface

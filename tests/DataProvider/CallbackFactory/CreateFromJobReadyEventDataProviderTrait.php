@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\DataProvider\CallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\JobReadyEvent;
 use App\Tests\Mock\Entity\MockCallback;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 trait CreateFromJobReadyEventDataProviderTrait
 {

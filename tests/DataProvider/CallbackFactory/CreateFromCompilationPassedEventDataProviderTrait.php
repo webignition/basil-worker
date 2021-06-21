@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\DataProvider\CallbackFactory;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Event\SourceCompilation\FailedEvent;
 use App\Event\SourceCompilation\PassedEvent;
 use App\Tests\Mock\Entity\MockCallback;
 use App\Tests\Mock\MockSuiteManifest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 trait CreateFromCompilationPassedEventDataProviderTrait
 {

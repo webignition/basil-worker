@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
+use App\Services\EntityFactory\JobFactory;
+use App\Services\EntityFactory\SourceFactory;
 use App\Tests\Model\Environment;
 use App\Tests\Model\EnvironmentSetup;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory;
+use App\Tests\Model\JobSetup;
 
 class EnvironmentFactory
 {
@@ -21,13 +22,18 @@ class EnvironmentFactory
 
     public function create(EnvironmentSetup $setup): Environment
     {
-        $jobSetup = $setup->getJobSetup();
+        $environment = new Environment();
 
-        $job = $this->jobFactory->create(
-            $jobSetup->getLabel(),
-            $jobSetup->getCallbackUrl(),
-            $jobSetup->getMaximumDurationInSeconds()
-        );
+        $jobSetup = $setup->getJobSetup();
+        if ($jobSetup instanceof JobSetup) {
+            $job = $this->jobFactory->create(
+                $jobSetup->getLabel(),
+                $jobSetup->getCallbackUrl(),
+                $jobSetup->getMaximumDurationInSeconds()
+            );
+
+            $environment = $environment->withJob($job);
+        }
 
         $sources = [];
         foreach ($setup->getSourceSetups() as $sourceSetup) {
@@ -44,8 +50,7 @@ class EnvironmentFactory
             $callbacks[] = $this->testCallbackFactory->create($callbackSetup);
         }
 
-        return (new Environment())
-            ->withJob($job)
+        return $environment
             ->withSources($sources)
             ->withTests($tests)
             ->withCallbacks($callbacks)

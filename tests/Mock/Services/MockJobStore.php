@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Mock\Services;
 
+use App\Entity\Job;
+use App\Services\EntityStore\JobStore;
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class MockJobStore
 {

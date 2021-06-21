@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use App\Event\SourceCompilation\PassedEvent;
+use App\Services\EntityFactory\TestFactory as TestEntityFactory;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use webignition\BasilCompilerModels\TestManifest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\TestFactory as BundleTestFactory;
 
 class TestFactory implements EventSubscriberInterface
 {
-    public function __construct(private BundleTestFactory $bundleTestFactory)
+    public function __construct(private TestEntityFactory $testEntityFactory)
     {
     }
 
@@ -61,7 +61,7 @@ class TestFactory implements EventSubscriberInterface
     {
         $manifestConfiguration = $manifest->getConfiguration();
 
-        return $this->bundleTestFactory->create(
+        return $this->testEntityFactory->create(
             TestConfiguration::create(
                 $manifestConfiguration->getBrowser(),
                 $manifestConfiguration->getUrl()

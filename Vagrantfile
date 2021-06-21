@@ -18,7 +18,6 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "config/bundles.php", destination: "~/build/config/"
     basil_worker.vm.provision "file", source: "config/packages/cache.yaml", destination: "~/build/config/packages/"
     basil_worker.vm.provision "file", source: "config/packages/doctrine.yaml", destination: "~/build/config/packages/"
-    basil_worker.vm.provision "file", source: "config/packages/doctrine_migrations.yaml", destination: "~/build/config/packages/"
     basil_worker.vm.provision "file", source: "config/packages/framework.yaml", destination: "~/build/config/packages/"
     basil_worker.vm.provision "file", source: "config/packages/messenger.yaml", destination: "~/build/config/packages/"
     basil_worker.vm.provision "file", source: "config/packages/routing.yaml", destination: "~/build/config/packages/"
@@ -27,7 +26,6 @@ Vagrant.configure("2") do |config|
     basil_worker.vm.provision "file", source: "config/services.yaml", destination: "~/build/config/"
     basil_worker.vm.provision "file", source: "public/index.php", destination: "~/build/public/"
     basil_worker.vm.provision "file", source: "src", destination: "~/build/"
-    basil_worker.vm.provision "file", source: "migrations", destination: "~/build/"
     basil_worker.vm.provision "file", source: "Dockerfile", destination: "~/build/"
     basil_worker.vm.provision "file", source: "./supervisor", destination: "~/build/"
 

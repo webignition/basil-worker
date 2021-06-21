@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\MessageDispatcher;
 
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 use App\Event\CallbackHttpErrorEvent;
 use App\Event\CompilationCompletedEvent;
 use App\Event\ExecutionStartedEvent;
@@ -21,6 +24,7 @@ use App\Event\TestStepPassedEvent;
 use App\Message\SendCallbackMessage;
 use App\MessageDispatcher\SendCallbackMessageDispatcher;
 use App\MessageDispatcher\TimeoutCheckMessageDispatcher;
+use App\Repository\CallbackRepository;
 use App\Services\ApplicationWorkflowHandler;
 use App\Services\ExecutionWorkflowHandler;
 use App\Services\TestFactory;
@@ -35,10 +39,6 @@ use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 use webignition\YamlDocument\Document;
 

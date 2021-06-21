@@ -65,11 +65,6 @@ build {
 
   provisioner "file" {
     destination = "~/build/config/packages/"
-    source      = "config/packages/doctrine_migrations.yaml"
-  }
-
-  provisioner "file" {
-    destination = "~/build/config/packages/"
     source      = "config/packages/framework.yaml"
   }
 
@@ -114,11 +109,6 @@ build {
   provisioner "file" {
     destination = "~/build"
     source      = "src"
-  }
-
-  provisioner "file" {
-    destination = "~/build"
-    source      = "migrations"
   }
 
   provisioner "file" {

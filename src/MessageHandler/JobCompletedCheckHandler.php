@@ -6,9 +6,9 @@ namespace App\MessageHandler;
 
 use App\Event\JobCompletedEvent;
 use App\Message\JobCompletedCheckMessage;
+use App\Services\ApplicationState;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\StateBundle\Services\ApplicationState;
 
 class JobCompletedCheckHandler implements MessageHandlerInterface
 {

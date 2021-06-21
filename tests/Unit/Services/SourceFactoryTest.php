@@ -7,11 +7,11 @@ namespace App\Tests\Unit\Services;
 use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSourceCollection;
+use App\Services\EntityFactory\SourceFactory as SourceEntityFactory;
 use App\Services\SourceFactory;
 use App\Services\SourceFileStore;
 use App\Tests\Mock\Model\MockUploadedSourceCollection;
 use PHPUnit\Framework\TestCase;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory as BundleSourceFactory;
 
 class SourceFactoryTest extends TestCase
 {
@@ -22,7 +22,7 @@ class SourceFactoryTest extends TestCase
     {
         $factory = new SourceFactory(
             \Mockery::mock(SourceFileStore::class),
-            \Mockery::mock(BundleSourceFactory::class)
+            \Mockery::mock(SourceEntityFactory::class)
         );
 
         $path = 'Test/test.yml';
