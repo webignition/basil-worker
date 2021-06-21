@@ -4,7 +4,7 @@ WORKDIR /app
 
 ARG APP_ENV=prod
 ARG DATABASE_URL=postgresql://database_user:database_password@0.0.0.0:5432/database_name?serverVersion=12&charset=utf8
-ARG MESSENGER_TRANSPORT_DSN=amqp://rabbitmq_user:rabbitmq_password@rabbitmq_host:5672/%2f/messages
+ARG MESSENGER_TRANSPORT_DSN=doctrine://default
 ARG COMPILER_SOURCE_DIRECTORY=/app/source
 ARG COMPILER_TARGET_DIRECTORY=/app/tests
 ARG COMPILER_HOST=compiler
