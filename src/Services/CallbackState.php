@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Repository\CallbackRepository;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
+use App\Services\EntityStore\CallbackStore;
 
 class CallbackState implements \Stringable
 {
