@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use App\Event\SourceCompilation\PassedEvent;
+use App\Repository\TestRepository;
 use App\Services\TestFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\MockSuiteManifest;
@@ -12,9 +15,6 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\BasilModels\Test\Configuration;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
 
 class TestFactoryTest extends AbstractBaseFunctionalTest
 {

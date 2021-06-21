@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
+use App\Entity\Callback\CallbackInterface;
+use App\Services\EntityStore\CallbackStore;
+use App\Services\EntityStore\JobStore;
+use App\Services\EntityStore\SourceStore;
 
 class ApplicationState implements \Stringable
 {

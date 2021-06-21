@@ -7,21 +7,21 @@ namespace App\Controller;
 use App\Exception\MissingTestSourceException;
 use App\Message\JobReadyMessage;
 use App\Model\Manifest;
+use App\Repository\TestRepository;
 use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
 use App\Services\CompilationState;
+use App\Services\EntityFactory\JobFactory;
+use App\Services\EntityStore\JobStore;
+use App\Services\EntityStore\SourceStore;
 use App\Services\ExecutionState;
 use App\Services\SourceFactory;
 use App\Services\TestSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class JobController extends AbstractController

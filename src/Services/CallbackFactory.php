@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Services\EventCallbackFactory\EventCallbackFactoryInterface;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
 
 class CallbackFactory
 {

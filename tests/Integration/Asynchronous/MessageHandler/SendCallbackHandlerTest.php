@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Integration\Asynchronous\MessageHandler;
 
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 use App\Message\SendCallbackMessage;
 use App\Model\BackoffStrategy\ExponentialBackoffStrategy;
+use App\Repository\CallbackRepository;
+use App\Services\EntityPersister;
 use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
@@ -15,10 +19,6 @@ use App\Tests\Services\EnvironmentFactory;
 use App\Tests\Services\Integration\HttpLogReader;
 use App\Tests\Services\IntegrationJobProperties;
 use Symfony\Component\Messenger\MessageBusInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\EntityPersister;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 
 class SendCallbackHandlerTest extends AbstractBaseIntegrationTest
 {

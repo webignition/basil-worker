@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\CallbackStore;
+use App\Entity\Callback\CallbackInterface;
+use App\Services\EntityStore\CallbackStore;
 
 class CompilationState implements \Stringable
 {

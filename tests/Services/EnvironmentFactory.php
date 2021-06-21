@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
+use App\Services\EntityFactory\JobFactory;
+use App\Services\EntityFactory\SourceFactory;
 use App\Tests\Model\Environment;
 use App\Tests\Model\EnvironmentSetup;
 use App\Tests\Model\JobSetup;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\SourceFactory;
 
 class EnvironmentFactory
 {

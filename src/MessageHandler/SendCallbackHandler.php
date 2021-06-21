@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\MessageHandler;
 
+use App\Entity\Callback\CallbackInterface;
 use App\Message\SendCallbackMessage;
+use App\Repository\CallbackRepository;
 use App\Services\CallbackSender;
+use App\Services\CallbackStateMutator;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\CallbackStateMutator;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\CallbackRepository;
 
 class SendCallbackHandler implements MessageHandlerInterface
 {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Source;
 use App\Services\SourcePathFinder;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\EnvironmentSetup;
@@ -11,7 +12,6 @@ use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
 
 class SourcePathFinderTest extends AbstractBaseFunctionalTest
 {

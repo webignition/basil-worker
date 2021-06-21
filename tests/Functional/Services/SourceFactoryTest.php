@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Functional\Services;
 
+use App\Entity\Source;
 use App\Model\Manifest;
 use App\Model\UploadedFileKey;
 use App\Model\UploadedSource;
@@ -15,7 +16,6 @@ use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
 
 class SourceFactoryTest extends AbstractBaseFunctionalTest
 {

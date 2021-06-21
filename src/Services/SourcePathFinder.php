@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
+use App\Entity\Source;
+use App\Repository\TestRepository;
+use App\Services\EntityStore\SourceStore;
 use webignition\StringPrefixRemover\DefinedStringPrefixRemover;
 
 class SourcePathFinder

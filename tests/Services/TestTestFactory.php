@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Services;
 
+use App\Entity\Test;
+use App\Services\EntityFactory\TestFactory;
 use App\Tests\Model\TestSetup;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\TestFactory;
 
 class TestTestFactory
 {

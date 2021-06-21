@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1740fce21a92117fc4f74ddf20251aeb",
+    "content-hash": "8211b7131156d1bd424b33604797629f",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -5206,68 +5206,6 @@
                 "source": "https://github.com/webignition/basil-runner-documents/tree/0.3"
             },
             "time": "2021-02-19T18:28:56+00:00"
-        },
-        {
-            "name": "webignition/basil-worker-persistence-bundle",
-            "version": "0.27",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/webignition/basil-worker-persistence-bundle.git",
-                "reference": "563df4b7ecac917eea2a053561e728c9ac24c87b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/webignition/basil-worker-persistence-bundle/zipball/563df4b7ecac917eea2a053561e728c9ac24c87b",
-                "reference": "563df4b7ecac917eea2a053561e728c9ac24c87b",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/orm": "^2.8",
-                "ext-json": "*",
-                "php": "8.*",
-                "symfony/config": "^5.2",
-                "symfony/dependency-injection": "^5.2",
-                "symfony/http-kernel": "^5.2",
-                "symfony/yaml": "^5.3"
-            },
-            "require-dev": {
-                "doctrine/doctrine-bundle": "^2.2",
-                "friendsofphp/php-cs-fixer": "^3.0",
-                "mockery/mockery": "^1.4",
-                "phpstan/extension-installer": "^1.1",
-                "phpstan/phpstan": "^0.12.78",
-                "phpstan/phpstan-mockery": "^0.12.12",
-                "phpstan/phpstan-phpunit": "^0.12.17",
-                "phpstan/phpstan-symfony": "^0.12.20",
-                "phpunit/phpunit": "^9.5",
-                "squizlabs/php_codesniffer": "^3.6",
-                "webignition/object-reflector": "^1.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "webignition\\BasilWorker\\PersistenceBundle\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Jon Cram",
-                    "email": "webignition@gmail.com"
-                }
-            ],
-            "homepage": "https://github.com/webignition/basil-worker-persistence-bundle",
-            "support": {
-                "issues": "https://github.com/webignition/basil-worker-persistence-bundle/issues",
-                "source": "https://github.com/webignition/basil-worker-persistence-bundle/tree/0.27"
-            },
-            "time": "2021-06-10T16:27:17+00:00"
         },
         {
             "name": "webignition/error-handler",

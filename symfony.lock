@@ -493,9 +493,6 @@
     "webignition/basil-runner-documents": {
         "version": "0.3"
     },
-    "webignition/basil-worker-persistence-bundle": {
-        "version": "0.8"
-    },
     "webignition/error-handler": {
         "version": "0.2"
     },

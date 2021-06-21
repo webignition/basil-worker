@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Services\Repository\TestRepository;
+use App\Entity\Test;
+use App\Repository\TestRepository;
 
 class ExecutionState implements \Stringable
 {

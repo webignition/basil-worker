@@ -10,10 +10,10 @@ use App\Event\SourceCompilation\StartedEvent as SourceCompilationStartedEvent;
 use App\Message\CompileSourceMessage;
 use App\Services\CompilationState;
 use App\Services\Compiler;
+use App\Services\EntityStore\JobStore;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 use webignition\BasilCompilerModels\ErrorOutputInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\JobStore;
 
 class CompileSourceHandler implements MessageHandlerInterface
 {
