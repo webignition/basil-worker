@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Job;
+use App\Entity\Source;
+use App\Entity\Test;
 
 class Environment
 {

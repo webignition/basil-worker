@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\EventCallbackFactory;
 
 use App\Services\EntityFactory\CallbackFactory as CallbackEntityFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 abstract class AbstractEventCallbackFactory implements EventCallbackFactoryInterface
 {

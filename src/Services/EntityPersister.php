@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
+use App\Entity\EntityInterface;
 
 class EntityPersister
 {

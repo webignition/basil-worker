@@ -14,7 +14,7 @@ use App\Tests\Services\IntegrationCallbackRequestFactory;
 use App\Tests\Services\IntegrationJobProperties;
 use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use webignition\HttpHistoryContainer\Collection\RequestCollection;
 use webignition\HttpHistoryContainer\Collection\RequestCollectionInterface;
 

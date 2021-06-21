@@ -7,7 +7,7 @@ namespace App\Event;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackHttpErrorEvent extends Event
 {

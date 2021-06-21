@@ -6,7 +6,7 @@ namespace App\Tests\Services;
 
 use App\Tests\Model\TestSetup;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 use App\Services\EntityFactory\TestFactory;
 
 class TestTestFactory

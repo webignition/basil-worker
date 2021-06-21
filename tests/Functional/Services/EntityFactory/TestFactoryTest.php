@@ -7,7 +7,7 @@ namespace App\Tests\Functional\Services\EntityFactory;
 use App\Repository\TestRepository;
 use App\Services\EntityFactory\TestFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\TestConfiguration;
 
 class TestFactoryTest extends AbstractBaseFunctionalTest
 {

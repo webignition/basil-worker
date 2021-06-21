@@ -7,11 +7,11 @@ namespace App\Tests\Functional\Services;
 use App\Services\EntityPersister;
 use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\EntityInterface;
+use App\Entity\Job;
+use App\Entity\Source;
 
 class EntityPersisterTest extends AbstractBaseFunctionalTest
 {

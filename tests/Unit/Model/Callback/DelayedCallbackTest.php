@@ -10,7 +10,7 @@ use App\Model\StampCollection;
 use App\Tests\Model\TestCallback;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class DelayedCallbackTest extends TestCase
 {

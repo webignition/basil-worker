@@ -11,8 +11,8 @@ use App\Services\ExecutionState;
 use App\Tests\Integration\AbstractCreateAddSourcesCompileExecuteTest;
 use App\Tests\Services\Integration\HttpLogReader;
 use Psr\Http\Message\RequestInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 
 class CreateAddSourcesCompileExecuteTest extends AbstractCreateAddSourcesCompileExecuteTest
 {

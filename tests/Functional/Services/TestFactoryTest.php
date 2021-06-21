@@ -13,8 +13,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\BasilCompilerModels\TestManifest;
 use webignition\BasilModels\Test\Configuration;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 
 class TestFactoryTest extends AbstractBaseFunctionalTest
 {

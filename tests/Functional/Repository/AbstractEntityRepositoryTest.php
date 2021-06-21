@@ -8,7 +8,7 @@ use App\Tests\AbstractBaseFunctionalTest;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use Doctrine\ORM\QueryBuilder;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
+use App\Entity\EntityInterface;
 
 /**
  * @template T

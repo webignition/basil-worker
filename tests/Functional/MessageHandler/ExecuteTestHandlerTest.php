@@ -20,8 +20,8 @@ use App\Tests\Model\JobSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Job;
+use App\Entity\Test;
 use webignition\ObjectReflector\ObjectReflector;
 
 class ExecuteTestHandlerTest extends AbstractBaseFunctionalTest

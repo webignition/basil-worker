@@ -8,7 +8,7 @@ use App\Services\EntityFactory\CallbackFactory;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\CallbackStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackStoreTest extends AbstractBaseFunctionalTest
 {

@@ -7,7 +7,7 @@ namespace App\Tests\Services;
 use App\Services\EntityFactory\CallbackFactory as CallbackEntityFactory;
 use App\Tests\Model\CallbackSetup;
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class TestCallbackFactory
 {

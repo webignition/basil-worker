@@ -19,7 +19,7 @@ use App\Tests\DataProvider\CallbackFactory\CreateFromJobTimeoutEventDataProvider
 use App\Tests\DataProvider\CallbackFactory\CreateFromTestEventDataProviderTrait;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackFactoryTest extends AbstractBaseFunctionalTest
 {

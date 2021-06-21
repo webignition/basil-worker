@@ -8,8 +8,8 @@ use App\Services\TestDocumentFactory;
 use App\Services\TestDocumentMutator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Yaml\Dumper;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use webignition\StringPrefixRemover\DefinedStringPrefixRemover;
 use webignition\YamlDocumentGenerator\YamlGenerator;
 

@@ -21,7 +21,7 @@ use App\Tests\Mock\Services\MockTestExecutor;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class ExecuteTestHandlerTest extends TestCase
 {

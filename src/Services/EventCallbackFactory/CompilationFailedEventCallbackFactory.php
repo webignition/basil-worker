@@ -6,7 +6,7 @@ namespace App\Services\EventCallbackFactory;
 
 use App\Event\SourceCompilation\FailedEvent;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CompilationFailedEventCallbackFactory extends AbstractCompilationEventCallbackFactory
 {

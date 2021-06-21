@@ -8,7 +8,7 @@ use App\Event\TestStepFailedEvent;
 use App\Event\TestStepPassedEvent;
 use App\Model\Document\Step;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 use webignition\TcpCliProxyClient\Client;
 use webignition\TcpCliProxyClient\Handler;
 use webignition\YamlDocument\Document;

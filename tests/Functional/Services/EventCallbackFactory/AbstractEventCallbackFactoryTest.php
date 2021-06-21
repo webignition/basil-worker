@@ -7,7 +7,7 @@ namespace App\Tests\Functional\Services\EventCallbackFactory;
 use App\Services\EventCallbackFactory\EventCallbackFactoryInterface;
 use App\Tests\AbstractBaseFunctionalTest;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 abstract class AbstractEventCallbackFactoryTest extends AbstractBaseFunctionalTest
 {

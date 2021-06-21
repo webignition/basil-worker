@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Repository;
 
 use App\Repository\TestConfigurationRepository;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\EntityInterface;
+use App\Entity\TestConfiguration;
 
 /**
  * @extends AbstractEntityRepositoryTest<TestConfiguration>

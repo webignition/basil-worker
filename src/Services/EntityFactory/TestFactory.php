@@ -7,8 +7,8 @@ namespace App\Services\EntityFactory;
 use App\Repository\TestRepository;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\TestConfigurationStore;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 
 class TestFactory extends AbstractEntityFactory
 {

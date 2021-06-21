@@ -7,8 +7,8 @@ namespace App\Services;
 use App\Event\SourceCompilation\PassedEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use webignition\BasilCompilerModels\TestManifest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use App\Services\EntityFactory\TestFactory as TestEntityFactory;
 
 class TestFactory implements EventSubscriberInterface

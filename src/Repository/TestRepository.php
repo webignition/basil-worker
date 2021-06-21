@@ -7,7 +7,7 @@ use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query;
 use Doctrine\Persistence\ManagerRegistry;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 /**
  * @method Test|null find($id, $lockMode = null, $lockVersion = null)

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\HttpMessage;
 
 use GuzzleHttp\Psr7\Request as GuzzleRequest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Job;
 
 class CallbackRequest extends GuzzleRequest
 {

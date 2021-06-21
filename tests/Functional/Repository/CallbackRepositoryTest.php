@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Repository;
 
 use App\Repository\CallbackRepository;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\EntityInterface;
 
 /**
  * @extends AbstractEntityRepositoryTest<CallbackEntity>

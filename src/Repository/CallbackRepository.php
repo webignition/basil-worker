@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackEntity;
 
 /**
  * @method CallbackEntity|null find($id, $lockMode = null, $lockVersion = null)

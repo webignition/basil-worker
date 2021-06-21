@@ -6,7 +6,7 @@ namespace App\Tests\Mock\Services;
 
 use App\Services\TestExecutor;
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class MockTestExecutor
 {

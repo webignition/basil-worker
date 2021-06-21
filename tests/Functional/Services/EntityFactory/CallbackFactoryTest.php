@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services\EntityFactory;
 
 use App\Services\EntityFactory\CallbackFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackFactoryTest extends AbstractBaseFunctionalTest
 {

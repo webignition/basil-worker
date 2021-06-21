@@ -13,7 +13,7 @@ use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\EnvironmentFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use App\Entity\Job;
 
 class JobControllerTest extends AbstractBaseFunctionalTest
 {

@@ -8,8 +8,8 @@ use App\Services\CallbackState;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Model\CallbackSetup;
 use App\Tests\Services\TestCallbackFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackStateTest extends AbstractBaseFunctionalTest
 {

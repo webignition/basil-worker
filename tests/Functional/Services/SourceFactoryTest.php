@@ -15,7 +15,7 @@ use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 
 class SourceFactoryTest extends AbstractBaseFunctionalTest
 {

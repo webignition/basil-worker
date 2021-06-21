@@ -8,7 +8,7 @@ use App\Exception\MissingTestSourceException;
 use App\Model\Manifest;
 use App\Model\UploadedSource;
 use App\Model\UploadedSourceCollection;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 use App\Services\EntityFactory\SourceFactory as SourceEntityFactory;
 
 class SourceFactory

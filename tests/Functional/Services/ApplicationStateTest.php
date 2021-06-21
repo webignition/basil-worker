@@ -12,8 +12,8 @@ use App\Tests\Model\JobSetup;
 use App\Tests\Model\SourceSetup;
 use App\Tests\Model\TestSetup;
 use App\Tests\Services\EnvironmentFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Callback\CallbackInterface;
+use App\Entity\Test;
 
 class ApplicationStateTest extends AbstractBaseFunctionalTest
 {

@@ -6,7 +6,7 @@ namespace App\Tests\Services;
 
 use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\RequestInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class IntegrationCallbackRequestFactory
 {

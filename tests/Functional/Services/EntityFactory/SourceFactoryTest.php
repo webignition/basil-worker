@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services\EntityFactory;
 
 use App\Services\EntityFactory\SourceFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 
 class SourceFactoryTest extends AbstractBaseFunctionalTest
 {

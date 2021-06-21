@@ -11,7 +11,7 @@ use App\Tests\Model\TestSetup;
 use App\Tests\Services\TestTestFactory;
 use App\Tests\Services\TestTestMutator;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
 class TestStateMutatorTest extends AbstractBaseFunctionalTest

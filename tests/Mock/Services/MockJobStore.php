@@ -6,7 +6,7 @@ namespace App\Tests\Mock\Services;
 
 use App\Services\EntityStore\JobStore;
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use App\Entity\Job;
 
 class MockJobStore
 {

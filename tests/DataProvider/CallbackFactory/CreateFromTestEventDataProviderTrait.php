@@ -11,7 +11,7 @@ use App\Event\TestStepFailedEvent;
 use App\Event\TestStepPassedEvent;
 use App\Tests\Mock\Entity\MockCallback;
 use App\Tests\Mock\Entity\MockTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use webignition\YamlDocument\Document;
 
 trait CreateFromTestEventDataProviderTrait

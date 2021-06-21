@@ -12,7 +12,7 @@ use App\Tests\Model\TestSetup;
 use App\Tests\Services\Asserter\TestEntityAsserter;
 use App\Tests\Services\TestTestFactory;
 use Psr\EventDispatcher\EventDispatcherInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 use webignition\YamlDocument\Document;
 
 class TestCancellerTest extends AbstractBaseFunctionalTest

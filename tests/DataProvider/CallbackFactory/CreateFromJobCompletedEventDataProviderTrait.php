@@ -6,7 +6,7 @@ namespace App\Tests\DataProvider\CallbackFactory;
 
 use App\Event\JobCompletedEvent;
 use App\Tests\Mock\Entity\MockCallback;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 trait CreateFromJobCompletedEventDataProviderTrait
 {

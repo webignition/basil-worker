@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Repository;
 
 use App\Repository\SourceRepository;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\EntityInterface;
+use App\Entity\Source;
 
 /**
  * @extends AbstractEntityRepositoryTest<Source>

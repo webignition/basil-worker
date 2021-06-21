@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services\EntityStore;
 
 use App\Services\EntityStore\TestConfigurationStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\TestConfiguration;
 
 class TestConfigurationStoreTest extends AbstractBaseFunctionalTest
 {

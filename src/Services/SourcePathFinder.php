@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Repository\TestRepository;
 use App\Services\EntityStore\SourceStore;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 use webignition\StringPrefixRemover\DefinedStringPrefixRemover;
 
 class SourcePathFinder

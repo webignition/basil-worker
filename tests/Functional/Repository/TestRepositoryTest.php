@@ -6,9 +6,9 @@ namespace App\Tests\Functional\Repository;
 
 use App\Repository\TestRepository;
 use App\Services\EntityStore\TestConfigurationStore;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\EntityInterface;
+use App\Entity\Test;
+use App\Entity\TestConfiguration;
 use webignition\ObjectReflector\ObjectReflector;
 
 /**

@@ -7,7 +7,7 @@ namespace App\Services;
 use App\Services\EntityStore\CallbackStore;
 use App\Services\EntityStore\JobStore;
 use App\Services\EntityStore\SourceStore;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class ApplicationState implements \Stringable
 {

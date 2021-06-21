@@ -6,7 +6,7 @@ namespace App\Services\EventCallbackFactory;
 
 use App\Event\JobTimeoutEvent;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class JobTimeoutEventCallbackFactory extends AbstractEventCallbackFactory
 {

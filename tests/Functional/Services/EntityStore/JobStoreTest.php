@@ -7,7 +7,7 @@ namespace App\Tests\Functional\Services\EntityStore;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\JobStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use App\Entity\Job;
 
 class JobStoreTest extends AbstractBaseFunctionalTest
 {

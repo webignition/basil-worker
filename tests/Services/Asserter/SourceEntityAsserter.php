@@ -9,7 +9,7 @@ use App\Services\SourceFileStore;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectRepository;
 use PHPUnit\Framework\TestCase;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 
 class SourceEntityAsserter
 {

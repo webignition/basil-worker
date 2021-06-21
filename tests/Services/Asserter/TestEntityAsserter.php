@@ -6,7 +6,7 @@ namespace App\Tests\Services\Asserter;
 
 use App\Repository\TestRepository;
 use PHPUnit\Framework\TestCase;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class TestEntityAsserter
 {

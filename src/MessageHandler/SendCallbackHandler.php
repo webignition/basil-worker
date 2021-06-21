@@ -9,7 +9,7 @@ use App\Repository\CallbackRepository;
 use App\Services\CallbackSender;
 use App\Services\CallbackStateMutator;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class SendCallbackHandler implements MessageHandlerInterface
 {

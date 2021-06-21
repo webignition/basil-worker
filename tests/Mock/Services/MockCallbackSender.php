@@ -6,7 +6,7 @@ namespace App\Tests\Mock\Services;
 
 use App\Services\CallbackSender;
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class MockCallbackSender
 {

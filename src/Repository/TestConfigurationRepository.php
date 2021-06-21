@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\TestConfiguration;
 
 /**
  * @method TestConfiguration|null find($id, $lockMode = null, $lockVersion = null)

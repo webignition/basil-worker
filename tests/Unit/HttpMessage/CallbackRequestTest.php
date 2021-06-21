@@ -8,7 +8,7 @@ use App\HttpMessage\CallbackRequest;
 use App\Tests\Mock\Entity\MockJob;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Message\RequestInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 
 class CallbackRequestTest extends TestCase
 {

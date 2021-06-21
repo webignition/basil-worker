@@ -6,7 +6,7 @@ namespace App\Tests\Functional\Services\EntityFactory;
 
 use App\Services\EntityFactory\JobFactory;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Job;
+use App\Entity\Job;
 
 class JobFactoryTest extends AbstractBaseFunctionalTest
 {

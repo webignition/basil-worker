@@ -6,7 +6,7 @@ namespace App\Services\EntityStore;
 
 use App\Repository\TestConfigurationRepository;
 use App\Services\EntityFactory\TestConfigurationFactory;
-use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
+use App\Entity\TestConfiguration;
 
 class TestConfigurationStore
 {

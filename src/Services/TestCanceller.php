@@ -8,7 +8,7 @@ use App\Event\JobTimeoutEvent;
 use App\Event\TestStepFailedEvent;
 use App\Repository\TestRepository;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class TestCanceller implements EventSubscriberInterface
 {

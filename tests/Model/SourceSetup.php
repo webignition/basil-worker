@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Model;
 
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 
 class SourceSetup
 {

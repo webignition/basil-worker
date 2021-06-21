@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Model;
 
 use App\Model\Callback\AbstractCallbackWrapper;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackEntity;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackEntity;
+use App\Entity\Callback\CallbackInterface;
 
 class TestCallback extends AbstractCallbackWrapper
 {

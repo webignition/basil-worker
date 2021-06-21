@@ -26,7 +26,7 @@ use App\Services\CallbackStateMutator;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Contracts\EventDispatcher\Event;
-use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
+use App\Entity\Callback\CallbackInterface;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class SendCallbackMessageDispatcher extends AbstractMessageDispatcher implements EventSubscriberInterface

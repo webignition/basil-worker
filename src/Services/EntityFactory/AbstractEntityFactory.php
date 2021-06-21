@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Services\EntityFactory;
 
 use App\Services\EntityPersister;
-use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
+use App\Entity\EntityInterface;
 
 abstract class AbstractEntityFactory
 {

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Services;
 
 use Doctrine\ORM\EntityManagerInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class TestTestMutator
 {

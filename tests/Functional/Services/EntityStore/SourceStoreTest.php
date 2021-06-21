@@ -8,7 +8,7 @@ use App\Services\EntityFactory\SourceFactory;
 use App\Services\EntityPersister;
 use App\Services\EntityStore\SourceStore;
 use App\Tests\AbstractBaseFunctionalTest;
-use webignition\BasilWorker\PersistenceBundle\Entity\Source;
+use App\Entity\Source;
 
 class SourceStoreTest extends AbstractBaseFunctionalTest
 {

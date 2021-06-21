@@ -6,7 +6,7 @@ namespace App\Tests\Mock\Repository;
 
 use App\Repository\TestRepository;
 use Mockery\MockInterface;
-use webignition\BasilWorker\PersistenceBundle\Entity\Test;
+use App\Entity\Test;
 
 class MockTestRepository
 {
