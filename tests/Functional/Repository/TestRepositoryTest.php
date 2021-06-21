@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Repository;
 
 use App\Repository\TestRepository;
+use App\Services\EntityStore\TestConfigurationStore;
 use webignition\BasilWorker\PersistenceBundle\Entity\EntityInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Test;
 use webignition\BasilWorker\PersistenceBundle\Entity\TestConfiguration;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\TestConfigurationStore;
 use webignition\ObjectReflector\ObjectReflector;
 
 /**
@@ -23,10 +23,8 @@ class TestRepositoryTest extends AbstractEntityRepositoryTest
         parent::setUp();
 
         $testConfigurationStore = self::$container->get(TestConfigurationStore::class);
-        self::assertInstanceOf(TestConfigurationStore::class, $testConfigurationStore);
-        if ($testConfigurationStore instanceof TestConfigurationStore) {
-            $this->testConfigurationStore = $testConfigurationStore;
-        }
+        \assert($testConfigurationStore instanceof TestConfigurationStore);
+        $this->testConfigurationStore = $testConfigurationStore;
     }
 
     public function findOneByDataProvider(): array
