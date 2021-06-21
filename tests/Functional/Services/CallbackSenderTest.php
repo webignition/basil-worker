@@ -6,6 +6,7 @@ namespace App\Tests\Functional\Services;
 
 use App\Services\CallbackResponseHandler;
 use App\Services\CallbackSender;
+use App\Services\EntityFactory\JobFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Mock\Services\MockCallbackResponseHandler;
 use App\Tests\Model\TestCallback;
@@ -15,7 +16,6 @@ use GuzzleHttp\Psr7\Response;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use Psr\Http\Message\ResponseInterface;
 use webignition\BasilWorker\PersistenceBundle\Entity\Callback\CallbackInterface;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 use webignition\ObjectReflector\ObjectReflector;
 
 class CallbackSenderTest extends AbstractBaseFunctionalTest
@@ -132,9 +132,8 @@ class CallbackSenderTest extends AbstractBaseFunctionalTest
     private function createJob(): void
     {
         $jobFactory = self::$container->get(JobFactory::class);
-        if ($jobFactory instanceof JobFactory) {
-            $jobFactory->create('label content', 'http://example.com/callback', 10);
-        }
+        \assert($jobFactory instanceof JobFactory);
+        $jobFactory->create('label content', 'http://example.com/callback', 10);
     }
 
     private function setCallbackResponseHandlerOnCallbackSender(CallbackResponseHandler $responseHandler): void

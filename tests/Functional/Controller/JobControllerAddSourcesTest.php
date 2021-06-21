@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Functional\Controller;
 
 use App\Message\JobReadyMessage;
+use App\Services\EntityFactory\JobFactory;
 use App\Tests\AbstractBaseFunctionalTest;
 use App\Tests\Services\Asserter\JsonResponseAsserter;
 use App\Tests\Services\Asserter\MessengerAsserter;
@@ -13,7 +14,6 @@ use App\Tests\Services\ClientRequestSender;
 use App\Tests\Services\FileStoreHandler;
 use App\Tests\Services\UploadedFileFactory;
 use Symfony\Component\HttpFoundation\Response;
-use webignition\BasilWorker\PersistenceBundle\Services\Factory\JobFactory;
 
 class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
 {
@@ -46,7 +46,7 @@ class JobControllerAddSourcesTest extends AbstractBaseFunctionalTest
         $this->uploadStoreHandler->clear();
 
         $jobFactory = self::$container->get(JobFactory::class);
-        self::assertInstanceOf(JobFactory::class, $jobFactory);
+        \assert($jobFactory instanceof JobFactory);
         $jobFactory->create(md5('label content'), 'http://example.com/callback', 10);
 
         $sourceEntityAsserter = self::$container->get(SourceEntityAsserter::class);
