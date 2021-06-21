@@ -1,0 +1,10 @@
+version: "3"
+
+networks:
+  primary:
+    name: worker-network
+
+services:
+  postgres:
+    ports:
+      - 5432:5432

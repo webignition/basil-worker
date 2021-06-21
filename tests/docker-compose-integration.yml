@@ -17,10 +17,6 @@ services:
     ports:
       - 5672:5672
 
-  postgres:
-    ports:
-      - 5432:5432
-
   httpbin:
     image: kennethreitz/httpbin
     container_name: httpbin
