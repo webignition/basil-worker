@@ -3,7 +3,6 @@
     "license": "proprietary",
     "require": {
         "php": ">=8",
-        "ext-amqp": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-iconv": "*",

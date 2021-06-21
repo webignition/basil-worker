@@ -29,10 +29,8 @@ ENV CALLBACK_RETRY_LIMIT=$CALLBACK_RETRY_LIMIT
 ENV DOCKERIZE_VERSION="v2.1.0"
 
 COPY --from=composer /usr/bin/composer /usr/bin/composer
-COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/bin/install-php-extensions
 
 RUN apt-get -qq update && apt-get -qq -y install  \
-  librabbitmq-dev \
   libpq-dev \
   libzip-dev \
   supervisor \
@@ -40,8 +38,6 @@ RUN apt-get -qq update && apt-get -qq -y install  \
   && docker-php-ext-install \
   pdo_pgsql \
   zip \
-  && install-php-extensions amqp \
-  && rm /usr/bin/install-php-extensions \
   && apt-get autoremove -y \
   && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
