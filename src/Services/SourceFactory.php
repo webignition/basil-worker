@@ -16,10 +16,10 @@ class SourceFactory
     private SourceFileStore $sourceFileStore;
     private SourceEntityFactory $sourceEntityFactory;
 
-    public function __construct(SourceFileStore $sourceFileStore, SourceEntityFactory $bundleSourceFactory)
+    public function __construct(SourceFileStore $sourceFileStore, SourceEntityFactory $sourceEntityFactory)
     {
         $this->sourceFileStore = $sourceFileStore;
-        $this->sourceEntityFactory = $bundleSourceFactory;
+        $this->sourceEntityFactory = $sourceEntityFactory;
     }
 
     /**
