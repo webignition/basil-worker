@@ -111,7 +111,7 @@
         "functional-start": "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-functional.yml up -d postgres",
         "functional-status": "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-functional.yml ps postgres",
         "functional-teardown": [
-            "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml -f ./tests/docker-compose-functional.yml down"
+            "docker-compose --env-file ./.docker-compose.env -f ./docker-compose.yml down --remove-orphans"
         ],
         "functional-setup": [
             "@functional-start",
