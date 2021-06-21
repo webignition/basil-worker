@@ -5,7 +5,6 @@ Services=(
   chrome-runner
   firefox-runner
   delegator
-  rabbitmq
   postgres
   nginx
   app-web

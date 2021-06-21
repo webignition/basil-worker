@@ -70,4 +70,4 @@ RUN composer check-platform-reqs --ansi \
   && php bin/console cache:clear --env=prod \
   && chown -R www-data:www-data /app/var/log
 
-CMD dockerize -wait tcp://rabbitmq:5672 -timeout 30s -wait tcp://postgres:5432 -timeout 30s supervisord -c /etc/supervisor/supervisord.conf
+CMD dockerize -wait tcp://postgres:5432 -timeout 30s supervisord -c /etc/supervisor/supervisord.conf
