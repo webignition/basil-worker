@@ -15,13 +15,13 @@ use App\Response\BadJobCreateRequestResponse;
 use App\Services\CompilationState;
 use App\Services\EntityFactory\JobFactory;
 use App\Services\EntityStore\JobStore;
+use App\Services\EntityStore\SourceStore;
 use App\Services\ExecutionState;
 use App\Services\SourceFactory;
 use App\Services\TestSerializer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use webignition\BasilWorker\PersistenceBundle\Services\Store\SourceStore;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class JobController extends AbstractController
