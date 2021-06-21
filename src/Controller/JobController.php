@@ -19,12 +19,11 @@ use App\Services\EntityStore\SourceStore;
 use App\Services\ExecutionState;
 use App\Services\SourceFactory;
 use App\Services\TestSerializer;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
-class JobController extends AbstractController
+class JobController
 {
     private JobStore $jobStore;
 
