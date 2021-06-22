@@ -116,8 +116,11 @@ class AppTest extends TestCase
         $durationExceeded = false;
 
         while (
-            false === $durationExceeded &&
-            false === $this->waitForApplicationState(CompilationState::STATE_COMPLETE, ExecutionState::STATE_COMPLETE)
+            false === $durationExceeded
+            && false === $this->waitForApplicationState(
+                CompilationState::STATE_COMPLETE,
+                ExecutionState::STATE_COMPLETE
+            )
         ) {
             usleep(self::WAIT_INTERVAL);
             $duration += self::WAIT_INTERVAL;
@@ -210,13 +213,13 @@ class AppTest extends TestCase
 
     /**
      * @param CompilationState::STATE_* $compilationState
-     * @param ExecutionState::STATE_* $executionState
+     * @param ExecutionState::STATE_*   $executionState
      */
     private function waitForApplicationState(string $compilationState, string $executionState): bool
     {
         $jobStatus = $this->getJsonResponse('http://localhost/status');
 
-        return $compilationState === $jobStatus['compilation_state'] &&
-            $executionState === $jobStatus['execution_state'];
+        return $compilationState === $jobStatus['compilation_state']
+            && $executionState === $jobStatus['execution_state'];
     }
 }
