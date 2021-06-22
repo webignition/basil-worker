@@ -44,6 +44,7 @@ class ApplicationTest extends TestCase
                 'sources' => [],
                 'compilation_state' => 'awaiting',
                 'execution_state' => 'awaiting',
+                'callback_state' => 'awaiting',
                 'tests' => [],
             ],
             $this->getJobStatus()
@@ -80,6 +81,7 @@ class ApplicationTest extends TestCase
                 ],
                 'compilation_state' => 'running',
                 'execution_state' => 'awaiting',
+                'callback_state' => 'awaiting',
                 'tests' => [],
             ],
             $this->getJobStatus()
