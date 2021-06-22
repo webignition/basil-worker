@@ -8,6 +8,7 @@ use App\Model\UploadedFileKey;
 use App\Request\AddSourcesRequest;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
+use App\Tests\Services\Asserter\SerializedJobAsserter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
@@ -20,12 +21,14 @@ class AppTest extends TestCase
     private const WAIT_TIMEOUT = self::MICROSECONDS_PER_SECOND * 30;
 
     private Client $httpClient;
+    private SerializedJobAsserter $jobAsserter;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->httpClient = new Client();
+        $this->jobAsserter = new SerializedJobAsserter($this->httpClient);
     }
 
     public function testInitialStatus(): void
@@ -54,7 +57,7 @@ class AppTest extends TestCase
 
         self::assertSame(200, $response->getStatusCode());
 
-        $this->assertJobStatus([
+        $this->jobAsserter->assertJob([
             'label' => md5('label content'),
             'callback_url' => 'http://example.com/callback',
             'maximum_duration_in_seconds' => 600,
@@ -88,7 +91,7 @@ class AppTest extends TestCase
             ],
         ]);
 
-        $this->assertJobStatus([
+        $this->jobAsserter->assertJob([
             'label' => md5('label content'),
             'callback_url' => 'http://example.com/callback',
             'maximum_duration_in_seconds' => 600,
@@ -121,7 +124,7 @@ class AppTest extends TestCase
             $durationExceeded = $duration >= self::WAIT_TIMEOUT;
         }
 
-        $this->assertJobStatus([
+        $this->jobAsserter->assertJob([
             'label' => md5('label content'),
             'callback_url' => 'http://example.com/callback',
             'maximum_duration_in_seconds' => 600,
@@ -176,118 +179,6 @@ class AppTest extends TestCase
                 ],
             ],
         ]);
-    }
-
-    /**
-     * @param array<mixed> $expectedJobData
-     */
-    private function assertJobStatus(array $expectedJobData): void
-    {
-        $this->assertJobProperties(
-            $expectedJobData['label'],
-            $expectedJobData['callback_url'],
-            $expectedJobData['maximum_duration_in_seconds']
-        );
-
-        $this->assertJobSources($expectedJobData['sources']);
-        $this->assertJobState($expectedJobData['compilation_state'], $expectedJobData['execution_state']);
-        $this->assertTests($expectedJobData['tests']);
-    }
-
-    private function assertJobProperties(
-        string $expectedLabel,
-        string $expectedCallbackUrl,
-        int $expectedDurationInSeconds
-    ): void {
-        $jobStatus = $this->getJsonResponse('http://localhost/status');
-
-        self::assertSame($expectedLabel, $jobStatus['label']);
-        self::assertSame($expectedCallbackUrl, $jobStatus['callback_url']);
-        self::assertSame($expectedDurationInSeconds, $jobStatus['maximum_duration_in_seconds']);
-    }
-
-    /**
-     * @param string[] $expectedSources
-     */
-    private function assertJobSources(array $expectedSources): void
-    {
-        $jobStatus = $this->getJsonResponse('http://localhost/status');
-
-        self::assertSame($expectedSources, $jobStatus['sources']);
-    }
-
-    /**
-     * @param CompilationState::STATE_* $expectedCompilationState
-     * @param ExecutionState::STATE_* $expectedExecutionState
-     */
-    private function assertJobState(string $expectedCompilationState, string $expectedExecutionState): void
-    {
-        $jobStatus = $this->getJsonResponse('http://localhost/status');
-
-        self::assertSame($expectedCompilationState, $jobStatus['compilation_state']);
-        self::assertSame($expectedExecutionState, $jobStatus['execution_state']);
-    }
-
-    /**
-     * @param array<mixed> $expectedTests
-     */
-    private function assertTests(array $expectedTests): void
-    {
-        $jobStatus = $this->getJsonResponse('http://localhost/status');
-        $tests = $jobStatus['tests'];
-        self::assertIsArray($tests);
-
-        self::assertCount(count($expectedTests), $tests);
-
-        foreach ($expectedTests as $index => $expectedTest) {
-            self::assertArrayHasKey($index, $tests);
-            $actualTest = $tests[$index];
-            self::assertIsArray($actualTest);
-
-            $this->assertTest(
-                $expectedTest['configuration'],
-                $expectedTest['source'],
-                $expectedTest['step_count'],
-                $expectedTest['state'],
-                $expectedTest['position'],
-                $actualTest
-            );
-        }
-    }
-
-    /**
-     * @param array<mixed> $expectedConfiguration
-     * @param array<mixed> $actual
-     */
-    private function assertTest(
-        array $expectedConfiguration,
-        string $expectedSource,
-        int $expectedStepCount,
-        string $expectedState,
-        int $expectedPosition,
-        array $actual
-    ): void {
-        $this->assertTestConfiguration(
-            $expectedConfiguration['browser'],
-            $expectedConfiguration['url'],
-            $actual['configuration']
-        );
-
-        self::assertSame($expectedSource, $actual['source']);
-        self::assertArrayHasKey('target', $actual);
-        self::assertMatchesRegularExpression('/^Generated[0-9a-f]{32}Test\.php$/', $actual['target']);
-        self::assertSame($expectedStepCount, $actual['step_count']);
-        self::assertSame($expectedState, $actual['state']);
-        self::assertSame($expectedPosition, $actual['position']);
-    }
-
-    /**
-     * @param array<mixed> $actual
-     */
-    private function assertTestConfiguration(string $expectedBrowser, string $expectedUrl, array $actual): void
-    {
-        self::assertSame($expectedBrowser, $actual['browser']);
-        self::assertSame($expectedUrl, $actual['url']);
     }
 
     /**
