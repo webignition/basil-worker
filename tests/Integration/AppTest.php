@@ -6,6 +6,9 @@ namespace App\Tests\Integration;
 
 use App\Model\UploadedFileKey;
 use App\Request\AddSourcesRequest;
+use App\Services\CompilationState;
+use App\Services\ExecutionState;
+use App\Tests\Services\Asserter\SerializedJobAsserter;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Psr7\Request;
@@ -13,20 +16,19 @@ use PHPUnit\Framework\TestCase;
 
 class AppTest extends TestCase
 {
+    private const MICROSECONDS_PER_SECOND = 1000000;
+    private const WAIT_INTERVAL = self::MICROSECONDS_PER_SECOND * 1;
+    private const WAIT_TIMEOUT = self::MICROSECONDS_PER_SECOND * 30;
+
     private Client $httpClient;
-
-    public static function setUpBeforeClass(): void
-    {
-        parent::setUpBeforeClass();
-
-        exec('composer db-recreate --quiet');
-    }
+    private SerializedJobAsserter $jobAsserter;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->httpClient = new Client();
+        $this->jobAsserter = new SerializedJobAsserter($this->httpClient);
     }
 
     public function testInitialStatus(): void
@@ -40,6 +42,9 @@ class AppTest extends TestCase
         self::assertSame(400, $response->getStatusCode());
     }
 
+    /**
+     * @depends testInitialStatus
+     */
     public function testCreateJob(): void
     {
         $response = $this->httpClient->post('http://localhost/create', [
@@ -52,7 +57,7 @@ class AppTest extends TestCase
 
         self::assertSame(200, $response->getStatusCode());
 
-        $this->assertJobStatus([
+        $this->jobAsserter->assertJob([
             'label' => md5('label content'),
             'callback_url' => 'http://example.com/callback',
             'maximum_duration_in_seconds' => 600,
@@ -63,6 +68,9 @@ class AppTest extends TestCase
         ]);
     }
 
+    /**
+     * @depends testCreateJob
+     */
     public function testAddSources(): void
     {
         $manifestKey = new UploadedFileKey(AddSourcesRequest::KEY_MANIFEST);
@@ -83,7 +91,7 @@ class AppTest extends TestCase
             ],
         ]);
 
-        $this->assertJobStatus([
+        $this->jobAsserter->assertJob([
             'label' => md5('label content'),
             'callback_url' => 'http://example.com/callback',
             'maximum_duration_in_seconds' => 600,
@@ -100,11 +108,80 @@ class AppTest extends TestCase
     }
 
     /**
-     * @param array<mixed> $expectedJobData
+     * @depends testAddSources
      */
-    private function assertJobStatus(array $expectedJobData): void
+    public function testCompilationExecution(): void
     {
-        self::assertSame($expectedJobData, $this->getJsonResponse('http://localhost/status'));
+        $duration = 0;
+        $durationExceeded = false;
+
+        while (
+            false === $durationExceeded
+            && false === $this->waitForApplicationState(
+                CompilationState::STATE_COMPLETE,
+                ExecutionState::STATE_COMPLETE
+            )
+        ) {
+            usleep(self::WAIT_INTERVAL);
+            $duration += self::WAIT_INTERVAL;
+            $durationExceeded = $duration >= self::WAIT_TIMEOUT;
+        }
+
+        $this->jobAsserter->assertJob([
+            'label' => md5('label content'),
+            'callback_url' => 'http://example.com/callback',
+            'maximum_duration_in_seconds' => 600,
+            'sources' => [
+                'Test/chrome-open-index.yml',
+                'Test/chrome-firefox-open-index.yml',
+                'Test/chrome-open-form.yml',
+                'Page/index.yml',
+            ],
+            'compilation_state' => 'complete',
+            'execution_state' => 'complete',
+            'tests' => [
+                [
+                    'configuration' => [
+                        'browser' => 'chrome',
+                        'url' => 'http://nginx-html/index.html',
+                    ],
+                    'source' => 'Test/chrome-open-index.yml',
+                    'step_count' => 1,
+                    'state' => 'complete',
+                    'position' => 1,
+                ],
+                [
+                    'configuration' => [
+                        'browser' => 'chrome',
+                        'url' => 'http://nginx-html/index.html',
+                    ],
+                    'source' => 'Test/chrome-firefox-open-index.yml',
+                    'step_count' => 1,
+                    'state' => 'complete',
+                    'position' => 2,
+                ],
+                [
+                    'configuration' => [
+                        'browser' => 'firefox',
+                        'url' => 'http://nginx-html/index.html',
+                    ],
+                    'source' => 'Test/chrome-firefox-open-index.yml',
+                    'step_count' => 1,
+                    'state' => 'complete',
+                    'position' => 3,
+                ],
+                [
+                    'configuration' => [
+                        'browser' => 'chrome',
+                        'url' => 'http://nginx-html/form.html',
+                    ],
+                    'source' => 'Test/chrome-open-form.yml',
+                    'step_count' => 1,
+                    'state' => 'complete',
+                    'position' => 4,
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -132,5 +209,17 @@ class AppTest extends TestCase
             'contents' => (string) file_get_contents(getcwd() . '/tests/Fixtures/Basil/' . $path),
             'filename' => $path
         ];
+    }
+
+    /**
+     * @param CompilationState::STATE_* $compilationState
+     * @param ExecutionState::STATE_*   $executionState
+     */
+    private function waitForApplicationState(string $compilationState, string $executionState): bool
+    {
+        $jobStatus = $this->getJsonResponse('http://localhost/status');
+
+        return $compilationState === $jobStatus['compilation_state']
+            && $executionState === $jobStatus['execution_state'];
     }
 }
