@@ -225,8 +225,7 @@ class AppTest extends TestCase
         string $compilationState,
         string $executionState,
         string $callbackState,
-    ): bool
-    {
+    ): bool {
         $jobStatus = $this->getJsonResponse('http://localhost/status');
 
         return $compilationState === $jobStatus['compilation_state']
