@@ -24,32 +24,4 @@ class SendCallbackMessageTest extends TestCase
     {
         self::assertSame(self::CALLBACK_ID, $this->message->getCallbackId());
     }
-
-    public function testGetType(): void
-    {
-        self::assertSame(SendCallbackMessage::TYPE, $this->message->getType());
-    }
-
-    public function testGetPayload(): void
-    {
-        self::assertSame(
-            [
-                'callback_id' => $this->message->getCallbackId(),
-            ],
-            $this->message->getPayload()
-        );
-    }
-
-    public function testJsonSerialize(): void
-    {
-        self::assertSame(
-            [
-                'type' => SendCallbackMessage::TYPE,
-                'payload' => [
-                    'callback_id' => $this->message->getCallbackId(),
-                ],
-            ],
-            $this->message->jsonSerialize()
-        );
-    }
 }

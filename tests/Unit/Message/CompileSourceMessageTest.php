@@ -24,32 +24,4 @@ class CompileSourceMessageTest extends TestCase
     {
         self::assertSame(self::PATH, $this->message->getPath());
     }
-
-    public function testGetType(): void
-    {
-        self::assertSame(CompileSourceMessage::TYPE, $this->message->getType());
-    }
-
-    public function testGetPayload(): void
-    {
-        self::assertSame(
-            [
-                'path' => $this->message->getPath(),
-            ],
-            $this->message->getPayload()
-        );
-    }
-
-    public function testJsonSerialize(): void
-    {
-        self::assertSame(
-            [
-                'type' => CompileSourceMessage::TYPE,
-                'payload' => [
-                    'path' => $this->message->getPath(),
-                ],
-            ],
-            $this->message->jsonSerialize()
-        );
-    }
 }

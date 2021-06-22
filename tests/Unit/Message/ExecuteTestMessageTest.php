@@ -24,32 +24,4 @@ class ExecuteTestMessageTest extends TestCase
     {
         self::assertSame(self::TEST_ID, $this->message->getTestId());
     }
-
-    public function testGetType(): void
-    {
-        self::assertSame(ExecuteTestMessage::TYPE, $this->message->getType());
-    }
-
-    public function testGetPayload(): void
-    {
-        self::assertSame(
-            [
-                'test_id' => $this->message->getTestId(),
-            ],
-            $this->message->getPayload()
-        );
-    }
-
-    public function testJsonSerialize(): void
-    {
-        self::assertSame(
-            [
-                'type' => ExecuteTestMessage::TYPE,
-                'payload' => [
-                    'test_id' => $this->message->getTestId(),
-                ],
-            ],
-            $this->message->jsonSerialize()
-        );
-    }
 }

@@ -41,16 +41,6 @@ services:
         arguments:
             $path: '%compiler_source_directory%'
 
-    webignition\JsonMessageSerializerBundle\Services\MessageFactory:
-        arguments:
-            $typeToMessageClassMap:
-                'job-ready': 'App\Message\JobReadyMessage'
-                'compile-source': 'App\Message\CompileSourceMessage'
-                'execute-test': 'App\Message\ExecuteTestMessage'
-                'send-callback': 'App\Message\SendCallbackMessage'
-                'timeout-check': 'App\Message\TimeoutCheckMessage'
-                'job-complete-check': 'App\Message\JobCompletedCheckMessage'
-
     app.services.path-prefix-remover.compiler-source:
         class: webignition\StringPrefixRemover\DefinedStringPrefixRemover
         arguments:
