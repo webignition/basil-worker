@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Integration;
 
 use App\Services\ApplicationState;
+use App\Services\CallbackState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Tests\Services\ApplicationStateHandler;
@@ -122,6 +123,7 @@ abstract class AbstractCreateAddSourcesCompileExecuteTest extends AbstractBaseIn
                 [
                     'compilation_state' => CompilationState::STATE_AWAITING,
                     'execution_state' => ExecutionState::STATE_AWAITING,
+                    'callback_state' => CallbackState::STATE_AWAITING,
                     'sources' => [],
                     'tests' => [],
                 ]
