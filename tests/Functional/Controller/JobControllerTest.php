@@ -104,6 +104,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     'sources' => [],
                     'compilation_state' => 'awaiting',
                     'execution_state' => 'awaiting',
+                    'callback_state' => 'awaiting',
                     'tests' => [],
                 ],
             ],
@@ -130,6 +131,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     ],
                     'compilation_state' => 'running',
                     'execution_state' => 'awaiting',
+                    'callback_state' => 'awaiting',
                     'tests' => [],
                 ],
             ],
@@ -165,6 +167,7 @@ class JobControllerTest extends AbstractBaseFunctionalTest
                     ],
                     'compilation_state' => 'running',
                     'execution_state' => 'awaiting',
+                    'callback_state' => 'awaiting',
                     'tests' => [
                         [
                             'configuration' => [

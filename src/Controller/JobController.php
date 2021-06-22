@@ -12,6 +12,7 @@ use App\Request\AddSourcesRequest;
 use App\Request\JobCreateRequest;
 use App\Response\BadAddSourcesRequestResponse;
 use App\Response\BadJobCreateRequestResponse;
+use App\Services\CallbackState;
 use App\Services\CompilationState;
 use App\Services\EntityFactory\JobFactory;
 use App\Services\EntityStore\JobStore;
@@ -110,7 +111,8 @@ class JobController
         TestRepository $testRepository,
         TestSerializer $testSerializer,
         CompilationState $compilationState,
-        ExecutionState $executionState
+        ExecutionState $executionState,
+        CallbackState $callbackState,
     ): JsonResponse {
         if (false === $this->jobStore->has()) {
             return new JsonResponse([], 400);
@@ -125,6 +127,7 @@ class JobController
                 'sources' => $sourceStore->findAllPaths(),
                 'compilation_state' => (string) $compilationState,
                 'execution_state' => (string) $executionState,
+                'callback_state' => (string) $callbackState,
                 'tests' => $testSerializer->serializeCollection($tests),
             ]
         );
