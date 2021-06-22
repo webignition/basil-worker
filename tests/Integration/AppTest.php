@@ -6,6 +6,7 @@ namespace App\Tests\Integration;
 
 use App\Model\UploadedFileKey;
 use App\Request\AddSourcesRequest;
+use App\Services\CallbackState;
 use App\Services\CompilationState;
 use App\Services\ExecutionState;
 use App\Tests\Services\Asserter\SerializedJobAsserter;
@@ -18,7 +19,7 @@ class AppTest extends TestCase
 {
     private const MICROSECONDS_PER_SECOND = 1000000;
     private const WAIT_INTERVAL = self::MICROSECONDS_PER_SECOND * 1;
-    private const WAIT_TIMEOUT = self::MICROSECONDS_PER_SECOND * 30;
+    private const WAIT_TIMEOUT = self::MICROSECONDS_PER_SECOND * 60;
 
     private Client $httpClient;
     private SerializedJobAsserter $jobAsserter;
@@ -64,6 +65,7 @@ class AppTest extends TestCase
             'sources' => [],
             'compilation_state' => 'awaiting',
             'execution_state' => 'awaiting',
+            'callback_state' => 'awaiting',
             'tests' => [],
         ]);
     }
@@ -103,6 +105,7 @@ class AppTest extends TestCase
             ],
             'compilation_state' => 'running',
             'execution_state' => 'awaiting',
+            'callback_state' => 'awaiting',
             'tests' => [],
         ]);
     }
@@ -119,7 +122,8 @@ class AppTest extends TestCase
             false === $durationExceeded
             && false === $this->waitForApplicationState(
                 CompilationState::STATE_COMPLETE,
-                ExecutionState::STATE_COMPLETE
+                ExecutionState::STATE_COMPLETE,
+                CallbackState::STATE_COMPLETE,
             )
         ) {
             usleep(self::WAIT_INTERVAL);
@@ -139,6 +143,7 @@ class AppTest extends TestCase
             ],
             'compilation_state' => 'complete',
             'execution_state' => 'complete',
+            'callback_state' => 'complete',
             'tests' => [
                 [
                     'configuration' => [
@@ -214,12 +219,18 @@ class AppTest extends TestCase
     /**
      * @param CompilationState::STATE_* $compilationState
      * @param ExecutionState::STATE_*   $executionState
+     * @param CallbackState::STATE_*    $callbackState
      */
-    private function waitForApplicationState(string $compilationState, string $executionState): bool
+    private function waitForApplicationState(
+        string $compilationState,
+        string $executionState,
+        string $callbackState,
+    ): bool
     {
         $jobStatus = $this->getJsonResponse('http://localhost/status');
 
         return $compilationState === $jobStatus['compilation_state']
-            && $executionState === $jobStatus['execution_state'];
+            && $executionState === $jobStatus['execution_state']
+            && $callbackState === $jobStatus['callback_state'];
     }
 }

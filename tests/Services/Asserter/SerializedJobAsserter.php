@@ -31,6 +31,7 @@ class SerializedJobAsserter
         TestCase::assertSame($expectedJob['sources'], $job['sources']);
         TestCase::assertSame($expectedJob['compilation_state'], $job['compilation_state']);
         TestCase::assertSame($expectedJob['execution_state'], $job['execution_state']);
+        TestCase::assertSame($expectedJob['callback_state'], $job['callback_state']);
 
         $tests = $job['tests'];
         TestCase::assertIsArray($tests);
