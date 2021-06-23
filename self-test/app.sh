@@ -32,7 +32,7 @@ if [ "$LAST_EXIT_CODE" -eq 0 ]; then
     until [ $COUNTER -gt $RETRY_LIMIT ]
     do
       if [ "$CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE" -ne 0 ]; then
-          sleep 3
+          sleep 10
           sudo docker logs callback-receiver | php ./vendor/bin/phpunit --stop-on-failure ./src/CallbackReceiverLogTest.php
           CALLBACK_RECEIVER_LOG_TEST_EXIT_CODE=$?
       fi
