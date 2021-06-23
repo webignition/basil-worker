@@ -22,7 +22,7 @@ class ClientRequestSender
 
     public function createJob(string $label, string $callbackUrl, int $maximumDurationInSeconds): Response
     {
-        $this->client->request('POST', '/create', [
+        $this->client->request('POST', '/job', [
             JobCreateRequest::KEY_LABEL => $label,
             JobCreateRequest::KEY_CALLBACK_URL => $callbackUrl,
             JobCreateRequest::KEY_MAXIMUM_DURATION => $maximumDurationInSeconds,

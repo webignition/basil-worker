@@ -27,7 +27,7 @@ class ApplicationTest extends TestCase
 
     public function testCreateJob(): void
     {
-        $createJobResponse = self::$httpClient->post('http://localhost/create', [
+        $createJobResponse = self::$httpClient->post('http://localhost/job', [
             'form_params' => [
                 'label' => self::JOB_LABEL,
                 'callback-url' => self::CALLBACK_URL,

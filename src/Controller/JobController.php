@@ -34,7 +34,7 @@ class JobController
     }
 
     /**
-     * @Route("/create", name="create", methods={"POST"})
+     * @Route("/job", name="create", methods={"POST"})
      */
     public function create(JobFactory $jobFactory, JobCreateRequest $request): JsonResponse
     {

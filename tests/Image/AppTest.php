@@ -48,7 +48,7 @@ class AppTest extends TestCase
      */
     public function testCreateJob(): void
     {
-        $response = $this->httpClient->post('http://localhost/create', [
+        $response = $this->httpClient->post('http://localhost/job', [
             'form_params' => [
                 'label' => md5('label content'),
                 'callback-url' => 'http://example.com/callback',
