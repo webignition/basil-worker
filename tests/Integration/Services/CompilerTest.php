@@ -2,22 +2,16 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Synchronous\Services;
+namespace App\Tests\Integration\Services;
 
 use App\Services\Compiler;
-use App\Tests\Integration\AbstractBaseIntegrationTest;
-use App\Tests\Services\FileStoreHandler;
 use webignition\BasilCompilerModels\ErrorOutput;
 use webignition\BasilCompilerModels\SuiteManifest;
-use webignition\TcpCliProxyClient\Client;
 
-class CompilerTest extends AbstractBaseIntegrationTest
+class CompilerTest extends AbstractTestCreationTest
 {
     private Compiler $compiler;
     private string $compilerSourceDirectory;
-    private string $compilerTargetDirectory;
-    private FileStoreHandler $localSourceStoreHandler;
-    private FileStoreHandler $uploadedStoreHandler;
 
     protected function setUp(): void
     {
@@ -31,39 +25,6 @@ class CompilerTest extends AbstractBaseIntegrationTest
         if (is_string($compilerSourceDirectory)) {
             $this->compilerSourceDirectory = $compilerSourceDirectory;
         }
-
-        $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
-        if (is_string($compilerTargetDirectory)) {
-            $this->compilerTargetDirectory = $compilerTargetDirectory;
-        }
-
-        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
-        \assert($localSourceStoreHandler instanceof FileStoreHandler);
-        $this->localSourceStoreHandler = $localSourceStoreHandler;
-        $this->localSourceStoreHandler->clear();
-
-        $uploadedStoreHandler = self::$container->get('app.tests.services.file_store_handler.uploaded');
-        \assert($uploadedStoreHandler instanceof FileStoreHandler);
-        $this->uploadedStoreHandler = $uploadedStoreHandler;
-        $this->uploadedStoreHandler->clear();
-
-        $this->entityRemover->removeAll();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->entityRemover->removeAll();
-
-        $compilerClient = self::$container->get('app.services.compiler-client');
-        self::assertInstanceOf(Client::class, $compilerClient);
-
-        $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
-        $compilerClient->request($request);
-
-        $this->localSourceStoreHandler->clear();
-        $this->uploadedStoreHandler->clear();
-
-        parent::tearDown();
     }
 
     /**

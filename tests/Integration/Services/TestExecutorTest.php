@@ -2,30 +2,25 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration\Synchronous\Services;
+namespace App\Tests\Integration\Services;
 
 use App\Event\TestStepPassedEvent;
 use App\Services\Compiler;
 use App\Services\TestExecutor;
 use App\Services\TestFactory;
-use App\Tests\Integration\AbstractBaseIntegrationTest;
 use App\Tests\Mock\MockEventDispatcher;
 use App\Tests\Model\ExpectedDispatchedEvent;
 use App\Tests\Model\ExpectedDispatchedEventCollection;
-use App\Tests\Services\FileStoreHandler;
 use Symfony\Contracts\EventDispatcher\Event;
 use webignition\BasilCompilerModels\SuiteManifest;
 use webignition\ObjectReflector\ObjectReflector;
-use webignition\TcpCliProxyClient\Client;
 use webignition\YamlDocument\Document;
 
-class TestExecutorTest extends AbstractBaseIntegrationTest
+class TestExecutorTest extends AbstractTestCreationTest
 {
     private TestExecutor $testExecutor;
     private Compiler $compiler;
     private TestFactory $testFactory;
-    private string $compilerTargetDirectory;
-    private FileStoreHandler $localSourceStoreHandler;
 
     protected function setUp(): void
     {
@@ -42,33 +37,6 @@ class TestExecutorTest extends AbstractBaseIntegrationTest
         $testFactory = self::$container->get(TestFactory::class);
         \assert($testFactory instanceof TestFactory);
         $this->testFactory = $testFactory;
-
-        $compilerTargetDirectory = self::$container->getParameter('compiler_target_directory');
-        if (is_string($compilerTargetDirectory)) {
-            $this->compilerTargetDirectory = $compilerTargetDirectory;
-        }
-
-        $localSourceStoreHandler = self::$container->get('app.tests.services.file_store_handler.local_source');
-        \assert($localSourceStoreHandler instanceof FileStoreHandler);
-        $this->localSourceStoreHandler = $localSourceStoreHandler;
-        $this->localSourceStoreHandler->clear();
-
-        $this->entityRemover->removeAll();
-    }
-
-    protected function tearDown(): void
-    {
-        $this->entityRemover->removeAll();
-
-        $compilerClient = self::$container->get('app.services.compiler-client');
-        self::assertInstanceOf(Client::class, $compilerClient);
-
-        $request = 'rm ' . $this->compilerTargetDirectory . '/*.php';
-        $compilerClient->request($request);
-
-        $this->localSourceStoreHandler->clear();
-
-        parent::tearDown();
     }
 
     /**

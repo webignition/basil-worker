@@ -1,3 +1,6 @@
+imports:
+    - { resource: services/test_common.yaml }
+
 parameters:
     integration_http_log_path: '%env(HTTP_LOG_PATH)%'
 
@@ -77,3 +80,19 @@ services:
         public: true
         arguments:
             $baseUrl: '%env(CALLBACK_BASE_URL)%'
+
+    webignition\SymfonyMessengerMessageDispatcher\Middleware\IgnoredMessageMiddleware:
+        arguments:
+            $messageClassNames:
+                - App\Message\TimeoutCheckMessage
+                - App\Message\JobReadyMessage
+
+    webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher:
+        arguments:
+            $middleware:
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\IgnoredMessageMiddleware'
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\DelayedMessage\DelayedMessageMiddleware'
+                - '@webignition\SymfonyMessengerMessageDispatcher\Middleware\RetryByLimitMiddleware'
+
+    App\Tests\Services\IntegrationCallbackRequestFactory:
+        public: true

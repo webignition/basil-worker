@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Integration;
+namespace App\Tests\Image;
 
 use App\Model\UploadedFileKey;
 use App\Request\AddSourcesRequest;

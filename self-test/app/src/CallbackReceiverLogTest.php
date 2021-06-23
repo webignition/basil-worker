@@ -30,15 +30,20 @@ class CallbackReceiverLogTest extends TestCase
     /**
      * @dataProvider logBodyDataProvider
      *
-     * @param array<mixed> $expectedBodyData
+     * @param array<mixed> $expectedLogSectionBodies
      */
-    public function testLogBody(int $logSectionIndex, array $expectedBodyData): void
+    public function testLogBody(array $expectedLogSectionBodies): void
     {
-        self::assertArrayHasKey($logSectionIndex, self::$logSections);
+        $logSectionBodyDataCollection = [];
+        foreach (self::$logSections as $logSection) {
+            $logSectionBodyDataCollection[] = $this->decodeLogSectionBody($logSection);
+        }
 
-        $bodyData = $this->getLogSectionBodyData($logSectionIndex);
+        self::assertCount(count(self::$logSections), $expectedLogSectionBodies);
 
-        self::assertSame($expectedBodyData, $bodyData);
+        foreach ($expectedLogSectionBodies as $expectedLogSection) {
+            self::assertContains($expectedLogSection, $logSectionBodyDataCollection);
+        }
     }
 
     /**
@@ -47,124 +52,99 @@ class CallbackReceiverLogTest extends TestCase
     public function logBodyDataProvider(): array
     {
         return [
-            [
-                'logSectionIndex' => 0,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'job/started',
-                    'payload' => [],
-                ],
-            ],
-            [
-                'logSectionIndex' => 1,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'compilation/started',
-                    'payload' => [
-                        'source' => 'test.yml',
+            'default' => [
+                'expectedLogSectionBodies' => [
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'job/started',
+                        'payload' => [],
                     ],
-                ],
-            ],
-            [
-                'logSectionIndex' => 2,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'compilation/passed',
-                    'payload' => [
-                        'source' => 'test.yml',
-                    ],
-                ],
-            ],
-            [
-                'logSectionIndex' => 3,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'compilation/completed',
-                    'payload' => [],
-                ],
-            ],
-            [
-                'logSectionIndex' => 4,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'execution/started',
-                    'payload' => [],
-                ],
-            ],
-            [
-                'logSectionIndex' => 5,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'test/started',
-                    'payload' => [
-                        'type' => 'test',
-                        'path' => 'test.yml',
-                        'config' => [
-                            'browser' => 'chrome',
-                            'url' => 'http://http-fixtures',
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'compilation/started',
+                        'payload' => [
+                            'source' => 'test.yml',
                         ],
                     ],
-                ],
-            ],
-            [
-                'logSectionIndex' => 6,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'step/passed',
-                    'payload' => [
-                        'type' => 'step',
-                        'name' => 'verify page is open',
-                        'status' => 'passed',
-                        'statements' => [
-                            [
-                                'type' => 'assertion',
-                                'source' => '$page.url is "http://http-fixtures/"',
-                                'status' => 'passed',
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'compilation/passed',
+                        'payload' => [
+                            'source' => 'test.yml',
+                        ],
+                    ],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'compilation/completed',
+                        'payload' => [],
+                    ],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'execution/started',
+                        'payload' => [],
+                    ],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'test/started',
+                        'payload' => [
+                            'type' => 'test',
+                            'path' => 'test.yml',
+                            'config' => [
+                                'browser' => 'chrome',
+                                'url' => 'http://http-fixtures',
                             ],
                         ],
                     ],
-                ],
-            ],
-            [
-                'logSectionIndex' => 7,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'test/passed',
-                    'payload' => [
-                        'type' => 'test',
-                        'path' => 'test.yml',
-                        'config' => [
-                            'browser' => 'chrome',
-                            'url' => 'http://http-fixtures',
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'step/passed',
+                        'payload' => [
+                            'type' => 'step',
+                            'name' => 'verify page is open',
+                            'status' => 'passed',
+                            'statements' => [
+                                [
+                                    'type' => 'assertion',
+                                    'source' => '$page.url is "http://http-fixtures/"',
+                                    'status' => 'passed',
+                                ],
+                            ],
                         ],
                     ],
-                ],
-            ],
-            [
-                'logSectionIndex' => 8,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'execution/completed',
-                    'payload' => [],
-                ],
-            ],
-            [
-                'logSectionIndex' => 9,
-                'expectedBodyData' => [
-                    'label' => self::JOB_LABEL,
-                    'type' => 'job/completed',
-                    'payload' => [],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'test/passed',
+                        'payload' => [
+                            'type' => 'test',
+                            'path' => 'test.yml',
+                            'config' => [
+                                'browser' => 'chrome',
+                                'url' => 'http://http-fixtures',
+                            ],
+                        ],
+                    ],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'execution/completed',
+                        'payload' => [],
+                    ],
+                    [
+                        'label' => self::JOB_LABEL,
+                        'type' => 'job/completed',
+                        'payload' => [],
+                    ],
                 ],
             ],
         ];
     }
 
     /**
+     * @param array<mixed> $logSection
+     *
      * @return array<mixed>
      */
-    private function getLogSectionBodyData(int $logSectionIndex): array
+    private function decodeLogSectionBody(array $logSection): array
     {
-        $logSection = self::$logSections[$logSectionIndex];
         $bodyContent = $logSection['body'];
         $bodyData = json_decode($bodyContent, true);
 
