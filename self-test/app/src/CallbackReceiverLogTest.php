@@ -28,6 +28,8 @@ class CallbackReceiverLogTest extends TestCase
     }
 
     /**
+     * @depends testLogSize
+     *
      * @dataProvider logBodyDataProvider
      *
      * @param array<mixed> $expectedBodyData
