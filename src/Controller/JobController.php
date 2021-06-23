@@ -101,7 +101,7 @@ class JobController
         return new JsonResponse();
     }
 
-    #[Route(self::PATH_JOB, name: 'create', methods: ['GET'])]
+    #[Route(self::PATH_JOB, name: 'status', methods: ['GET', 'HEAD'])]
     public function status(
         SourceStore $sourceStore,
         TestRepository $testRepository,
