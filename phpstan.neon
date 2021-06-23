@@ -3,6 +3,5 @@ parameters:
   paths:
     - src
     - tests
-  excludes_analyse:
-    - tests/build/*
+    - self-test/app/src
   inferPrivatePropertyTypeFromConstructor: true
