@@ -36,19 +36,16 @@ class ApplicationTest extends TestCase
         ]);
         self::assertSame(200, $createJobResponse->getStatusCode());
         self::assertSame('application/json', $createJobResponse->getHeaderLine('content-type'));
-        self::assertSame(
-            [
-                'label' => self::JOB_LABEL,
-                'callback_url' => self::CALLBACK_URL,
-                'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
-                'sources' => [],
-                'compilation_state' => 'awaiting',
-                'execution_state' => 'awaiting',
-                'callback_state' => 'awaiting',
-                'tests' => [],
-            ],
-            $this->getJobStatus()
-        );
+        $this->assertJobStatus([
+            'label' => self::JOB_LABEL,
+            'callback_url' => self::CALLBACK_URL,
+            'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
+            'sources' => [],
+            'compilation_states' => ['awaiting'],
+            'execution_states' => ['awaiting'],
+            'callback_states' => ['awaiting'],
+            'tests' => [],
+        ]);
     }
 
     /**
@@ -71,21 +68,18 @@ class ApplicationTest extends TestCase
 
         self::assertSame(200, $addSourcesResponse->getStatusCode());
         self::assertSame('application/json', $addSourcesResponse->getHeaderLine('content-type'));
-        self::assertSame(
-            [
-                'label' => self::JOB_LABEL,
-                'callback_url' => self::CALLBACK_URL,
-                'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
-                'sources' => [
-                    'test.yml',
-                ],
-                'compilation_state' => 'running',
-                'execution_state' => 'awaiting',
-                'callback_state' => 'awaiting',
-                'tests' => [],
+        $this->assertJobStatus([
+            'label' => self::JOB_LABEL,
+            'callback_url' => self::CALLBACK_URL,
+            'maximum_duration_in_seconds' => self::JOB_MAXIMUM_DURATION_IN_SECONDS,
+            'sources' => [
+                'test.yml',
             ],
-            $this->getJobStatus()
-        );
+            'compilation_states' => ['running', 'complete'],
+            'execution_states' => ['awaiting'],
+            'callback_states' => ['awaiting', 'running'],
+            'tests' => [],
+        ]);
     }
 
     /**
@@ -116,5 +110,22 @@ class ApplicationTest extends TestCase
             'contents' => $contents,
             'filename' => $path
         ];
+    }
+
+    /**
+     * @param array<mixed> $expectedJobData
+     */
+    private function assertJobStatus(array $expectedJobData): void
+    {
+        $job = $this->getJobStatus();
+
+        self::assertSame($expectedJobData['label'], $job['label']);
+        self::assertSame($expectedJobData['callback_url'], $job['callback_url']);
+        self::assertSame($expectedJobData['maximum_duration_in_seconds'], $job['maximum_duration_in_seconds']);
+        self::assertSame($expectedJobData['sources'], $job['sources']);
+        self::assertContains($job['compilation_state'], $expectedJobData['compilation_states']);
+        self::assertContains($job['execution_state'], $expectedJobData['execution_states']);
+        self::assertContains($job['callback_state'], $expectedJobData['callback_states']);
+        self::assertSame($job['tests'], $expectedJobData['tests']);
     }
 }
