@@ -26,6 +26,8 @@ use webignition\SymfonyMessengerMessageDispatcher\MessageDispatcher;
 
 class JobController
 {
+    public const PATH_JOB = '/job';
+
     private JobStore $jobStore;
 
     public function __construct(JobStore $jobStore)
@@ -33,9 +35,7 @@ class JobController
         $this->jobStore = $jobStore;
     }
 
-    /**
-     * @Route("/job", name="create", methods={"POST"})
-     */
+    #[Route(self::PATH_JOB, name: 'create', methods: ['POST'])]
     public function create(JobFactory $jobFactory, JobCreateRequest $request): JsonResponse
     {
         if ('' === $request->getLabel()) {
@@ -63,9 +63,7 @@ class JobController
         return new JsonResponse();
     }
 
-    /**
-     * @Route("/add-sources", name="add-sources", methods={"POST"})
-     */
+    #[Route('/add-sources', name: 'add-sources', methods: ['POST'])]
     public function addSources(
         SourceStore $sourceStore,
         SourceFactory $sourceFactory,
@@ -103,9 +101,7 @@ class JobController
         return new JsonResponse();
     }
 
-    /**
-     * @Route("/job", name="status", methods={"GET"})
-     */
+    #[Route(self::PATH_JOB, name: 'create', methods: ['GET'])]
     public function status(
         SourceStore $sourceStore,
         TestRepository $testRepository,
