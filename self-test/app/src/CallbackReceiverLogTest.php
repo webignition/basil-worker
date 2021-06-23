@@ -25,6 +25,8 @@ class CallbackReceiverLogTest extends TestCase
     public function testLogSize(): void
     {
         self::assertCount(10, self::$logSections);
+
+        var_dump(self::$logSections);
     }
 
     /**
