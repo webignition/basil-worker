@@ -35,7 +35,7 @@ class AppTest extends TestCase
     public function testInitialStatus(): void
     {
         try {
-            $response = $this->httpClient->get('http://localhost:/status');
+            $response = $this->httpClient->get('http://localhost:/job');
         } catch (ClientException $exception) {
             $response = $exception->getResponse();
         }
@@ -226,7 +226,7 @@ class AppTest extends TestCase
         string $executionState,
         string $callbackState,
     ): bool {
-        $jobStatus = $this->getJsonResponse('http://localhost/status');
+        $jobStatus = $this->getJsonResponse('http://localhost/job');
 
         return $compilationState === $jobStatus['compilation_state']
             && $executionState === $jobStatus['execution_state']

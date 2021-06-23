@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 class SerializedJobAsserter
 {
-    private const URL = 'http://localhost/status';
+    private const URL = 'http://localhost/job';
 
     public function __construct(private Client $httpClient)
     {

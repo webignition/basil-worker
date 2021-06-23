@@ -104,7 +104,7 @@ class JobController
     }
 
     /**
-     * @Route("/status", name="status", methods={"GET"})
+     * @Route("/job", name="status", methods={"GET"})
      */
     public function status(
         SourceStore $sourceStore,

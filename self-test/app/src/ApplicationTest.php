@@ -87,7 +87,7 @@ class ApplicationTest extends TestCase
      */
     private function getJobStatus(): array
     {
-        $response = self::$httpClient->get('http://localhost/status');
+        $response = self::$httpClient->get('http://localhost/job');
         self::assertSame(200, $response->getStatusCode());
 
         $data = json_decode($response->getBody()->getContents(), true);

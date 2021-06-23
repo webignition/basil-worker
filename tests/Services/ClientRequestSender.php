@@ -57,7 +57,7 @@ class ClientRequestSender
 
     public function getStatus(): Response
     {
-        $this->client->request('GET', '/status');
+        $this->client->request('GET', '/job');
 
         return $this->client->getResponse();
     }
