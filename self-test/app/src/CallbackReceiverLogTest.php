@@ -140,6 +140,7 @@ class CallbackReceiverLogTest extends TestCase
 
     /**
      * @param array<mixed> $logSection
+     *
      * @return array<mixed>
      */
     private function decodeLogSectionBody(array $logSection): array
