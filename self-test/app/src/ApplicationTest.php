@@ -22,10 +22,10 @@ class ApplicationTest extends TestCase
         parent::setUpBeforeClass();
 
         self::$httpClient = new Client();
-        self::$fixturePath = realpath(getcwd() . '/../fixtures');
+        self::$fixturePath = (string) realpath(getcwd() . '/../fixtures');
     }
 
-    public function testCreateJob()
+    public function testCreateJob(): void
     {
         $createJobResponse = self::$httpClient->post('http://localhost/create', [
             'form_params' => [
@@ -88,6 +88,9 @@ class ApplicationTest extends TestCase
         );
     }
 
+    /**
+     * @return array<mixed>
+     */
     private function getJobStatus(): array
     {
         $response = self::$httpClient->get('http://localhost/status');
