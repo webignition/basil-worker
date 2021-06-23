@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e87e05b0725662c843087b70ae82696",
+    "content-hash": "7832e2a1f28a1e108a09b250a335b34f",
     "packages": [
         {
             "name": "composer/package-versions-deprecated",
@@ -1814,16 +1814,16 @@
         },
         {
             "name": "symfony/amqp-messenger",
-            "version": "v5.2.4",
+            "version": "v5.2.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/amqp-messenger.git",
-                "reference": "cf309a35ed08caa77886ee6a352b8491c7681424"
+                "reference": "ce41f1ea7d72f4df1c83f6b28f11e6f68c502e5c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/amqp-messenger/zipball/cf309a35ed08caa77886ee6a352b8491c7681424",
-                "reference": "cf309a35ed08caa77886ee6a352b8491c7681424",
+                "url": "https://api.github.com/repos/symfony/amqp-messenger/zipball/ce41f1ea7d72f4df1c83f6b28f11e6f68c502e5c",
+                "reference": "ce41f1ea7d72f4df1c83f6b28f11e6f68c502e5c",
                 "shasum": ""
             },
             "require": {
@@ -1863,7 +1863,7 @@
             "description": "Symfony AMQP extension Messenger Bridge",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/amqp-messenger/tree/v5.2.4"
+                "source": "https://github.com/symfony/amqp-messenger/tree/v5.2.10"
             },
             "funding": [
                 {
@@ -1879,7 +1879,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-01-27T11:19:04+00:00"
+            "time": "2021-05-26T17:33:56+00:00"
         },
         {
             "name": "symfony/cache",
@@ -8639,7 +8639,6 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8",
-        "ext-amqp": "*",
         "ext-ctype": "*",
         "ext-curl": "*",
         "ext-iconv": "*",

@@ -48,16 +48,6 @@ services:
       - chrome-runner
       - firefox-runner
 
-  rabbitmq:
-    image: rabbitmq:3
-    container_name: rabbitmq
-    restart: always
-    networks:
-      - primary
-    environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
-
   postgres:
     image: postgres:12.5
     container_name: postgres
@@ -89,7 +79,7 @@ services:
       context: $APP_BUILD_CONTEXT
       args:
         DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD}@postgres:5432/worker-db?serverVersion=12&charset=utf8
-        MESSENGER_TRANSPORT_DSN: amqp://${RABBITMQ_USER}:${RABBITMQ_PASS}@rabbitmq:5672/%2f/messages
+        MESSENGER_TRANSPORT_DSN: doctrine://default
     container_name: app-web
     restart: always
     networks:
@@ -98,7 +88,6 @@ services:
       - compiler
       - delegator
       - postgres
-      - rabbitmq
     volumes:
       - /var/log/app-web:/app/var/log
       - ${LOCAL_SOURCE_PATH}:${SOURCE_PATH}
