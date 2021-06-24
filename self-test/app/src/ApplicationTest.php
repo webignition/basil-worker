@@ -27,7 +27,7 @@ class ApplicationTest extends TestCase
 
     public function testCreateJob(): void
     {
-        $createJobResponse = self::$httpClient->post('http://localhost/create', [
+        $createJobResponse = self::$httpClient->post('http://localhost/job', [
             'form_params' => [
                 'label' => self::JOB_LABEL,
                 'callback-url' => self::CALLBACK_URL,
@@ -87,7 +87,7 @@ class ApplicationTest extends TestCase
      */
     private function getJobStatus(): array
     {
-        $response = self::$httpClient->get('http://localhost/status');
+        $response = self::$httpClient->get('http://localhost/job');
         self::assertSame(200, $response->getStatusCode());
 
         $data = json_decode($response->getBody()->getContents(), true);
